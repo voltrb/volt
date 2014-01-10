@@ -2,7 +2,7 @@ require 'json'
 require 'sockjs/session'
 
 class ChannelHandler < SockJS::Session
-  def self.message_all
+  def self.message_all(message)
     @@channels.each do |channel|
       channel.send(message)
     end

@@ -19,6 +19,10 @@ class ModelController
     $page.url 
   end
   
+  def channel
+    $page.channel
+  end
+  
   def controller
     @controller ||= ReactiveValue.new(Model.new)
   end

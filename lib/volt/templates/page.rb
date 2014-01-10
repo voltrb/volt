@@ -64,11 +64,9 @@ class Page
       });
     }
 
-    # channel
-    # channel.on('message') do |message|
-    #   # puts "GOT: #{message}"
-    #   # `console.log('got: ', message);`
-    # end
+    channel.on('message') do |message|
+      puts "GOT: #{message}"
+    end
   end
   
   def link_clicked(url)

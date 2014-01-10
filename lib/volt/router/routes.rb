@@ -12,19 +12,20 @@ class Routes
   end
   
   def get(path, options)
-    if path.index(':')
-      sections = path.split(/([:][^:\/]+)/)
+    if path.index('{') && path.index('}')
+      sections = path.split(/(\{[^\}]+\})/)
+      sections = sections.reject {|v| v == '' }
       
       sections.each do |section|
-        if section[0] == ':'
-          options[section[1..-1]] = nil
+        if section[0] == '{' && section[-1] == '}'
+          options[section[1..-2]] = nil
         end
       end
       path = Proc.new do |params|
         # Create a path using the params in the path
         sections.map do |section|
-          if section[0] == ':'
-            params[section[1..-1]]
+          if section[0] == '{' && section[-1] == '}'
+            params[section[1..-2]]
           else
             section
           end
@@ -73,7 +74,7 @@ class Routes
   
     def params_match_options?(params, options)
       options.each_pair do |key, value|
-        if value == nil || value != params.send(key)
+        if value != nil && value != params.send(key)
           return false
         end
       end
