@@ -1,0 +1,28 @@
+<:title>
+  {#template params._controller.or('home'), "title"}
+</:title>
+
+<:body>
+  <div class="container">
+    <div class="header">
+      <ul class="nav nav-pills pull-right">
+        <:nav page="" text="Home" />
+        <:nav page="about" text="About" />
+      </ul>
+      <h3 class="text-muted">Project name</h3>
+    </div>
+    
+    {#template params._controller.or('home')}
+    
+    <div class="footer">
+      <p>&copy; Company 2014</p>
+    </div>
+
+  </div>
+</:body>
+
+<:nav>
+  <li class="{#if params._controller.or('') == page}active{/}">
+    <a href="/{page}">{text}</a>
+  </li>
+</:nav>

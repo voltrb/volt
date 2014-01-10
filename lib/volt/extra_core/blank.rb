@@ -1,0 +1,88 @@
+class Object
+  # An object is blank if it's false, empty, or a whitespace string.
+  # For example, '', '   ', +nil+, [], and {} are all blank.
+  #
+  # This simplifies:
+  #
+  #   if address.nil? || address.empty?
+  #
+  # ...to:
+  #
+  #   if address.blank?
+  def blank?
+    respond_to?(:empty?) ? empty? : !self
+  end
+
+  # An object is present if it's not <tt>blank?</tt>.
+  def present?
+    !blank?
+  end
+
+end
+
+class NilClass
+  # +nil+ is blank:
+  #
+  #   nil.blank? # => true
+  def blank?
+    true
+  end
+end
+
+class FalseClass
+  # +false+ is blank:
+  #
+  #   false.blank? # => true
+  def blank?
+    true
+  end
+end
+
+class TrueClass
+  # +true+ is not blank:
+  #
+  #   true.blank? # => false
+  def blank?
+    false
+  end
+end
+
+class Array
+  # An array is blank if it's empty:
+  #
+  #   [].blank?      # => true
+  #   [1,2,3].blank? # => false
+  alias_method :blank?, :empty?
+end
+
+class Hash
+  # A hash is blank if it's empty:
+  #
+  #   {}.blank?                # => true
+  #   { key: 'value' }.blank?  # => false
+  alias_method :blank?, :empty?
+end
+
+class String
+  # A string is blank if it's empty or contains whitespaces only:
+  #
+  #   ''.blank?                 # => true
+  #   '   '.blank?              # => true
+  #   '　'.blank?               # => true
+  #   ' something here '.blank? # => false
+  def blank?
+    # self !~ /[^[:space:]]/
+    # TODO: Opal fails with the previous regex
+    self.strip == ''
+  end
+end
+
+class Numeric #:nodoc:
+  # No number is blank:
+  #
+  #   1.blank? # => false
+  #   0.blank? # => false
+  def blank?
+    false
+  end
+end

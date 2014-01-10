@@ -1,0 +1,3 @@
+class BaseNode
+
+end

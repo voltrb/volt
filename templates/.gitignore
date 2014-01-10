@@ -1,0 +1,12 @@
+.bundle
+.config
+.yardoc
+_yardoc
+coverage
+doc/
+rdoc
+tmp
+.idea
+.yardoc
+.sass-cache
+.DS_Store
