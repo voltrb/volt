@@ -4,7 +4,7 @@ This guide will take you through creating a basic web application in Volt.  This
 
 To get started, install volt:
 
-    gem install voltframework
+    gem install volt
 
 Then create a new project:
 
@@ -19,8 +19,8 @@ This will setup a basic project.  Now lets run the server.
 
 When a user interacts with a web page, typically we want to do two things:
 
-1) Change application state
-2) Update the DOM
+1. Change application state
+2. Update the DOM
 
 For example when a user clicks to add a new todo item to a todo list, we might create a JavaScript object to represent the todo item, then add an item to the list's DOM.  A lot of work needs to be done to make sure that the JavaScript object and the DOM always stay in sync.
 
