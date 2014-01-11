@@ -1,3 +1,5 @@
+require 'volt/server/rack/source_map_server'
+
 SOURCE_MAPS = !!ENV['MAPS']
 
 Opal::Processor.source_map_enabled = SOURCE_MAPS

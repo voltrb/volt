@@ -12,8 +12,6 @@ require 'volt/server/component_handler'
 if RUBY_PLATFORM != 'java'
   require 'volt/server/channel_handler'
 end
-require 'volt/server/source_map_server'
-
 require 'volt/server/rack/asset_files'
 require 'volt/server/rack/index_files'
 require 'volt/server/rack/opal_files'
