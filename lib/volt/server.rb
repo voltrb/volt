@@ -26,8 +26,6 @@ class Server
   end
   
   def app
-    
-    
     @app = Rack::Builder.new
     @app.use Rack::CommonLogger
     @app.use Rack::ShowExceptions
@@ -36,10 +34,14 @@ class Server
       run ComponentHandler.new
     end
 
+    # Serve the main html files from public, also figure out
+    # which JS/CSS files to serve.
     @app.use IndexFiles, @asset_files
     
+    # Serve the opal files
     OpalFiles.new(@app, @app_path, @asset_files)
     
+    # Handle socks js connection
     if RUBY_PLATFORM != 'java'
       @app.map "/channel" do
         run Rack::SockJS.new(ChannelHandler)#, :websocket => false
@@ -53,7 +55,6 @@ class Server
       :header_rules => [
         [:all, {'Cache-Control' => 'public, max-age=86400'}]
       ]
-    
 
     @app.run lambda{ |env| [ 404, { 'Content-Type'  => 'text/html' }, ['404 - page not found'] ] }
     
