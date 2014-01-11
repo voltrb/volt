@@ -74,6 +74,8 @@ class Routes
   
     def params_match_options?(params, options)
       options.each_pair do |key, value|
+        # A nil value means it can match anything, so we don't want to
+        # fail on nil.        
         if value != nil && value != params.send(key)
           return false
         end
