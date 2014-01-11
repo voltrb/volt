@@ -1,5 +1,5 @@
 [![Gem Version](https://badge.fury.io/rb/volt.png)](http://badge.fury.io/rb/volt)
-[![Code Climate](https://codeclimate.com/repos/52d0dcdf695680068d00035f/badges/5b4861fd463acf4545ec/gpa.png)](https://codeclimate.com/repos/52d0dcdf695680068d00035f/feed)
+[![Code Climate](https://codeclimate.com/github/voltrb/volt.png)](https://codeclimate.com/github/voltrb/volt)
 
 # Volt
 
