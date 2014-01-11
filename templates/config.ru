@@ -1,4 +1,4 @@
 # Run via rack server
 require 'bundler/setup'
 require 'volt/server'
-run Server.app
+run Server.new.app
