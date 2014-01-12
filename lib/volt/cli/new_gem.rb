@@ -50,7 +50,6 @@ class NewGem
       constant_array = constant_name.split('::')
       git_user_name = `git config user.name`.chomp
       git_user_email = `git config user.email`.chomp
-      volt_version_base = File.read(File.join(File.dirname(__FILE__), '../../../VERSION')).split('.').tap {|v| v[v.size-1] = 0 }.join('.')
   
       opts = {
         :name            => @name,
@@ -64,6 +63,11 @@ class NewGem
       }
     
       return opts
+    end
+    
+    def volt_version_base
+      version_path = File.join(File.dirname(__FILE__), '../../../VERSION')
+      File.read(version_path).split('.').tap {|v| v[v.size-1] = 0 }.join('.')
     end
   
 end
