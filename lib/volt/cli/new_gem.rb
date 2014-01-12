@@ -1,3 +1,6 @@
+# Creates a new "volt" gem, which can be used to easily repackage
+# components.
+
 class NewGem  
   def initialize(thor, name, options)
     @thor = thor
