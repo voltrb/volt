@@ -8,6 +8,7 @@ class NewGem
     @target = File.join(Dir.pwd, @name)
     
     copy_files
+    copy_options
   end
   
   def copy_files
@@ -18,7 +19,9 @@ class NewGem
     copy("newgem/newgem.gemspec.tt", "#{@name}.gemspec")
     copy("newgem/lib/newgem.rb.tt", "lib/#{@namespaced_path}.rb")
     copy("newgem/lib/newgem/version.rb.tt", "lib/#{@namespaced_path}/version.rb")
+  end
     
+  def copy_options
     if options[:bin]
       copy("newgem/bin/newgem.tt", "bin/#{@name}")
     end
