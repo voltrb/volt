@@ -45,8 +45,7 @@ class NewGem
     end
   
     def gem_options
-      constant_name = @name.split('_').map{|p| p[0..0].upcase + p[1..-1] }.join
-      constant_name = constant_name.split('-').map{|q| q[0..0].upcase + q[1..-1] }.join('::') if constant_name =~ /-/
+      constant_name = self.constant_name
       constant_array = constant_name.split('::')
       git_user_name = `git config user.name`.chomp
       git_user_email = `git config user.email`.chomp
@@ -68,6 +67,11 @@ class NewGem
     def volt_version_base
       version_path = File.join(File.dirname(__FILE__), '../../../VERSION')
       File.read(version_path).split('.').tap {|v| v[v.size-1] = 0 }.join('.')
+    end
+    
+    def constant_name
+      constant_name = @name.split('_').map{|p| p[0..0].upcase + p[1..-1] }.join
+      constant_name = constant_name.split('-').map{|q| q[0..0].upcase + q[1..-1] }.join('::') if constant_name =~ /-/
     end
   
 end
