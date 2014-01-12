@@ -7,6 +7,10 @@ class NewGem
     @opts = gem_options
     @target = File.join(Dir.pwd, @name)
     
+    copy_files
+  end
+  
+  def copy_files
     copy("newgem/Gemfile.tt", "Gemfile")
     copy("newgem/Rakefile.tt", "Rakefile")
     copy("newgem/README.md.tt", "README.md")
