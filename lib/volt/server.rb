@@ -21,8 +21,6 @@ class Server
   def initialize
     @app_path = File.expand_path(File.join(Dir.pwd, "app"))
     @asset_files = AssetFiles.new
-    
-    puts Rack::Mime::MIME_TYPES.inspect
   end
   
   def app
