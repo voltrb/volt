@@ -11,6 +11,7 @@ class OpalFiles
   def initialize(builder, app_path, asset_files)
     @asset_files = asset_files
     environment = Opal::Environment.new
+    environment.cache = Sprockets::Cache::FileStore.new("./tmp")
   
     environment.append_path(app_path)
   

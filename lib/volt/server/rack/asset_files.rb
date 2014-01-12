@@ -1,10 +1,16 @@
 class AssetFiles
   
-  # Return an array of every folder where we might find components
+  # Yield for every folder where we might find components
   def app_folders
     # Find all app folders
     @app_folders ||= begin
       app_folders = ['app', 'vendor/app']
+      
+      # Gem folders with volt in them
+      # TODO: we should probably qualify this a bit more
+      app_folders += Gem.loaded_specs.values.map { |g| g.full_gem_path }.reject {|g| g !~ /volt/ }
+      
+      app_folders
     end
     
     # Yield each app folder and return a flattened array with
