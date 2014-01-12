@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'voltframework'
+gem 'volt'
 
 # Needed at the moment
 gem 'opal', git: 'https://github.com/opal/opal.git'
