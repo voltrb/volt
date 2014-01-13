@@ -1,13 +1,17 @@
+require "net/http"
+require "uri"
+
 # Creates a new "volt" gem, which can be used to easily repackage
 # components.
-
 class NewGem  
   def initialize(thor, name, options)
     @thor = thor
-    @name = name#"volt-" + name.chomp("/") # remove trailing slash if present
+    @name = "volt-" + name.chomp("/") # remove trailing slash if present
 
-    unless gem_is_available?
-      puts "There is already a gem named #{@name}.  Please choose a different name."
+    if gem_is_available?
+      @thor.say("#{@name} is available!  Making gem files.", :green)
+    else
+      @thor.say("There is already a gem named #{@name}.  Please choose a different name.", :red)
       return
     end
     
@@ -22,22 +26,19 @@ class NewGem
   
   # Check with the rubygems api to see if this gem name is available.
   def gem_is_available?
-      require "net/http"
-      require "uri"
+    @thor.say("Check if #{@name} is available as a gem name.", :yellow)
+    uri = URI.parse("https://rubygems.org/api/v1/gems/#{@name}.json")
 
-      uri = URI.parse("https://rubygems.org/api/v1/gems/#{@name}.json")
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+  
+    request = Net::HTTP::Get.new(uri.request_uri)
+    response = http.request(request)
 
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true
-    
-      request = Net::HTTP::Get.new(uri.request_uri)
-      response = http.request(request)
-
-      return response.code == "404"
-    rescue => SocketError
-      # rubygems is down, skip check
-      return true
-    end
+    return response.code == "404"
+  rescue SocketError => e
+    # rubygems is down, skip check
+    return true
   end
   
   def copy_files
