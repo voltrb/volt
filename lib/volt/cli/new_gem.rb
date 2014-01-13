@@ -22,18 +22,22 @@ class NewGem
   
   # Check with the rubygems api to see if this gem name is available.
   def gem_is_available?
-    require "net/http"
-    require "uri"
+      require "net/http"
+      require "uri"
 
-    uri = URI.parse("https://rubygems.org/api/v1/gems/#{@name}.json")
+      uri = URI.parse("https://rubygems.org/api/v1/gems/#{@name}.json")
 
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true
     
-    request = Net::HTTP::Get.new(uri.request_uri)
-    response = http.request(request)
+      request = Net::HTTP::Get.new(uri.request_uri)
+      response = http.request(request)
 
-    return response.code == "404"
+      return response.code == "404"
+    rescue => SocketError
+      # rubygems is down, skip check
+      return true
+    end
   end
   
   def copy_files
