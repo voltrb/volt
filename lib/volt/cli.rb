@@ -9,7 +9,7 @@ class CLI < Thor
     directory("project", name)
     
     say "Bundling Gems...."
-    `cd #{name} ; bundle`
+    `cd #{name} ; bundle -j 4`
   end
   
   desc "console", "run the console on the project in the current directory"
