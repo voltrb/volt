@@ -1,10 +1,13 @@
-class AssetFiles
+class ComponentPaths
+  def initialize(root=nil)
+    @root = root || Dir.pwd
+  end
   
   # Yield for every folder where we might find components
   def app_folders
     # Find all app folders
     @app_folders ||= begin
-      app_folders = ['app', 'vendor/app']
+      app_folders = ["#{@root}/app", "#{@root}/vendor/app"]
       
       # Gem folders with volt in them
       # TODO: we should probably qualify this a bit more
@@ -22,6 +25,34 @@ class AssetFiles
     end
     
     return files
+  end
+  
+  def components
+    return @components if @components
+    
+    @components = {}
+    app_folders.each do |app_folder|
+      Dir["#{app_folder}/*"].each do |folder|
+        if File.directory?(folder)
+          folder_name = folder[/[^\/]+$/]
+          
+          @components[folder_name] ||= []
+          @components[folder_name] << folder
+        end
+      end
+    end
+    
+    return @components
+  end
+  
+  def component_path(name)
+    folders = components[name]
+    
+    if folders
+      return folders.first
+    else
+      return nil
+    end
   end
   
   def asset_folders
