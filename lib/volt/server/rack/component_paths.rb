@@ -31,7 +31,7 @@ class ComponentPaths
     return @components if @components
     
     @components = {}
-    app_folders.each do |app_folder|
+    app_folders do |app_folder|
       Dir["#{app_folder}/*"].each do |folder|
         if File.directory?(folder)
           folder_name = folder[/[^\/]+$/]
