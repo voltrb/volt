@@ -1,1 +1,2 @@
 component 'shared'
+component 'slideshow'

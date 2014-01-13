@@ -13,7 +13,6 @@ class ComponentPaths
       # TODO: we should probably qualify this a bit more
       app_folders += Gem.loaded_specs.values.map { |g| g.full_gem_path }.reject {|g| g !~ /volt/ }.map {|f| f + '/app' }
 
-      puts "APP FOLDERS: #{app_folders.inspect}"
       app_folders
     end
     

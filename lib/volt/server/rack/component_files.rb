@@ -1,13 +1,20 @@
 require 'volt/server/rack/component_paths'
+require 'volt'
 
 # Takes in the path to a component and gets all other components
 # required from this one
 class ComponentFiles
-  def initialize(component_name, component_paths)
+  def initialize(component_name, component_paths, main_component=false)
     @component_name = component_name
     @component_paths = component_paths
     @asset_folders = []
     @components = [component_name]
+    @main_component = main_component
+    
+    if @main_component
+      # Add in volt's JS files first
+      component('volt')
+    end
     
     load_child_components
     add_asset_folder(component_name)
@@ -72,16 +79,19 @@ class ComponentFiles
   
   
   def javascript_files
-    if Volt.source_maps?
-      javascript_files = environment['volt/templates/page'].to_a.map {|v| '/assets/' + v.logical_path + '?body=1' }
-    else
-      javascript_files = ['/assets/volt/templates/page.js']
-    end
-    
-    javascript_files << '/components/home.js'
-    javascript_files += asset_folders do |asset_folder|
+    javascript_files = asset_folders do |asset_folder|
       Dir["#{asset_folder}/**/*.js"].map {|path| '/assets' + path[asset_folder.size..-1] }
     end
+    
+    opal_js_files = []
+    if Volt.source_maps?
+      opal_js_files << environment['volt/templates/page'].to_a.map {|v| '/assets/' + v.logical_path + '?body=1' }
+    else
+      opal_js_files << '/assets/volt/templates/page.js'
+    end
+    opal_js_files << '/components/home.js'
+
+    javascript_files.insert(2, *opal_js_files)
     
     return javascript_files
   end

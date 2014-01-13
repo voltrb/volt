@@ -12,12 +12,12 @@ describe ComponentFiles do
     main = ComponentFiles.new("main", @component_paths)
     
     components = main.components
-    expect(components).to eq(['main', 'shared', 'bootstrap'])
+    expect(components).to eq(['main', 'shared', 'bootstrap', "slideshow"])
   end
   
   it "should list all JS files" do
     main = ComponentFiles.new("main", @component_paths)
     
-    expect(main.javascript_files).to eq(["/assets/volt/templates/page.js", "/components/home.js", "/assets/js/test2.js", "/assets/js/test1.js"])
+    expect(main.javascript_files).to eq(["/assets/js/test2.js", "/assets/js/bootstrap.js", "/assets/volt/templates/page.js", "/components/home.js", "/assets/js/test3.js", "/assets/js/test1.js"])
   end
 end
