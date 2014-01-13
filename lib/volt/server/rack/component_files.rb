@@ -55,7 +55,6 @@ class ComponentFiles
     if File.exists?(dependencies_file)
       # Run the dependencies file in this ComponentFiles context
       code = File.read(dependencies_file)
-      puts "CODE: #{code.inspect}"
       instance_eval(code)
     end
   end
