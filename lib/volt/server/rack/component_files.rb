@@ -87,7 +87,6 @@ class ComponentFiles
 
   def css_files
     asset_folders do |asset_folder|
-      puts "ASSET FOLDER: #{asset_folder}"
       Dir["#{asset_folder}/**/*.{css,scss}"].map {|path| '/assets' + path[asset_folder.size..-1].gsub(/[.]scss$/, '') }
     end
   end
