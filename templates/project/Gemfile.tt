@@ -2,6 +2,9 @@ source 'https://rubygems.org'
 
 gem 'volt'
 
+# Twitter bootstrap
+gem 'volt-bootstrap'
+
 # Needed at the moment
 gem 'opal', git: 'https://github.com/opal/opal.git'
 gem 'opal-jquery', :git => 'https://github.com/opal/opal-jquery.git'
