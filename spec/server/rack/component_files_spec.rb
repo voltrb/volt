@@ -2,7 +2,7 @@ require 'volt/server/rack/component_files'
 
 describe ComponentFiles do
   before do
-    @spec_app_root = File.join(File.dirname(__FILE__), "../../app")
+    @spec_app_root = File.join(File.dirname(__FILE__), "../..")
   end
   
   it "should return the dependencies list" do

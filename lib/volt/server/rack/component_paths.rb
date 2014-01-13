@@ -7,7 +7,7 @@ class ComponentPaths
   def app_folders
     # Find all app folders
     @app_folders ||= begin
-      app_folders = ["#{@root}/app", "#{@root}/vendor/app"]
+      app_folders = ["#{@root}/app", "#{@root}/vendor/app"].map {|f| File.expand_path(f) }
       
       # Gem folders with volt in them
       # TODO: we should probably qualify this a bit more
@@ -21,10 +21,10 @@ class ComponentPaths
     
     files = []
     @app_folders.each do |app_folder|
-      files += yield(app_folder)
+      files << yield(app_folder)
     end
     
-    return files
+    return files.flatten
   end
   
   def components
