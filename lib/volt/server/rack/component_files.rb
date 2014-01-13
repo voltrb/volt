@@ -22,12 +22,10 @@ class ComponentFiles
   def component(name)
     # Load any sub-requires
     child_files = ComponentFiles.new(name, @component_paths)
-    
     new_components = child_files.components
     
     # remove any we already have
     new_components = new_components - @components
-    
     new_components.each {|nc| add_asset_folder(nc) }
     
     @components += new_components
@@ -49,11 +47,17 @@ class ComponentFiles
   end
   
   def load_child_components
-    dependencies_file = File.join(path_to_component, "config/dependencies.rb")
+    path = path_to_component
+    if path
+      dependencies_file = File.join(path_to_component, "config/dependencies.rb")
+    else
+      raise "Unable to find component #{@component_name.inspect}"
+    end
     
     if File.exists?(dependencies_file)
       # Run the dependencies file in this ComponentFiles context
       code = File.read(dependencies_file)
+      puts "CODE: #{code.inspect}"
       instance_eval(code)
     end
   end

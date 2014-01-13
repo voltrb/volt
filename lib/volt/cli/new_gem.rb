@@ -1,12 +1,14 @@
 require "net/http"
 require "uri"
+require 'fileutils'
 
 # Creates a new "volt" gem, which can be used to easily repackage
 # components.
 class NewGem  
   def initialize(thor, name, options)
     @thor = thor
-    @name = "volt-" + name.chomp("/") # remove trailing slash if present
+    @component_name = name.chomp("/")
+    @name = "volt-" + @component_name # remove trailing slash if present
 
     if gem_is_available?
       @thor.say("#{@name} is available!  Making gem files.", :green)
@@ -42,14 +44,15 @@ class NewGem
   end
   
   def copy_files
-    @thor.directory("newgem/app", File.join("#{@target}", "app"))
+    @thor.directory("newgem/app/newgem", File.join("#{@target}", "app/#{@component_name}"))
     copy("newgem/Gemfile.tt", "Gemfile")
     copy("newgem/Rakefile.tt", "Rakefile")
     copy("newgem/README.md.tt", "README.md")
     copy("newgem/gitignore.tt", ".gitignore")
     copy("newgem/newgem.gemspec.tt", "#{@name}.gemspec")
     copy("newgem/lib/newgem.rb.tt", "lib/#{@namespaced_path}.rb")
-    copy("newgem/lib/newgem/version.rb.tt", "lib/#{@namespaced_path}/version.rb")
+    copy("newgem/VERSION", "VERSION")
+    FileUtils.mkdir_p(File.join(@target, "lib/#{@namespaced_path}"))
   end
     
   def copy_options
