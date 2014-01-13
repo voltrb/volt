@@ -1,14 +1,12 @@
 require 'volt/server/rack/source_map_server'
 
-SOURCE_MAPS = !!ENV['MAPS'] unless defined?(SOURCE_MAPS)
-
-Opal::Processor.source_map_enabled = SOURCE_MAPS
-# Opal::Processor.arity_check_enabled = true
-# Opal::Processor.dynamic_require_severity = :raise
-
 # Sets up the maps for the opal assets, and source maps if enabled.
 class OpalFiles
   def initialize(builder, app_path, component_paths)
+    Opal::Processor.source_map_enabled = Volt.source_maps?
+    # Opal::Processor.arity_check_enabled = true
+    # Opal::Processor.dynamic_require_severity = :raise
+
     @component_paths = component_paths
     environment = Opal::Environment.new
     environment.cache = Sprockets::Cache::FileStore.new("./tmp")
@@ -33,7 +31,7 @@ class OpalFiles
       run environment
     end
 
-    if SOURCE_MAPS
+    if Volt.source_maps?
       source_maps = SourceMapServer.new(environment)
 
       builder.map(source_maps.prefix) do

@@ -1,7 +1,5 @@
 require 'volt/server/rack/component_paths'
 
-SOURCE_MAPS = !!ENV['MAPS'] unless defined?(SOURCE_MAPS)
-
 # Takes in the path to a component and gets all other components
 # required from this one
 class ComponentFiles
@@ -75,7 +73,7 @@ class ComponentFiles
   
   
   def javascript_files
-    if SOURCE_MAPS
+    if Volt.source_maps?
       javascript_files = environment['volt/templates/page'].to_a.map {|v| '/assets/' + v.logical_path + '?body=1' }
     else
       javascript_files = ['/assets/volt/templates/page.js']

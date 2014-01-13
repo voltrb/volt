@@ -23,7 +23,7 @@ class IndexFiles
   end
   
   def javascript_files
-    # TODO: OPTimize
+    # TODO: Cache somehow, this is being loaded every time
     ComponentFiles.new('home', @component_paths).javascript_files
   end
   

@@ -10,4 +10,8 @@ class Volt
   def self.client?
     !!ENV['CLIENT']
   end
+  
+  def self.source_maps?
+    !!ENV['MAPS']
+  end
 end

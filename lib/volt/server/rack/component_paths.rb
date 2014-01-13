@@ -12,7 +12,7 @@ class ComponentPaths
       # Gem folders with volt in them
       # TODO: we should probably qualify this a bit more
       app_folders += Gem.loaded_specs.values.map { |g| g.full_gem_path }.reject {|g| g !~ /volt/ }.map {|f| f + '/app' }
-      
+
       app_folders
     end
     
