@@ -4,7 +4,13 @@
 class NewGem  
   def initialize(thor, name, options)
     @thor = thor
-    @name = "volt-" + name.chomp("/") # remove trailing slash if present
+    @name = name#"volt-" + name.chomp("/") # remove trailing slash if present
+
+    unless gem_is_available?
+      puts "There is already a gem named #{@name}.  Please choose a different name."
+      return
+    end
+    
     @options = options
     @namespaced_path = @name.tr('-', '/')
     @opts = gem_options
@@ -12,6 +18,22 @@ class NewGem
     
     copy_files
     copy_options
+  end
+  
+  # Check with the rubygems api to see if this gem name is available.
+  def gem_is_available?
+    require "net/http"
+    require "uri"
+
+    uri = URI.parse("https://rubygems.org/api/v1/gems/#{@name}.json")
+
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    
+    request = Net::HTTP::Get.new(uri.request_uri)
+    response = http.request(request)
+
+    return response.code == "404"
   end
   
   def copy_files
