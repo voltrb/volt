@@ -1,8 +1,10 @@
+require 'volt/server/rack/component_files'
+
 # Serves the main pages
 class IndexFiles
-  def initialize(app, asset_files)
+  def initialize(app, component_paths)
     @app = app
-    @asset_files = asset_files
+    @component_paths = component_paths
   end
 
   def call(env)
@@ -21,11 +23,12 @@ class IndexFiles
   end
   
   def javascript_files
-    @asset_files.asset_javascript_files
+    # TODO: OPTimize
+    ComponentFiles.new('home', @component_paths).javascript_files
   end
   
   def css_files
-    @asset_files.asset_css_files
+    ComponentFiles.new('home', @component_paths).css_files
   end
 
   

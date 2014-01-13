@@ -11,7 +11,7 @@ class ComponentPaths
       
       # Gem folders with volt in them
       # TODO: we should probably qualify this a bit more
-      app_folders += Gem.loaded_specs.values.map { |g| g.full_gem_path }.reject {|g| g !~ /volt/ }
+      # app_folders += Gem.loaded_specs.values.map { |g| g.full_gem_path }.reject {|g| g !~ /volt/ }
       
       app_folders
     end
@@ -55,33 +55,16 @@ class ComponentPaths
     end
   end
   
+  # Return every asset folder we need to serve from
   def asset_folders
-    @asset_folders ||= begin
-      app_folders do |app_folder|
-        Dir["#{app_folder}/*/assets"]
+    folders = []
+    app_folders do |app_folder|
+      Dir["#{app_folder}/*/assets"].each do |asset_folder|
+        folders << yield(asset_folder)
       end
     end
-  end
-  
-  def asset_javascript_files
-    if SOURCE_MAPS
-      javascript_files = environment['volt/templates/page'].to_a.map {|v| '/assets/' + v.logical_path + '?body=1' }
-    else
-      javascript_files = ['/assets/volt/templates/page.js']
-    end
     
-    javascript_files << '/components/home.js'
-    
-    javascript_files += app_folders do |app_folder|
-      Dir["#{app_folder}/*/assets/**/*.js"].map {|path| '/' + path.split('/')[2..-1].join('/') }
-    end
-    
-    return javascript_files
+    folders.flatten
   end
 
-  def asset_css_files
-    app_folders do |app_folder|
-      Dir["#{app_folder}/*/assets/**/*.{css,scss}"].map {|path| '/' + path.split('/')[2..-1].join('/').gsub(/[.]scss$/, '') }
-    end
-  end
 end

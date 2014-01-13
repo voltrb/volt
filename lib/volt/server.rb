@@ -12,7 +12,7 @@ require 'volt/server/component_handler'
 if RUBY_PLATFORM != 'java'
   require 'volt/server/channel_handler'
 end
-require 'volt/server/rack/asset_files'
+require 'volt/server/rack/component_paths'
 require 'volt/server/rack/index_files'
 require 'volt/server/rack/opal_files'
 
@@ -20,7 +20,7 @@ require 'volt/server/rack/opal_files'
 class Server
   def initialize
     @app_path = File.expand_path(File.join(Dir.pwd, "app"))
-    @asset_files = AssetFiles.new
+    @component_paths = ComponentPaths.new
   end
   
   def app
@@ -34,10 +34,10 @@ class Server
 
     # Serve the main html files from public, also figure out
     # which JS/CSS files to serve.
-    @app.use IndexFiles, @asset_files
+    @app.use IndexFiles, @component_paths
     
     # Serve the opal files
-    OpalFiles.new(@app, @app_path, @asset_files)
+    OpalFiles.new(@app, @app_path, @component_paths)
     
     # Handle socks js connection
     if RUBY_PLATFORM != 'java'
