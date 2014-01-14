@@ -2,6 +2,7 @@ class ReactiveTemplate
   include Events
   
   def initialize(context, template_path)
+    # puts "New Reactive Template: #{context.inspect} - #{template_path.inspect}"
     @template_path = template_path
     @target = AttributeTarget.new
     @template = TemplateRenderer.new(@target, context, "main", template_path)

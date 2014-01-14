@@ -219,7 +219,7 @@ class Template
     full_template_path = "#{@template_parser.template_path}/#{section_name}/#{template_name}"
     @binding_number += 1
   
-    attribute_template = Template.new(@template_parser, section_name, Nokogiri::HTML::DocumentFragment.parse(content))
+    attribute_template = Template.new(@template_parser, "#{section_name}/#{template_name}", Nokogiri::HTML::DocumentFragment.parse(content))
     @template_parser.add_template("#{section_name}/#{template_name}", attribute_template)
     attribute_template.start_walk
     attribute_template.pull_closed_block_scopes
@@ -433,6 +433,7 @@ class TemplateParser
 	end
 
 	def add_template(name, template)
+    raise "Already defined at #{@template_path + '/' + name}" if @templates[@template_path + '/' + name]
 		@templates[@template_path + '/' + name] = template
 	end
 
