@@ -51,7 +51,7 @@ This will setup a basic project.  Now lets run the server.
     1. [Content Binding](#content-binding)
     2. [If Binding](#if-binding)
     3. [Each Binding](#each-binding)
-    4. [Attribute Binding](#attribute-binding)
+    4. [Attribute Bindings](#attribute-bindings)
 2. [Models](#models)
 3. [Components](#components)
 4. [Controls](#controls)
