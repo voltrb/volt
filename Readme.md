@@ -24,21 +24,45 @@ Volt has the following goals:
 7. Secure (shouldn't need to be said, but it does)
 8. Be fast/light
 9. Understandable code base
-10. Component Upgradeability
-
-## 10. Component Upgradeability
-
-(seamless promotion)
-Everyone wishes that we could predict the scope and required features for each part of our application, but in the real world, things we don't expect to grow large often do and things we think will be large don't end up that way.  Volt provides an easy way to promote sections of html and code to provide more
-
-- subtemplate
-- template
-- controller
-- component
+10. Control Upgradeability
 
 # Components
 
 Apps are made up of Components.  Each folder under app/ is a component.  When you visit a route, it loads all of the files in the component on the front end, so new pages within the component can be rendered on the front end.  If a url is visited that routes to a different component, the request will be loaded as a normal page load and all of that components files will be loaded.  You can think of components as the "reload boundry" between sections of your app.
 
 # Controls
- 
+
+Everyone wishes that we could predict the scope and required features for each part of our application, but in the real world, things we don't expect to grow large often do and things we think will be large don't end up that way.  Controls let you quickly setup reusable code/views.  The location of the control's code can be moved as it grows without changing the way controls are invoked.
+
+To render a control, simply use a tag like so:
+
+    <:control-name />
+    
+or
+
+    <:control-name></:control-name>
+
+To find the control's views and optional controller, Volt will search the following (in order):
+
+| Component   | View Folder    | View File    | Section   |
+|             |                |              | :{name}   |
+|             |                | {name}.html  | :body     |
+|             | {name}         | index.html   | :body     |
+| {name}      | index          | index.html   | :body     |
+
+Each part is explained below:
+
+1. section
+Views are composed of sections.  Sections start with a <:SectionName> tag and end with </:SectionName>  Volt will look first for a section in the same view.
+
+2. views
+Next Volt will look for a view file that with the control name.  If found, it will render the body section of that view.
+
+3. view folder
+Failing above, Volt will look for a view folder with the control name, and an index.html file within that folder.  It will render the :body section of that view.  If a controller exists for the view folder, it will make a new instance of that controller and render in that instance.
+
+4. component
+Next, all folders under app/ are checked.  The view path looked for is {component}/index/index.html with a section of :body.
+
+5. gems
+Lastly the app folder of all gems that start with volt are checked.  They are checekd for a similar path to component.
