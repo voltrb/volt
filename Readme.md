@@ -42,7 +42,7 @@ This will setup a basic project.  Now lets run the server.
 
     volt server
 
-## Bindings
+# Bindings
 
 When a user interacts with a web page, typically we want to do two things:
 
@@ -53,6 +53,79 @@ For example when a user clicks to add a new todo item to a todo list, we might c
 
 Recently the idea of "reactive programming" has been used to simplify maintaining the DOM.  The idea is instead of having event handlers that manage a model (or JavaScript object) and manage the DOM, we have event handlers that manage reactive data models.  We describe our DOM layer in a declaritive way so that it automatically knows how to render our data models.
 
+## Reactive Value's
+
+To build bindings, Volt provides the ReactiveValue class.  This wraps any object in a reactive interface.  To create a ReactiveValue, simply pass the object you want to wrap as the first argument to new.
+
+```ruby
+    a = ReactiveValue.new(some_object)
+```
+
+When you call a method on a ReactiveValue, you get back a new reactive value that depends on the previous one.  It remebers how it was created and you can call .cur on it any time to get its current value (which will be computed based off of the first reactive value).  Keep in mind below that + is a method call (the same as a.+(b) in ruby.)
+
+```ruby
+    a = ReactiveValue.new(1)
+    a.reactive?
+    # => true
+    
+    a.cur
+    # => 1
+    
+    b = a + 5
+    b.reactive?
+    # => true
+    
+    b.cur
+    # => 6
+    
+    a.cur = 2
+    b.cur
+    # => 7
+```
+
+This provides the backbone for reactive programming.  We setup computation/flow graphs instead of doing an actual calcuation.  Calling .cur (or .inspect, .to_s, etc..) runs the computation and returns the current value at that time, based on all of its dependencies.
+
+ReactiveValue's also let you setup listeners and trigger events:
+
+```ruby
+    a = ReactiveValue.new(0)
+    a.on('changed') { puts "A changed" }
+    a.trigger!('changed')
+    # => A Changed
+```
+
+These events propigate to any reactive value's created off of a reactive value.
+
+```ruby
+    a = ReactiveValue.new(1)
+    b = a + 5
+    b.on('changed') { puts "B changed" }
+    
+    a.trigger!('changed')
+    # => B changed
+```
+
+This event flow lets us know when an object has changed, so we can update everything that depended on that object.
+
+Lastly, we can also pass in other reactive value's as arguments to methods on a reactive value.  The dependencies will be tracked for both and events will propigate down from both.  Also, doing .cur = to update the current value triggers a "changed" event.
+
+```ruby
+    a = ReactiveValue.new(1)
+    b = ReactiveValue.new(2)
+    c = a + b
+
+    a.on('changed') { puts "A changed" }
+    b.on('changed') { puts "B changed" }
+    c.on('changed') { puts "C changed" }
+    
+    a.cur = 3
+    # => A changed
+    # => C changed
+    
+    b.cur = 5
+    # => B changed
+    # => C changed
+```
 
 # Components
 
