@@ -67,7 +67,7 @@ To find the control's views and optional controller, Volt will search the follow
 | {name}      | index          | index.html   | :body     |
 | gems/{name} | index          | index.html   | :body     |
 
-** Note that anything with a view folder will also load a controller if the name/folder matches.
+** Note that anything with a view folder will also load a controller if the name/folder matches. **
 
 
 Each part is explained below:
