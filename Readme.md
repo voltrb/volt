@@ -74,8 +74,12 @@ Recently the idea of "reactive programming" has been used to simplify maintainin
 To build bindings, Volt provides the ReactiveValue class.  This wraps any object in a reactive interface.  To create a ReactiveValue, simply pass the object you want to wrap as the first argument to new.
 
 ```ruby
-    a = ReactiveValue.new(some_object)
+    a = ReactiveValue.new("my object")
+    
+    # => @"my object"
 ```
+
+When .inspect is called on a ReactiveValue (like in the console), an @ is placed infront of the value's inspect string, so you know its reactive.
 
 When you call a method on a ReactiveValue, you get back a new reactive value that depends on the previous one.  It remebers how it was created and you can call .cur on it any time to get its current value, which will be computed based off of the first reactive value.  (Keep in mind below that + is a method call, the same as a.+(b) in ruby.)
 
@@ -225,6 +229,49 @@ If you have a controller at app/home/controller/index_controller.rb, and a view 
 
 # Models
 
+Volt's concept of a model is slightly different from many frameworks where a model is the name for the ORM to the database.  In Volt a model is a class where you can store data easily.  Where that data stored is not the concern of the model, but the class that created the model.  Lets first see how to use a model.
+
+Volt comes with many built-in models, one is called 'page'.  If you call #page on a controller, you will get access to the model.  Models provided by Volt are automatically wrapped in a ReactiveValue.
+
+    page._name = 'Ryan'
+    page._name
+    # => @'Ryan'
+    
+Models act like a hash that you can access with getters and setters that start with an _  Prefixing with an underscore makes sure we don't accidentally try to call a method that doesn't exist and get back nil.  There is no need to define which fields a model has, they act similar to a hash, but with a shorter access and assign syntax.
+
+Models also let you nest data:
+
+    page._settings._color = 'blue'
+    page._settings._color
+    # => @'blue'
+    
+    page._settings
+    # => @#<Model:_settings {:_color=>"blue"}>
+    
+Nested data is automatically setup when assigned.  In this case, page._settings is a model that is part of the page model.
+
+You can also append to a model if its not defined yet.
+
+    page._items << 'item 1'
+    page._items
+    # => @#<ArrayModel ["item 1", "item 2"]>
+    
+    page._items[0]
+    # => @"item 1"
+
+An array model will automatically be setup to contain the items appended.
+
+Above I mentioned that Volt comes with many different models accessable from a controller.  Each stores in a different location.
+
+| Name      | Storage Location                                                          |
+|-----------|---------------------------------------------------------------------------|
+| page      | page provides a temporary store that only lasts for the life of the page. |
+| store     | store syncs the data to the backend database and provides query methods.  |
+| session   | values will be stored in a session cookie.                                |
+| params    | values will be stored in the params and url.  Routes can be setup to change how params are shown in the url.  (See routes for more info) |
+| controller| a model for the current controller                                        |
+
+**more storage locations are planned**
 
 # Components
 
@@ -239,6 +286,8 @@ component 'component_name'
 in the file.
 
 Dependencies act just like require in ruby, but for whole components.
+
+TODO: document component generator
 
 # Controls
 
