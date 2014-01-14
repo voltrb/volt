@@ -154,14 +154,22 @@ Because a method on a reactive value always returns another reactive value, and 
 One common place we use a truthy check is in setting up default values with || (logical or)  Volt provides a convience method that does the same thing .or, but works with ReactiveValue's.
 
 Instead of 
-    
+
+```ruby
     a || b
+```
 
 Simply use:
     
+```ruby
     a.or(b)
+```
 
 .and works the same way as &&.  #and and #or let you maintain the reactivity all of the way through.
+
+
+### With
+
 
 
 ## Bindings
@@ -250,31 +258,37 @@ Volt's concept of a model is slightly different from many frameworks where a mod
 
 Volt comes with many built-in models, one is called 'page'.  If you call #page on a controller, you will get access to the model.  Models provided by Volt are automatically wrapped in a ReactiveValue.
 
+```ruby
     page._name = 'Ryan'
     page._name
     # => @'Ryan'
+```
     
 Models act like a hash that you can access with getters and setters that start with an _  Prefixing with an underscore makes sure we don't accidentally try to call a method that doesn't exist and get back nil.  There is no need to define which fields a model has, they act similar to a hash, but with a shorter access and assign syntax.
 
 Models also let you nest data:
 
+```ruby
     page._settings._color = 'blue'
     page._settings._color
     # => @'blue'
     
     page._settings
     # => @#<Model:_settings {:_color=>"blue"}>
+```
     
 Nested data is automatically setup when assigned.  In this case, page._settings is a model that is part of the page model.
 
 You can also append to a model if its not defined yet.
 
+```ruby
     page._items << 'item 1'
     page._items
     # => @#<ArrayModel ["item 1", "item 2"]>
     
     page._items[0]
     # => @"item 1"
+```
 
 An array model will automatically be setup to contain the items appended.
 
