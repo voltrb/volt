@@ -68,7 +68,7 @@ When a user interacts with a web page, typically we want to do two things:
 
 For example when a user clicks to add a new todo item to a todo list, we might create a JavaScript object to represent the todo item, then add an item to the list's DOM.  A lot of work needs to be done to make sure that the JavaScript object and the DOM always stay in sync.
 
-Recently the idea of "reactive programming" has been used to simplify maintaining the DOM.  The idea is instead of having event handlers that manage a model (or JavaScript object) and manage the DOM, we have event handlers that manage reactive data models.  We describe our DOM layer in a declaritive way so that it automatically knows how to render our data models.
+Recently the idea of "reactive programming" has been used to simplify maintaining the DOM.  The idea is instead of having event handlers that manage a model (or JavaScript object) and manage the DOM, we have event handlers that manage reactive data models.  We describe our DOM layer in a declarative way so that it automatically knows how to render our data models.
 
 ## Reactive Value's
 
@@ -323,7 +323,17 @@ in the file.
 
 Dependencies act just like require in ruby, but for whole components.
 
-TODO: document component generator
+## Component Generator
+
+Components can easily be shared as a gem.  Volt provides a scaffold for component gems.  In a folder (not in a volt project), simply type: volt component {component_name}  This will create the files needed for the gem.  Note that all volt component gems will be prefixed with volt- so they can easily be found by others.
+
+While developing, you can use the component by placing the following in your Gemfile:
+
+    gem 'volt-{component_name}', path: '/path/to/folder/with/component'
+
+Once the gem is ready, you can release it to ruby gems with:
+
+    rake release
 
 # Controls
 
