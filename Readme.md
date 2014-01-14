@@ -51,6 +51,7 @@ This will setup a basic project.  Now lets run the server.
     1. [Content Binding](#content-binding)
     2. [If Binding](#if-binding)
     3. [Each Binding](#each-binding)
+    4. [Attribute Binding](#attribute-binding)
 2. [Models](#models)
 3. [Components](#components)
 4. [Controls](#controls)
@@ -201,6 +202,24 @@ For the array: ['one', 'two', 'three'] this would print:
 You can do {index + 1} to correct the numbers.
 
 When items are removed or added to the array, the #each binding automatically and intellegently add or removes the items from/to the dom.
+
+## Attribute Bindings
+
+Bindings can also be placed inside of attributes.
+
+    <p class="{#if _is_cool?}cool{/}">Text</p>
+
+There are some special features provided to make for elements work as "two way bindings"
+
+    <input type="text" value="{_name}" />
+    
+In the example above, if _name changes, the field will update and if the field is updated, _name will be changed.
+
+    <input type="checkbox" checked="{_checked}" />
+
+If the value of a checked attribute is true, the checkbox will be shown checked.  If it is checked/unchecked, the value will be updated to true or false.
+
+-- TODO: select boxes
 
 If you have a controller at app/home/controller/index_controller.rb, and a view at app/home/views/index/index.html, all methods called are called on the controller.
 
