@@ -36,11 +36,15 @@ Everyone wishes that we could predict the scope and required features for each p
 
 To render a control, simply use a tag like so:
 
+```html
     <:control-name />
+```
     
 or
 
+```html
     <:control-name></:control-name>
+```
 
 To find the control's views and optional controller, Volt will search the following (in order):
 
