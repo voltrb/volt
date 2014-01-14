@@ -147,6 +147,23 @@ Lastly, we can also pass in other reactive value's as arguments to methods on a 
     # => C changed
 ```
 
+### Truthy Checks: .true?, .false?, .or, and .and
+
+Because a method on a reactive value always returns another reactive value, and because only nil and false are false in ruby, we need a way to check if a ReactiveValue is truthy in our code.  The easiest way to do this is by calling .true? on it.  It will return a non-wrapped boolean.  .nil? and .false? do as you would expect.
+
+One common place we use a truthy check is in setting up default values with || (logical or)  Volt provides a convience method that does the same thing .or, but works with ReactiveValue's.
+
+Instead of 
+    
+    a || b
+
+Simply use:
+    
+    a.or(b)
+
+.and works the same way as &&.  #and and #or let you maintain the reactivity all of the way through.
+
+
 ## Bindings
 
 Now that you understand the basics of ReactiveValue's, we can discuss bindings.  In Volt, you code your views in a handlebar's like template language.  Volt provides severial bindings, which handle rendering of something for you.  Content bindings are anything inbetween { and }
