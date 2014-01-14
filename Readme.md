@@ -56,6 +56,7 @@ This will setup a basic project.  Now lets run the server.
 3. [Components](#components)
 4. [Controls](#controls)
 5. [Routes](#routes)
+  1. [Routes file](#routes-file)
 
 
 # Rendering
