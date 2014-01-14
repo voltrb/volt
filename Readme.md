@@ -41,7 +41,10 @@ Then create a new project:
 This will setup a basic project.  Now lets run the server.
 
     volt server
-    
+
+You can access the volt console with:
+
+    volt console
 
 # Guide Sections
 
