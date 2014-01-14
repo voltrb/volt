@@ -44,11 +44,14 @@ or
 
 To find the control's views and optional controller, Volt will search the following (in order):
 
+
 | Component   | View Folder    | View File    | Section   |
+|-------------|----------------|--------------|-----------|
 |             |                |              | :{name}   |
 |             |                | {name}.html  | :body     |
 |             | {name}         | index.html   | :body     |
 | {name}      | index          | index.html   | :body     |
+
 
 Each part is explained below:
 
