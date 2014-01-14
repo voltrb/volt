@@ -30,6 +30,16 @@ Volt has the following goals:
 
 Apps are made up of Components.  Each folder under app/ is a component.  When you visit a route, it loads all of the files in the component on the front end, so new pages within the component can be rendered on the front end.  If a url is visited that routes to a different component, the request will be loaded as a normal page load and all of that components files will be loaded.  You can think of components as the "reload boundry" between sections of your app.
 
+You can also use controls (see below) from one component in another.  To do this, you must require the component from the component you wish to use them.  This can be done in the ```config/dependencies.rb``` file.  Just put
+
+```ruby
+component 'component_name'
+```
+
+in the file.
+
+Dependencies act just like require in ruby, but for whole components.
+
 # Controls
 
 Everyone wishes that we could predict the scope and required features for each part of our application, but in the real world, things we don't expect to grow large often do and things we think will be large don't end up that way.  Controls let you quickly setup reusable code/views.  The location of the control's code can be moved as it grows without changing the way controls are invoked.
@@ -55,6 +65,7 @@ To find the control's views and optional controller, Volt will search the follow
 |             |                | {name}.html  | :body     |
 |             | {name}         | index.html   | :body     |
 | {name}      | index          | index.html   | :body     |
+| gems/{name} | index          | index.html   | :body     |
 
 
 Each part is explained below:
@@ -73,3 +84,16 @@ Next, all folders under app/ are checked.  The view path looked for is {componen
 
 5. gems
 Lastly the app folder of all gems that start with volt are checked.  They are checekd for a similar path to component.
+
+When you create a control, you can also specify multiple parts of the search path in the name.  The parts should be seperated by a :  Example:
+
+    <:blog:comments />
+    
+The above would search the following:
+
+| Component   | View Folder    | View File    | Section   |
+|-------------|----------------|--------------|-----------|
+|             |                | blog.html    | :comments |
+|             | blog           | comments.html| :body     |
+| blog        | comments       | index.html   | :body     |
+| gems/blog   | comments       | index.html   | :body     |
