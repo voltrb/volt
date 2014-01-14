@@ -26,6 +26,34 @@ Volt has the following goals:
 9. Understandable code base
 10. Control Upgradeability
 
+# VOLT guide
+
+This guide will take you through creating a basic web application in Volt.  This tutorial assumes a basic knowledge of ruby and web development.
+
+To get started, install volt:
+
+    gem install volt
+
+Then create a new project:
+
+    volt new project_name
+    
+This will setup a basic project.  Now lets run the server.
+
+    volt server
+
+## Bindings
+
+When a user interacts with a web page, typically we want to do two things:
+
+1. Change application state
+2. Update the DOM
+
+For example when a user clicks to add a new todo item to a todo list, we might create a JavaScript object to represent the todo item, then add an item to the list's DOM.  A lot of work needs to be done to make sure that the JavaScript object and the DOM always stay in sync.
+
+Recently the idea of "reactive programming" has been used to simplify maintaining the DOM.  The idea is instead of having event handlers that manage a model (or JavaScript object) and manage the DOM, we have event handlers that manage reactive data models.  We describe our DOM layer in a declaritive way so that it automatically knows how to render our data models.
+
+
 # Components
 
 Apps are made up of Components.  Each folder under app/ is a component.  When you visit a route, it loads all of the files in the component on the front end, so new pages within the component can be rendered on the front end.  If a url is visited that routes to a different component, the request will be loaded as a normal page load and all of that components files will be loaded.  You can think of components as the "reload boundry" between sections of your app.
