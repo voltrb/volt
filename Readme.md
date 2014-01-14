@@ -57,6 +57,8 @@ You can access the volt console with:
     4. [Attribute Bindings](#attribute-bindings)
 2. [Models](#models)
 3. [Components](#components)
+  1. [Assets](#assets)
+  2. [Component Generator](#component-generator)
 4. [Controls](#controls)
 5. [Routes](#routes)
   1. [Routes file](#routes-file)
@@ -325,6 +327,14 @@ component 'component_name'
 in the file.
 
 Dependencies act just like require in ruby, but for whole components.
+
+## Assets
+
+**Note, asset management is still early, and likely will change quite a bit**
+
+In volt, assets such as JavaScript and CSS (or sass) are automatically included on the page for you.  Anything placed inside of a components asset folder is served at /assets (via [https://github.com/sstephenson/sprockets](sprockets))  Link and script tags are automatically added for each css and js file in assets/css and assets/js respectively.  Files are included in their lexical order, so you can add numbers in front if you need to change the load order.
+
+Any JS/CSS from an included component or component gem will be included as well.  By default bootstrap is provided by the volt-bootstrap gem.
 
 ## Component Generator
 
