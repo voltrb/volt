@@ -67,6 +67,8 @@ To find the control's views and optional controller, Volt will search the follow
 | {name}      | index          | index.html   | :body     |
 | gems/{name} | index          | index.html   | :body     |
 
+** Note that anything with a view folder will also load a controller if the name/folder matches.
+
 
 Each part is explained below:
 
@@ -87,7 +89,9 @@ Lastly the app folder of all gems that start with volt are checked.  They are ch
 
 When you create a control, you can also specify multiple parts of the search path in the name.  The parts should be seperated by a :  Example:
 
+```html
     <:blog:comments />
+```
     
 The above would search the following:
 
