@@ -61,7 +61,7 @@ To build bindings, Volt provides the ReactiveValue class.  This wraps any object
     a = ReactiveValue.new(some_object)
 ```
 
-When you call a method on a ReactiveValue, you get back a new reactive value that depends on the previous one.  It remebers how it was created and you can call .cur on it any time to get its current value (which will be computed based off of the first reactive value).  Keep in mind below that + is a method call (the same as a.+(b) in ruby.)
+When you call a method on a ReactiveValue, you get back a new reactive value that depends on the previous one.  It remebers how it was created and you can call .cur on it any time to get its current value, which will be computed based off of the first reactive value.  (Keep in mind below that + is a method call, the same as a.+(b) in ruby.)
 
 ```ruby
     a = ReactiveValue.new(1)
@@ -107,7 +107,7 @@ These events propigate to any reactive value's created off of a reactive value.
 
 This event flow lets us know when an object has changed, so we can update everything that depended on that object.
 
-Lastly, we can also pass in other reactive value's as arguments to methods on a reactive value.  The dependencies will be tracked for both and events will propigate down from both.  Also, doing .cur = to update the current value triggers a "changed" event.
+Lastly, we can also pass in other reactive value's as arguments to methods on a reactive value.  The dependencies will be tracked for both and events will propigate down from both.  (Also, note that doing .cur = to update the current value triggers a "changed" event.)
 
 ```ruby
     a = ReactiveValue.new(1)
@@ -126,6 +126,68 @@ Lastly, we can also pass in other reactive value's as arguments to methods on a 
     # => B changed
     # => C changed
 ```
+
+## Bindings
+
+Now that you understand the basics of ReactiveValue's, we can discuss bindings.  In Volt, you code your views in a handlebar's like template language.  Volt provides severial bindings, which handle rendering of something for you.  Content bindings are anything inbetween { and }
+
+### Content binding
+
+The most basic binding is a content binding:
+
+    <p>{some_method}<p>
+
+The content binding runs the ruby code between { and }, then renders the return value.  If the returned value is a ReactiveValue, it will update the value updated whenever a 'changed' event is called.
+
+### If binding
+
+An if binding lets you provide basic flow control.
+
+    {#if _some_check?}
+      <p>render this</p>
+    {/}
+    
+Blocks are closed with a {/}
+
+When the #if binding is rendered, it will run the ruby code after #if.  If the code is true it will render the code below.  Again, if the returned value is reactive, it will update as that value changes.
+
+If bindings can also have #elsif and #else blocks.
+
+    {#if _condition_1?}
+      <p>condition 1 true</p>
+    {#elsif _condition_2?}
+      <p>condition 2 true</p>
+    {#else}
+      <p>neither true</p>
+    {/}
+
+### Each binding
+
+For iteration over objects, the each binding is provided.
+
+    {#each _items as item}
+      <p>{item}</p>
+    {/}
+
+Above, if _items was an array, the block would be rendered for each item, setting 'item' to the value of the array element.
+
+You can also access the position of the item in the array with the #index method.
+
+    {#each _items as item}
+      <p>{index}. {item}</p>
+    {/}
+
+For the array: ['one', 'two', 'three'] this would print:
+
+    0. one
+    1. two
+    2. three
+
+You can do {index + 1} to correct the numbers.
+
+When items are removed or added to the array, the #each binding automatically and intellegently add or removes the items from/to the dom.
+
+If you have a controller at app/home/controller/index_controller.rb, and a view at app/home/views/index/index.html, all methods called are called on the controller.
 
 # Components
 
