@@ -56,7 +56,7 @@ To find the control's views and optional controller, Volt will search the follow
 Each part is explained below:
 
 1. section
-Views are composed of sections.  Sections start with a <:SectionName> tag and end with </:SectionName>  Volt will look first for a section in the same view.
+Views are composed of sections.  Sections start with a ```<:SectionName>``` tag and end with ```</:SectionName>```  Volt will look first for a section in the same view.
 
 2. views
 Next Volt will look for a view file that with the control name.  If found, it will render the body section of that view.
