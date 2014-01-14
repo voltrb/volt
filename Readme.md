@@ -46,8 +46,15 @@ This will setup a basic project.  Now lets run the server.
 # Guide Sections
 
 1. [Rendering](#rendering)
-  a. [Reactive Values](#reactive-values)
-  b. [Bindings](#bindings)
+  1. [Reactive Values](#reactive-values)
+  2. [Bindings](#bindings)
+    1. [Content Binding](#content-binding)
+    2. [If Binding](#if-binding)
+    3. [Each Binding](#each-binding)
+2. [Models](#models)
+3. [Components](#components)
+4. [Controls](#controls)
+5. [Routes](#routes)
 
 
 # Rendering
