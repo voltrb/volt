@@ -335,6 +335,8 @@ Once the gem is ready, you can release it to ruby gems with:
 
     rake release
 
+Remove the path: option in the gemfile if you wish to use the rubygems version.
+
 # Controls
 
 Everyone wishes that we could predict the scope and required features for each part of our application, but in the real world, things we don't expect to grow large often do and things we think will be large don't end up that way.  Controls let you quickly setup reusable code/views.  The location of the control's code can be moved as it grows without changing the way controls are invoked.
