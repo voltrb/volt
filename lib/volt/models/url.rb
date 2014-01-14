@@ -39,7 +39,7 @@ class URL
     
     path, params = @router.url_for_params(@params)
 
-    new_url = "#{@scheme}://#{host_with_port}#{path || @path}"
+    new_url = "#{@scheme}://#{host_with_port}#{(path || @path).chomp('/')}"
     
     unless params.empty?
       new_url += '?'

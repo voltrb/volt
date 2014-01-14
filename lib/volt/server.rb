@@ -28,16 +28,17 @@ class Server
     @app.use Rack::CommonLogger
     @app.use Rack::ShowExceptions
 
+    component_paths = @component_paths
     @app.map '/components' do
-      run ComponentHandler.new
+      run ComponentHandler.new(component_paths)
     end
+    
+    # Serve the opal files
+    OpalFiles.new(@app, @app_path, @component_paths)
 
     # Serve the main html files from public, also figure out
     # which JS/CSS files to serve.
     @app.use IndexFiles, @component_paths
-    
-    # Serve the opal files
-    OpalFiles.new(@app, @app_path, @component_paths)
     
     # Handle socks js connection
     if RUBY_PLATFORM != 'java'

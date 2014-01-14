@@ -51,6 +51,10 @@ class ComponentFiles
     @component_paths.component_path(name || @component_name)
   end
   
+  def component_paths
+    @components.map {|c| [path_to_component(c), c] }
+  end
+  
   def load_child_components
     path = path_to_component
     if path

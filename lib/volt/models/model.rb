@@ -202,7 +202,6 @@ class Model
     end
   
     def __track_element(key, value)
-      puts "TRACK: #{key} - #{value.inspect}"
       __setup_tracking(key, value) do |event, key, args|
         trigger_by_attribute!(event, key, *args)
       end

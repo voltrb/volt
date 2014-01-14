@@ -97,13 +97,13 @@ class TemplateBinding < BaseBinding
         controller = nil
         if path_position > 1
           # Lookup the controller
-          controller = full_path[1]
+          controller = [full_path[0], full_path[1]]
         end
         return path, controller
       end
     end
     
-    return nil
+    return nil, nil
   end
 
   def update
@@ -127,8 +127,19 @@ class TemplateBinding < BaseBinding
     if controller
       args = []
       args << SubContext.new(@model) if @model
+      
+      name = controller[1].camelize
+      
+      # For the home object, we do not need to namespace our controller
+      if controller[0] != 'home'
+        base_name = controller[0].camelize
+        base_object = Object.send(:const_get, base_name.to_sym)
+      else
+        base_object = Object
+      end
+      
       # Initialize the new controller
-      current_context = Object.send(:const_get, (controller.camelize + 'Controller').to_sym).new(*args)
+      current_context = base_object.send(:const_get, (name + 'Controller').to_sym).new(*args)
     elsif @model
       # Passed in attributes, but there is no controller
       current_context = SubContext.new(@model, current_context)      

@@ -1,14 +1,29 @@
 require 'volt/server/rack/component_files'
+require 'volt/router/routes'
 
 # Serves the main pages
 class IndexFiles
   def initialize(app, component_paths)
     @app = app
     @component_paths = component_paths
+    
+    @@router ||= Routes.new.define do
+      # Find the route file
+      route_file = File.read('app/home/config/routes.rb')
+      eval(route_file)
+    end
+  end
+  
+  def route_match?(path)
+    @@router.path_matchers.each do |path_matcher|
+      return true if path =~ path_matcher
+    end
+    
+    return false
   end
 
   def call(env)
-    if %w[/ /demo /blog /todos /page3 /page4].include?(env['PATH_INFO']) || env['PATH_INFO'][0..5] == '/todos'
+    if route_match?(env['PATH_INFO'])
       [200, { 'Content-Type' => 'text/html' }, [html]]
     else
       @app.call env

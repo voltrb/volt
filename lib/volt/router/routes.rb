@@ -1,8 +1,14 @@
+require 'volt'
+
 class Routes
-  attr_reader :routes
+  attr_reader :routes, :path_matchers
 
   def initialize
     @routes = []
+    
+    if Volt.server?
+      @path_matchers = []
+    end
   end
   
   def define(&block)
@@ -11,7 +17,7 @@ class Routes
     return self
   end
   
-  def get(path, options)
+  def get(path, options={})
     if path.index('{') && path.index('}')
       sections = path.split(/(\{[^\}]+\})/)
       sections = sections.reject {|v| v == '' }
@@ -21,6 +27,9 @@ class Routes
           options[section[1..-2]] = nil
         end
       end
+      
+      add_path_matcher(sections) if Volt.server?
+      
       path = Proc.new do |params|
         # Create a path using the params in the path
         sections.map do |section|
@@ -31,9 +40,25 @@ class Routes
           end
         end.join('')
       end
+    else
+      add_path_matcher([path]) if Volt.server?
     end
     
     @routes << [path, options]
+  end
+
+  # TODO: This is slow, optimize with a DFA or NFA
+  def add_path_matcher(sections)
+    match_path = ''
+    sections.each do |section|
+      if section[0] == '{' && section[-1] == '}'
+        match_path << "[^\/]+"
+      else
+        match_path << section
+      end
+    end
+    
+    @path_matchers << (/^#{match_path}$/)
   end
   
   # Takes in params and generates a path and the remaining params
