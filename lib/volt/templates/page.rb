@@ -70,7 +70,6 @@ class Page
   end
   
   def link_clicked(url)
-    puts "Link Clicked to: #{url}"
     # Skip when href == ''
     return if url.blank?
 

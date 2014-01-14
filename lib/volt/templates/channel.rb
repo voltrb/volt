@@ -12,7 +12,6 @@ class Channel
       this.socket = new SockJS('http://localhost:3000/channel');//, {reconnect: true});
 
       this.socket.onopen = function() {
-        console.log('open');
         self['$trigger!']("open");
       };
 
