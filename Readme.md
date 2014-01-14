@@ -389,4 +389,28 @@ The above would search the following:
 
 # Routes
 
+Routes in Volt are very different from traditional backend frameworks.  Since data is synchronized using websockets, routes are mainly used to serialize the state of the application in a pretty way.  When a page is first loaded, the url is parsed with the routes and the params model's values are set from the url.  Later if the params model is updated, the url is updated based on the routes.
 
+This means that routes in volt have to go both from url to params and params to url.  It should also be noted that if a link is clicked and the controller/view to render the new url is within the current component (or an included component), the page will not be reloaded, the url will be updated with the HTML5 history API, and the params hash will reflect the new url.  You can use the changes in params to render different views based on the url.
+
+## Routes file
+
+Routes are specified on a per-component basis in the config/routes.rb file.  Routes simply map from url to params.
+
+    get "/todos", _controller: 'todos'
+
+Routes take two arguments, a path, and a params hash.  When a new url is loaded and the path is matched on a route, the params will be set to the params provided for that route.
+
+When the params are changed, the url will be set to the path for the route that's params hash matches.
+
+**Note: at the moment nested params do not work, but they are a planned feature**
+
+Route path's can also contain variables similar to bindings.
+
+    get "/todos/{_index}", _controller: 'todos'
+    
+In the case above, if any url matches /todos/*, (where * is anything but a slash), it will be the active route. params._controller would be set to 'todos', and params._index would be set to the value in the path.
+
+If params._controller is 'todos' and params._index is not nil, the route would be matched.
+
+Routes are matched top to bottom in a routes file.
