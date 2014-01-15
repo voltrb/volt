@@ -107,7 +107,7 @@ class TemplateBinding < BaseBinding
   end
 
   def update
-    full_path, controller = path_for_template(@path.cur, @section.cur)
+    full_path, controller_name = path_for_template(@path.cur, @section.cur)
 
     @current_template.remove if @current_template
     
@@ -124,22 +124,14 @@ class TemplateBinding < BaseBinding
     
     # TODO: at the moment a :body section and a :title will both initialize different
     # controllers.  Maybe we should have a way to tie them together?
-    if controller
+    if controller_name
       args = []
       args << SubContext.new(@model) if @model
       
-      name = controller[1].camelize
-      
-      # For the home object, we do not need to namespace our controller
-      if controller[0] != 'home'
-        base_name = controller[0].camelize
-        base_object = Object.send(:const_get, base_name.to_sym)
-      else
-        base_object = Object
-      end
+      controller = get_controller(controller_name)
       
       # Initialize the new controller
-      current_context = base_object.send(:const_get, (name + 'Controller').to_sym).new(*args)
+      current_context = controller.new(*args)
     elsif @model
       # Passed in attributes, but there is no controller
       current_context = SubContext.new(@model, current_context)      
@@ -167,4 +159,24 @@ class TemplateBinding < BaseBinding
 
     super
   end
+  
+  private
+  
+    # Fetch the controller class
+    def get_controller(controller_name)
+      name = controller_name[1].camelize
+    
+      # For the home object, we do not need to namespace our controller
+      if controller_name[0] != 'home'
+        # Controller is namespaced, lookup outer module first
+        base_name = controller_name[0].camelize
+        base_object = Object.send(:const_get, base_name.to_sym)
+      else
+        # Get controller directlry
+        base_object = Object
+      end
+    
+      base_object.send(:const_get, (name + 'Controller').to_sym)
+    end
+  
 end
