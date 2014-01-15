@@ -20,7 +20,7 @@ class Routes
   def get(path, options={})
     if path.index('{') && path.index('}')
       # The path contains bindings.
-      path = build_path_matcher(path)
+      path = build_path_matcher(path, options)
     else
       add_path_matcher([path]) if Volt.server?
     end
@@ -32,7 +32,7 @@ class Routes
   # bindings in the path.  Those are then used to create a proc
   # that will return the path with the current params in it.
   # If it matches it will be used.
-  def build_path_matcher(path)
+  def build_path_matcher(path, options)
     sections = path.split(/(\{[^\}]+\})/)
     sections = sections.reject {|v| v == '' }
     
