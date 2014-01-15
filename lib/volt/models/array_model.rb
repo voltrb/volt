@@ -2,6 +2,8 @@ require 'volt/models/model_wrapper'
 
 class ArrayModel < ReactiveArray
   include ModelWrapper
+  
+  attr_reader :path
 
   def initialize(array=[], parent=nil, path=nil)
     @parent = parent

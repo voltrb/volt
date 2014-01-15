@@ -32,10 +32,12 @@ class Model
     attributes.true?
   end
   
-  def initialize(attributes={}, parent=nil, path=nil, class_paths=nil)
+  def initialize(attributes={}, parent=nil, path=[], class_paths=nil)
     self.attributes = wrap_values(attributes)
     @parent = parent
     @path = path
+    
+    puts "Path: #{path}"
   end
   
   # Pass the comparison through
@@ -109,7 +111,7 @@ class Model
       # Method has the key, look it up directly
       return attributes[method_name]
     else
-      return new_model(nil, self, method_name)
+      return new_model(nil, self, path + [method_name])
     end
   end
   
@@ -164,12 +166,15 @@ class Model
   # Initialize an empty array and append to it
   def <<(value)
     @parent.expand!
-    result = @parent.send(@path)
+
+    # Grab the last section of the path, so we can do the assign on the parent
+    path = @path.last
+    result = @parent.send(path)
     
     if result.nil?
       # If this isn't a model yet, instantiate it
-      @parent.send(:"#{@path}=", ArrayModel.new([], @parent, @path))
-      result = @parent.send(@path)
+      @parent.send(:"#{path}=", ArrayModel.new([], @parent, @path))
+      result = @parent.send(path)
       
       # Add the new item
       result << value
@@ -179,7 +184,7 @@ class Model
   end
   
   def inspect
-    "<#{self.class.to_s}:#{@path} #{attributes.inspect}>"
+    "<#{self.class.to_s}:#{@path.join('.')} #{attributes.inspect}>"
   end
   
   
