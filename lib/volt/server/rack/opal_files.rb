@@ -6,8 +6,8 @@ class OpalFiles
   
   def initialize(builder, app_path, component_paths)
     ::Opal::Processor.source_map_enabled = Volt.source_maps?
-    Opal::Processor.arity_check_enabled = true
-    Opal::Processor.dynamic_require_severity = :raise
+    # Opal::Processor.arity_check_enabled = true
+    # Opal::Processor.dynamic_require_severity = :raise
 
     @component_paths = component_paths
     @environment = Opal::Environment.new
