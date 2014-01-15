@@ -34,11 +34,11 @@ class Server
     end
     
     # Serve the opal files
-    OpalFiles.new(@app, @app_path, @component_paths)
+    opal_files = OpalFiles.new(@app, @app_path, @component_paths)
 
     # Serve the main html files from public, also figure out
     # which JS/CSS files to serve.
-    @app.use IndexFiles, @component_paths
+    @app.use IndexFiles, @component_paths, opal_files
     
     # Handle socks js connection
     if RUBY_PLATFORM != 'java'

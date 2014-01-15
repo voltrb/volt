@@ -82,14 +82,14 @@ class ComponentFiles
   end
   
   
-  def javascript_files
+  def javascript_files(opal_files)
     javascript_files = asset_folders do |asset_folder|
       Dir["#{asset_folder}/**/*.js"].map {|path| '/assets' + path[asset_folder.size..-1] }
     end
     
     opal_js_files = []
     if Volt.source_maps?
-      opal_js_files << environment['volt/templates/page'].to_a.map {|v| '/assets/' + v.logical_path + '?body=1' }
+      opal_js_files += opal_files.environment['volt/templates/page'].to_a.map {|v| '/assets/' + v.logical_path + '?body=1' }
     else
       opal_js_files << '/assets/volt/templates/page.js'
     end

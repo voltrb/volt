@@ -27,6 +27,17 @@ Volt has the following goals:
 9. Understandable code base
 10. Control Upgradeability
 
+# Road Map
+
+Many of the core Volt features are implemented.  We still have a bit to go before 1.0, most of it involving models.
+
+1. Database storing models
+2. Model validations (client and server side)
+3. Reactive model queries
+4. Reactive Enumerators with Blocks (.map .count, etc...)
+5. Full managed render loop (for fast rendering)
+6. Fix N+1 issue with some reactive values (I know how to fix, just haven't gotten around to doing it)
+
 # VOLT guide
 
 This guide will take you through creating a basic web application in Volt.  This tutorial assumes a basic knowledge of ruby and web development.
@@ -342,7 +353,7 @@ Any JS/CSS from an included component or component gem will be included as well.
 
 ## Component Generator
 
-Components can easily be shared as a gem.  Volt provides a scaffold for component gems.  In a folder (not in a volt project), simply type: volt component {component_name}  This will create the files needed for the gem.  Note that all volt component gems will be prefixed with volt- so they can easily be found by others.
+Components can easily be shared as a gem.  Volt provides a scaffold for component gems.  In a folder (not in a volt project), simply type: volt gem {component_name}  This will create the files needed for the gem.  Note that all volt component gems will be prefixed with volt- so they can easily be found by others.
 
 While developing, you can use the component by placing the following in your Gemfile:
 
@@ -444,3 +455,11 @@ In the case above, if any url matches /todos/*, (where * is anything but a slash
 If params._controller is 'todos' and params._index is not nil, the route would be matched.
 
 Routes are matched top to bottom in a routes file.
+
+## Debugging
+
+An in browser irb is in the works.  We also have source maps support, but they are currently disabled due by default.  To enable them run:
+
+    MAPS=true volt s
+    
+They are disabled by default because they slow down page rendering because so many files are rendered.  We're working with the opal and sprockets teams to make it so everything is still served in one big source maps file (which would show the files as they originated on disk)

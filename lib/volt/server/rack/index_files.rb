@@ -3,9 +3,10 @@ require 'volt/router/routes'
 
 # Serves the main pages
 class IndexFiles
-  def initialize(app, component_paths)
+  def initialize(app, component_paths, opal_files)
     @app = app
     @component_paths = component_paths
+    @opal_files = opal_files
     
     @@router ||= Routes.new.define do
       # Find the route file
@@ -39,7 +40,7 @@ class IndexFiles
   
   def javascript_files
     # TODO: Cache somehow, this is being loaded every time
-    ComponentFiles.new('home', @component_paths, true).javascript_files
+    ComponentFiles.new('home', @component_paths, true).javascript_files(@opal_files)
   end
   
   def css_files
