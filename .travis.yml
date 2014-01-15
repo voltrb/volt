@@ -3,4 +3,4 @@ rvm:
   - "2.1.0"
   # - jruby-19mode # JRuby in 1.9 mode
   # - rbx
-  
+script: bundle exec rspec
