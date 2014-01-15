@@ -19,32 +19,43 @@ class Routes
   
   def get(path, options={})
     if path.index('{') && path.index('}')
-      sections = path.split(/(\{[^\}]+\})/)
-      sections = sections.reject {|v| v == '' }
-      
-      sections.each do |section|
-        if section[0] == '{' && section[-1] == '}'
-          options[section[1..-2]] = nil
-        end
-      end
-      
-      add_path_matcher(sections) if Volt.server?
-      
-      path = Proc.new do |params|
-        # Create a path using the params in the path
-        sections.map do |section|
-          if section[0] == '{' && section[-1] == '}'
-            params[section[1..-2]]
-          else
-            section
-          end
-        end.join('')
-      end
+      # The path contains bindings.
+      path = build_path_matcher(path)
     else
       add_path_matcher([path]) if Volt.server?
     end
     
     @routes << [path, options]
+  end
+  
+  # Takes the path and splits it up into sections around any
+  # bindings in the path.  Those are then used to create a proc
+  # that will return the path with the current params in it.
+  # If it matches it will be used.
+  def build_path_matcher(path)
+    sections = path.split(/(\{[^\}]+\})/)
+    sections = sections.reject {|v| v == '' }
+    
+    sections.each do |section|
+      if section[0] == '{' && section[-1] == '}'
+        options[section[1..-2]] = nil
+      end
+    end
+    
+    add_path_matcher(sections) if Volt.server?
+    
+    path = Proc.new do |params|
+      # Create a path using the params in the path
+      sections.map do |section|
+        if section[0] == '{' && section[-1] == '}'
+          params[section[1..-2]]
+        else
+          section
+        end
+      end.join('')
+    end
+    
+    return path
   end
 
   # TODO: This is slow, optimize with a DFA or NFA
