@@ -81,7 +81,6 @@ To build bindings, Volt provides the ReactiveValue class.  This wraps any object
 
 ```ruby
     a = ReactiveValue.new("my object")
-    
     # => @"my object"
 ```
 

@@ -272,11 +272,10 @@ describe Model do
     added_count = 0
     changed_count = 0
     # store._todo_lists.on('added') { added_count += 1 }
-    store._current_todo.on('changed') { puts "CHANGED TRIGGERED" ; changed_count += 1 }
+    store._current_todo.on('changed') { changed_count += 1 }
     # expect(added_count).to eq(0)
     expect(changed_count).to eq(0)
   
-    puts "Append-----------"
     a.cur = 1000
     # store._todo_lists << {_name: 'List 1', _todos: []}
     
