@@ -182,7 +182,7 @@ class Model
   end
   
   def inspect
-    "<#{self.class.to_s}:#{@path.join('.')} #{attributes.inspect}>"
+    "<#{self.class.to_s} #{attributes.inspect}>"
   end
   
   

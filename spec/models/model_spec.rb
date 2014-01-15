@@ -228,19 +228,19 @@ describe Model do
     expect(model._item._lists.cur.class).to eq(ArrayModel)    
   end
   
-  # it "should call changed when a the reference to a submodel is assigned to another value" do
-  #   a = ReactiveValue.new(Model.new)
-  #   
-  #   count = 0
-  #   a._blue._green.on('changed') { count += 1 }
-  #   count.should == 0
-  #   
-  #   a._blue._green = 5
-  #   count.should == 1
-  #   
-  #   a._blue = 22
-  #   count.should == 2
-  # end
+  it "should call changed when a the reference to a submodel is assigned to another value" do
+    a = ReactiveValue.new(Model.new)
+    
+    count = 0
+    a._blue._green.on('changed') { count += 1 }
+    expect(count).to eq(0)
+    
+    a._blue._green = 5
+    expect(count).to eq(1)
+    
+    a._blue = 22
+    expect(count).to eq(2)
+  end
   
   it "should trigger changed when a value is deleted" do
     a = ReactiveValue.new(Model.new)
@@ -260,6 +260,11 @@ describe Model do
     
   end
   
+  it "should let you append nested hashes" do
+    a = Model.new
+    # TODO: Fails
+    # a._items << {_name: {_text: 'Name'}}
+  end
   
   it "should work" do
     store = ReactiveValue.new(Model.new)
