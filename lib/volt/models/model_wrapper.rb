@@ -3,7 +3,7 @@ module ModelWrapper
   # model.
   def wrap_value(value)
     if value.cur.is_a?(Array)
-      value = ArrayModel.new(value, self, nil)
+      value = ArrayModel.new(value, self, path + [:[]])
     elsif value.cur.is_a?(Hash)
       value = Model.new(value, self, path + [:[]])
     end
