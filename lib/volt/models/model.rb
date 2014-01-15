@@ -32,12 +32,10 @@ class Model
     attributes.true?
   end
   
-  def initialize(attributes={}, parent=nil, path=[], class_paths=nil)
+  def initialize(attributes={}, parent=nil, path=nil, class_paths=nil)
     self.attributes = wrap_values(attributes)
     @parent = parent
-    @path = path
-    
-    puts "Path: #{path}"
+    @path = path || []
   end
   
   # Pass the comparison through
@@ -103,7 +101,7 @@ class Model
     # Reading an attribute, we may get back a nil model.
     method_name = method_name.to_sym
     
-    if attributes == nil
+    if method_name[0] != '_' && attributes == nil
       # The method we are calling is on a nil model, return a wrapped 
       # exception.
       return return_undefined_method(method_name)
@@ -154,7 +152,7 @@ class Model
       if @parent
         @parent.expand!
       
-        @parent.attributes[@path] = self
+        @parent.attributes[@path.last] = self
       end
     end
   end

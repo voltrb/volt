@@ -7,7 +7,7 @@ class ArrayModel < ReactiveArray
 
   def initialize(array=[], parent=nil, path=nil)
     @parent = parent
-    @path = path
+    @path = path || []
     
     array = wrap_values(array)
     
