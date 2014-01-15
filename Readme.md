@@ -187,7 +187,7 @@ Simply use:
 
 ### With
 
-
+... TODO: ...
 
 ## Bindings
 
@@ -327,7 +327,25 @@ Because all models provided by Volt are wrapped in a ReactiveValue, you can regi
 
 # Controllers
 
-... TODO ...
+A controller can be any class in Volt, however it is common to have that class inherit from ModelController.  A model controller lets you specify a model that the controller works off of.  This is a common pattern in Volt.  To assign the current model, simply set @model to one of the provided models in the initializer.
+
+    class TodosController < ModelController
+      def initialize
+        @model = page
+      end
+    end
+
+Now any methods not defined on the TodosController will fall through to the @model.  All views in views/{controller_name} will have this controller as the target for any ruby run in their bindings.  This means that calls on self (implicit or with self.) will have the model as their target (after calling through the controller).  This lets you add methods to the controller to control how the model is handled.
+
+Controllers in the app/home component do not need to be namespaced, all other components should namespace controllers like so:
+
+    module Auth
+      class LoginController < ModelController
+        # ...
+      end
+    end
+
+Here "auth" would be the component name.
 
 # Components
 
