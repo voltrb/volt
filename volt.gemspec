@@ -29,7 +29,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "mongo", "~> 1.9.0"
   spec.add_dependency "thin", "~> 1.6.0"
   spec.add_dependency "multi_json", "~> 1.8.2"
-  spec.add_dependency "oj", "~> 2.3.0"
+  spec.add_dependency "oj", "~> 2.5.0"
   spec.add_dependency "rake", "~> 10.0.4"
 
 
