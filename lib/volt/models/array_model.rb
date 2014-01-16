@@ -36,4 +36,12 @@ class ArrayModel < ReactiveArray
     args = wrap_values(args)
     super(*args)
   end
+  
+  def new_model(*args)
+    Model.new(*args)
+  end
+  
+  def new_array_model(*args)
+    ArrayModel.new(*args)
+  end
 end

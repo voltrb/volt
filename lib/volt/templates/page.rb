@@ -24,6 +24,7 @@ require 'volt/page/url_tracker'
 require 'volt'
 require 'volt/benchmark/benchmark'
 require 'volt/templates/render_queue'
+require 'volt/templates/tasks'
 
 class Page
   attr_reader :url, :params, :page, :store, :templates, :routes, :render_queue
@@ -67,6 +68,10 @@ class Page
     channel.on('message') do |message|
       puts "GOT: #{message}"
     end
+  end
+  
+  def tasks
+    @tasks ||= Tasks.new(self)
   end
   
   def link_clicked(url)

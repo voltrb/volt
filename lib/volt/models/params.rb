@@ -1,3 +1,5 @@
+require 'volt/models/params_array'
+
 # All url related data is stored in params.  This includes the main uri
 # in addition to any query parameters.  The router is responsible for
 # converting any uri sections into params.  Sections in the uri will
@@ -6,7 +8,6 @@
 # The params value can be updated the same way a model would be, only
 # the updates will trigger an updated url via the browser history api.
 # TODO: Support # for browsers without the history api.
-
 class Params < Model    
   def initialize(*args)
     super(*args)
@@ -63,5 +64,9 @@ class Params < Model
   
   def new_model(*args)
     Params.new(*args)
+  end
+  
+  def new_array_model(*args)
+    ParamsArray.new(*args)
   end
 end

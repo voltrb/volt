@@ -23,6 +23,10 @@ class ModelController
     $page.channel
   end
   
+  def tasks
+    $page.tasks
+  end
+  
   def controller
     @controller ||= ReactiveValue.new(Model.new)
   end

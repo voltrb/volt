@@ -131,6 +131,10 @@ class Model
     Model.new(*args)
   end
   
+  def new_array_model(*args)
+    ArrayModel.new(*args)
+  end
+  
   def trigger_by_attribute!(event_name, attribute, *passed_args)
     trigger_by_scope!(event_name, *passed_args) do |scope|
       method_name, *args, block = scope
@@ -171,7 +175,7 @@ class Model
     
     if result.nil?
       # If this isn't a model yet, instantiate it
-      @parent.send(:"#{path}=", ArrayModel.new([], @parent, @path))
+      @parent.send(:"#{path}=", new_array_model([], @parent, @path))
       result = @parent.send(path)
       
       # Add the new item
