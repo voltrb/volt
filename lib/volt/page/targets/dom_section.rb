@@ -1,4 +1,4 @@
-require 'volt/templates/targets/base_section'
+require 'volt/page/targets/base_section'
 
 class DomSection < BaseSection
   def initialize(binding_name)

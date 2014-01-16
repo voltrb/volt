@@ -1,4 +1,4 @@
-require 'volt/templates/base_binding'
+require 'volt/page/base_binding'
 
 class IfBinding < BaseBinding
   def initialize(target, context, binding_name, branches)

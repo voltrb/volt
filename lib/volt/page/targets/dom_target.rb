@@ -1,5 +1,5 @@
-require 'volt/templates/targets/base_section'
-require 'volt/templates/targets/dom_section'
+require 'volt/page/targets/base_section'
+require 'volt/page/targets/dom_section'
 
 # DomTarget's provide an interface that can render bindings into
 # the dom.  Currently only one "dom" is supported, but multiple

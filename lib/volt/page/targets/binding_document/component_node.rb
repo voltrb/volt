@@ -1,4 +1,4 @@
-require 'volt/templates/targets/binding_document/html_node'
+require 'volt/page/targets/binding_document/html_node'
 require 'volt/reactive/events'
 
 # Component nodes contain an array of both HtmlNodes and ComponentNodes.

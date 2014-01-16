@@ -1,5 +1,5 @@
-require 'volt/templates/base_binding'
-require 'volt/templates/targets/attribute_target'
+require 'volt/page/base_binding'
+require 'volt/page/targets/attribute_target'
 
 class AttributeBinding < BaseBinding
   def initialize(target, context, binding_name, attribute_name, getter)

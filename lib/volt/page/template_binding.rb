@@ -1,5 +1,5 @@
-require 'volt/templates/base_binding'
-require 'volt/templates/template_renderer'
+require 'volt/page/base_binding'
+require 'volt/page/template_renderer'
 
 class TemplateBinding < BaseBinding
   def initialize(target, context, binding_name, binding_in_path, getter)

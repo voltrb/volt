@@ -1,4 +1,4 @@
-require 'volt/templates/targets/binding_document/base_node'
+require 'volt/page/targets/binding_document/base_node'
 
 class HtmlNode < BaseNode
   def initialize(html)

@@ -1,4 +1,4 @@
-require 'volt/templates/targets/binding_document/component_node'
+require 'volt/page/targets/binding_document/component_node'
 
 describe ComponentNode do
   before do

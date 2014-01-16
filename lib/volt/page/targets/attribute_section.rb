@@ -1,7 +1,7 @@
 # AttributeSection provides a place to render templates that
 # will be placed as text into an attribute.
 
-require 'volt/templates/targets/base_section'
+require 'volt/page/targets/base_section'
 
 class AttributeSection
   def initialize(target, binding_name)
