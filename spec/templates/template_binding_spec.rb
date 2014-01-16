@@ -1,4 +1,4 @@
-require 'volt/page/template_binding'
+require 'volt/page/bindings/template_binding'
 
 # Setup page stub
 

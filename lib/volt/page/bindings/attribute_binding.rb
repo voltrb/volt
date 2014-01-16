@@ -1,4 +1,4 @@
-require 'volt/page/base_binding'
+require 'volt/page/bindings/base_binding'
 require 'volt/page/targets/attribute_target'
 
 class AttributeBinding < BaseBinding

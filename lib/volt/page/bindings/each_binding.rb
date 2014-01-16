@@ -1,4 +1,4 @@
-require 'volt/page/base_binding'
+require 'volt/page/bindings/base_binding'
 
 class EachBinding < BaseBinding
   def initialize(target, context, binding_name, getter, variable_name, template_name)

@@ -1,4 +1,4 @@
-require 'volt/page/base_binding'
+require 'volt/page/bindings/base_binding'
 
 class ContentBinding < BaseBinding
   def initialize(target, context, binding_name, getter)

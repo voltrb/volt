@@ -1,4 +1,4 @@
-require 'volt/page/base_binding'
+require 'volt/page/bindings/base_binding'
 
 # TODO: We need to figure out how we want to wrap JS events
 class JSEvent
