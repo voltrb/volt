@@ -82,11 +82,7 @@ class AttributeBinding < BaseBinding
       value = false
     end
     
-    if value
-      element['checked'] = 'checked'
-    else
-      element.remove_attr('checked')
-    end
+    element.prop('checked', value)
     
   end
   

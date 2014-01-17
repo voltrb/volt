@@ -394,4 +394,26 @@ describe Model do
       expect(count).to eq(2)
     end
   end
+  
+  it "should trigger on false assign" do
+    a = ReactiveValue.new(Model.new)
+    
+    count1 = 0
+    count2 = 0
+    
+    b = a._complete
+    c = a._complete
+    b.on('changed') { count1 += 1 }
+    c.on('changed') { count2 += 1 }
+    expect(count1).to eq(0)
+    
+    b._complete = true
+    expect(count1).to eq(1)
+    expect(count2).to eq(1)
+
+    b._complete = false
+    expect(count1).to eq(2)
+    expect(count2).to eq(2)
+    
+  end
 end

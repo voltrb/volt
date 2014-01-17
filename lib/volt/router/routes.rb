@@ -63,9 +63,9 @@ class Routes
     match_path = ''
     sections.each do |section|
       if section[0] == '{' && section[-1] == '}'
-        match_path << "[^\/]+"
+        match_path = match_path + "[^\/]+"
       else
-        match_path << section
+        match_path = match_path + section
       end
     end
     

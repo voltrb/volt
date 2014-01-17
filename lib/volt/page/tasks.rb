@@ -45,7 +45,9 @@ class Tasks
   end
   
   def update(model_id, data)
+    $loading_models = true
     puts "UPDATE: #{model_id} with #{data.inspect}"
     Store.update(model_id, data)
+    $loading_models = false
   end
 end

@@ -5,22 +5,42 @@ class Store < Model
   
   @@identity_map = {}
   
-  def initialize(tasks=nil, load_from_saved=false, *args)
+  def initialize(tasks=nil, *args)
     @tasks = tasks
 
     super(*args)
     
     track_in_identity_map if attributes && attributes['_id']
     
-    value_updated unless load_from_saved
+    value_updated
+  end
+
+  def event_added(event, scope_provider, first)
+    puts "EVENT: #{event}"
+    if first && event == :changed
+      puts "REGISTER"
+      # Start listening
+      $page.tasks.call('ChannelTasks', 'add_listener', 1)
+    end
+  end
+  
+  def event_removed(event, no_more_events)
+    if no_more_events && event == :changed
+      # Stop listening
+      $page.tasks.call('ChannelTasks', 'remove_listener', 1)
+    end
   end
   
   def self.update(model_id, data)
     model = @@identity_map[model_id]
     
     if model
-      model.attributes = data
-      model.trigger!('changed')
+      data.each_pair do |key, value|
+        if key != '_id'
+          puts "update #{key} with #{value.inspect}"
+          model.send(:"#{key}=", value)
+        end
+      end
     end
   end
   
@@ -48,7 +68,7 @@ class Store < Model
   
   def value_updated
     # puts "VU: #{@tasks.inspect} = #{path.inspect} - #{attributes.inspect}"
-    if !($page.loading_models) && @tasks && path.size > 0 && attributes.is_a?(Hash)
+    if (!defined?($loading_models) || !$loading_models) && @tasks && path.size > 0 && attributes.is_a?(Hash)
       
       # No id yet, lets create one
       unless attributes['_id']
@@ -92,7 +112,7 @@ class Store < Model
   
   
   def new_model(attributes={}, parent=nil, path=nil, class_paths=nil)
-    model = Store.new(@tasks, false, attributes, parent, path, class_paths)
+    model = Store.new(@tasks, attributes, parent, path, class_paths)
 
     if @tasks && path.last[-1] == 's'
       # puts "FIND NEW MODEL: #{path.inspect} - #{attributes.inspect}"
@@ -106,15 +126,16 @@ class Store < Model
       end
       
       @tasks.call('StoreTasks', 'find', collection(path), scope) do |results|
-        $page.loading_models = true
+        # TODO: Globals evil, replace
+        $loading_models = true
         results.each do |result|
           # Get model again, we need to fetch it each time so it gets the
           # updated model when it switches from nil.
           # TODO: Strange that this is needed
           model = self.send(path.last)
-          model << Store.new(@tasks, true, result, model, path + [:[]], class_paths)
+          model << Store.new(@tasks, result, model, path + [:[]], class_paths)
         end
-        $page.loading_models = false
+        $loading_models = false
       end
     end
     
@@ -122,6 +143,6 @@ class Store < Model
   end
   
   def new_array_model(*args)
-    StoreArray.new(@tasks, false, *args)
+    StoreArray.new(@tasks, *args)
   end
 end

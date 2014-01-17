@@ -8,8 +8,12 @@ class ChannelHandler < SockJS::Session
     @@dispatcher = val
   end
   
-  def self.send_message_all(*args)
+  # Sends a message to all, optionally skipping a users channel
+  def self.send_message_all(skip_channel=nil, *args)
     @@channels.each do |channel|
+      if skip_channel && channel == skip_channel
+        next
+      end
       channel.send_message(*args)
     end
     

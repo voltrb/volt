@@ -1,10 +1,11 @@
 require 'mongo'
 class StoreTasks
-  def initialize(channel=nil)
+  def initialize(channel=nil, dispatcher=nil)
     @@mongo_db ||= Mongo::MongoClient.new("localhost", 27017)
     @@db ||= @@mongo_db.db("development")
     
     @channel = channel
+    @dispatcher = dispatcher
   end
   
   def db
@@ -29,9 +30,8 @@ class StoreTasks
       end
     end
     
-    puts "CHECK: #{id.inspect} - #{data.inspect}"
     id = id['_id']
-    # ChannelHandler.send_message_all('update', nil, id, data.merge('_id' => id))
+    ChannelHandler.send_message_all(@channel, 'update', nil, id, data.merge('_id' => id))
   end
   
   def find(collection, scope, query=nil)
