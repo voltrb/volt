@@ -48,7 +48,7 @@ class Store < Model
   
   def value_updated
     # puts "VU: #{@tasks.inspect} = #{path.inspect} - #{attributes.inspect}"
-    if @tasks && path.size > 0 && attributes.is_a?(Hash)
+    if !($page.loading_models) && @tasks && path.size > 0 && attributes.is_a?(Hash)
       
       # No id yet, lets create one
       unless attributes['_id']
@@ -106,6 +106,7 @@ class Store < Model
       end
       
       @tasks.call('StoreTasks', 'find', collection(path), scope) do |results|
+        $page.loading_models = true
         results.each do |result|
           # Get model again, we need to fetch it each time so it gets the
           # updated model when it switches from nil.
@@ -113,6 +114,7 @@ class Store < Model
           model = self.send(path.last)
           model << Store.new(@tasks, true, result, model, path + [:[]], class_paths)
         end
+        $page.loading_models = false
       end
     end
     
