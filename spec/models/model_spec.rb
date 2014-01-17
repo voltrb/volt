@@ -381,14 +381,11 @@ describe Model do
       expect(count).to eq(0)
       
       c = b.cur
-      puts c.inspect
       c << {_name: 'one'}
 
       # TODO: Without fetching this again, this fails.
       c = b.cur
       
-      
-      puts c.inspect
       c << {_name: 'two'}
       
       expect(count).to eq(2)

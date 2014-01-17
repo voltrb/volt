@@ -16,9 +16,7 @@ class Store < Model
   end
 
   def event_added(event, scope_provider, first)
-    puts "EVENT: #{event}"
     if first && event == :changed
-      puts "REGISTER"
       # Start listening
       $page.tasks.call('ChannelTasks', 'add_listener', 1)
     end
