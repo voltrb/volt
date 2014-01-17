@@ -45,6 +45,16 @@ class ComponentPaths
     return @components
   end
   
+  def add_tasks_to_load_path
+    components.each do |name,component_folders|
+      component_folders.each do |component_folder|
+        Dir["#{component_folder}/tasks"].each do |tasks_folder|
+          $LOAD_PATH.unshift(tasks_folder)
+        end
+      end
+    end
+  end
+  
   def component_path(name)
     folders = components[name]
     

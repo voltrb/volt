@@ -37,7 +37,7 @@ class Page
     
     # Run the code to setup the page
     @page = ReactiveValue.new(Model.new)#({}, nil, 'page', @model_classes))
-    @store = ReactiveValue.new(Model.new)#({}, nil, 'store', @model_classes))
+    @store = ReactiveValue.new(Store.new(tasks))#({}, nil, 'store', @model_classes))
     
     @url = ReactiveValue.new(URL.new)
     @params = @url.params
@@ -64,10 +64,6 @@ class Page
         return false;
       });
     }
-
-    channel.on('message') do |message|
-      puts "GOT: #{message}"
-    end
   end
   
   def tasks

@@ -33,9 +33,9 @@ class Model
   end
   
   def initialize(attributes={}, parent=nil, path=nil, class_paths=nil)
-    self.attributes = wrap_values(attributes)
     @parent = parent
     @path = path || []
+    self.attributes = wrap_values(attributes)
   end
   
   # Pass the comparison through
@@ -89,7 +89,7 @@ class Model
     value = args[0]
     __assign_element(attribute_name, value)
     
-    attributes[attribute_name] = wrap_value(value)
+    attributes[attribute_name] = wrap_value(value, [attribute_name])
     trigger_by_attribute!('changed', attribute_name)
   end
   
@@ -109,8 +109,13 @@ class Model
       # Method has the key, look it up directly
       return attributes[method_name]
     else
-      return new_model(nil, self, path + [method_name])
+      return read_new_model(method_name)
     end
+  end
+
+  # Get a new model, make it easy to override
+  def read_new_model(method_name)
+    return new_model(nil, self, path + [method_name])
   end
   
   def return_undefined_method(method_name)

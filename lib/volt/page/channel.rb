@@ -8,38 +8,49 @@ class Channel
   
   def initialize
     @socket = nil
+    @state = :opening
+    @queue = []
     %x{
       this.socket = new SockJS('http://localhost:3000/channel');//, {reconnect: true});
 
       this.socket.onopen = function() {
+        self.$open();
         self['$trigger!']("open");
       };
 
       this.socket.onmessage = function(message) {
-        console.log('received: ', message);
         self['$message_received'](message.data);
       };
     }
   end
   
+  def open
+    @state = :open
+    @queue.each do |message|
+      send(message)
+    end
+  end
+  
   def message_received(message)
     message = JSON.parse(message)
-    puts "Got #{message.inspect}"
     
-    trigger!('message', message)
+    trigger!('message', *message)
   end
   
   def send(message)
-    # TODO: Temp: wrap message in an array, so we're sure its valid JSON
-    message = JSON.dump([message])
-    %x{
-      //message = window.JSON.parse(message);
-      console.log('send: ', message);
-      this.socket.send(message);
-    }
+    if @state != :open
+      @queue << message
+    else
+      # TODO: Temp: wrap message in an array, so we're sure its valid JSON
+      message = JSON.dump([message])
+      %x{
+        this.socket.send(message);
+      }
+    end
   end
   
   def close
+    @state = :closed
     %x{
       this.socket.close();
     }

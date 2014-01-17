@@ -341,4 +341,35 @@ describe Model do
     a._new_item._name = 'Testing'
     # expect(count).to eq(1)
   end
+  
+  describe "paths" do
+    it "should store the path" do
+      a = Model.new
+      expect(a._test.path).to eq([:_test])
+      a._test = {_name: 'Yes'}
+      expect(a._test.path).to eq([:_test])
+    
+      a._items << {_name: 'Yes'}
+      expect(a._items.path).to eq([:_items])
+      expect(a._items[0].path).to eq([:_items, :[]])
+    end
+    
+    it "should store the paths when assigned" do
+      a = Model.new
+      
+      a._items = [{_name: 'Cool'}]
+      
+      expect(a._items.path).to eq([:_items])
+      expect(a._items[0].path).to eq([:_items, :[]])
+    end
+    
+    it "should handle nested paths" do
+      a = Model.new
+      
+      a._items << {_name: 'Cool', _lists: [{_name: 'One'}, {_name: 'Two'}]}
+      
+      expect(a._items[0]._lists.path).to eq([:_items, :[], :_lists])
+      expect(a._items[0]._lists[1].path).to eq([:_items, :[], :_lists, :[]])
+    end
+  end
 end

@@ -1,21 +1,28 @@
 module ModelWrapper
   # For cretain values, we wrap them to make the behave as a
   # model.
-  def wrap_value(value)
+  def wrap_value(value, lookup)
     if value.cur.is_a?(Array)
-      value = new_array_model(value, self, nil)
+      value = new_array_model(value, self, path + lookup)
     elsif value.cur.is_a?(Hash)
-      value = new_model(value, self, path + [:[]])
+      value = new_model(value, self, path + lookup)
     end
     
     return value
   end
   
-  def wrap_values(values)
+  def wrap_values(values, lookup=[])
     if values.cur.is_a?(Array)
-      values = values.map {|v| wrap_value(v) }
+      # Coming from an array
+      values = values.map {|v| wrap_value(v,lookup + [:[]]) }
     elsif values.cur.is_a?(Hash)
-      values = Hash[values.map {|k,v| [k, wrap_value(v)] }]
+      pairs = values.map do |k,v|
+        path = lookup + [k]
+            
+        [k, wrap_value(v,path)]
+      end
+      
+      values = Hash[pairs]
     end
     
     return values

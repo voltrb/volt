@@ -1,10 +1,12 @@
 require 'json'
 require 'sockjs/session'
-require 'volt/tasks/dispatcher'
 
 class ChannelHandler < SockJS::Session
   # Create one instance of the dispatcher
-  @@dispatcher = Dispatcher.new
+  
+  def self.dispatcher=(val)
+    @@dispatcher = val
+  end
   
   def self.message_all(message)
     @@channels.each do |channel|
@@ -27,7 +29,13 @@ class ChannelHandler < SockJS::Session
     # Messages are json and wrapped in an array
     message = JSON.parse(message).first
     
-    @@dispatcher.dispatch(message)
+    @@dispatcher.dispatch(self, message)
+  end
+  
+  def send_message(*args)
+    str = JSON.dump([*args])
+    
+    send(str)
   end
   
   def closed    

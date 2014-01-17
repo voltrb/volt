@@ -15,6 +15,7 @@ end
 require 'volt/server/rack/component_paths'
 require 'volt/server/rack/index_files'
 require 'volt/server/rack/opal_files'
+require 'volt/tasks/dispatcher'
 
 
 class Server
@@ -42,6 +43,9 @@ class Server
     
     # Handle socks js connection
     if RUBY_PLATFORM != 'java'
+      component_paths.add_tasks_to_load_path
+      ChannelHandler.dispatcher = Dispatcher.new
+      
       @app.map "/channel" do
         run Rack::SockJS.new(ChannelHandler)#, :websocket => false
       end
