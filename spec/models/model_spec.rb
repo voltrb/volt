@@ -371,5 +371,27 @@ describe Model do
       expect(a._items[0]._lists.path).to eq([:_items, :[], :_lists])
       expect(a._items[0]._lists[1].path).to eq([:_items, :[], :_lists, :[]])
     end
+    
+    it "should trigger added when added" do
+      a = ReactiveValue.new(Model.new)
+      count = 0
+      b = a._items
+
+      b.on('added') { count += 1 }
+      expect(count).to eq(0)
+      
+      c = b.cur
+      puts c.inspect
+      c << {_name: 'one'}
+
+      # TODO: Without fetching this again, this fails.
+      c = b.cur
+      
+      
+      puts c.inspect
+      c << {_name: 'two'}
+      
+      expect(count).to eq(2)
+    end
   end
 end

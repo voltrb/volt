@@ -8,9 +8,9 @@ class ChannelHandler < SockJS::Session
     @@dispatcher = val
   end
   
-  def self.message_all(message)
+  def self.send_message_all(*args)
     @@channels.each do |channel|
-      channel.send(message)
+      channel.send_message(*args)
     end
     
   end

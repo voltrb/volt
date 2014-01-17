@@ -3,8 +3,8 @@
 class Dispatcher
   
   def dispatch(channel, message)
-    class_name, method_name, *args = message
-    
+    callback_id, class_name, method_name, *args = message
+
     # TODO: Think about security?
     
     if class_name[/Tasks$/] && !class_name['::']
@@ -16,7 +16,10 @@ class Dispatcher
       # Init and send the method
       result = klass.new(channel).send(method_name, *args)
       
-      return ['name', 'test']
+      if callback_id
+        # Callback with result
+        channel.send_message('response', callback_id, result)
+      end
     end
   end
 end

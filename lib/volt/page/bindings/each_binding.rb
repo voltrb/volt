@@ -17,9 +17,9 @@ class EachBinding < BaseBinding
     # Run the initial render
     update
 
-    @added_listener = @value.on('added') { |position, item| puts "ADDED" ; item_added(position) }
-    @changed_listener = @value.on('changed') { puts "CHANGED" ; reload }
-    @removed_listener = @value.on('removed') { |position| puts "REMOVED at #{position.inspect}" ; item_removed(position) }
+    @added_listener = @value.on('added') { |position, item| item_added(position) }
+    @changed_listener = @value.on('changed') { reload }
+    @removed_listener = @value.on('removed') { |position| item_removed(position) }
   end
   
   # When a change event comes through, its most likely upstream, so the whole

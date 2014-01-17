@@ -3,14 +3,25 @@ require 'volt/models/store_array'
 class Store < Model
   ID_CHARS = [('a'..'z'), ('A'..'Z'), ('0'..'9')].map {|v| v.to_a }.flatten
   
-  @@identity_map ||= {}
+  @@identity_map = {}
   
-  def initialize(tasks=nil, *args)
+  def initialize(tasks=nil, load_from_saved=false, *args)
     @tasks = tasks
 
     super(*args)
     
-    value_updated
+    track_in_identity_map if attributes && attributes['_id']
+    
+    value_updated unless load_from_saved
+  end
+  
+  def self.update(model_id, data)
+    model = @@identity_map[model_id]
+    
+    if model
+      model.attributes = data
+      model.trigger!('changed')
+    end
   end
   
   def generate_id
@@ -31,17 +42,23 @@ class Store < Model
     return result
   end
   
+  def track_in_identity_map
+    @@identity_map[attributes['_id']] = self
+  end
+  
   def value_updated
     # puts "VU: #{@tasks.inspect} = #{path.inspect} - #{attributes.inspect}"
     if @tasks && path.size > 0 && attributes.is_a?(Hash)
       
       # No id yet, lets create one
-      attributes['_id'] ||= generate_id
+      unless attributes['_id']
+        self.attributes['_id'] = generate_id
+        track_in_identity_map
+      end
 
-      
       if parent && source = parent.parent
         # puts "FROM: #{path.inspect} - #{parent.inspect} && #{parent.parent.inspect}"
-        attributes[path[-2].singularize+'_id'] = source._id
+        self.attributes[path[-2].singularize+'_id'] = source._id
       end
       
       # Don't store any sub-stores, those will do their own saving.
@@ -75,15 +92,34 @@ class Store < Model
   
   
   def new_model(attributes={}, parent=nil, path=nil, class_paths=nil)
-    if @tasks
+    model = Store.new(@tasks, false, attributes, parent, path, class_paths)
+
+    if @tasks && path.last[-1] == 's'
       # puts "FIND NEW MODEL: #{path.inspect} - #{attributes.inspect}"
-      @tasks.call('StoreTasks', 'find', collection(path))
+      
+      # Check to see the parents scope so we can only lookup associated
+      # models.
+      scope = {}
+      
+      if parent._id.true?
+        scope[path[-1].singularize + '_id'] = parent._id
+      end
+      
+      @tasks.call('StoreTasks', 'find', collection(path), scope) do |results|
+        results.each do |result|
+          # Get model again, we need to fetch it each time so it gets the
+          # updated model when it switches from nil.
+          # TODO: Strange that this is needed
+          model = self.send(path.last)
+          model << Store.new(@tasks, true, result, model, path + [:[]], class_paths)
+        end
+      end
     end
     
-    Store.new(@tasks, attributes, parent, path, class_paths)
+    return model
   end
   
   def new_array_model(*args)
-    StoreArray.new(@tasks, *args)
+    StoreArray.new(@tasks, false, *args)
   end
 end

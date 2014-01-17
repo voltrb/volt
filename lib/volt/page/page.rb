@@ -28,6 +28,7 @@ require 'volt/page/tasks'
 
 class Page
   attr_reader :url, :params, :page, :store, :templates, :routes, :render_queue
+  attr_accessor :loading_models
 
   def initialize
 

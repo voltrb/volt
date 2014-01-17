@@ -3,26 +3,49 @@
 class Tasks
   def initialize(page)
     @page = page
+    @callback_id = 0
+    @callbacks = {}
     
     page.channel.on('message') do |*args|
       received_message(*args)
     end
   end
   
-  def call(class_name, method_name, *args, &block)
-    @page.channel.send([class_name, method_name, *args])
+  def call(class_name, method_name, *args, &callback)
+    if callback
+      callback_id = @callback_id
+      @callback_id += 1
+
+      # Track the callback
+      # TODO: Timeout on these callbacks
+      @callbacks[callback_id] = callback
+    else
+      callback_id = nil
+    end
+    
+    @page.channel.send([callback_id, class_name, method_name, *args])
   end
   
   
-  def received_message(name, *args)
-    if name == 'update'
+  def received_message(name, callback_id, *args)
+    case name
+    when 'response'
+      response(callback_id, *args)
+    when 'update'
       update(*args)
     end
   end
   
-  def update(path, values)
-    # Store.assign_
-    $page.store.send(:"#{path}=", values)
-    puts "Update: #{path.inspect} - #{values.inspect}"
+  def response(callback_id, *args)
+    callback = @callbacks.delete(callback_id)
+    
+    if callback
+      callback.call(*args)
+    end
+  end
+  
+  def update(model_id, data)
+    puts "UPDATE: #{model_id} with #{data.inspect}"
+    Store.update(model_id, data)
   end
 end

@@ -83,7 +83,7 @@ class ReactiveArray# < Array
     trigger_on_direct_listeners!('added', self.size-1)
     
     trigger_size_change!
-    
+
     return result
   end
   
