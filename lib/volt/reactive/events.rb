@@ -191,9 +191,8 @@ module Events
         # if we aren't reactive, we should pass to all of our reactive listeners, since they
         # just proxy us.
         # If the filter exists, check it
-        puts "CHECK #{listener.inspect} : #{self.inspect} -- #{listener.klass.inspect}"
+        # puts "CHECK #{listener.inspect} : #{self.inspect} -- #{listener.klass.inspect}"
         if !filter || (!reactive? && listener.scope_provider.reactive?) || filter.call(listener.scope)
-          puts "TRIGGER"
           listener.call(filter, *args)
         end
       end
