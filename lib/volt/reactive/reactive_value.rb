@@ -41,7 +41,7 @@ class ReactiveValue < BasicObject
   # Proxy methods to the ReactiveManager.  We want to have as few
   # as possible methods on reactive values, so all other methods
   # are forwarded to the object the reactive value points to.
-  [:cur, :cur=, :on, :trigger!].each do |method_name|
+  [:cur, :cur=, :on, :trigger!, :trigger_by_scope!].each do |method_name|
     define_method(method_name) do |*args, &block|
       @reactive_manager.send(method_name, *args, &block)
     end

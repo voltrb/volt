@@ -178,7 +178,7 @@ class ReactiveArray# < Array
       when nil
         # no method name means the event was bound directly, we don't
         # want to trigger changed on the array its self.
-        true
+        false
       when :[]
         # Extract the current index if its reactive
         arg_index = args[0].cur

@@ -6,7 +6,7 @@ DEBUG = false
 # A listener gets returned when adding an 'on' event listener.  It can be
 # used to clear the event listener.
 class Listener
-  attr_reader :scope_provider
+  attr_reader :scope_provider, :klass
   
   def initialize(klass, event, scope_provider, callback)
     @klass = klass
@@ -187,8 +187,13 @@ module Events
     if @listeners && @listeners[event]
       @listeners[event].each do |listener|
         # Call the event on each listener
-        puts "LI: " + listener.inspect + " #{filter.inspect} on #{self.inspect}"
-        if !filter || filter.call(listener.scope)
+        # If there is no filter, call
+        # if we aren't reactive, we should pass to all of our reactive listeners, since they
+        # just proxy us.
+        # If the filter exists, check it
+        puts "CHECK #{listener.inspect} : #{self.inspect} -- #{listener.klass.inspect}"
+        if !filter || (!reactive? && listener.scope_provider.reactive?) || filter.call(listener.scope)
+          puts "TRIGGER"
           listener.call(filter, *args)
         end
       end
