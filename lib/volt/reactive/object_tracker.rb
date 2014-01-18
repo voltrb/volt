@@ -80,8 +80,8 @@ class ObjectTracker
       # Add to current
       should_attach = current_obj.respond_to?(:on)
       if should_attach
-        # TODO: TRACK
         @cached_current_obj = current_obj
+        puts "ATTACH: #{@cached_current_obj}"
         @current_obj_chain_listener = @main_object.event_chain.add_object(@cached_current_obj)
       end
     else

@@ -170,13 +170,13 @@ module Events
   def remove_event_from_chains(event)
     event_chain.remove_event(event)
 
-    if event != :changed
-      # See if there are any remaining events that aren't changed
-      if listeners.keys.reject {|k| k == :changed }.size == 0
-        @other_event_listener.remove
-        @other_event_listener = nil
-      end
-    end
+    # if event != :changed
+    #   # See if there are any remaining events that aren't changed
+    #   if listeners.keys.reject {|k| k == :changed }.size == 0
+    #     @other_event_listener.remove
+    #     @other_event_listener = nil
+    #   end
+    # end
   end
   
   def trigger!(event, filter=nil, *args)
