@@ -184,7 +184,7 @@ module Events
     event = event.to_sym
     
     if @listeners && @listeners[event]
-      puts "LISTENERS FOR #{event} on #{self.inspect} - #{@listeners[event].inspect}"
+      # puts "LISTENERS FOR #{event} on #{self.inspect} - #{@listeners[event].inspect}"
       @listeners[event].each do |listener|
         # Call the event on each listener
         # If there is no filter, call

@@ -13,8 +13,13 @@ class BaseBinding
     @section ||= target.section(@binding_name)
   end
   
-  def remove
+  def remove    
     section.remove
+    
+    # Clear any references
+    @target = nil
+    @context = nil
+    @section = nil
   end
   
   def remove_anchors

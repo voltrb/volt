@@ -53,7 +53,9 @@ class ReactiveValue < BasicObject
   alias_method :rm, :reactive_manager  
   
   def check_tag(method_name, tag_name)
-    current_obj = cur # TODO: should be cached somehow
+    puts "CHECK TAG"
+    current_obj = self.cur() # TODO: should be cached somehow
+    puts "AFTER"
     
     if current_obj.respond_to?(:reactive_method_tag)
       tag = current_obj.reactive_method_tag(method_name, tag_name)
@@ -88,7 +90,7 @@ class ReactiveValue < BasicObject
     # For some methods, we pass directly to the current object.  This
     # helps ReactiveValue's be well behaved ruby citizens.
     # Also skip if this is a destructive method
-    if SKIP_METHODS.include?(method_name) || check_tag(method_name, :destructive)# || (method_name[0] =~ /[a-zA-Z]/ && !cur.is_a?(::Exception))
+    if SKIP_METHODS.include?(method_name) || check_tag(method_name, :destructive)
       pass_args = pass_reactive ? args : args.map{|v| v.cur }
       return cur.__send__(method_name, *pass_args, &block)
     end
@@ -243,6 +245,9 @@ class ReactiveManager
 
   # Fetch the current value
   def cur
+    @@cur_count ||= 0
+    @@cur_count += 1
+    puts "Cur: #{@@cur_count}"# if @@cur_count % 100 == 0
     # if @cached_obj && ObjectTracker.cache_version == @cached_version
     #   return @cached_obj
     # end
@@ -326,7 +331,7 @@ class ReactiveManager
     
     # Add the ReactiveValue we're building from
     new_val.reactive_manager.add_parent!(self)
-    
+
     # Add any reactive arguments as parents
     args.select(&:reactive?).each do |arg|
       new_val.reactive_manager.add_parent!(arg.reactive_manager)
@@ -344,27 +349,7 @@ class ReactiveManager
     @parents.delete(parent)
     event_chain.remove_object(parent)
   end
-  
-  # def event_added(event, scope_provider, first)
-  #   # Chain to our current value
-  #   @current_obj = self.cur()
-  #   
-  #   if @current_obj.respond_to?(:on)
-  #     @current_obj_chain_listener = event_chain.add_object(@current_obj)
-  #   end
-  #   
-  #   
-  #   # if first && event != :changed && !@other_event_listener
-  #   #   @other_event_listener = on('changed') { }
-  #   # end
-  # end
-  
-  # def event_removed(event, no_more_events)
-  #   if no_more_events && @current_obj_chain_listener
-  #     @current_obj_chain_listener.remove
-  #     @current_obj_chain_listener = nil
-  #   end
-  # end
+
   
   def set_scope!(new_scope)
     @scope = new_scope

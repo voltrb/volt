@@ -100,6 +100,11 @@ class AttributeBinding < BaseBinding
       @update_listener.remove
       @update_listener = nil
     end
+    
+    # Clear any references
+    @target = nil
+    @context = nil
+    @section = nil
   end
 
 

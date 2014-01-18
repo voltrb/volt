@@ -39,10 +39,6 @@ class EventBinding < BaseBinding
     @listener = $page.events.add(event_name, self, handler)
   end
 
-  def element
-    Element.find('#' + binding_name)
-  end
-
   # Remove the event binding
   def remove
     # puts "REMOVE EL FOR #{@event}"
