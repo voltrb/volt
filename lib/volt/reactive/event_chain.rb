@@ -49,31 +49,17 @@ class EventChain
       end
     end
   end
-  
-  def all_listening_events
-    all_listeners = []
-    all_listeners += @main_object.listeners.keys
     
-    if @main_object
-      @main_object.event_followers.each do |event_follower|
-        all_listeners += event_follower.listeners.keys
-      end
-    end
-    
-    return all_listeners.uniq
-  end
-
-  
   # We can chain our events to any other object that includes
   # Events
   def add_object(object, &block) 
     # puts "ADD OBJECT: #{object.inspect} to #{self.inspect}" 
-      
+    
     chain_listener = ChainListener.new(self, object, block)
 
     listeners = {}
     
-    all_listening_events.uniq.each do |event|
+    @main_object.listeners.keys.each do |event|
       # Create a listener for each event
       listeners[event] = setup_listener(event, chain_listener)
     end

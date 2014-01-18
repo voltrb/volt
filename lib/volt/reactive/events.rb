@@ -163,24 +163,12 @@ module Events
   def add_event_to_chains(event)
     # First time this event is added, update any chains
     event_chain.add_event(event)
-
-    # We need to keep the event chain's updated for any objects we're
-    # following for events.
-    event_followings.each {|ef| ef.event_chain.add_event(event) }
-
-    if event != :changed && !@other_event_listener
-      @other_event_listener = on('changed') { }
-    end
   end
   
   # When events are removed, we need to notify any relevent chains so they
   # can remove any chained events.
   def remove_event_from_chains(event)
     event_chain.remove_event(event)
-    
-    # We need to keep the event chain's updated for any objects we're
-    # following for events.
-    event_followings.each {|ef| ef.event_chain.remove_event(event) }
 
     if event != :changed
       # See if there are any remaining events that aren't changed
@@ -191,76 +179,16 @@ module Events
     end
   end
   
-  
-  # Track the current object that we're following.
-  def event_followings
-    @event_followings || []
-  end
-
-  def add_following(object)
-    @event_followings ||= []
-    @event_followings << object
-    
-    # Take all of our listeners and add them to the 
-    listeners.keys.each do |event|
-      object.event_chain.add_event(event)
-    end
-  end
-  
-  def remove_following(object) 
-    @event_followings.delete(object)
-       
-    listeners.keys.each do |event|
-      object.event_chain.remove_event(event)
-    end
-  end
-  
-  # Track who's following us
-  def event_followers
-    @event_followers || []
-  end
-  
-  def add_event_follower(follower)
-    @event_followers ||= []
-    @event_followers << follower
-    
-    follower.add_following(self)
-  end
-  
-  def remove_event_follower(follower)
-    if @event_followers
-      @event_followers.delete(follower)
-    
-      follower.remove_following(self)
-    end
-  end
-
-  # Return all listeners for an event on the current object and any event 
-  # following objects.
-  def all_listeners_for(event)
-    # TODO: We dup at the moment because some events unregister events, is there
-    # a better solution than this?
-    all_listeners = []
-    all_listeners += @listeners[event].dup if @listeners && @listeners[event]
-
-    if @event_followers
-      @event_followers.each do |event_follower|
-        ef_listeners = event_follower.listeners
-        all_listeners += ef_listeners[event].dup if ef_listeners[event]
-      end
-    end
-    
-    return all_listeners
-  end
-
   def trigger!(event, *args)
     ObjectTracker.process_queue if !reactive? && !respond_to?(:skip_current_queue_flush)
     
     event = event.to_sym
     
-    all_listeners_for(event).each do |listener|
-      # Call the event on each listener
-      listener.call(*args)
+    if @listeners && @listeners[event]
+      @listeners[event].each do |listener|
+        # Call the event on each listener
+        listener.call(*args)
+      end
     end
 
     nil
@@ -272,10 +200,12 @@ module Events
     
     event = event.to_sym
     
-    all_listeners_for(event).each do |listener|
-      # Call the block, pass in the scope
-      if block.call(listener.scope)
-        listener.call(*args)
+    if @listeners && @listeners[event]
+      @listeners[event].each do |listener|
+        # Call the block, pass in the scope
+        if block.call(listener.scope)
+          listener.call(*args)
+        end
       end
     end
   end

@@ -141,6 +141,17 @@ describe ReactiveValue do
       expect(b.reactive?).to eq(true)
       expect(a.cur).not_to eq(nil)
     end
+    
+    it "should only chain one event up" do
+      a = ReactiveValue.new('1')
+      b = a.to_i
+
+      count = 0
+      b.on('changed') { count += 1 }
+      b.on('changed') { count += 1 }
+      
+      expect(a.reactive_manager.listeners[:changed].size).to eq(1)
+    end
   end
   
   describe "events" do

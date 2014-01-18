@@ -80,8 +80,9 @@ class ObjectTracker
       # Add to current
       should_attach = current_obj.respond_to?(:on)
       if should_attach
-        current_obj.add_event_follower(@main_object)
+        # TODO: TRACK
         @cached_current_obj = current_obj
+        @current_obj_chain_listener = @main_object.event_chain.add_object(@cached_current_obj)
       end
     else
       puts "DISABLED, no update" if OBJECT_TRACKER_DEBUG
@@ -92,7 +93,9 @@ class ObjectTracker
   def remove_followers
     # Remove from previous
     if @cached_current_obj
-      @cached_current_obj.remove_event_follower(@main_object)
+      @current_obj_chain_listener.remove
+      @current_obj_chain_listener = nil
+      
       @cached_current_obj = nil
     end
   end

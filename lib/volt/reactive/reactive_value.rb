@@ -209,8 +209,6 @@ class ReactiveManager
     @scope = scope
     
     @parents = []
-    
-    object_tracker.enable!
   end
   
   def reactive?
@@ -226,20 +224,17 @@ class ReactiveManager
   end
   
   
-  # def event_added(event, scope, first)
-  #   # When the first event is registered, we need to start listening on our current object
-  #   # for it to publish events.
-  #   # object_tracker.enable! if first
-  # end
-  # 
-  # def event_removed(event, last)
-  #   # If no one is listening on the reactive value, then we don't need to listen on our
-  #   # current object for events, because no one cares.
-  #   # Note: when we're tracking the current object, it will have one registered changed 
-  #   # event.
-  #   # update_current_object(true) if last && !has_non_tracking_listeners?
-  #   # object_tracker.disable! if @listeners.size == 0
-  # end
+  def event_added(event, scope, first)
+    # When the first event is registered, we need to start listening on our current object
+    # for it to publish events.
+    object_tracker.enable! if first
+  end
+  
+  def event_removed(event, last)
+    # If no one is listening on the reactive value, then we don't need to listen on our
+    # current object for events, because no one cares.
+    object_tracker.disable! if @listeners.size == 0
+  end
   
   def object_tracker
     @object_tracker ||= ::ObjectTracker.new(self)
@@ -349,6 +344,27 @@ class ReactiveManager
     @parents.delete(parent)
     event_chain.remove_object(parent)
   end
+  
+  # def event_added(event, scope_provider, first)
+  #   # Chain to our current value
+  #   @current_obj = self.cur()
+  #   
+  #   if @current_obj.respond_to?(:on)
+  #     @current_obj_chain_listener = event_chain.add_object(@current_obj)
+  #   end
+  #   
+  #   
+  #   # if first && event != :changed && !@other_event_listener
+  #   #   @other_event_listener = on('changed') { }
+  #   # end
+  # end
+  
+  # def event_removed(event, no_more_events)
+  #   if no_more_events && @current_obj_chain_listener
+  #     @current_obj_chain_listener.remove
+  #     @current_obj_chain_listener = nil
+  #   end
+  # end
   
   def set_scope!(new_scope)
     @scope = new_scope
