@@ -75,9 +75,9 @@ class Page
     return if url.blank?
 
     # Normalize url
-    # Benchmark.bm(1) do
+    Benchmark.bm(1) do
       @url.parse("http://localhost:3000" + url)
-    # end
+    end
   end
   
   # We provide a binding_name, so we can bind events on the document

@@ -265,8 +265,8 @@ class ReactiveManager
     end
     
     # if ObjectTracker.cache_enabled
-      # @cached_obj = result
-      # @cached_version = ObjectTracker.cache_version
+    #   @cached_obj = result
+    #   @cached_version = ObjectTracker.cache_version
     # end
     
     return result

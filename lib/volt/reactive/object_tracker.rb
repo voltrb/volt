@@ -74,15 +74,17 @@ class ObjectTracker
       current_obj = @main_object.cur#(true)
       
       # puts "UPDATE ON #{current_obj.inspect}"
-    
-      remove_followers
+      
+      if !@cached_current_obj || current_obj.object_id != @cached_current_obj.object_id
+        remove_followers
   
-      # Add to current
-      should_attach = current_obj.respond_to?(:on)
-      if should_attach
-        @cached_current_obj = current_obj
-        puts "ATTACH: #{@cached_current_obj}"
-        @current_obj_chain_listener = @main_object.event_chain.add_object(@cached_current_obj)
+        # Add to current
+        should_attach = current_obj.respond_to?(:on)
+        if should_attach
+          @cached_current_obj = current_obj
+          # puts "ATTACH: #{@cached_current_obj}"
+          @current_obj_chain_listener = @main_object.event_chain.add_object(@cached_current_obj)
+        end
       end
     else
       puts "DISABLED, no update" if OBJECT_TRACKER_DEBUG

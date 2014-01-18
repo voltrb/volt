@@ -43,7 +43,7 @@ class Listener
   end
   
   def scope
-    @scope_provider && @scope_provider.scope
+    @scope_provider && scope_provider.respond_to?(:scope) && @scope_provider.scope
   end
   
   def call(*args)
@@ -98,7 +98,6 @@ class Listener
 end
 
 module Events
-  attr_accessor :scope
   # Add a listener for an event
   def on(event, scope_provider=nil, &block) 
     # puts "Register: #{event} on #{self.inspect}"   
@@ -185,13 +184,14 @@ module Events
     event = event.to_sym
     
     if @listeners && @listeners[event]
+      puts "LISTENERS FOR #{event} on #{self.inspect} - #{@listeners[event].inspect}"
       @listeners[event].each do |listener|
         # Call the event on each listener
         # If there is no filter, call
         # if we aren't reactive, we should pass to all of our reactive listeners, since they
         # just proxy us.
         # If the filter exists, check it
-        # puts "CHECK #{listener.inspect} : #{self.inspect} -- #{listener.klass.inspect}"
+        # puts "CHECK #{listener.inspect} : #{self.inspect} -- #{listener.klass.inspect}"        
         if !filter || (!reactive? && listener.scope_provider.reactive?) || filter.call(listener.scope)
           listener.call(filter, *args)
         end
