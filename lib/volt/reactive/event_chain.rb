@@ -40,12 +40,17 @@ class EventChain
   
   # Register an event listener that chains from object to self
   def setup_listener(event, chain_listener)
-    return chain_listener.object.on(event, @main_object) do |*args|
+    return chain_listener.object.on(event, @main_object) do |filter, *args|
       if callback = chain_listener.callback
         callback.call(event, *args)
       else
         # Trigger on this value, when it happens on the parent
-        @main_object.trigger!(event, *args)
+        
+        # Only pass the filter from non-reactive to reactive?  This
+        # lets us scope the calls on a proxied object.
+        filter = nil unless !chain_listener.object.reactive? && @main_object.reactive?
+        
+        @main_object.trigger!(event, filter, *args)
       end
     end
   end

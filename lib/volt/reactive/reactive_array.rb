@@ -172,12 +172,13 @@ class ReactiveArray# < Array
     self.trigger_by_scope!(event_name, *passed_args) do |scope|
       # method_name, *args, block = scope
       method_name, args, block = split_scope(scope)
+      # puts "SCOPE CHECK: TFI: #{method_name.inspect} - #{args.inspect} on #{self.inspect}"
       
       result = case method_name
       when nil
         # no method name means the event was bound directly, we don't
         # want to trigger changed on the array its self.
-        false
+        true
       when :[]
         # Extract the current index if its reactive
         arg_index = args[0].cur

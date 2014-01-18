@@ -179,15 +179,18 @@ module Events
     end
   end
   
-  def trigger!(event, *args)
-    ObjectTracker.process_queue if !reactive? && !respond_to?(:skip_current_queue_flush)
+  def trigger!(event, filter=nil, *args)
+    ObjectTracker.process_queue if !reactive?# && !respond_to?(:skip_current_queue_flush)
     
     event = event.to_sym
     
     if @listeners && @listeners[event]
       @listeners[event].each do |listener|
         # Call the event on each listener
-        listener.call(*args)
+        puts "LI: " + listener.inspect + " #{filter.inspect} on #{self.inspect}"
+        if !filter || filter.call(listener.scope)
+          listener.call(filter, *args)
+        end
       end
     end
 
@@ -196,18 +199,7 @@ module Events
   
   # Takes a block, which passes in 
   def trigger_by_scope!(event, *args, &block)
-    ObjectTracker.process_queue if !reactive? && !respond_to?(:skip_current_queue_flush)
-    
-    event = event.to_sym
-    
-    if @listeners && @listeners[event]
-      @listeners[event].each do |listener|
-        # Call the block, pass in the scope
-        if block.call(listener.scope)
-          listener.call(*args)
-        end
-      end
-    end
+    trigger!(event, block, *args)
   end
 
 end

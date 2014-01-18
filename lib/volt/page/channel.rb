@@ -34,7 +34,7 @@ class Channel
   def message_received(message)
     message = JSON.parse(message)
     
-    trigger!('message', *message)
+    trigger!('message', nil, *message)
   end
   
   def send(message)
