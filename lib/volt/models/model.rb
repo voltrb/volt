@@ -58,9 +58,6 @@ class Model
   end
   
   tag_all_methods do
-    destructive! do |method_name|
-      method_name[0] == '_' && method_name[-1] == '='
-    end
     pass_reactive! do |method_name|
       method_name[0] == '_' && method_name[-1] == '='
     end
