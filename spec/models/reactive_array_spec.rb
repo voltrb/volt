@@ -186,7 +186,6 @@ describe ReactiveArray do
       
       count = 0
       model._current_todo._todos.on('added') { count += 1 }
-      # model._current_todo._todos.on('changed') { puts "AC" }
       expect(count).to eq(0)
       
       model._todo_lists << Model.new(_name: 'One', _todos: [])
@@ -194,7 +193,6 @@ describe ReactiveArray do
       
       model._current_todo = model._todo_lists[0]
       
-      # model.trigger!('added')
       model._current_todo._todos << "Svoltle todo"
       expect(count).to eq(1)
     end

@@ -26,7 +26,6 @@ class EachBinding < BaseBinding
   # array might have changed.  In this case, just reload the whole thing
   # TODO: Track to make sure the changed event isn't being called too often (it is currently)
   def reload
-    puts "ENABLE"
     # ObjectTracker.enable_cache
     # Remove all of the current templates
     if @templates
@@ -44,7 +43,6 @@ class EachBinding < BaseBinding
     update
 
     # ObjectTracker.disable_cache
-    puts "DISABLE"
   end
 
   def item_removed(position)
