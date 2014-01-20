@@ -29,8 +29,10 @@ class EachBinding < BaseBinding
     # Remove all of the current templates
     if @templates
       @templates.each do |template|
-        template.remove
         template.remove_anchors
+        
+        # TODO: Make sure this is being removed since we already removed the anchors
+        template.remove
       end
     end
     
