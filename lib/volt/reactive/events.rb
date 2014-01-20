@@ -110,7 +110,10 @@ module Events
     @listeners[event] << new_listener
 
     first = @listeners[event].size == 1
-    add_event_to_chains(event) if first
+    
+    # When events get added, we need to notify event chains so they
+    # can update and chain any new events.
+    event_chain.add_event(event) if first
 
     # Let the included class know that an event was registered. (if it cares)
     if self.respond_to?(:event_added)
@@ -143,7 +146,9 @@ module Events
 
       no_more_events = @listeners[event].size == 0
       if no_more_events
-        remove_event_from_chains(event)
+        # When events are removed, we need to notify any relevent chains so they
+        # can remove any chained events.
+        event_chain.remove_event(event)
 
         # No registered listeners now on this event
         @listeners.delete(event)
@@ -156,30 +161,11 @@ module Events
       end
     # end
   end
-  
-  # When events get added, we need to notify event chains so they
-  # can update and chain any new events.
-  def add_event_to_chains(event)
-    # First time this event is added, update any chains
-    event_chain.add_event(event)
-  end
-  
-  # When events are removed, we need to notify any relevent chains so they
-  # can remove any chained events.
-  def remove_event_from_chains(event)
-    event_chain.remove_event(event)
-
-    # if event != :changed
-    #   # See if there are any remaining events that aren't changed
-    #   if listeners.keys.reject {|k| k == :changed }.size == 0
-    #     @other_event_listener.remove
-    #     @other_event_listener = nil
-    #   end
-    # end
-  end
-  
+    
   def trigger!(event, filter=nil, *args)
-    ObjectTracker.process_queue if !reactive?# && !respond_to?(:skip_current_queue_flush)
+    are_reactive = reactive?
+    # puts "TRIGGER FOR: #{event} on #{self.inspect}" if !reactive?
+    ObjectTracker.process_queue if !are_reactive# && !respond_to?(:skip_current_queue_flush)
     
     event = event.to_sym
     
@@ -192,7 +178,7 @@ module Events
         # just proxy us.
         # If the filter exists, check it
         # puts "CHECK #{listener.inspect} : #{self.inspect} -- #{listener.klass.inspect}"        
-        if !filter || (!reactive? && listener.scope_provider.reactive?) || filter.call(listener.scope)
+        if !filter || (!are_reactive && listener.scope_provider.reactive?) || filter.call(listener.scope)
           listener.call(filter, *args)
         end
       end

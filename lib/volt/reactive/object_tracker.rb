@@ -1,4 +1,3 @@
-OBJECT_TRACKER_DEBUG = false
 
 class ObjectTracker
   @@queue = {}
@@ -7,6 +6,15 @@ class ObjectTracker
   
   def self.cache_enabled
     @@cache_enabled
+  end
+  
+  def self.enable_cache
+    clear_cache
+    @@cache_enabled = true
+  end
+  
+  def self.disable_cache
+    @@cache_enabled = false
   end
   
   def self.cache_version
@@ -18,7 +26,6 @@ class ObjectTracker
   end
   
   def initialize(main_object)
-    # puts "NEW OBJECT TRACKER FOR: #{main_object.inspect}"
     @main_object = main_object
     @enabled = false
   end
@@ -28,41 +35,38 @@ class ObjectTracker
   end
   
   def queue_update
-    puts "QUEUE UPDATE" if OBJECT_TRACKER_DEBUG
     @@queue[self] = true
   end
   
   # Run through the queue and update the followers for each
   def self.process_queue
+    return if @@queue.size == 0
     # puts "PROCESS QUEUE: #{@@queue.size}"
-    puts "Process #{@@queue.size} items" if OBJECT_TRACKER_DEBUG
-    # TODO: Doing a full dup here is expensive?
-    queue = @@queue.dup
+    queue = @@queue
+
+    # puts "Update Followers #{@@queue.size}" 
     
     # Clear before running incase someone adds during
     @@queue = {}
-
-    @@cache_enabled = true
-    self.clear_cache
+    # self.enable_cache
 
     queue.each_pair do |object_tracker,val|
       object_tracker.update_followers
     end
     
-    @@cache_enabled = false
+    # self.disable_cache
     
+    # puts "UPDATED FOLLOWERS"
   end
   
   def enable!
     unless @enabled
-      puts "Enable OBJ Tracker" if OBJECT_TRACKER_DEBUG
       @enabled = true
       queue_update
     end
   end
   
   def disable!
-    puts "Disable OBJ Tracker" if OBJECT_TRACKER_DEBUG
     remove_followers
     @@queue.delete(self)
     @enabled = false
@@ -70,7 +74,6 @@ class ObjectTracker
 
   def update_followers
     if @enabled
-      puts "UPDATE" if OBJECT_TRACKER_DEBUG
       current_obj = @main_object.cur#(true)
       
       # puts "UPDATE ON #{current_obj.inspect}"
@@ -87,7 +90,6 @@ class ObjectTracker
         end
       end
     else
-      puts "DISABLED, no update" if OBJECT_TRACKER_DEBUG
     end
   end
   

@@ -222,8 +222,8 @@ class ReactiveManager
 
   # Fetch the current value
   def cur
-    @@cur_count ||= 0
-    @@cur_count += 1
+    # @@cur_count ||= 0
+    # @@cur_count += 1
     # puts "Cur: #{@@cur_count}"# if @@cur_count % 100 == 0
     # if @cached_obj && ObjectTracker.cache_version == @cached_version
     #   return @cached_obj

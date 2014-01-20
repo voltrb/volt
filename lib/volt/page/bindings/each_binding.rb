@@ -17,8 +17,8 @@ class EachBinding < BaseBinding
     # Run the initial render
     update
 
-    @added_listener = @value.on('added') { |_, position, item| item_added(position) }
-    @changed_listener = @value.on('changed') { reload }
+    @added_listener = @value.on('added') { |_, position, item| puts "ADDED" ; item_added(position) }
+    @changed_listener = @value.on('changed') { puts "CHANGED" ; reload }
     @removed_listener = @value.on('removed') { |_, position| item_removed(position) }
   end
   
@@ -26,6 +26,8 @@ class EachBinding < BaseBinding
   # array might have changed.  In this case, just reload the whole thing
   # TODO: Track to make sure the changed event isn't being called too often (it is currently)
   def reload
+    puts "ENABLE"
+    ObjectTracker.enable_cache
     # Remove all of the current templates
     if @templates
       @templates.each do |template|
@@ -40,12 +42,15 @@ class EachBinding < BaseBinding
     
     # Run update again to rebuild
     update
+
+    ObjectTracker.disable_cache
+    puts "DISABLE"
   end
 
   def item_removed(position)
     position = position.cur
-    @templates[position].remove
     @templates[position].remove_anchors
+    @templates[position].remove
     @templates.delete_at(position)
     
     value_obj = @value.cur
@@ -65,7 +70,8 @@ class EachBinding < BaseBinding
   end
 
   def item_added(position)
-    # puts "ADDED AT #{position}"
+    # ObjectTracker.enable_cache
+    # puts "ADDED 1"
     binding_name = @@binding_number
     @@binding_number += 1
 
@@ -78,6 +84,8 @@ class EachBinding < BaseBinding
     item_context = SubContext.new({@item_name => value, :index => index, :parent => @value}, @context)
 
     @templates << TemplateRenderer.new(@target, item_context, binding_name, @template_name)
+    # puts "ADDED 2"
+    # ObjectTracker.disable_cache
   end
 
   def update(item=nil)
