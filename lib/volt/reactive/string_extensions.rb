@@ -19,9 +19,6 @@ class String
   end
 
   if RUBY_PLATFORM != 'opal'
-    tag_method(:<<) do
-      destructive!
-    end
     def <<(val)
       if val.reactive?
         raise "Cannot append a reactive string to non-reactive string.  Use + instead"

@@ -58,8 +58,12 @@ class ReactiveValue < BasicObject
   end
   
   def __is_destructive?(method_name)
-    if method_name[-1] == '=' && method_name[-2] != '='
+    last_char = method_name[-1]
+    if last_char == '=' && method_name[-2] != '='
       # Method is an assignment (and not a comparator ==)
+      return true
+    elsif last_char == '!' || last_char == '<'
+      # Method is tagged as destructive, or is a push ( << )
       return true
     elsif ::DestructiveMethods.might_be_destructive?(method_name)
       # Method may be destructive, check if it actually is on the current value

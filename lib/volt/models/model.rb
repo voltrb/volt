@@ -164,7 +164,6 @@ class Model
   end
   
   tag_method(:<<) do
-    destructive!
     pass_reactive!
   end
   # Initialize an empty array and append to it

@@ -60,10 +60,6 @@ class URL
   # Called when the state has changed and the url in the
   # browser should be updated
   # Called when an attribute changes to update the url
-  tag_method(:update!) do
-    destructive!
-    # TODO: ! methods should default to destructive
-  end
   def update!
     new_url = full_url()
     

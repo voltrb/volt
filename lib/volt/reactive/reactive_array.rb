@@ -18,7 +18,6 @@ class ReactiveArray# < Array
   end
   
   tag_method(:[]=) do
-    destructive!
     pass_reactive!
   end
   
@@ -69,7 +68,6 @@ class ReactiveArray# < Array
   
 
   tag_method(:<<) do
-    destructive!
     pass_reactive!
   end
   # alias :__old_append :<<
