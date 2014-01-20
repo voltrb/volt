@@ -97,32 +97,9 @@ class ReactiveValue < BasicObject
     
     @block_reactives = []
     result = @reactive_manager.with_and_options(args, pass_reactive) do |val, in_args|
-      # When a method is called with a block, we pass in our own block that wraps the
-      # block passed in.  This way we can pass in any arguments as reactive and track
-      # the return values.
-      new_block = block
-      # index_cache = []
-      # index = 0
-      # 
-      # if false && new_block
-      #   new_block = ::Proc.new do |*block_args|
-      #     res = block.call(*block_args.map {|v| ::ReactiveValue.new(v) })
-      #     
-      #     result.rm.remove_parent!(index_cache[index]) if index_cache[index]
-      #     puts "index: #{index}"
-      #     index_cache[index] = res
-      # 
-      #     # @block_reactives << res
-      #     result.rm.add_parent!(res)
-      #     # puts "Parent Size: #{result.rm.parents.size}"
-      #     
-      #     index += 1
-      #     
-      #     res.cur
-      #   end
-      # end
       
-      val.__send__(method_name, *in_args, &new_block)
+      puts "GET #{method_name.inspect}"
+      val.__send__(method_name, *in_args, &block)
     end
     
     manager = result.reactive_manager
