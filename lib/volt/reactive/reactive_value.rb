@@ -225,7 +225,7 @@ class ReactiveManager
     # @@cur_count ||= 0
     # @@cur_count += 1
     # puts "Cur: #{@@cur_count}"# if @@cur_count % 100 == 0
-    # if @cached_obj && ObjectTracker.cache_version == @cached_version
+    # if ObjectTracker.cache_version == @cached_version
     #   return @cached_obj
     # end
     

@@ -27,7 +27,7 @@ class EachBinding < BaseBinding
   # TODO: Track to make sure the changed event isn't being called too often (it is currently)
   def reload
     puts "ENABLE"
-    ObjectTracker.enable_cache
+    # ObjectTracker.enable_cache
     # Remove all of the current templates
     if @templates
       @templates.each do |template|
@@ -43,7 +43,7 @@ class EachBinding < BaseBinding
     # Run update again to rebuild
     update
 
-    ObjectTracker.disable_cache
+    # ObjectTracker.disable_cache
     puts "DISABLE"
   end
 
@@ -83,6 +83,7 @@ class EachBinding < BaseBinding
     
     item_context = SubContext.new({@item_name => value, :index => index, :parent => @value}, @context)
 
+    # ObjectTracker.enable_cache
     @templates << TemplateRenderer.new(@target, item_context, binding_name, @template_name)
     # puts "ADDED 2"
     # ObjectTracker.disable_cache
