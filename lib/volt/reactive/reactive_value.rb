@@ -4,6 +4,7 @@ require 'volt/reactive/string_extensions'
 require 'volt/reactive/array_extensions'
 require 'volt/reactive/reactive_array'
 require 'volt/reactive/object_tracker'
+require 'volt/reactive/destructive_methods'
 
 class Object
   def cur
@@ -52,30 +53,21 @@ class ReactiveValue < BasicObject
   end
   alias_method :rm, :reactive_manager  
   
-  def check_tag(method_name, tag_name)
-    puts "CHECK TAG"
-    current_obj = self.cur() # TODO: should be cached somehow
-    puts "AFTER"
-    
-    if current_obj.respond_to?(:reactive_method_tag)
-      tag = current_obj.reactive_method_tag(method_name, tag_name)
-      
-      unless tag
-        # Get the tag from the all methods if its not directly specified
-        tag = current_obj.reactive_method_tag(:__all_methods, tag_name)
-      end
-      
-      # Evaluate now if its a proc
-      tag = tag.call(method_name) if tag.class == ::Proc
-      
-      return tag
-    end
-    
-    return nil
-  end
-  
   def puts(*args)
     ::Object.send(:puts, *args)
+  end
+  
+  def __is_destructive?(method_name)
+    if method_name[-1] == '=' && method_name[-2] != '='
+      # Method is an assignment (and not a comparator ==)
+      return true
+    elsif ::DestructiveMethods.might_be_destructive?(method_name)
+      # Method may be destructive, check if it actually is on the current value
+      # TODO: involves a call to cur
+      return reactive_manager.check_tag(method_name, :destructive, self.cur)
+    else
+      return false
+    end
   end
   
   def method_missing(method_name, *args, &block)
@@ -83,23 +75,27 @@ class ReactiveValue < BasicObject
     if method_name == :send
       method_name, *args = args
     end
-    
-    # Check to see if the method we're calling wants to receive reactive values.
-    pass_reactive = check_tag(method_name, :pass_reactive)
 
     # For some methods, we pass directly to the current object.  This
     # helps ReactiveValue's be well behaved ruby citizens.
     # Also skip if this is a destructive method
-    if SKIP_METHODS.include?(method_name) || check_tag(method_name, :destructive)
-      pass_args = pass_reactive ? args : args.map{|v| v.cur }
-      return cur.__send__(method_name, *pass_args, &block)
+    if SKIP_METHODS.include?(method_name) || __is_destructive?(method_name)
+      current_obj = self.cur
+      
+      # Unwrap arguments if the method doesn't want reactive values
+      pass_args = reactive_manager.unwrap_if_pass_reactive(args, method_name, current_obj)
+      
+      return current_obj.__send__(method_name, *pass_args, &block)
     end
     
     @block_reactives = []
-    result = @reactive_manager.with_and_options(args, pass_reactive) do |val, in_args|
-      
-      puts "GET #{method_name.inspect}"
-      val.__send__(method_name, *in_args, &block)
+    result = @reactive_manager.with_and_options(args) do |val, in_args|
+      # Unwrap arguments if the method doesn't want reactive values
+      # TODO: Should cache the lookup on pass_reactive
+      pass_args = reactive_manager.unwrap_if_pass_reactive(in_args, method_name, val)
+
+      # puts "GET #{method_name.inspect}"
+      val.__send__(method_name, *pass_args, &block)
     end
     
     manager = result.reactive_manager
@@ -267,14 +263,44 @@ class ReactiveManager
     end
   end
   
+  
+  # Method calls can be tagged so the reactive value knows
+  # how to handle them.  This lets you check the state of
+  # the tags.
+  def check_tag(method_name, tag_name, current_obj)
+    if current_obj.respond_to?(:reactive_method_tag)
+      tag = current_obj.reactive_method_tag(method_name, tag_name)
+      
+      unless tag
+        # Get the tag from the all methods if its not directly specified
+        tag = current_obj.reactive_method_tag(:__all_methods, tag_name)
+      end
+      
+      # Evaluate now if its a proc
+      tag = tag.call(method_name) if tag.class == ::Proc
+      
+      return tag
+    end
+    
+    return nil
+  end
+  
+  def unwrap_if_pass_reactive(args, method_name, current_obj)
+    # Check to see if the method we're calling wants to receive reactive values.
+    pass_reactive = check_tag(method_name, :pass_reactive, current_obj)
+
+    # Unwrap arguments if the method doesn't want reactive values
+    return pass_reactive ? args : args.map{|v| v.cur }
+  end
+  
   # With returns a new reactive value dependent on any arguments passed in.
   # If a block is passed in, the getter is the block its self, which will
   # be passed the .cur and the .cur of any reactive arguments.
   def with(*args, &block)
-    return with_and_options(args, false, &block)
+    return with_and_options(args, &block)
   end
   
-  def with_and_options(args, pass_reactive, &block)
+  def with_and_options(args, &block)
     getter = @getter
     setter = @setter
     scope = @scope
@@ -282,17 +308,14 @@ class ReactiveManager
     if block
       # If a block was passed in, the getter now becomes a proc that calls
       # the passed in block with the right arguments.
-      getter = ::Proc.new do
-        # Unwrap arguments if the method doesn't want reactive values
-        pass_args = pass_reactive ? args : args.map{|v| v.cur }
-        
+      getter = ::Proc.new do        
         # TODO: Calling cur every time
         current_val = self.cur
         
         if current_val.is_a?(Exception)
           current_val
         else
-          block.call(current_val, pass_args)
+          block.call(current_val, args)
         end
       end
       

@@ -1,3 +1,5 @@
+require 'volt/reactive/destructive_methods'
+
 # ReactiveTags provide an easy way to specify how a class deals with 
 # reactive events and method calls.als
 module ReactiveTags
@@ -29,6 +31,11 @@ module ReactiveTags
     
       @reactive_method_tags ||= {}
       @reactive_method_tags[method_name.to_sym] = tagger.method_tags
+      
+      # Track a destructive method
+      if tagger.method_tags.destructive
+        DestructiveMethods.add_method(method_name)
+      end
     end
     
     def tag_all_methods(&block)
