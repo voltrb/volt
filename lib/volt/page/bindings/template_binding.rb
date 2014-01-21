@@ -164,12 +164,12 @@ class TemplateBinding < BaseBinding
   
     # Fetch the controller class
     def get_controller(controller_name)
-      name = controller_name[1].camelize
+      name = controller_name[1].gsub('-', '_').camelize
     
       # For the home object, we do not need to namespace our controller
       if controller_name[0] != 'home'
         # Controller is namespaced, lookup outer module first
-        base_name = controller_name[0].camelize.to_sym
+        base_name = controller_name[0].gsub('-', '_').camelize.to_sym
         if Object.send(:const_defined?, base_name)
           base_object = Object.send(:const_get, base_name)
         end
