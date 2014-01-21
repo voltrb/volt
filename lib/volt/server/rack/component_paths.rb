@@ -37,7 +37,7 @@ class ComponentPaths
           folder_name = folder[/[^\/]+$/]
           
           @components[folder_name] ||= []
-          @components[folder_name] << folder
+          @components[folder_name] << folder          
         end
       end
     end

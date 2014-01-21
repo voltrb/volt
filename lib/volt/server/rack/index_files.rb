@@ -44,7 +44,7 @@ class IndexFiles
   end
   
   def css_files
-    ComponentFiles.new('home', @component_paths).css_files
+    ComponentFiles.new('home', @component_paths, true).css_files
   end
 
   

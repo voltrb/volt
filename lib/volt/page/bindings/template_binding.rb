@@ -131,7 +131,7 @@ class TemplateBinding < BaseBinding
       controller = get_controller(controller_name)
       
       # Initialize the new controller
-      current_context = controller.new(*args)
+      current_context = (ModelController || controller).new(*args)
     elsif @model
       # Passed in attributes, but there is no controller
       current_context = SubContext.new(@model, current_context)      
@@ -169,14 +169,23 @@ class TemplateBinding < BaseBinding
       # For the home object, we do not need to namespace our controller
       if controller_name[0] != 'home'
         # Controller is namespaced, lookup outer module first
-        base_name = controller_name[0].camelize
-        base_object = Object.send(:const_get, base_name.to_sym)
+        base_name = controller_name[0].camelize.to_sym
+        if Object.send(:const_defined?, base_name)
+          base_object = Object.send(:const_get, base_name)
+        end
       else
         # Get controller directlry
         base_object = Object
       end
-    
-      base_object.send(:const_get, (name + 'Controller').to_sym)
+      
+      if base_object
+        name = (name + 'Controller').to_sym
+        if base_object.send(:const_defined?, name)
+          return base_object.send(:const_get, name)
+        end
+      end
+
+      return nil
     end
   
 end

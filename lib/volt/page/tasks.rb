@@ -55,6 +55,7 @@ class Tasks
   
   def reload
     puts "RELOAD"
+    $page.page._reloading = true
     `window.location.reload(false);`
   end
 end

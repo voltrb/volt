@@ -24,8 +24,12 @@ class Server
     @app_path = File.expand_path(File.join(Dir.pwd, "app"))
     @component_paths = ComponentPaths.new
     
+    setup_change_listener
+  end
+  
+  def setup_change_listener
     # Setup the listeners for file changes
-    puts "Listen for changes on #{@app_path}"
+    puts "Listen for changes at #{@app_path}"
     listener = Listen.to("#{@app_path}/") do |modified, added, removed|
       ChannelHandler.send_message_all(nil, 'reload')
     end
