@@ -1,8 +1,8 @@
-require 'opal'
+if RUBY_PLATFORM == 'opal'
+  require 'opal'
 
-ENV['CLIENT'] = true
-
-require 'opal-jquery'
+  require 'opal-jquery'
+end
 require 'volt/models'
 require 'volt/models/params'
 require 'volt/controllers/model_controller'
@@ -18,7 +18,12 @@ require 'volt/page/reactive_template'
 require 'volt/page/document_events'
 require 'volt/page/sub_context'
 require 'volt/page/targets/dom_target'
-require 'volt/page/channel'
+
+if RUBY_PLATFORM == 'opal'
+  require 'volt/page/channel'
+else
+  require 'volt/page/channel_stub'
+end
 require 'volt/router/routes'
 require 'volt/models/url'
 require 'volt/page/url_tracker'
@@ -47,24 +52,23 @@ class Page
     @events = DocumentEvents.new
     @render_queue = RenderQueue.new
     
-    # Add event for link clicks to handle all a onclick
-    # EventBinding.new(self, )
-    
-    # Setup escape binding for console
-    %x{
-      $(document).keyup(function(e) {
-        if (e.keyCode == 27) {
-          Opal.gvars.page.$launch_console();
-        }
-      });
+    if RUBY_PLATFORM == 'opal'
+      # Setup escape binding for console
+      %x{
+        $(document).keyup(function(e) {
+          if (e.keyCode == 27) {
+            Opal.gvars.page.$launch_console();
+          }
+        });
       
-      $(document).on('click', 'a', function(event) {        
-        Opal.gvars.page.$link_clicked($(this).attr('href'));
-        event.stopPropagation();
+        $(document).on('click', 'a', function(event) {        
+          Opal.gvars.page.$link_clicked($(this).attr('href'));
+          event.stopPropagation();
         
-        return false;
-      });
-    }
+          return false;
+        });
+      }
+    end
   end
   
   def tasks
@@ -91,7 +95,13 @@ class Page
   end
 
   def channel
-    @channel ||= ReactiveValue.new(Channel.new)
+    @channel ||= begin
+      if Volt.client?
+        ReactiveValue.new(Channel.new)
+      else
+        ReactiveValue.new(ChannelStub.new)
+      end
+    end
   end
 
   def events
@@ -137,9 +147,11 @@ class Page
   end
 end
 
-$page = Page.new
+if Volt.client?
+  $page = Page.new
 
-# Call start once the page is loaded
-Document.ready? do
-  $page.start
+  # Call start once the page is loaded
+  Document.ready? do
+    $page.start
+  end
 end

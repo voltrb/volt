@@ -10,10 +10,22 @@ class Console
     require 'volt/models/params'
     require 'volt/server/template_parser'
     require 'volt'
+    require 'volt/page/page'
+    require 'volt/server/rack/component_paths'
+    require 'volt/server/channel_handler_stub'
+    
+    ChannelHandlerStub.dispatcher = Dispatcher.new
+    
+        
+    app_path = File.expand_path(File.join(Dir.pwd, "app"))
+    component_paths = ComponentPaths.new
+    component_paths.add_tasks_to_load_path
 
     Pry.config.prompt_name = 'volt'
 
     # start a REPL session
-    Pry.start
+    # Pry.start
+    
+    Page.new.pry
   end
 end

@@ -1,3 +1,5 @@
+ENV['SERVER'] = 'true'
+
 require 'opal'
 require "rack"
 if RUBY_PLATFORM != 'java'

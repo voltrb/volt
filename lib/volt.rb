@@ -6,11 +6,11 @@ class Volt
   end
   
   def self.server?
-    !ENV['CLIENT']
+    !!ENV['SERVER']
   end
   
   def self.client?
-    !!ENV['CLIENT']
+    !ENV['SERVER']
   end
   
   def self.source_maps?

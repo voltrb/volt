@@ -128,10 +128,13 @@ class Store < Model
   
   def new_model(attributes={}, parent=nil, path=nil, class_paths=nil)
     model = Store.new(@tasks, attributes, parent, path, class_paths)
-
+    
+    # When loading models on the server (or in the server console), any tasks.call
+    # yield immediately.  So we will need to not call find again.
+    # TODO: find a way to remove this
+    return model if Volt.server? && $loading_models
+    
     if @tasks && path.last[-1] == 's'
-      # puts "FIND NEW MODEL: #{path.inspect} - #{attributes.inspect}"
-      
       # Check to see the parents scope so we can only lookup associated
       # models.
       scope = {}

@@ -82,7 +82,6 @@ class Channel
     destructive!
   end
   def send_message(message)
-    `console.log('do send message');`
     puts "Send #{message.inspect}"
     if @state != :open
       @queue << message

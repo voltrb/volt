@@ -3,6 +3,7 @@ require_relative 'channel_tasks'
 
 class StoreTasks
   def initialize(channel=nil, dispatcher=nil)
+    puts "init store tasks"
     @@mongo_db ||= Mongo::MongoClient.new("localhost", 27017)
     @@db ||= @@mongo_db.db("development")
     
@@ -33,13 +34,13 @@ class StoreTasks
     end
     
     id = id['_id']
-    # ChannelHandler.send_message_all(@channel, 'update', nil, id, data.merge('_id' => id))
-    
-    ChannelTasks.send_message_to_channel("#{collection}##{id}", ['update', nil, id, data.merge('_id' => id)], @channel)
+
+    puts "DATA: #{data.merge('_id' => id).symbolize_keys.inspect}"
+    ChannelTasks.send_message_to_channel("#{collection}##{id}", ['update', nil, id, data.merge('_id' => id).symbolize_keys], @channel)
   end
   
   def find(collection, scope, query=nil)
     puts "FIND: #{collection.inspect} - #{scope}"
-    return @@db[collection].find(scope).to_a
+    return @@db[collection].find(scope).to_a.map {|item| item.symbolize_keys }
   end
 end
