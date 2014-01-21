@@ -39,7 +39,7 @@ class Channel
     @state = :open
     @reconnect_interval = nil
     @queue.each do |message|
-      send(message)
+      send_message(message)
     end
     
     trigger!('open')
@@ -78,9 +78,15 @@ class Channel
     trigger!('message', nil, *message)
   end
   
-  def send(message)
+  tag_method(:send_message) do
+    destructive!
+  end
+  def send_message(message)
+    `console.log('do send message');`
+    puts "Send #{message.inspect}"
     if @state != :open
       @queue << message
+      puts "Queue"
     else
       # TODO: Temp: wrap message in an array, so we're sure its valid JSON
       message = JSON.dump([message])
@@ -90,7 +96,7 @@ class Channel
     end
   end
   
-  def close
+  def close!
     @state = :closed
     %x{
       this.socket.close();

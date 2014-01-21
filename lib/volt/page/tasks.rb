@@ -23,7 +23,7 @@ class Tasks
       callback_id = nil
     end
     
-    @page.channel.send([callback_id, class_name, method_name, *args])
+    @page.channel.send_message([callback_id, class_name, method_name, *args])
   end
   
   

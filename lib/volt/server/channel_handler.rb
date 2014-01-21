@@ -33,6 +33,7 @@ class ChannelHandler < SockJS::Session
     # Messages are json and wrapped in an array
     message = JSON.parse(message).first
     
+    puts "GOT: #{message.inspect}"
     @@dispatcher.dispatch(self, message)
   end
   

@@ -1,4 +1,6 @@
 require 'mongo'
+require_relative 'channel_tasks'
+
 class StoreTasks
   def initialize(channel=nil, dispatcher=nil)
     @@mongo_db ||= Mongo::MongoClient.new("localhost", 27017)
