@@ -6,6 +6,7 @@ if RUBY_PLATFORM != 'java'
 end
 require "sprockets-sass"
 require "sass"
+require 'listen'
 
 require 'volt/extra_core/extra_core'
 require 'volt/server/component_handler'
@@ -22,6 +23,13 @@ class Server
   def initialize
     @app_path = File.expand_path(File.join(Dir.pwd, "app"))
     @component_paths = ComponentPaths.new
+    
+    # Setup the listeners for file changes
+    puts "Listen for changes on #{@app_path}"
+    listener = Listen.to("#{@app_path}/") do |modified, added, removed|
+      ChannelHandler.send_message_all(nil, 'reload')
+    end
+    listener.start
   end
   
   def app

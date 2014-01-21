@@ -33,6 +33,8 @@ class Tasks
       response(callback_id, *args)
     when 'update'
       update(*args)
+    when 'reload'
+      reload
     end
   end
   
@@ -49,5 +51,10 @@ class Tasks
     puts "UPDATE: #{model_id} with #{data.inspect}"
     Store.update(model_id, data)
     $loading_models = false
+  end
+  
+  def reload
+    puts "RELOAD"
+    `window.location.reload(false);`
   end
 end
