@@ -131,7 +131,7 @@ class TemplateBinding < BaseBinding
       controller = get_controller(controller_name)
       
       # Initialize the new controller
-      current_context = (ModelController || controller).new(*args)
+      current_context = (controller || ModelController).new(*args)
     elsif @model
       # Passed in attributes, but there is no controller
       current_context = SubContext.new(@model, current_context)      

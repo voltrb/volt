@@ -11,7 +11,9 @@ class ContentBinding < BaseBinding
     # Run the initial render
     update
 
-    @changed_listener = @value.on('changed') { update }
+    if @value.reactive?
+      @changed_listener = @value.on('changed') { update }
+    end
   end
 
   def update
@@ -25,8 +27,10 @@ class ContentBinding < BaseBinding
   end
 
   def remove
-    @changed_listener.remove
-    @changed_listener = nil
+    if @changed_listener
+      @changed_listener.remove
+      @changed_listener = nil
+    end
 
     super
   end
