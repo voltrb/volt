@@ -6,7 +6,7 @@ class Tasks
     @callback_id = 0
     @callbacks = {}
     
-    page.channel.on('message') do |*args|
+    page.channel.on('message') do |_, *args|
       received_message(*args)
     end
   end

@@ -31,7 +31,9 @@ class StoreTasks
     end
     
     id = id['_id']
-    ChannelHandler.send_message_all(@channel, 'update', nil, id, data.merge('_id' => id))
+    # ChannelHandler.send_message_all(@channel, 'update', nil, id, data.merge('_id' => id))
+    
+    ChannelTasks.send_message_to_channel("#{collection}##{id}", ['update', nil, id, data.merge('_id' => id)], @channel)
   end
   
   def find(collection, scope, query=nil)

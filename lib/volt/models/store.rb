@@ -14,18 +14,31 @@ class Store < Model
     
     value_updated
   end
+  
+  # def _id
+  #   return attributes && attributes['_id']
+  # end
 
   def event_added(event, scope_provider, first)
     if first && event == :changed
       # Start listening
-      $page.tasks.call('ChannelTasks', 'add_listener', 1)
+      ensure_id
+      if self.attributes && self.path.size > 1
+        channel_name = "#{self.path[-2]}##{self.attributes['_id']}"
+        puts "LISTENER ON: #{channel_name.inspect} -- #{self.path.inspect}"
+        $page.tasks.call('ChannelTasks', 'add_listener', channel_name)
+      end
     end
   end
   
   def event_removed(event, no_more_events)
     if no_more_events && event == :changed
       # Stop listening
-      $page.tasks.call('ChannelTasks', 'remove_listener', 1)
+      if self.attributes && self.path.size > 1
+        channel_name = "#{self.path[-2]}##{self.attributes['_id']}"
+        puts "REMOVE LISTENER ON: #{channel_name}"
+        $page.tasks.call('ChannelTasks', 'remove_listener', channel_name)
+      end
     end
   end
   
@@ -64,19 +77,23 @@ class Store < Model
     @@identity_map[attributes['_id']] = self
   end
   
+  # When called, will setup an id if there is not one
+  def ensure_id
+    # No id yet, lets create one
+    if attributes && !attributes['_id']
+      self.attributes['_id'] = generate_id
+      track_in_identity_map
+    end
+  end
+  
   def value_updated
     # puts "VU: #{@tasks.inspect} = #{path.inspect} - #{attributes.inspect}"
-    if (!defined?($loading_models) || !$loading_models) && @tasks && path.size > 0 && attributes.is_a?(Hash)
+    if (!defined?($loading_models) || !$loading_models) && @tasks && path.size > 0 && !self.nil?
       
-      # No id yet, lets create one
-      unless attributes['_id']
-        self.attributes['_id'] = generate_id
-        track_in_identity_map
-      end
-
-      if parent && source = parent.parent
-        # puts "FROM: #{path.inspect} - #{parent.inspect} && #{parent.parent.inspect}"
-        self.attributes[path[-2].singularize+'_id'] = source._id
+      ensure_id
+      
+      if path.size > 2 && parent && source = parent.parent
+        self.attributes[path[-2].to_s.singularize+'_id'] = source._id
       end
       
       # Don't store any sub-stores, those will do their own saving.
@@ -119,10 +136,11 @@ class Store < Model
       # models.
       scope = {}
       
-      if parent._id.true?
+      if parent.attributes && parent.attributes['_id'].true?
         scope[path[-1].singularize + '_id'] = parent._id
       end
       
+      puts "FIND: #{collection(path).inspect} at #{scope.inspect}"
       @tasks.call('StoreTasks', 'find', collection(path), scope) do |results|
         # TODO: Globals evil, replace
         $loading_models = true
