@@ -36,7 +36,6 @@ class Channel
   end
   
   def opened
-    puts "OPEN"
     @state = :open
     @reconnect_interval = nil
     @queue.each do |message|
@@ -48,7 +47,6 @@ class Channel
   end
 
   def closed(error)
-    puts "CLOSED"
     @state = :closed
     @error = `error.reason`
     
