@@ -49,7 +49,7 @@ class Listener
   def call(*args)
     # raise "Triggered on removed: #{@event} on #{@klass2.inspect}" if @removed
     if @removed
-      puts "Triggered on removed: #{@event}"
+      puts "Triggered on a removed event: #{@event}"
       return
     end
     
@@ -171,14 +171,16 @@ module Events
     
     if @listeners && @listeners[event]
       # puts "LISTENERS FOR #{event} on #{self.inspect} - #{@listeners[event].inspect}"
-      @listeners[event].each do |listener|
+      # TODO: We have to dup here because one trigger might remove another
+      @listeners[event].dup.each do |listener|
         # Call the event on each listener
+        # If there is no listener, that means another event trigger removed it.
         # If there is no filter, call
         # if we aren't reactive, we should pass to all of our reactive listeners, since they
         # just proxy us.
         # If the filter exists, check it
-        # puts "CHECK #{listener.inspect} : #{self.inspect} -- #{listener.klass.inspect}"        
-        if !filter || (!are_reactive && listener.scope_provider.reactive?) || filter.call(listener.scope)
+        # puts "CHECK #{listener.inspect} : #{self.inspect} -- #{listener.klass.inspect}"   
+        if (!filter || (!are_reactive && listener.scope_provider.reactive?) || filter.call(listener.scope))
           listener.call(filter, *args)
         end
       end

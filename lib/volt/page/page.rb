@@ -90,7 +90,7 @@ class Page
   end
 
   def channel
-    @channel ||= Channel.new
+    @channel ||= ReactiveValue.new(Channel.new)
   end
 
   def events
