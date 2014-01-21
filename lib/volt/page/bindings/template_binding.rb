@@ -110,34 +110,37 @@ class TemplateBinding < BaseBinding
     full_path, controller_name = path_for_template(@path.cur, @section.cur)
 
     @current_template.remove if @current_template
-    
-    current_context = @context
-    
+        
     if @model
       # Load in any procs
       @model.each_pair do |key,value|
         if value.class == Proc
-          @model[key] = value.call
+          @model[key.gsub('-', '_')] = value.call
         end
       end
     end
     
+    render_template(full_path, controller_name)
+  end
+  
+  # The context for templates can be either a controller, or the original context.
+  def render_template(full_path, controller_name)    
     # TODO: at the moment a :body section and a :title will both initialize different
     # controllers.  Maybe we should have a way to tie them together?
-    if controller_name
+    
+    controller = get_controller(controller_name)
+    if controller
       args = []
       args << SubContext.new(@model) if @model
       
-      controller = get_controller(controller_name)
-      
-      # Initialize the new controller
-      current_context = (controller || ModelController).new(*args)
-    elsif @model
-      # Passed in attributes, but there is no controller
-      current_context = SubContext.new(@model, current_context)      
+      # Setup the controller
+      current_context = controller.new(*args)
+    else
+      # Pass the context directly
+      current_context = @context
     end
 
-    @current_template = TemplateRenderer.new(@target, current_context, @binding_name, full_path)
+    @current_template = TemplateRenderer.new(@target, current_context, @binding_name, full_path)    
   end
 
   def remove
@@ -164,6 +167,8 @@ class TemplateBinding < BaseBinding
   
     # Fetch the controller class
     def get_controller(controller_name)
+      return nil unless controller_name && controller_name.size > 0
+      
       name = controller_name[1].gsub('-', '_').camelize
     
       # For the home object, we do not need to namespace our controller

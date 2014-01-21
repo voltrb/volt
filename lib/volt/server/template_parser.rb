@@ -69,10 +69,10 @@ class Template
 		end
 	end
 
-	def add_template(node, content)
+	def add_template(node, content, name='Template')
 		html = "<!-- $#{@binding_number} --><!-- $/#{@binding_number} -->"
 
-		@current_scope.add_binding(@binding_number, "lambda { |target, context, id| TemplateBinding.new(target, context, id, #{@template_parser.template_path.inspect}, Proc.new { [#{content}] }) }")
+		@current_scope.add_binding(@binding_number, "lambda { |target, context, id| #{name}Binding.new(target, context, id, #{@template_parser.template_path.inspect}, Proc.new { [#{content}] }) }")
 
 		@binding_number += 1
 		return html
@@ -351,7 +351,7 @@ class Template
     args_str = "#{template_path.inspect}"
     args_str << ", {#{attributes_string}}" if attribute_hash.size > 0
 
-		new_html = add_template(node, args_str)
+		new_html = add_template(node, args_str, 'Component')
     
     node.swap(new_html)#Nokogiri::HTML::DocumentFragment.parse(new_html))
   end
