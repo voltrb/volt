@@ -66,6 +66,10 @@ class Server
   
   def app
     @app = Rack::Builder.new
+    
+    # Should only be used in production
+    # @app.use Rack::Deflater
+
     # @app.use Rack::Chunked
     @app.use Rack::ContentLength
 

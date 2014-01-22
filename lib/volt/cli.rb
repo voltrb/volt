@@ -19,6 +19,7 @@ class CLI < Thor
   end
 
   desc "server", "run the server on the project in the current directory"
+  method_option :port, :type => :string, :aliases => '-p', :banner => 'specify which port the server should run on'
   def server
     require 'thin'
     require 'fileutils'
@@ -31,7 +32,13 @@ class CLI < Thor
     end
 
     ENV['SERVER'] = 'true'
-    Thin::Runner.new(['start', '--threaded', '--max-persistent-conns', '100', "--max-conns", "300"]).run!
+    args = ['start', '--threaded', '--max-persistent-conns', '100', "--max-conns", "300"]
+    
+    if options[:port]
+      args += ['-p', options[:port].to_s]
+    end
+    
+    Thin::Runner.new(args).run!
     
     # require 'volt/server'
     # 
