@@ -44,7 +44,7 @@ class NewGem
   end
   
   def copy_files
-    @thor.directory("newgem/app/newgem", File.join("#{@target}", "app/#{@component_name}"))
+    @thor.directory("newgem/app/newgem", File.join("#{@target}", "app/#{@component_name}"), @opts)
     copy("newgem/Gemfile.tt", "Gemfile")
     copy("newgem/Rakefile.tt", "Rakefile")
     copy("newgem/README.md.tt", "README.md")

@@ -1,0 +1,9 @@
+module <%=config[:name].gsub(/^volt[-]/, '').gsub('-', '_').split("_").map {|s| s.capitalize }.join("") %>
+  class IndexController
+    attr_accessor :data
+    
+    def initialize(data)
+      @data = data
+    end
+  end
+end
