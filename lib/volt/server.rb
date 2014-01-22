@@ -33,7 +33,7 @@ module Rack
     def call(env)
       status, headers, body = @app.call(env)
 
-      if status == 304 && env['HTTP_CONNECTION'] == 'keep-alive'
+      if status == 304 && env['HTTP_CONNECTION'].downcase == 'keep-alive'
         headers['Connection'] = 'keep-alive'
       end
       
