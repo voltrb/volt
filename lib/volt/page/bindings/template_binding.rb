@@ -97,7 +97,7 @@ class TemplateBinding < BaseBinding
         controller = nil
         if path_position > 1
           # Lookup the controller
-          controller = [full_path[0], full_path[1]]
+          controller = [full_path[0], full_path[1] + 'Controller']
         end
         return path, controller
       end
@@ -169,12 +169,11 @@ class TemplateBinding < BaseBinding
     def get_controller(controller_name)
       return nil unless controller_name && controller_name.size > 0
       
-      name = controller_name[1].gsub('-', '_').camelize
-    
+      base_name, name = controller_name.map {|v| v.gsub('-', '_').camelize }
+      
       # For the home object, we do not need to namespace our controller
-      if controller_name[0] != 'home'
+      if base_name != 'Home'
         # Controller is namespaced, lookup outer module first
-        base_name = controller_name[0].gsub('-', '_').camelize.to_sym
         if Object.send(:const_defined?, base_name)
           base_object = Object.send(:const_get, base_name)
         end
@@ -184,7 +183,6 @@ class TemplateBinding < BaseBinding
       end
       
       if base_object
-        name = (name + 'Controller').to_sym
         if base_object.send(:const_defined?, name)
           return base_object.send(:const_get, name)
         end

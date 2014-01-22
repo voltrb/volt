@@ -90,12 +90,12 @@ class Store < Model
   
   def value_updated
     path_size = path.size
-    if (!defined?($loading_models) || !$loading_models) && path_size > 0 && !nil?
+    if (!defined?($loading_models) || !$loading_models) && @tasks && path_size > 0 && !nil?
       
       ensure_id
       
       if path_size > 3 && parent && source = parent.parent
-        attributes[:"#{path[-4].singularize}_id"] = source._id
+        self.attributes[:"#{path[-4].singularize}_id"] = source._id
       end
       
       # Don't store any sub-stores, those will do their own saving.
