@@ -169,26 +169,26 @@ class TemplateBinding < BaseBinding
     def get_controller(controller_name)
       return nil unless controller_name && controller_name.size > 0
       
-      base_name, name = controller_name.map {|v| v.gsub('-', '_').camelize }
+      # Get the constant parts
+      parts = controller_name.map {|v| v.gsub('-', '_').camelize }
       
-      # For the home object, we do not need to namespace our controller
-      if base_name != 'Home'
-        # Controller is namespaced, lookup outer module first
-        if Object.const_defined?(base_name)
-          base_object = Object.const_get(base_name)
-        end
-      else
-        # Get controller directlry
-        base_object = Object
+      # Home doesn't get namespaced
+      if parts.first == 'Home'
+        parts.shift
       end
       
-      if base_object
-        if base_object.const_defined?(name)
-          return base_object.const_get(name)
+      # Do const lookups starting at object and working our way down.
+      # So Volt::ProgressBar would lookup Volt, then ProgressBar on Volt.
+      obj = Object
+      parts.each do |part|
+        if obj.const_defined?(part)
+          obj = obj.const_get(part)
+        else
+          return nil
         end
       end
-
-      return nil
+      
+      return obj
     end
   
 end
