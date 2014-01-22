@@ -90,7 +90,7 @@ class Store < Model
   
   def value_updated
     path_size = path.size
-    if (!defined?($loading_models) || !$loading_models) && @tasks && path_size > 0 && !nil?
+    if !(defined?($loading_models) && $loading_models) && @tasks && path_size > 0 && !nil?
       
       ensure_id
       
