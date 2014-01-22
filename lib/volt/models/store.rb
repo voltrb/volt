@@ -123,7 +123,7 @@ class Store < Model
     attributes[method_name] = model
     
     if model.state == :not_loaded
-      # model.load!
+      model.load!
     end
     
     return model
