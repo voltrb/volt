@@ -16,14 +16,13 @@ class ComponentHandler
     component_name = req.path.strip.gsub(/^\/components\//, '').gsub(/[.]js$/, '')
 
     code = ''
-    
-
+  
     component_files = ComponentFiles.new(component_name, @component_paths, true)
     component_files.component_paths.each do |component_path, component_name|
       code << ComponentTemplates.new(component_path, component_name).code
       code << "\n\n"
     end
-    
+  
     javascript_code = Opal.compile(code)
 
     # puts "ENV: #{env.inspect}"

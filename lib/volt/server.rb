@@ -21,6 +21,27 @@ require 'volt/server/rack/opal_files'
 require 'volt/tasks/dispatcher'
 
 
+module Rack
+  # TODO: For some reason in Rack (or maybe thin), 304 headers close
+  # the http connection.  We might need to make this check if keep 
+  # alive was in the request.
+  class KeepAlive
+    def initialize(app)
+      @app = app
+    end
+ 
+    def call(env)
+      status, headers, body = @app.call(env)
+
+      if status == 304 && env['HTTP_CONNECTION'] == 'keep-alive'
+        headers['Connection'] = 'keep-alive'
+      end
+      
+      [status, headers, body]
+    end
+  end
+end
+
 class Server
   def initialize
     @app_path = File.expand_path(File.join(Dir.pwd, "app"))
@@ -40,6 +61,13 @@ class Server
   
   def app
     @app = Rack::Builder.new
+    # @app.use Rack::Chunked
+    @app.use Rack::ContentLength
+
+    @app.use Rack::KeepAlive
+    @app.use Rack::ConditionalGet
+    @app.use Rack::ETag
+    
     @app.use Rack::CommonLogger
     @app.use Rack::ShowExceptions
 
