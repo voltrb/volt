@@ -97,7 +97,7 @@ class TemplateBinding < BaseBinding
         controller = nil
         if path_position > 1
           # Lookup the controller
-          controller = [full_path[0], full_path[1] + 'Controller']
+          controller = [full_path[0], full_path[1] + '_controller']
         end
         return path, controller
       end
