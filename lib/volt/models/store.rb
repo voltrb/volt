@@ -34,8 +34,8 @@ class Store < Model
   end
   
   def change_channel_connection(add_or_remove)
-    if self.attributes && self.path.size > 1
-      channel_name = "#{self.path[-2]}##{self.attributes[:_id]}"
+    if attributes && path.size > 1
+      channel_name = "#{path[-2]}##{attributes[:_id]}"
       $page.tasks.call('ChannelTasks', "#{add_or_remove}_listener", channel_name)
     end    
   end
@@ -94,7 +94,7 @@ class Store < Model
       ensure_id
       
       if path.size > 3 && parent && source = parent.parent
-        self.attributes[(path[-4].to_s.singularize+'_id').to_sym] = source._id
+        self.attributes[:"#{path[-4].singularize}_id"] = source._id
       end
       
       # Don't store any sub-stores, those will do their own saving.
@@ -139,8 +139,8 @@ class Store < Model
         scope = {}
       
         # Scope to the parent
-        if path.size > 2 && parent.attributes && parent.attributes[:_id].true?
-          scope[(path[-3].to_s.singularize + '_id').to_sym] = parent._id
+        if path.size > 2 && (attrs = parent.attributes) && attrs[:_id].true?
+          scope[:"#{path[-3].singularize}_id"] = parent._id
         end
         
         load_child_models(scope)
