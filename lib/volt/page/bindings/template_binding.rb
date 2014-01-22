@@ -174,8 +174,8 @@ class TemplateBinding < BaseBinding
       # For the home object, we do not need to namespace our controller
       if base_name != 'Home'
         # Controller is namespaced, lookup outer module first
-        if Object.send(:const_defined?, base_name)
-          base_object = Object.send(:const_get, base_name)
+        if Object.const_defined?(base_name)
+          base_object = Object.const_get(base_name)
         end
       else
         # Get controller directlry
@@ -183,8 +183,8 @@ class TemplateBinding < BaseBinding
       end
       
       if base_object
-        if base_object.send(:const_defined?, name)
-          return base_object.send(:const_get, name)
+        if base_object.const_defined?(name)
+          return base_object.const_get(name)
         end
       end
 
