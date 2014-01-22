@@ -98,12 +98,15 @@ class Store < Model
         self.attributes[:"#{path[-4].singularize}_id"] = source._id
       end
       
-      # Don't store any sub-stores, those will do their own saving.
-      attrs = attributes.reject {|k,v| v.is_a?(Model) || v.is_a?(ArrayModel) }
-      
       # puts "Save: #{collection} - #{attrs.inspect}"
-      @tasks.call('StoreTasks', 'save', collection, attrs)
+      @tasks.call('StoreTasks', 'save', collection, self_attributes)
     end
+  end
+  
+  # Return the attributes that are only for this store, not any sub-associations.
+  def self_attributes
+    # Don't store any sub-stores, those will do their own saving.
+    attrs = attributes.reject {|k,v| v.is_a?(Model) || v.is_a?(ArrayModel) }    
   end
   
   def collection(path=nil)
