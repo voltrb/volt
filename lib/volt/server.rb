@@ -6,8 +6,8 @@ if RUBY_PLATFORM != 'java'
   require "rack/sockjs"
   require "eventmachine"
 end
-require "sprockets-sass"
 require "sass"
+require "sprockets-sass"
 require 'listen'
 
 require 'volt/extra_core/extra_core'
@@ -19,7 +19,6 @@ require 'volt/server/rack/component_paths'
 require 'volt/server/rack/index_files'
 require 'volt/server/rack/opal_files'
 require 'volt/tasks/dispatcher'
-
 
 module Rack
   # TODO: For some reason in Rack (or maybe thin), 304 headers close
