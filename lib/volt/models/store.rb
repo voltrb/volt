@@ -89,12 +89,13 @@ class Store < Model
   end
   
   def value_updated
-    if (!defined?($loading_models) || !$loading_models) && @tasks && path.size > 0 && !self.nil?
+    path_size = path.size
+    if (!defined?($loading_models) || !$loading_models) && path_size > 0 && !nil?
       
       ensure_id
       
-      if path.size > 3 && parent && source = parent.parent
-        self.attributes[:"#{path[-4].singularize}_id"] = source._id
+      if path_size > 3 && parent && source = parent.parent
+        attributes[:"#{path[-4].singularize}_id"] = source._id
       end
       
       # Don't store any sub-stores, those will do their own saving.
@@ -133,7 +134,7 @@ class Store < Model
     if @state == :not_loaded
       @state = :loading
     
-      if @tasks && path.last[-1] == 's'
+      if @tasks && path.last.plural?
         # Check to see the parents scope so we can only lookup associated
         # models.
         scope = {}

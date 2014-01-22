@@ -26,4 +26,14 @@ class String
       return self
     end
   end
+  
+  def plural?
+    # TODO: Temp implementation
+    self[-1] == 's'
+  end
+  
+  def singular?
+    # TODO: Temp implementation
+    self[-1] != 's'
+  end
 end

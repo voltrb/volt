@@ -14,4 +14,12 @@ class Symbol
   def singularize
     to_s.singularize.to_sym
   end
+  
+  def plural?
+    to_s.plural?
+  end
+
+  def singular?
+    to_s.singular?
+  end
 end
