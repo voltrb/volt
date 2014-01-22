@@ -81,7 +81,8 @@ class Page
 
     # Normalize url
     Benchmark.bm(1) do
-      @url.parse("http://localhost:3000" + url)
+      host = `document.location.host`
+      @url.parse("http://#{host}" + url)
     end
   end
   
