@@ -174,14 +174,10 @@ class Model
     path = @path.last
     result = @parent.send(path)
     
-    puts "RES1: #{result.inspect} - #{result.nil?.inspect}"
     if result.nil?
       # If this isn't a model yet, instantiate it
       @parent.send(:"#{path}=", new_array_model([], @parent, @path))
-      puts "LOOKUP: #{path.inspect} on #{@parent.inspect}"
       result = @parent.send(path)
-      
-      puts "REULT!: #{result.inspect}"
     end
 
     # Add the new item

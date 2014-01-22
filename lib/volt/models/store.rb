@@ -24,7 +24,6 @@ class Store < Model
       ensure_id
       if self.attributes && self.path.size > 1
         channel_name = "#{self.path[-2]}##{self.attributes[:_id]}"
-        puts "LISTENER ON: #{channel_name.inspect} -- #{self.path.inspect}"
         $page.tasks.call('ChannelTasks', 'add_listener', channel_name)
       end
     end
@@ -35,7 +34,6 @@ class Store < Model
       # Stop listening
       if self.attributes && self.path.size > 1
         channel_name = "#{self.path[-2]}##{self.attributes[:_id]}"
-        puts "REMOVE LISTENER ON: #{channel_name}"
         $page.tasks.call('ChannelTasks', 'remove_listener', channel_name)
       end
     end
@@ -47,7 +45,6 @@ class Store < Model
     if model
       data.each_pair do |key, value|
         if key != '_id'
-          puts "update #{key} with #{value.inspect}"
           model.send(:"#{key}=", value)
         end
       end
@@ -62,6 +59,11 @@ class Store < Model
   end
   
   def method_missing(method_name, *args, &block)
+    if method_name[-1] == ']'
+      # Load the model
+      self.load!
+    end
+
     result = super
     
     if method_name[0] == '_' && method_name[-1] == '='
@@ -97,7 +99,7 @@ class Store < Model
       # Don't store any sub-stores, those will do their own saving.
       attrs = attributes.reject {|k,v| v.is_a?(Model) || v.is_a?(ArrayModel) }
       
-      puts "Save: #{collection} - #{attrs.inspect}"
+      # puts "Save: #{collection} - #{attrs.inspect}"
       @tasks.call('StoreTasks', 'save', collection, attrs)
     end
   end
@@ -127,29 +129,33 @@ class Store < Model
   end
   
   def load!
-    @state = :loading
-    puts "LOAD: #{self.inspect}"
+    if @state == :not_loaded
     
-    if @tasks && path.last[-1] == 's'
-      # Check to see the parents scope so we can only lookup associated
-      # models.
-      scope = {}
+      @state = :loading
+    
+      if @tasks && path.last[-1] == 's'
+        # Check to see the parents scope so we can only lookup associated
+        # models.
+        scope = {}
       
-      # Scope to the parent
-      if path.size > 2 && parent.attributes && parent.attributes[:_id].true?
-        scope[(path[-3].singularize + '_id').to_sym] = parent._id
-      end
-      
-      puts "FIND: #{collection(path).inspect} at #{scope.inspect}"
-      @tasks.call('StoreTasks', 'find', collection(path), scope) do |results|
-        # TODO: Globals evil, replace
-        $loading_models = true
-        results.each do |result|
-          self << Store.new(@tasks, result, self, path + [:[]], @class_paths)
+        # Scope to the parent
+        if path.size > 2 && parent.attributes && parent.attributes[:_id].true?
+          scope[(path[-3].to_s.singularize + '_id').to_sym] = parent._id
         end
-        $loading_models = false
+        
+        # puts "FIND: #{collection(path).inspect} at #{scope.inspect}"
+        @tasks.call('StoreTasks', 'find', collection(path), scope) do |results|
+          # TODO: Globals evil, replace
+          $loading_models = true
+          results.each do |result|
+            self << Store.new(@tasks, result, self, path + [:[]], @class_paths)
+          end
+          $loading_models = false
+        end
       end
     end
+    
+    return self
   end
   
   def new_model(attributes={}, parent=nil, path=nil, class_paths=nil)
