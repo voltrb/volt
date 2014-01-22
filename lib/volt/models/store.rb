@@ -22,21 +22,22 @@ class Store < Model
     if first && event == :changed
       # Start listening
       ensure_id
-      if self.attributes && self.path.size > 1
-        channel_name = "#{self.path[-2]}##{self.attributes[:_id]}"
-        $page.tasks.call('ChannelTasks', 'add_listener', channel_name)
-      end
+      change_channel_connection("add")
     end
   end
   
   def event_removed(event, no_more_events)
     if no_more_events && event == :changed
       # Stop listening
-      if self.attributes && self.path.size > 1
-        channel_name = "#{self.path[-2]}##{self.attributes[:_id]}"
-        $page.tasks.call('ChannelTasks', 'remove_listener', channel_name)
-      end
+      change_channel_connection("remove")
     end
+  end
+  
+  def change_channel_connection(add_or_remove)
+    if self.attributes && self.path.size > 1
+      channel_name = "#{self.path[-2]}##{self.attributes[:_id]}"
+      $page.tasks.call('ChannelTasks', "#{add_or_remove}_listener", channel_name)
+    end    
   end
   
   def self.update(model_id, data)
@@ -130,7 +131,6 @@ class Store < Model
   
   def load!
     if @state == :not_loaded
-    
       @state = :loading
     
       if @tasks && path.last[-1] == 's'
