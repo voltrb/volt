@@ -19,7 +19,7 @@ class Channel
   
   def connect!
     %x{
-      this.socket = new SockJS('http://localhost:3000/channel');
+      this.socket = new SockJS('/channel');
 
       this.socket.onopen = function() {
         self.$opened();

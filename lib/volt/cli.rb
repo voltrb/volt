@@ -32,7 +32,7 @@ class CLI < Thor
     end
 
     ENV['SERVER'] = 'true'
-    args = ['start', '--threaded', '--max-persistent-conns', '100', "--max-conns", "300"]
+    args = ['start', '--threaded', '--max-persistent-conns', '300', "--max-conns", "400"]
     
     if options[:port]
       args += ['-p', options[:port].to_s]
