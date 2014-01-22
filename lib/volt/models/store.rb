@@ -143,19 +143,23 @@ class Store < Model
           scope[(path[-3].to_s.singularize + '_id').to_sym] = parent._id
         end
         
-        # puts "FIND: #{collection(path).inspect} at #{scope.inspect}"
-        @tasks.call('StoreTasks', 'find', collection(path), scope) do |results|
-          # TODO: Globals evil, replace
-          $loading_models = true
-          results.each do |result|
-            self << Store.new(@tasks, result, self, path + [:[]], @class_paths)
-          end
-          $loading_models = false
-        end
+        load_child_models(scope)
       end
     end
     
     return self
+  end
+  
+  def load_child_models(scope)
+    # puts "FIND: #{collection(path).inspect} at #{scope.inspect}"
+    @tasks.call('StoreTasks', 'find', collection(path), scope) do |results|
+      # TODO: Globals evil, replace
+      $loading_models = true
+      results.each do |result|
+        self << Store.new(@tasks, result, self, path + [:[]], @class_paths)
+      end
+      $loading_models = false
+    end
   end
   
   def new_model(attributes={}, parent=nil, path=nil, class_paths=nil)
