@@ -5,26 +5,25 @@ class Store < Model
   
   @@identity_map = {}
   
+  attr_reader :state
+  
   def initialize(tasks=nil, *args)
     @tasks = tasks
+    @state = :not_loaded
 
     super(*args)
     
-    track_in_identity_map if attributes && attributes['_id']
+    track_in_identity_map if attributes && attributes[:_id]
     
     value_updated
   end
-  
-  # def _id
-  #   return attributes && attributes['_id']
-  # end
 
   def event_added(event, scope_provider, first)
     if first && event == :changed
       # Start listening
       ensure_id
       if self.attributes && self.path.size > 1
-        channel_name = "#{self.path[-2]}##{self.attributes['_id']}"
+        channel_name = "#{self.path[-2]}##{self.attributes[:_id]}"
         puts "LISTENER ON: #{channel_name.inspect} -- #{self.path.inspect}"
         $page.tasks.call('ChannelTasks', 'add_listener', channel_name)
       end
@@ -35,7 +34,7 @@ class Store < Model
     if no_more_events && event == :changed
       # Stop listening
       if self.attributes && self.path.size > 1
-        channel_name = "#{self.path[-2]}##{self.attributes['_id']}"
+        channel_name = "#{self.path[-2]}##{self.attributes[:_id]}"
         puts "REMOVE LISTENER ON: #{channel_name}"
         $page.tasks.call('ChannelTasks', 'remove_listener', channel_name)
       end
@@ -74,26 +73,25 @@ class Store < Model
   end
   
   def track_in_identity_map
-    @@identity_map[attributes['_id']] = self
+    @@identity_map[attributes[:_id]] = self
   end
   
   # When called, will setup an id if there is not one
   def ensure_id
     # No id yet, lets create one
-    if attributes && !attributes['_id']
-      self.attributes['_id'] = generate_id
+    if attributes && !attributes[:_id]
+      self.attributes[:_id] = generate_id
       track_in_identity_map
     end
   end
   
   def value_updated
-    # puts "VU: #{@tasks.inspect} = #{path.inspect} - #{attributes.inspect}"
     if (!defined?($loading_models) || !$loading_models) && @tasks && path.size > 0 && !self.nil?
       
       ensure_id
       
-      if path.size > 2 && parent && source = parent.parent
-        self.attributes[path[-2].to_s.singularize+'_id'] = source._id
+      if path.size > 3 && parent && source = parent.parent
+        self.attributes[(path[-4].to_s.singularize+'_id').to_sym] = source._id
       end
       
       # Don't store any sub-stores, those will do their own saving.
@@ -121,26 +119,25 @@ class Store < Model
     self.attributes ||= {}
     attributes[method_name] = model
     
+    if model.state == :not_loaded
+      # model.load!
+    end
+    
     return model
   end
   
-  
-  
-  def new_model(attributes={}, parent=nil, path=nil, class_paths=nil)
-    model = Store.new(@tasks, attributes, parent, path, class_paths)
-    
-    # When loading models on the server (or in the server console), any tasks.call
-    # yield immediately.  So we will need to not call find again.
-    # TODO: find a way to remove this
-    return model if Volt.server? && $loading_models
+  def load!
+    @state = :loading
+    puts "LOAD: #{self.inspect}"
     
     if @tasks && path.last[-1] == 's'
       # Check to see the parents scope so we can only lookup associated
       # models.
       scope = {}
       
-      if parent.attributes && parent.attributes['_id'].true?
-        scope[path[-1].singularize + '_id'] = parent._id
+      # Scope to the parent
+      if path.size > 2 && parent.attributes && parent.attributes[:_id].true?
+        scope[(path[-3].singularize + '_id').to_sym] = parent._id
       end
       
       puts "FIND: #{collection(path).inspect} at #{scope.inspect}"
@@ -148,17 +145,15 @@ class Store < Model
         # TODO: Globals evil, replace
         $loading_models = true
         results.each do |result|
-          # Get model again, we need to fetch it each time so it gets the
-          # updated model when it switches from nil.
-          # TODO: Strange that this is needed
-          model = self.send(path.last)
-          model << Store.new(@tasks, result, model, path + [:[]], class_paths)
+          self << Store.new(@tasks, result, self, path + [:[]], @class_paths)
         end
         $loading_models = false
       end
     end
-    
-    return model
+  end
+  
+  def new_model(attributes={}, parent=nil, path=nil, class_paths=nil)
+    return Store.new(@tasks, attributes, parent, path, class_paths)
   end
   
   def new_array_model(*args)

@@ -40,7 +40,9 @@ class StoreTasks
   end
   
   def find(collection, scope, query=nil)
-    puts "FIND: #{collection.inspect} - #{scope}"
-    return @@db[collection].find(scope).to_a.map {|item| item.symbolize_keys }
+    results = @@db[collection].find(scope).to_a.map {|item| item.symbolize_keys }
+    puts "FIND: #{collection.inspect} - #{scope} - #{results.inspect}"
+    
+    return results
   end
 end
