@@ -5,6 +5,12 @@ class StoreArray < ArrayModel
     super(array, parent, path)
   end
   
+  def event_added(event, scope_provider, first)
+    super
+    
+    puts "event added: #{event} - #{first}"
+  end
+  
   def new_model(*args)
     Store.new(@tasks, *args)
   end
