@@ -3,6 +3,7 @@ require 'volt'
 require 'volt/server/template_parser'
 require 'volt/server/component_templates'
 require 'volt/server/rack/component_files'
+require 'volt/server/rack/asset_files'
 
 class ComponentHandler
   def initialize(component_paths)
@@ -17,7 +18,7 @@ class ComponentHandler
 
     code = ''
   
-    component_files = ComponentFiles.new(component_name, @component_paths, true)
+    component_files = AssetFiles.new(component_name, @component_paths)
     component_files.component_paths.each do |component_path, component_name|
       code << ComponentTemplates.new(component_path, component_name).code
       code << "\n\n"

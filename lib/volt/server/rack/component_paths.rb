@@ -1,3 +1,4 @@
+# ComponentPaths gives an array of every folder where you find a component.
 class ComponentPaths
   def initialize(root=nil)
     @root = root || Dir.pwd
@@ -27,6 +28,7 @@ class ComponentPaths
     return files.flatten
   end
   
+  # returns an array of every folder that is a component
   def components
     return @components if @components
     
@@ -45,7 +47,8 @@ class ComponentPaths
     return @components
   end
   
-  def add_tasks_to_load_path
+  # Makes each components classes available on the load path
+  def setup_components_load_path
     components.each do |name,component_folders|
       component_folders.each do |component_folder|
         Dir["#{component_folder}/tasks"].each do |tasks_folder|
@@ -55,6 +58,7 @@ class ComponentPaths
     end
   end
   
+  # Returns the path for a specific component
   def component_path(name)
     folders = components[name]
     
