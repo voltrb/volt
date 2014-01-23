@@ -29,6 +29,9 @@ class CLI < Thor
     # source maps and non-source maps.
     if File.exists?("config.ru") && File.exists?("Gemfile")
       FileUtils.rm_rf("tmp/.")
+    else
+      say("Current folder is not a Volt project", :red)
+      return
     end
 
     ENV['SERVER'] = 'true'
@@ -44,7 +47,7 @@ class CLI < Thor
     # 
     # EM.run do
     #   thin = Rack::Handler.get("thin")
-    #   thin.run(Server.new.app, Port: 5000)
+    #   thin.run(Server.new.app, Port: 3000)
     # end
   end
   

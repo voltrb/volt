@@ -1,5 +1,5 @@
 <:title>
-  {#template params._controller.or('home'), "title"}
+  {#template params._page.or('home'), "title"}
 </:title>
 
 <:body>
@@ -14,7 +14,7 @@
       <h3 class="text-muted">Project name</h3>
     </div>
     
-    {#template params._controller.or('home')}
+    {#template params._page.or('home')}
     
     <div class="footer">
       <p>&copy; Company 2014</p>
@@ -24,7 +24,7 @@
 </:body>
 
 <:nav>
-  <li class="{#if params._controller.or('') == page}active{/}">
+  <li class="{#if params._page.or('') == page}active{/}">
     <a href="/{page}">{text}</a>
   </li>
 </:nav>
