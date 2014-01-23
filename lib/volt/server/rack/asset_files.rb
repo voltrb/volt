@@ -1,4 +1,4 @@
-# Used to get a list of the assets from the dependencies
+# Used to get a list of the assets from the dependencies files.
 class AssetFiles
   def initialize(component_name, component_paths)
     @component_paths = component_paths
