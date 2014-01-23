@@ -40,11 +40,11 @@ class IndexFiles
   
   def javascript_files
     # TODO: Cache somehow, this is being loaded every time
-    ComponentFiles.new('home', @component_paths, true).javascript_files(@opal_files)
+    AssetFiles.new('home', @component_paths).javascript_files(@opal_files)
   end
   
   def css_files
-    ComponentFiles.new('home', @component_paths, true).css_files
+    AssetFiles.new('home', @component_paths).css_files
   end
 
   

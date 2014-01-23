@@ -36,7 +36,7 @@ class Store < Model
   def change_channel_connection(add_or_remove)
     if attributes && path.size > 1
       channel_name = "#{path[-2]}##{attributes[:_id]}"
-      $page.tasks.call('ChannelTasks', "#{add_or_remove}_listener", channel_name)
+      @tasks.call('ChannelTasks', "#{add_or_remove}_listener", channel_name)
     end    
   end
   

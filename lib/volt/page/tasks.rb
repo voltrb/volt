@@ -31,8 +31,10 @@ class Tasks
     case name
     when 'response'
       response(callback_id, *args)
-    when 'update'
-      update(*args)
+    when 'changed'
+      changed(*args)
+    when 'added'
+      added(*args)
     when 'reload'
       reload
     end
@@ -46,10 +48,17 @@ class Tasks
     end
   end
   
-  def update(model_id, data)
+  def changed(model_id, data)
     $loading_models = true
     puts "UPDATE: #{model_id} with #{data.inspect}"
     Store.update(model_id, data)
+    $loading_models = false
+  end
+  
+  def added(path, data)
+    $loading_models = true
+    puts "Add: #{path.inspect} - #{data.inspect}"
+    $page.store.send(path) << data
     $loading_models = false
   end
   

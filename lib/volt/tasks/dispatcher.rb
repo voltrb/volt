@@ -12,7 +12,6 @@ class Dispatcher
     
       # Get the class
       klass = Object.send(:const_get, class_name)
-      puts "KLASS: #{klass.inspect}"
       
       # Init and send the method
       result = klass.new(channel, self).send(method_name, *args)

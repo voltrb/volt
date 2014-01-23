@@ -1,5 +1,6 @@
 class ChannelTasks
   @@listeners = {}
+  @@channel_listeners = {}
   
   def initialize(channel, dispatcher)
     @channel = channel
@@ -7,13 +8,35 @@ class ChannelTasks
   end
   
   def add_listener(channel_name)
+    puts "ADD LIST: #{channel_name}"
+    
+    # Track every channel that is listening
     @@listeners[channel_name] ||= []
     @@listeners[channel_name] << @channel
+    
+    # Also keep track of which channel names a channel is listening
+    # on so it can be removed if a channel is closed.
+    @@channel_listeners[@channel] ||= {}
+    @@channel_listeners[@channel][channel_name] = true
   end
   
   def remove_listener(channel_name)
     if @@listeners[channel_name]
       @@listeners[channel_name].delete(@channel)
+      @@channel_listeners[@channel].delete(channel_name)
+    end
+  end
+  
+  # Called when a channel is closed, removes its listeners from
+  # all channels.
+  def close!
+    channel_names = @@channel_listeners.delete(@channel)
+    puts "REMOVE: #{channel_names.inspect}"
+    
+    if channel_names
+      channel_names.each_pair do |channel_name,val|
+        remove_listener(channel_name)
+      end
     end
   end
   

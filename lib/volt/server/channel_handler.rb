@@ -47,9 +47,13 @@ class ChannelHandler < SockJS::Session
     send(str)
   end
   
-  def closed    
+  def closed
+    puts "CHANNEL CLOSED"
     # Remove ourself from the available channels
     @@channels.delete(self)
+    
+    # Remove any listening channels
+    ChannelTasks.new(self).close!
   end
 
 end

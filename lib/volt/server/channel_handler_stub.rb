@@ -8,7 +8,6 @@ class ChannelHandlerStub
   end
   
   def initialize(channel_stub)
-    puts "INIT WITH : #{channel_stub.inspect}"
     @channel_stub = channel_stub
   end
 
@@ -18,12 +17,10 @@ class ChannelHandlerStub
   end
 
   def process_message(message)
-    puts "GOT: #{message.inspect}"
     @@dispatcher.dispatch(self, message)
   end
 
   def send_message(*args)
-    puts "SEND MSG: #{args.inspect}"
     @channel_stub.message_received(*args)
   end
 end
