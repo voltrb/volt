@@ -1,7 +1,7 @@
 require 'json'
 require 'sockjs/session'
 
-class ChannelHandler < SockJS::Session
+class SocketConnectionHandler < SockJS::Session
   # Create one instance of the dispatcher
   
   def self.dispatcher=(val)
