@@ -2,7 +2,6 @@ require 'stringio'
 require 'volt'
 require 'volt/server/template_parser'
 require 'volt/server/component_templates'
-require 'volt/server/rack/component_files'
 require 'volt/server/rack/asset_files'
 
 class ComponentHandler
@@ -18,8 +17,8 @@ class ComponentHandler
 
     code = ''
   
-    component_files = AssetFiles.new(component_name, @component_paths)
-    component_files.component_paths.each do |component_path, component_name|
+    asset_files = AssetFiles.new(component_name, @component_paths)
+    asset_files.component_paths.each do |component_path, component_name|
       code << ComponentTemplates.new(component_path, component_name).code
       code << "\n\n"
     end
