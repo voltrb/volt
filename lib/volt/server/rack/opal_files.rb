@@ -5,8 +5,10 @@ class OpalFiles
   attr_reader :environment
   
   def initialize(builder, app_path, component_paths)
-    ::Opal::Processor.source_map_enabled = Volt.source_maps?
-    # Opal::Processor.arity_check_enabled = true
+    Opal::Processor.source_map_enabled = Volt.source_maps?
+    
+    # Don't run arity checks in production
+    # Opal::Processor.arity_check_enabled = !Volt.env.production?
     # Opal::Processor.dynamic_require_severity = :raise
 
     @component_paths = component_paths

@@ -91,9 +91,9 @@ class AttributeBinding < BaseBinding
     # aren't responsible for it being there.
     case @attribute_name
     when 'value'
-      element.off('input.attrbind')
+      element.off('input.attrbind', nil)
     when 'checked'
-      element.off('change.attrbind')
+      element.off('change.attrbind', nil)
     end
     
     if @update_listener

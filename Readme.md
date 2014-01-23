@@ -68,6 +68,8 @@ You can access the volt console with:
     3. [Each Binding](#each-binding)
     4. [Attribute Bindings](#attribute-bindings)
 2. [Models](#models)
+  1. [Reactive Models](#reactive-models)
+  2. [Model Events](#model-events)
 3. [Components](#components)
   1. [Assets](#assets)
   2. [Component Generator](#component-generator)
@@ -324,6 +326,25 @@ Above I mentioned that Volt comes with many different models accessable from a c
 ## Reactive Models
 
 Because all models provided by Volt are wrapped in a ReactiveValue, you can register listeners on them and be updated when values change.  You can also call methods on their values and get updates when the source's change.  Bindings also setup listeners.  Models should be the main place you store all data in Volt.  While you can use ReactiveValue's manually, most of the time you will want to just use something like the page model.
+
+## Model Events
+
+Models trigger events when their data is updated.  Currently models emit three events: changed, added, and removed.  For example:
+
+    model = Model.new
+    
+    model._name.on('changed') { puts 'name changed' }
+    model._name = 'Ryan'
+    # => name changed
+    
+    model._items.on('added') { puts 'item added' }
+    model._items << 1
+    # => item added
+
+    model._items.on('removed') { puts 'item removed' }
+    model._items.delete_at(0)
+    # => item removed
+
 
 # Controllers
 
