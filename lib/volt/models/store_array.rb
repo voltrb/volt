@@ -7,16 +7,24 @@ class StoreArray < ArrayModel
   
   def event_added(event, scope_provider, first) 
     puts "New event: #{event.inspect} - #{first}"   
-    if event == :added && first
+    if first && [:added, :removed].include?(event)
       # Start listening for added items on the collection
       
       change_channel_connection('add')
     end
   end
   
-  def change_channel_connection(add_or_remove)
+  def event_removed(event, no_more_events)
+    if no_more_events && [:added, :removed].include?(event)
+      # Stop listening
+      change_channel_connection("remove", event)
+    end
+  end
+  
+  
+  def change_channel_connection(add_or_remove, event)
     if parent.attributes && path.size != 0
-      channel_name = "#{path[-1]}"
+      channel_name = "#{path[-1]}-#{event}"
       puts "Listen on #{channel_name}"
       @tasks.call('ChannelTasks', "#{add_or_remove}_listener", channel_name)
     end    
