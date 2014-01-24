@@ -2,14 +2,12 @@ class ChannelTasks
   @@listeners = {}
   @@channel_listeners = {}
   
-  def initialize(channel, dispatcher)
+  # The dispatcher passes its self in
+  def initialize(channel, dispatcher=nil)
     @channel = channel
-    @dispatcher = dispatcher
   end
   
   def add_listener(channel_name)
-    puts "ADD LIST: #{channel_name}"
-    
     # Track every channel that is listening
     @@listeners[channel_name] ||= []
     @@listeners[channel_name] << @channel
@@ -23,7 +21,9 @@ class ChannelTasks
   def remove_listener(channel_name)
     if @@listeners[channel_name]
       @@listeners[channel_name].delete(@channel)
-      @@channel_listeners[@channel].delete(channel_name)
+      if @@channel_listeners[@channel]
+        @@channel_listeners[@channel].delete(channel_name)
+      end
     end
   end
   
@@ -31,7 +31,6 @@ class ChannelTasks
   # all channels.
   def close!
     channel_names = @@channel_listeners.delete(@channel)
-    puts "REMOVE: #{channel_names.inspect}"
     
     if channel_names
       channel_names.each_pair do |channel_name,val|
@@ -40,7 +39,7 @@ class ChannelTasks
     end
   end
   
-  def self.send_message_to_channel(channel_name, message, skip_channel)
+  def self.send_message_to_channel(channel_name, message, skip_channel=nil)
     listeners = @@listeners[channel_name]
     
     if listeners

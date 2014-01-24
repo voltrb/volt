@@ -6,7 +6,7 @@ require 'volt/tasks/dispatcher'
 
 # Behaves the same as the Channel class, only the Channel class uses
 # sockjs to pass messages to the backend.  ChannelStub, simply passes
-# them directly to ChannelHandlerStub.
+# them directly to SocketConnectionHandlerStub.
 class ChannelStub
   include ReactiveTags
 
@@ -29,7 +29,7 @@ class ChannelStub
     destructive!
   end
   def send_message(message)
-    SocketConnectionHandlerStub.new(self).process_message(message)
+    ChannelHandlerStub.new(self).process_message(message)
   end
   
   def close!
