@@ -1,4 +1,4 @@
-class ChannelHandlerStub
+class SocketConnectionHandlerStub
   def self.dispatcher=(val)
     @@dispatcher = val
   end
