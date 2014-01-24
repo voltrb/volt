@@ -3,48 +3,6 @@
 # 
 # describe Model do
 #   
-#   describe "model paths" do
-#     before do
-#       @model = ReactiveValue.new(Model.new)      
-#     end
-#     
-#     it "should set the model path" do
-#       @model._object._name = 'Test'
-#       @model._object.path.cur.should == ['_object']
-#     end
-#     
-#     it "should set the model path for a sub array" do
-#       @model._items << {_name: 'Bob'}
-#       @model._items.path.cur.should == ['_items']
-#       @model._items[0].path.cur.should == ['_items', '[]']
-#     end
-#     
-#     it "should set the model path for sub sub arrays" do
-#       @model._lists << {_name: 'List 1', _items: []}
-#       @model._lists[0]._items.path.cur.should == ['_lists', '[]', '_items']
-#     end
-#   end
-#   
-#   
-#   describe "paths" do
-#     before do
-#       @model = ReactiveValue.new(Model.new({}, nil, 'model'))
-#     end
-#     
-#     it "should track paths" do
-#       @model._test.path.cur.should == ['model', '_test']
-#     end
-#     
-#     it "should track nested paths" do
-#       @model._test._blue.path.cur.should == ['model', '_test', '_blue']
-#     end
-#     
-#     it "should track paths with array lookup's" do
-#       @model._test._green << {}
-#       @model._test._green.path.cur.should == ['model', '_test', '_green']
-#       @model._test._green[0].path.cur.should == ['model', '_test', '_green', '[]']
-#     end
-#   end
 #   
 #   describe "user models" do
 #     class User < Model

@@ -411,4 +411,27 @@ describe Model do
     expect(count2).to eq(2)
     
   end
+  
+  
+  describe "model paths" do
+    before do
+      @model = ReactiveValue.new(Model.new)      
+    end
+    
+    it "should set the model path" do
+      @model._object._name = 'Test'
+      expect(@model._object.path.cur).to eq([:_object])
+    end
+    
+    it "should set the model path for a sub array" do
+      @model._items << {_name: 'Bob'}
+      expect(@model._items.path.cur).to eq([:_items])
+      expect(@model._items[0].path.cur).to eq([:_items, :[]])
+    end
+    
+    it "should set the model path for sub sub arrays" do
+      @model._lists << {_name: 'List 1', _items: []}
+      expect(@model._lists[0]._items.path.cur).to eq([:_lists, :[], :_items])
+    end
+  end
 end

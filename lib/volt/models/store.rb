@@ -36,6 +36,7 @@ class Store < Model
   def change_channel_connection(add_or_remove)
     if attributes && path.size > 1
       channel_name = "#{path[-2]}##{attributes[:_id]}"
+      puts "Event Added: #{channel_name} -- #{attributes.inspect}"
       @tasks.call('ChannelTasks', "#{add_or_remove}_listener", channel_name)
     end    
   end
@@ -164,6 +165,31 @@ class Store < Model
       end
       $loading_models = false
     end
+  end
+  
+  # When called, this model is deleted from its current parent collection
+  # and from the database
+  def delete!
+    if path.size == 0
+      raise "Not in a collection"
+    end
+    
+    # TEMP: Find this model in the parent's collection
+    parent.each_with_index do |child,index|
+      if child == self
+        parent.delete_at(index)
+        break
+      end
+    end
+
+    # Send to the DB that we got deleted
+    id = "#{collection}##{attributes[:_id]}"
+    puts "delete #{id}"
+    @tasks.call('StoreTasks', 'delete', id)
+  end
+  
+  def inspect
+    "<#{self.class.to_s}-#{@state} #{attributes.inspect}>"
   end
   
   def new_model(attributes={}, parent=nil, path=nil, class_paths=nil)

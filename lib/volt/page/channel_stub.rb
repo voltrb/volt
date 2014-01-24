@@ -29,7 +29,7 @@ class ChannelStub
     destructive!
   end
   def send_message(message)
-    ChannelHandlerStub.new(self).process_message(message)
+    SocketConnectionHandlerStub.new(self).process_message(message)
   end
   
   def close!

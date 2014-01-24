@@ -16,28 +16,32 @@ class StoreTasks
   
   def save(collection, data)
     puts "Insert: #{data.inspect} on #{collection.inspect}"
+    
+    data = data.symbolize_keys
+    id = data[:_id]
+
     # Try to create
     # TODO: Seems mongo is dumb and doesn't let you upsert with custom id's
     begin
       @@db[collection].insert(data)
-      id = {'_id' => data.delete('_id')}
       
       # Message that we inserted a new item
-      ChannelTasks.send_message_to_channel("#{collection}", ['added', nil, collection, data.merge('_id' => id).symbolize_keys], @channel)
+      puts "SENDING DATA: #{data.inspect}"
+      ChannelTasks.send_message_to_channel("#{collection}-added", ['added', nil, collection, data], @channel)
     rescue Mongo::OperationFailure => error
       # Really mongo client?
       if error.message[/^11000[:]/]
         # Update because the id already exists
-        id = {'_id' => data.delete('_id')}
-        @@db[collection].update(id, data)
+        update_data = data.dup
+        update_data.delete(:_id)
+        @@db[collection].update({:_id => id}, update_data)
       else
         raise
       end
     end
     
-    id = id['_id']
 
-    ChannelTasks.send_message_to_channel("#{collection}##{id}", ['changed', nil, id, data.merge('_id' => id).symbolize_keys], @channel)
+    ChannelTasks.send_message_to_channel("#{collection}##{id}", ['changed', nil, id, data], @channel)
   end
   
   def find(collection, scope, query=nil)
@@ -45,5 +49,9 @@ class StoreTasks
     puts "FIND: #{collection.inspect} - #{scope} - #{results.inspect}"
     
     return results
+  end
+  
+  def delete(id)
+    puts "DELETE: #{id.inspect}"
   end
 end

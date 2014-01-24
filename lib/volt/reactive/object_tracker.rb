@@ -36,6 +36,7 @@ class ObjectTracker
   
   def queue_update
     @@queue[self] = true
+    # self.class.process_queue
   end
   
   # Run through the queue and update the followers for each
