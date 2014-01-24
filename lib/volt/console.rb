@@ -12,9 +12,9 @@ class Console
     require 'volt'
     require 'volt/page/page'
     require 'volt/server/rack/component_paths'
-    require 'volt/server/channel_handler_stub'
+    require 'volt/server/socket_connection_handler_stub'
     
-    ChannelHandlerStub.dispatcher = Dispatcher.new
+    SocketConnectionHandlerStub.dispatcher = Dispatcher.new
     
         
     app_path = File.expand_path(File.join(Dir.pwd, "app"))

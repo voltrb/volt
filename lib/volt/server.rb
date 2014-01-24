@@ -13,7 +13,7 @@ require 'listen'
 require 'volt/extra_core/extra_core'
 require 'volt/server/component_handler'
 if RUBY_PLATFORM != 'java'
-  require 'volt/server/channel_handler'
+  require 'volt/server/socket_connection_handler'
 end
 require 'volt/server/rack/component_paths'
 require 'volt/server/rack/index_files'
@@ -58,7 +58,7 @@ class Server
   def setup_change_listener
     # Setup the listeners for file changes
     listener = Listen.to("#{@app_path}/") do |modified, added, removed|
-      ChannelHandler.send_message_all(nil, 'reload')
+      SocketConnectionHandler.send_message_all(nil, 'reload')
     end
     listener.start
   end
@@ -94,10 +94,10 @@ class Server
     # Handle socks js connection
     if RUBY_PLATFORM != 'java'
       component_paths.setup_components_load_path
-      ChannelHandler.dispatcher = Dispatcher.new
+      SocketConnectionHandler.dispatcher = Dispatcher.new
       
       @app.map "/channel" do
-        run Rack::SockJS.new(ChannelHandler)#, :websocket => false
+        run Rack::SockJS.new(SocketConnectionHandler)#, :websocket => false
       end
     end
     
