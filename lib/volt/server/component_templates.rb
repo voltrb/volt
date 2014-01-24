@@ -15,7 +15,7 @@ class ComponentTemplates
     views_path = "#{@component_path}/views/"
 
     # Load all templates in the folder
-    Dir["#{views_path}*/*.html"].each do |view_path|
+    Dir["#{views_path}*/*.html"].sort.each do |view_path|
       # Get the path for the template, supports templates in folders
       template_path = view_path[views_path.size..((-1 * ('.html'.size + 1)))]
       template_path = "#{@component_name}/#{template_path}"
@@ -45,7 +45,7 @@ class ComponentTemplates
     code = ''
     controllers_path = "#{@component_path}/controllers/"
 
-    Dir["#{controllers_path}*_controller.rb"].each do |controller_path|
+    Dir["#{controllers_path}*_controller.rb"].sort.each do |controller_path|
       code << File.read(controller_path) + "\n\n"
     end
 
@@ -56,7 +56,7 @@ class ComponentTemplates
     code = ''
     models_path = "#{@component_path}/models/"
 
-    Dir["#{models_path}*.rb"].each do |model_path|
+    Dir["#{models_path}*.rb"].sort.each do |model_path|
       code << File.read(model_path) + "\n\n"
       
       model_name = model_path.match(/([^\/]+)[.]rb$/)[1]

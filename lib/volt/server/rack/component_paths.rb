@@ -34,7 +34,7 @@ class ComponentPaths
     
     @components = {}
     app_folders do |app_folder|
-      Dir["#{app_folder}/*"].each do |folder|
+      Dir["#{app_folder}/*"].sort.each do |folder|
         if File.directory?(folder)
           folder_name = folder[/[^\/]+$/]
           
@@ -51,7 +51,7 @@ class ComponentPaths
   def setup_components_load_path
     components.each do |name,component_folders|
       component_folders.each do |component_folder|
-        Dir["#{component_folder}/tasks"].each do |tasks_folder|
+        Dir["#{component_folder}/tasks"].sort.each do |tasks_folder|
           $LOAD_PATH.unshift(tasks_folder)
         end
       end
@@ -73,7 +73,7 @@ class ComponentPaths
   def asset_folders
     folders = []
     app_folders do |app_folder|
-      Dir["#{app_folder}/*/assets"].each do |asset_folder|
+      Dir["#{app_folder}/*/assets"].sort.each do |asset_folder|
         folders << yield(asset_folder)
       end
     end

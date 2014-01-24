@@ -70,7 +70,7 @@ class AssetFiles
     @assets.each do |type, path|
       case type
       when :folder
-        javascript_files += Dir["#{path}/**/*.js"].map {|folder| '/assets' + folder[path.size..-1] }
+        javascript_files += Dir["#{path}/**/*.js"].sort.map {|folder| '/assets' + folder[path.size..-1] }
       when :javascript_file
         javascript_files << path
       end
@@ -94,7 +94,7 @@ class AssetFiles
     @assets.each do |type, path|
       case type
       when :folder
-        css_files += Dir["#{path}/**/*.{css,scss}"].map {|folder| '/assets' + folder[path.size..-1].gsub(/[.]scss$/, '') }
+        css_files += Dir["#{path}/**/*.{css,scss}"].sort.map {|folder| '/assets' + folder[path.size..-1].gsub(/[.]scss$/, '') }
       when :css_file
         css_files << path
       end
