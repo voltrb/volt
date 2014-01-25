@@ -17,6 +17,10 @@ class Store < Model
     
     value_updated
   end
+  
+  def self.from_id(id)
+    @@identity_map[id]
+  end
 
   def event_added(event, scope_provider, first)
     if first && event == :changed
@@ -122,50 +126,24 @@ class Store < Model
   # On stores, we store the model so we don't have to look it up
   # every time we do a read.
   def read_new_model(method_name)
-    model = new_model(nil, self, path + [method_name])
+    # On stores, plural associations are automatically assumed to be
+    # collections.
+    if method_name.plural?
+      model = new_array_model([], self, path + [method_name])
+    else
+      model = new_model(nil, self, path + [method_name])
+    end
     
     self.attributes ||= {}
     attributes[method_name] = model
     
-    if model.state == :not_loaded
+    if model.is_a?(StoreArray)# && model.state == :not_loaded
       model.load!
     end
     
     return model
   end
-  
-  def load!
-    if @state == :not_loaded
-      @state = :loading
-    
-      if @tasks && path.last.plural?
-        # Check to see the parents scope so we can only lookup associated
-        # models.
-        scope = {}
-      
-        # Scope to the parent
-        if path.size > 2 && (attrs = parent.attributes) && attrs[:_id].true?
-          scope[:"#{path[-3].singularize}_id"] = parent._id
-        end
-        
-        load_child_models(scope)
-      end
-    end
-    
-    return self
-  end
-  
-  def load_child_models(scope)
-    # puts "FIND: #{collection(path).inspect} at #{scope.inspect}"
-    @tasks.call('StoreTasks', 'find', collection(path), scope) do |results|
-      # TODO: Globals evil, replace
-      $loading_models = true
-      results.each do |result|
-        self << Store.new(@tasks, result, self, path + [:[]], @class_paths)
-      end
-      $loading_models = false
-    end
-  end
+
   
   # When called, this model is deleted from its current parent collection
   # and from the database
@@ -176,16 +154,19 @@ class Store < Model
     
     # TEMP: Find this model in the parent's collection
     parent.each_with_index do |child,index|
-      if child == self
+      puts "CHECK #{child.inspect} vs #{self.inspect}"
+      if child._id == self._id
+        puts "FOUND AT: #{index}"
         parent.delete_at(index)
         break
       end
     end
 
     # Send to the DB that we got deleted
-    id = "#{collection}##{attributes[:_id]}"
-    puts "delete #{id}"
-    @tasks.call('StoreTasks', 'delete', id)
+    unless $loading_models
+      puts "delete #{collection} - #{attributes[:_id]}"
+      @tasks.call('StoreTasks', 'delete', collection, attributes[:_id])
+    end
   end
   
   def inspect

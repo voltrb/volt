@@ -100,6 +100,14 @@ end
 module Events
   # Add a listener for an event
   def on(event, scope_provider=nil, &block) 
+
+    
+    # if reactive? && [:added, :removed].include?(event)
+    #   self.object_tracker.queue_update
+    #   ObjectTracker.process_queue
+    # end
+
+
     # puts "Register: #{event} on #{self.inspect}"   
     event = event.to_sym
     

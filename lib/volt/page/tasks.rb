@@ -35,6 +35,8 @@ class Tasks
       changed(*args)
     when 'added'
       added(*args)
+    when 'removed'
+      removed(*args)
     when 'reload'
       reload
     end
@@ -59,6 +61,12 @@ class Tasks
     $loading_models = true
     puts "Add: #{path.inspect} - #{data.inspect}"
     $page.store.send(path) << data
+    $loading_models = false
+  end
+  
+  def removed(id)
+    $loading_models = true
+    Store.from_id(id).delete!
     $loading_models = false
   end
   

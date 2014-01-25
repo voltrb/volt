@@ -291,7 +291,7 @@ describe Model do
     # expect(changed_count).to eq(1)
   end
   
-  it "should handle a basic todo list exvoltle with no setup" do
+  it "should handle a basic todo list with no setup" do
     store = ReactiveValue.new(Model.new)
     params = ReactiveValue.new(Params.new)
     
@@ -409,6 +409,10 @@ describe Model do
     b._complete = false
     expect(count1).to eq(2)
     expect(count2).to eq(2)
+    
+  end
+  
+  it "should set its self to be " do
     
   end
   

@@ -35,8 +35,8 @@ class ObjectTracker
   end
   
   def queue_update
+    # puts "Queue: #{@main_object.inspect}"
     @@queue[self] = true
-    self.class.process_queue
   end
   
   # Run through the queue and update the followers for each

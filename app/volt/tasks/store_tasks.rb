@@ -51,7 +51,10 @@ class StoreTasks
     return results
   end
   
-  def delete(id)
-    puts "DELETE: #{id.inspect}"
+  def delete(collection, id)
+    puts "DELETE: #{collection.inspect} - #{id.inspect}"
+    @@db[collection].remove('_id' => id)
+    
+    ChannelTasks.send_message_to_channel("#{collection}-removed", ['removed', nil, id], @channel)
   end
 end
