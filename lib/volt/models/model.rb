@@ -32,11 +32,14 @@ class Model
     attributes.true?
   end
   
-  def initialize(attributes={}, parent=nil, path=nil, class_paths=nil, persistor=nil)
-    @parent = parent
-    @path = path || []
+  def initialize(attributes={}, options={})
+    @options = options
+    @parent = options[:parent]
+    @path = options[:path] || []
+    @class_paths = options[:class_paths]
+    @persistor = options[:persistor]
+    
     self.attributes = wrap_values(attributes)
-    @persistor = persistor
   end
   
   # Pass the comparison through
@@ -113,7 +116,7 @@ class Model
 
   # Get a new model, make it easy to override
   def read_new_model(method_name)
-    return new_model(nil, self, path + [method_name])
+    return new_model(nil, @options.merge(parent: self, path: path + [method_name]))
   end
   
   def return_undefined_method(method_name)
@@ -177,7 +180,7 @@ class Model
     
     if result.nil?
       # If this isn't a model yet, instantiate it
-      @parent.send(:"#{path}=", new_array_model([], @parent, @path))
+      @parent.send(:"#{path}=", new_array_model([], @options))
       result = @parent.send(path)
     end
 

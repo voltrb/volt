@@ -3,9 +3,9 @@ module ModelWrapper
   # model.
   def wrap_value(value, lookup)
     if value.cur.is_a?(Array)
-      value = new_array_model(value, self, path + lookup)
+      value = new_array_model(value, @options.merge(parent: self, path: path + lookup))
     elsif value.cur.is_a?(Hash)
-      value = new_model(value, self, path + lookup)
+      value = new_model(value, @options.merge(parent: self, path: path + lookup))
     end
     
     return value

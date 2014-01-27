@@ -5,9 +5,10 @@ class ArrayModel < ReactiveArray
   
   attr_reader :parent, :path
 
-  def initialize(array=[], parent=nil, path=nil)
-    @parent = parent
-    @path = path || []
+  def initialize(array=[], options={})
+    @options = options
+    @parent = options[:parent]
+    @path = options[:path] || []
     
     array = wrap_values(array)
     
