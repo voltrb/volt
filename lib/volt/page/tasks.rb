@@ -53,7 +53,7 @@ class Tasks
   def changed(model_id, data)
     $loading_models = true
     puts "UPDATE: #{model_id} with #{data.inspect}"
-    Store.update(model_id, data)
+    Persistors::ModelStore.update(model_id, data)
     $loading_models = false
   end
   

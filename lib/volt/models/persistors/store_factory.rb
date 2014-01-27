@@ -5,7 +5,11 @@ module Persistors
     end
     
     def new(model)
-      Store.new(model, @tasks)
+      if model.is_a?(ArrayModel)
+        ArrayStore.new(model, @tasks)
+      else
+        ModelStore.new(model, @tasks)
+      end
     end
   end
 end
