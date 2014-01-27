@@ -61,7 +61,7 @@ class Model
     trigger_by_attribute!('changed', args[0])
     
     # Let the persistor know something changed
-    @persistor.deleted(attribute_name) if @persistor
+    @persistor.deleted(args[0]) if @persistor
   end
   
   tag_all_methods do
