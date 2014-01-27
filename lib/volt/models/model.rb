@@ -32,10 +32,11 @@ class Model
     attributes.true?
   end
   
-  def initialize(attributes={}, parent=nil, path=nil, class_paths=nil)
+  def initialize(attributes={}, parent=nil, path=nil, class_paths=nil, persistor=nil)
     @parent = parent
     @path = path || []
     self.attributes = wrap_values(attributes)
+    @persistor = persistor
   end
   
   # Pass the comparison through
