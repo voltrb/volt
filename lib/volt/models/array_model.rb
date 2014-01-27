@@ -3,7 +3,7 @@ require 'volt/models/model_wrapper'
 class ArrayModel < ReactiveArray
   include ModelWrapper
   
-  attr_reader :parent, :path
+  attr_reader :parent, :path, :persistor
 
   def initialize(array=[], options={})
     @options = options
