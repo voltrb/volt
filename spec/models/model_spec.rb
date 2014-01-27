@@ -293,7 +293,7 @@ describe Model do
   
   it "should handle a basic todo list with no setup" do
     store = ReactiveValue.new(Model.new)
-    params = ReactiveValue.new(Params.new)
+    params = ReactiveValue.new(Model.new({}, persistor: Persistors::Params))
     
     a = store._todo_lists
     store._current_todo = store._todo_lists[params._index.or(0).to_i]
@@ -436,6 +436,14 @@ describe Model do
     it "should set the model path for sub sub arrays" do
       @model._lists << {_name: 'List 1', _items: []}
       expect(@model._lists[0]._items.path.cur).to eq([:_lists, :[], :_items])
+    end
+  end
+  
+  describe "persistors" do
+    it "should setup a new instance of the persistor with self" do
+      persistor = double('persistor')
+      expect(persistor).to receive(:new)
+      @model = Model.new(nil, persistor: persistor)
     end
   end
 end

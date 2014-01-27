@@ -8,7 +8,8 @@ class URL
   
   def initialize(router=nil)
     @router = router
-    @params = Params.new({}, 'params')
+    @params = Model.new({}, persistor: Persistors::Params)
+    #Params.new({}, 'params')
   end
   
   # Parse takes in a url and extracts each sections.

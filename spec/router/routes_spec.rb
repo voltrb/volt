@@ -8,7 +8,7 @@ end
 
 describe Routes do
   it "should match routes" do
-    params = Params.new
+    params = Model.new({}, persistor: Persistors::Params)
     params._controller = 'blog'
     params._index = '5'
     

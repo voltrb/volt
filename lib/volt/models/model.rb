@@ -18,7 +18,7 @@ class Model
   include ObjectTracking
   
   attr_accessor :attributes
-  attr_reader :parent, :path
+  attr_reader :parent, :path, :persistor
   
   def nil?
     attributes.nil?
@@ -37,7 +37,7 @@ class Model
     @parent = options[:parent]
     @path = options[:path] || []
     @class_paths = options[:class_paths]
-    @persistor = options[:persistor]
+    @persistor = setup_persistor(options[:persistor])
     
     self.attributes = wrap_values(attributes)
   end
@@ -59,6 +59,9 @@ class Model
     __clear_element(args[0])
     attributes.delete(*args)
     trigger_by_attribute!('changed', args[0])
+    
+    # Let the persistor know something changed
+    @persistor.deleted(attribute_name) if @persistor
   end
   
   tag_all_methods do
@@ -92,6 +95,9 @@ class Model
     
     attributes[attribute_name] = wrap_value(value, [attribute_name])
     trigger_by_attribute!('changed', attribute_name)
+    
+    # Let the persistor know something changed
+    @persistor.changed(attribute_name) if @persistor
   end
   
   # When reading an attribute, we need to handle reading on:
@@ -172,7 +178,11 @@ class Model
   end
   # Initialize an empty array and append to it
   def <<(value)
-    @parent.expand!
+    if @parent
+      @parent.expand!
+    else
+      raise "Model data should be stored in sub collections."
+    end
 
     # Grab the last section of the path, so we can do the assign on the parent
     path = @path.last
@@ -218,4 +228,12 @@ class Model
         trigger_by_attribute!(event, key, *args)
       end
     end
+    
+    # Takes the persistor if there is one and
+    def setup_persistor(persistor)
+      if persistor
+        @persistor = persistor.new(self)
+      end
+    end
+    
 end

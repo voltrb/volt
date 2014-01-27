@@ -9,6 +9,7 @@ class ArrayModel < ReactiveArray
     @options = options
     @parent = options[:parent]
     @path = options[:path] || []
+    @persistor = setup_persistor(options[:persistor])
     
     array = wrap_values(array)
     
@@ -24,6 +25,8 @@ class ArrayModel < ReactiveArray
     args = wrap_values(args)
     
     super(*args)
+    
+    @persistor.added() if @persistor
   end
   
   # Make sure it gets wrapped
@@ -45,4 +48,12 @@ class ArrayModel < ReactiveArray
   def new_array_model(*args)
     ArrayModel.new(*args)
   end
+  
+  private
+    # Takes the persistor if there is one and
+    def setup_persistor(persistor)
+      if persistor
+        @persistor = persistor.new(self)
+      end
+    end
 end
