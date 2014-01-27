@@ -1,4 +1,8 @@
 require 'volt/server/rack/source_map_server'
+if Volt.env.production?
+  # Compress assets in production
+  require 'uglifier'
+end
 
 # Sets up the maps for the opal assets, and source maps if enabled.
 class OpalFiles
@@ -19,6 +23,12 @@ class OpalFiles
     environment = @environment
     
     environment.cache = Sprockets::Cache::FileStore.new("./tmp")
+    
+    if Volt.env.production?
+      # Compress in production
+      environment.js_compressor = Sprockets::UglifierCompressor
+      environment.css_compressor = Sprockets::YUICompressor
+    end
   
     environment.append_path(app_path)
   

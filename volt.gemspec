@@ -33,6 +33,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency "oj", "~> 2.5.0"
   spec.add_dependency "rake", "~> 10.0.4"
   spec.add_dependency "listen", "~> 2.4.0"
+  spec.add_dependency "uglifier", "~> 2.4.0"
+  spec.add_dependency "yui-compressor", "~> 0.12.0"
   # spec.add_dependency "rack-colorized_logger", "~> 1.0.4"
 
 
