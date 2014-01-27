@@ -65,7 +65,7 @@ class StoreArray < ArrayModel
   end
   
   def change_channel_connection(add_or_remove, event)
-    if parent.attributes && path.size != 0
+    if @tasks && parent.attributes && path.size != 0
       channel_name = "#{path[-1]}-#{event}"
       puts "Listen on #{channel_name} - #{add_or_remove}"
       @tasks.call('ChannelTasks', "#{add_or_remove}_listener", channel_name)
