@@ -4,7 +4,6 @@ if RUBY_PLATFORM == 'opal'
   require 'opal-jquery'
 end
 require 'volt/models'
-require 'volt/models/params'
 require 'volt/controllers/model_controller'
 require 'volt/page/bindings/attribute_binding'
 require 'volt/page/bindings/content_binding'

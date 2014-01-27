@@ -26,7 +26,7 @@ class ArrayModel < ReactiveArray
     
     super(*args)
     
-    @persistor.added() if @persistor
+    @persistor.added(args[0]) if @persistor
   end
   
   # Make sure it gets wrapped

@@ -10,7 +10,7 @@ module Persistors
       puts "Model Changed to: #{@model.attributes} on #{attribute_name}"
     end
     
-    def added
+    def added(model)
       puts "Added"
     end
   end
