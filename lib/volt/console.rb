@@ -7,7 +7,6 @@ class Console
 
     require 'volt/extra_core/extra_core'
     require 'volt/models'
-    require 'volt/models/params'
     require 'volt/server/template_parser'
     require 'volt'
     require 'volt/page/page'

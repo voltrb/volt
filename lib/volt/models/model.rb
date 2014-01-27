@@ -18,7 +18,7 @@ class Model
   include ObjectTracking
   
   attr_accessor :attributes
-  attr_reader :parent, :path, :persistor
+  attr_reader :parent, :path, :persistor, :options
   
   def nil?
     attributes.nil?
@@ -38,8 +38,10 @@ class Model
     @path = options[:path] || []
     @class_paths = options[:class_paths]
     @persistor = setup_persistor(options[:persistor])
-    
+
     self.attributes = wrap_values(attributes)
+    
+    @persistor.loaded if @persistor
   end
   
   # Pass the comparison through
@@ -51,6 +53,17 @@ class Model
   def !
     !attributes
   end
+  
+  # Pass to the persisotr
+  def event_added(event, scope_provider, first)
+    @persistor.event_added(event, scope_provider, first) if @persistor
+  end
+  
+  # Pass to the persistor
+  def event_removed(event, no_more_events)
+    @persistor.event_removed(event, no_more_events) if @persistor
+  end
+  
   
   tag_method(:delete) do
     destructive!
@@ -122,7 +135,11 @@ class Model
 
   # Get a new model, make it easy to override
   def read_new_model(method_name)
-    return new_model(nil, @options.merge(parent: self, path: path + [method_name]))
+    if @persistor && @persistor.respond_to?(:read_new_model)
+      @persistor.read_new_model(method_name)
+    else
+      return new_model(nil, @options.merge(parent: self, path: path + [method_name]))
+    end
   end
   
   def return_undefined_method(method_name)

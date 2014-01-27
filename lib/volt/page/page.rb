@@ -41,8 +41,8 @@ class Page
     @model_classes = {}
     
     # Run the code to setup the page
-    @page = ReactiveValue.new(Model.new)#({}, nil, 'page', @model_classes))
-    @store = ReactiveValue.new(Model.new)#({}, nil, 'store', @model_classes))
+    @page = ReactiveValue.new(Model.new)
+    @store = ReactiveValue.new(Model.new({}, persistor: Persistors::StoreFactory.new(tasks)))
     
     @url = ReactiveValue.new(URL.new)
     @params = @url.params
