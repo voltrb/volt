@@ -1,5 +1,6 @@
 class IndexController < ModelController
+  model :page
+
   def initialize
-    @model = page
   end
 end
