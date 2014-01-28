@@ -17,8 +17,8 @@ class EachBinding < BaseBinding
     # Run the initial render
     update
 
-    @added_listener = @value.on('added') { |_, position, item| puts "ADDED" ; item_added(position) }
-    @changed_listener = @value.on('changed') { puts "CHANGED" ; reload }
+    @added_listener = @value.on('added') { |_, position, item| item_added(position) }
+    @changed_listener = @value.on('changed') { reload }
     @removed_listener = @value.on('removed') { |_, position| item_removed(position) }
   end
   

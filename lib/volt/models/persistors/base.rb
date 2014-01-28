@@ -4,15 +4,15 @@ module Persistors
     def loaded
     end
     
-    # For deleted, the default action is to call changed for it
-    def deleted(attribute_name)
-      changed(attribute_name)
-    end
-    
     def changed(attribute_name)
     end
     
     def added(model)
+    end
+    
+    # For removed, the default action is to call changed for it
+    def removed(attribute_name)
+      changed(attribute_name)
     end
     
     def event_added(event, scope_provider, first)

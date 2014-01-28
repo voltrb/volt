@@ -57,21 +57,32 @@ class Tasks
   
   def changed(model_id, data)
     $loading_models = true
-    puts "UPDATE: #{model_id} with #{data.inspect}"
+    puts "From Backend: UPDATE: #{model_id} with #{data.inspect}"
     Persistors::ModelStore.update(model_id, data)
     $loading_models = false
   end
   
   def added(path, data)
     $loading_models = true
-    puts "Add: #{path.inspect} - #{data.inspect}"
-    $page.store.send(path) << data
+    
+    _, parent_id = data.find {|k,v| k != :_id && k[-3..-1] == '_id'}
+    if parent_id
+      parent_collection = Persistors::ModelStore.from_id(parent_id).model
+    else
+      # On the root
+      parent_collection = $page.store
+    end
+    
+    puts "From Backend: Add: #{path.inspect} - #{data.inspect}"
+    parent_collection.send(path) << data
     $loading_models = false
   end
   
   def removed(id)
+    puts "From Backend: Remove: #{id}"
     $loading_models = true
-    Store.from_id(id).delete!
+    model = Persistors::ModelStore.from_id(id)
+    model.delete!
     $loading_models = false
   end
   

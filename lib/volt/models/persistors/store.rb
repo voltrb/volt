@@ -9,11 +9,11 @@ module Persistors
     end
   
     def change_channel_connection(add_or_remove, event=nil)
-      if @model.attributes && @model.path.size > 1
-        channel_name = self.channel_name
+      if (@model.attributes && @model.path.size > 1) || @model.is_a?(ArrayModel)
+        channel_name = self.channel_name.to_s
         channel_name += "-#{event}" if event
 
-        puts "Event Added: #{channel_name} -- #{@model.attributes.inspect}"
+        puts "Event #{add_or_remove}: #{channel_name} -- #{@model.attributes.inspect}"
         @tasks.call('ChannelTasks', "#{add_or_remove}_listener", channel_name)
       end
     end
@@ -30,7 +30,7 @@ module Persistors
       else
         model = @model.new_model(nil, options)
       end
-    
+      
       @model.attributes ||= {}
       @model.attributes[method_name] = model
 

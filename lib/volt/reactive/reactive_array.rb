@@ -53,7 +53,7 @@ class ReactiveArray# < Array
     
     __clear_element(index)
     
-    @array.delete_at(index_val)
+    model = @array.delete_at(index_val)
     
     trigger_on_direct_listeners!('removed', index_val)
     
@@ -64,6 +64,19 @@ class ReactiveArray# < Array
     end
     
     trigger_size_change!
+    
+    @persistor.removed(model) if @persistor
+    
+    return model
+  end
+  
+  
+  # Delete is implemented as part of delete_at
+  tag_method(:delete) do
+    destructive!
+  end
+  def delete(val)
+    self.delete_at(@array.index(val))
   end
   
 

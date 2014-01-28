@@ -7,28 +7,31 @@ module Persistors
     @@identity_map = {}
     
     attr_reader :model
-  
-    # Called when an item is added into a collection
-    def loaded
-      # Set the id by default
-      puts "Model: #{@model.inspect} = #{@model.attributes.inspect}"
-      if @model.attributes.is_a?(Hash) && @model.attributes[:_id]
-        ensure_setup
-        changed
-      end
+    
+    def add_to_collection
+      @in_collection = true
+      ensure_setup
+      changed
+    end
+    
+    def remove_from_collection
+      @in_collection = false
+      stop_listening_for_changes
     end
     
     # Called the first time a value is assigned into this model
     def ensure_setup
-      @model.attributes[:_id] ||= generate_id
+      if @model.attributes
+        @model.attributes[:_id] ||= generate_id
 
-      if !model_in_identity_map?
-        @@identity_map[@model.attributes[:_id]] ||= self
-      end
+        if !model_in_identity_map?
+          @@identity_map[@model.attributes[:_id]] ||= self
+        end
 
-      # Check to see if we already have listeners setup
-      if @model.listeners[:changed]
-        listen_for_changes
+        # Check to see if we already have listeners setup
+        if @model.listeners[:changed]
+          listen_for_changes
+        end
       end
     end
     
@@ -46,12 +49,13 @@ module Persistors
     
     # Called when the model changes
     def changed(attribute_name=nil)
+      # puts "CHANGED: #{attribute_name.inspect} - #{@model.inspect}"
       ensure_setup
       
       path_size = @model.path.size
       if !(defined?($loading_models) && $loading_models) && @tasks && path_size > 0 && !@model.nil?      
         if path_size > 3 && (parent = @model.parent) && source = parent.parent
-          self.attributes[:"#{path[-4].singularize}_id"] = source._id
+          @model.attributes[:"#{@model.path[-4].singularize}_id"] = source._id
         end
       
         puts "Save: #{collection} - #{self_attributes.inspect} - #{@model.path.inspect}"
@@ -61,8 +65,10 @@ module Persistors
 
     def listen_for_changes
       unless @change_listening
-        @change_listening = true
-        change_channel_connection("add")
+        if @in_collection
+          @change_listening = true
+          change_channel_connection("add")
+        end
       end
     end
     
@@ -76,6 +82,7 @@ module Persistors
     def event_added(event, scope_provider, first)
       if first && event == :changed
         # Start listening
+        ensure_setup
         listen_for_changes
       end
     end
@@ -91,6 +98,15 @@ module Persistors
        @channel_name ||= "#{@model.path[-2]}##{@model.attributes[:_id]}"
     end
     
+    # Finds the model in its parent collection and deletes it.
+    def delete!
+      if @model.path.size == 0
+        raise "Not in a collection"
+      end
+    
+      @model.parent.delete(@model)
+    end
+    
     # Update the models based on the id/identity map.  Usually these requests
     # will come from the backend.
     def self.update(model_id, data)
@@ -103,6 +119,10 @@ module Persistors
           end
         end
       end
+    end
+    
+    def self.from_id(id)
+      @@identity_map[id]
     end
 
     private

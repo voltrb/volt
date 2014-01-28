@@ -412,8 +412,30 @@ describe Model do
     
   end
   
-  it "should set its self to be " do
+  it "should delete from an ArrayModel" do
+    array = ArrayModel.new([])
     
+    array << {_name: 'One'}
+    array << {_name: 'Two'}
+    array << {_name: 'Three'}
+    
+    expect(array.size).to eq(3)
+
+    expect(array.index(array[0])).to eq(0)
+    
+    array.delete(array[0])
+    expect(array.size).to eq(2)
+    expect(array[0]._name).to eq('Two')
+  end
+  
+  it "should compare true" do
+    a = Model.new({_name: 'Cool'})
+    expect(a == a).to eq(true)
+  end
+  
+  it "should do index" do
+    a = [{name: 'One'}, {name: 'Two'}, {name: 'Three'}]
+    expect(a.index(a[1])).to eq(1)
   end
   
   

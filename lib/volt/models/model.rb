@@ -46,7 +46,13 @@ class Model
   
   # Pass the comparison through
   def ==(val)
-    attributes == val
+    if val.is_a?(Model)
+      # Use normal comparison for a model
+      return super
+    else
+      # Compare to attributes otherwise
+      return attributes == val
+    end
   end
   
   # Pass through needed
@@ -72,9 +78,6 @@ class Model
     __clear_element(args[0])
     attributes.delete(*args)
     trigger_by_attribute!('changed', args[0])
-    
-    # Let the persistor know something changed
-    @persistor.deleted(args[0]) if @persistor
   end
   
   tag_all_methods do
@@ -218,7 +221,7 @@ class Model
   end
   
   def inspect
-    "<#{self.class.to_s} #{attributes.inspect}>"
+    "<#{self.class.to_s}:#{object_id} #{attributes.inspect}>"
   end
   
   

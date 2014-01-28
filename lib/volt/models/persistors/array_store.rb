@@ -8,8 +8,8 @@ module Persistors
       scope = {}
     
       # Scope to the parent
-      if @model.path.size > 1 && (attrs = @model.attributes) && attrs[:_id].true?
-        scope[:"#{path[-2].singularize}_id"] = _id
+      if @model.path.size > 1 && (parent = @model.parent) && (attrs = parent.attributes) && attrs[:_id].true?
+        scope[:"#{@model.path[-3].singularize}_id"] = attrs[:_id]
       end
       
       puts "Load At Scope: #{scope.inspect}"
@@ -25,7 +25,7 @@ module Persistors
         # TODO: Globals evil, replace
         $loading_models = true
         
-        new_options = @model.options.merge(path: @model.path + [:[]])
+        new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
         
         results.each do |result|
           @model << Model.new(result, new_options)
@@ -39,9 +39,31 @@ module Persistors
     end
     
     
+    # When a model is added to this collection, we call its "changed"
+    # method.  This should trigger a save.
+    def added(model)      
+      unless $loading_models
+        model.persistor.changed
+      end
+      
+      if model.persistor
+        # Tell the persistor it was added
+        model.persistor.add_to_collection
+      end
+    end
     
-    def added(model)
-      puts "Added"
+    def removed(model)      
+      if model.persistor
+        # Tell the persistor it was removed
+        model.persistor.remove_from_collection
+      end
+      
+      if $loading_models
+        return
+      else
+        puts "delete #{channel_name} - #{model.attributes[:_id]}"
+        @tasks.call('StoreTasks', 'delete', channel_name, model.attributes[:_id])
+      end
     end
     
   end
