@@ -65,16 +65,21 @@ class Tasks
   def added(path, data)
     $loading_models = true
     
-    _, parent_id = data.find {|k,v| k != :_id && k[-3..-1] == '_id'}
-    if parent_id
-      parent_collection = Persistors::ModelStore.from_id(parent_id).model
-    else
-      # On the root
-      parent_collection = $page.store
-    end
+    # Don't add if already in there
+    # TODO: shouldn't send twice
+    unless Persistors::ModelStore.from_id(data[:_id])
     
-    puts "From Backend: Add: #{path.inspect} - #{data.inspect}"
-    parent_collection.send(path) << data
+      _, parent_id = data.find {|k,v| k != :_id && k[-3..-1] == '_id'}
+      if parent_id
+        parent_collection = Persistors::ModelStore.from_id(parent_id).model
+      else
+        # On the root
+        parent_collection = $page.store
+      end
+    
+      puts "From Backend: Add: #{path.inspect} - #{data.inspect}"
+      parent_collection.send(path) << data
+    end
     $loading_models = false
   end
   

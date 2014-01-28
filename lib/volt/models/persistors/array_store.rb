@@ -7,9 +7,18 @@ module Persistors
     def loaded
       scope = {}
     
+    
+    
       # Scope to the parent
-      if @model.path.size > 1 && (parent = @model.parent) && (attrs = parent.attributes) && attrs[:_id].true?
-        scope[:"#{@model.path[-3].singularize}_id"] = attrs[:_id]
+      if @model.path.size > 1
+        parent = @model.parent
+        
+        parent.persistor.ensure_setup if parent.persistor
+        puts @model.parent.inspect
+        
+        if parent && (attrs = parent.attributes) && attrs[:_id].true?
+          scope[:"#{@model.path[-3].singularize}_id"] = attrs[:_id]
+        end
       end
       
       puts "Load At Scope: #{scope.inspect}"

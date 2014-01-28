@@ -7,7 +7,7 @@ class ChannelTasks
     @channel = channel
   end
   
-  def add_listener(channel_name)
+  def add_listener(channel_name, scope={})
     # Track every channel that is listening
     @@listeners[channel_name] ||= []
     @@listeners[channel_name] << @channel
@@ -18,7 +18,7 @@ class ChannelTasks
     @@channel_listeners[@channel][channel_name] = true
   end
   
-  def remove_listener(channel_name)
+  def remove_listener(channel_name, scope={})
     if @@listeners[channel_name]
       @@listeners[channel_name].delete(@channel)
       if @@channel_listeners[@channel]
