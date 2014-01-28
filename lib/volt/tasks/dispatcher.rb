@@ -14,11 +14,17 @@ class Dispatcher
       klass = Object.send(:const_get, class_name)
       
       # Init and send the method
-      result = klass.new(channel, self).send(method_name, *args)
+      begin
+        result = klass.new(channel, self).send(method_name, *args)
+        error = nil
+      rescue => e
+        result = nil
+        error = e
+      end
       
       if callback_id
         # Callback with result
-        channel.send_message('response', callback_id, result)
+        channel.send_message('response', callback_id, result, error)
       end
     end
   end

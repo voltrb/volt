@@ -82,10 +82,8 @@ class Channel
     destructive!
   end
   def send_message(message)
-    puts "Send #{message.inspect}"
     if @state != :open
       @queue << message
-      puts "Queue"
     else
       # TODO: Temp: wrap message in an array, so we're sure its valid JSON
       message = JSON.dump([message])

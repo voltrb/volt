@@ -7,6 +7,17 @@ module Persistors
       @is_tracking = false
       @tasks = tasks
     end
+  
+    def change_channel_connection(add_or_remove, event=nil)
+      if @model.attributes && @model.path.size > 1
+        channel_name = self.channel_name
+        channel_name += "-#{event}" if event
+
+        puts "Event Added: #{channel_name} -- #{@model.attributes.inspect}"
+        @tasks.call('ChannelTasks', "#{add_or_remove}_listener", channel_name)
+      end
+    end
+    
 
     # On stores, we store the model so we don't have to look it up
     # every time we do a read.
@@ -17,7 +28,7 @@ module Persistors
       if method_name.plural?
         model = @model.new_array_model([], options)
       else
-        model = @model.new_model({}, options)
+        model = @model.new_model(nil, options)
       end
     
       @model.attributes ||= {}

@@ -15,6 +15,9 @@ module Persistors
       puts "Load At Scope: #{scope.inspect}"
       
       query(scope)
+      
+      change_channel_connection('add', 'added')
+      change_channel_connection('add', 'removed')
     end
     
     def query(query)
@@ -30,6 +33,12 @@ module Persistors
         $loading_models = false
       end
     end
+    
+    def channel_name
+      @model.path[-1]
+    end
+    
+    
     
     def added(model)
       puts "Added"

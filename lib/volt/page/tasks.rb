@@ -42,11 +42,16 @@ class Tasks
     end
   end
   
-  def response(callback_id, *args)
+  def response(callback_id, result, error)
     callback = @callbacks.delete(callback_id)
     
     if callback
-      callback.call(*args)
+      if error
+        # TODO: full error handling
+        puts "Error: #{error.inspect}"
+      else
+        callback.call(result)
+      end
     end
   end
   

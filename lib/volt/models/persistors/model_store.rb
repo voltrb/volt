@@ -11,13 +11,30 @@ module Persistors
     # Called when an item is added into a collection
     def loaded
       # Set the id by default
+      puts "Model: #{@model.inspect} = #{@model.attributes.inspect}"
+      if @model.attributes.is_a?(Hash)
+        ensure_setup
+        changed
+      end
+    end
+    
+    # Called the first time a value is assigned into this model
+    def ensure_setup
       @model.attributes[:_id] ||= generate_id
-      @@identity_map[@model.attributes[:_id]] ||= self
-      
+
+      if !model_in_identity_map?
+        @@identity_map[@model.attributes[:_id]] ||= self
+        puts "In Ident: #{@model.attributes[:_id]}"
+      end
+
       # Check to see if we already have listeners setup
       if @model.listeners[:changed]
-        change_channel_connection("add")
+        listen_for_changes
       end
+    end
+    
+    def model_in_identity_map?
+      @@identity_map[@model.attributes[:_id]]
     end
     
     # Create a random unique id that can be used as the mongo id as well
@@ -29,41 +46,54 @@ module Persistors
     end
     
     # Called when the model changes
-    def changed(attribute_name)
+    def changed(attribute_name=nil)
+      ensure_setup
+      
       path_size = @model.path.size
       if !(defined?($loading_models) && $loading_models) && @tasks && path_size > 0 && !@model.nil?      
         if path_size > 3 && (parent = @model.parent) && source = parent.parent
           self.attributes[:"#{path[-4].singularize}_id"] = source._id
         end
       
-        puts "Save: #{collection} - #{self_attributes.inspect}"
+        puts "Save: #{collection} - #{self_attributes.inspect} - #{@model.path.inspect}"
         @tasks.call('StoreTasks', 'save', collection, self_attributes)
       end
     end
 
+    def listen_for_changes
+      unless @change_listening
+        @change_listening = true
+        change_channel_connection("add")
+      end
+    end
+    
+    def stop_listening_for_changes
+      if @change_listening
+        @change_listening = false
+        change_channel_connection("remove")
+      end
+    end
 
     def event_added(event, scope_provider, first)
       if first && event == :changed
         # Start listening
-        change_channel_connection("add")
+        listen_for_changes
       end
     end
   
     def event_removed(event, no_more_events)
       if no_more_events && event == :changed
         # Stop listening
-        change_channel_connection("remove")
+        stop_listening_for_changes
       end
     end
-  
-    def change_channel_connection(add_or_remove)
-      if @model.attributes && @model.path.size > 1
-        channel_name = "#{@model.path[-2]}##{@model.attributes[:_id]}"
-        puts "Event Added: #{channel_name} -- #{@model.attributes.inspect}"
-        @tasks.call('ChannelTasks', "#{add_or_remove}_listener", channel_name)
-      end
+
+    def channel_name
+       @channel_name ||= "#{@model.path[-2]}##{@model.attributes[:_id]}"
     end
     
+    # Update the models based on the id/identity map.  Usually these requests
+    # will come from the backend.
     def self.update(model_id, data)
       persistor = @@identity_map[model_id]
     
