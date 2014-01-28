@@ -12,7 +12,7 @@ module Persistors
     def loaded
       # Set the id by default
       puts "Model: #{@model.inspect} = #{@model.attributes.inspect}"
-      if @model.attributes.is_a?(Hash)
+      if @model.attributes.is_a?(Hash) && @model.attributes[:_id]
         ensure_setup
         changed
       end
@@ -24,7 +24,6 @@ module Persistors
 
       if !model_in_identity_map?
         @@identity_map[@model.attributes[:_id]] ||= self
-        puts "In Ident: #{@model.attributes[:_id]}"
       end
 
       # Check to see if we already have listeners setup
