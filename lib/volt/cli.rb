@@ -69,4 +69,6 @@ class CLI < Thor
   end
 end
 
+
+puts "Volt #{File.read(File.join(File.dirname(__FILE__), "../../VERSION"))}"
 CLI.start(ARGV)
