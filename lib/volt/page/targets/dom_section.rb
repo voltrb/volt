@@ -73,9 +73,11 @@ class DomSection < BaseSection
     %x{
       temp_div = document.createElement('div');
       var doc = jQuery.parseHTML(html);
-  
-      for (var i=0;i < doc.length;i++) {
-        temp_div.appendChild(doc[i]);
+      
+      if (doc) {
+        for (var i=0;i < doc.length;i++) {
+          temp_div.appendChild(doc[i]);
+        }
       }
     }
 

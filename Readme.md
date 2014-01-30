@@ -354,12 +354,18 @@ For convience, when placing a hash inside of another model, it is automatically 
 
     user = Model.new
     user._name = 'Ryan'
-    user._profiles = {twitter: 'http://www.twitter.com/ryanstout', dribbble: 'http://dribbble.com/ryanstout'}
+    user._profiles = {
+      twitter: 'http://www.twitter.com/ryanstout',
+      dribbble: 'http://dribbble.com/ryanstout'
+    }
     
-    puts user._name
-    # => Ryan
-    puts user._profiles._twitter
-    # => http://www.twitter.com/ryanstout
+    user._name
+    # => "Ryan"
+    user._profiles._twitter
+    # => "http://www.twitter.com/ryanstout"
+    user._profiles.class
+    # => Model
+    
     
 Models are accessed differently from hashes.  Instead of using model[:symbol] to access, you call a method model.method_name.  This provides a dynamic unified store where setters and getters can be added without changing any access code.
 
@@ -367,7 +373,31 @@ Models are accessed differently from hashes.  Instead of using model[:symbol] to
 
 Arrays inside of models are automatically converted to an instance of ArrayModel.  ArrayModels behave the same as a normal Array except that they can handle things like being bound to backend data and triggering reactive events.
 
+    model = Model.new
+    model._items << {_name: 'item 1'}
+    model._items.class
+    # => ArrayModel
+    
+    model._items[0].class
+    # => Model
+    model._items[0]
+    
+
+
 To convert a Model or an ArrayModel back to a normal hash, call .to_h or .to_a respectively.  To convert them to a JavaScript Object (for passing to some JavaScript code), call .to_n (to native).
+
+    user = Model.new
+    user._name = 'Ryan'
+    user._profiles = {
+      twitter: 'http://www.twitter.com/ryanstout',
+      dribbble: 'http://dribbble.com/ryanstout'
+    }
+    
+    user._profiles.to_h
+    # => {twitter: 'http://www.twitter.com/ryanstout', dribbble: 'http://dribbble.com/ryanstout'}
+    
+    items = ArrayModel.new([1,2,3,4])
+    items
 
 # Controllers
 
