@@ -486,7 +486,9 @@ Components can easily be shared as a gem.  Volt provides a scaffold for componen
 
 While developing, you can use the component by placing the following in your Gemfile:
 
+```ruby
     gem 'volt-{component_name}', path: '/path/to/folder/with/component'
+```
 
 Once the gem is ready, you can release it to ruby gems with:
 
