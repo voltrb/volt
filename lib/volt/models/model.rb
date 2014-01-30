@@ -225,7 +225,7 @@ class Model
   end
   
   def [](val)
-    raise "Models do not support hash style lookup.  Hashes inserted into other models are converted to models, see "
+    raise "Models do not support hash style lookup.  Hashes inserted into other models are converted to models, see https://github.com/voltrb/volt#automatic-model-conversion"
   end
   
   
