@@ -434,11 +434,13 @@ Now any methods not defined on the TodosController will fall through to the prov
 
 Controllers in the app/home component do not need to be namespaced, all other components should namespace controllers like so:
 
+```ruby
     module Auth
       class LoginController < ModelController
         # ...
       end
     end
+```
 
 Here "auth" would be the component name.
 
@@ -458,8 +460,10 @@ Dependencies act just like require in ruby, but for whole components.
 
 Sometimes you may need to include an externally hosted JS file from a component.  To do this, simply do the following in the dependencies.rb file:
 
+```ruby
     javascript_file 'http://code.jquery.com/jquery-2.0.3.min.js'
     css_file '//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css'
+```
     
 Note above though that jquery and bootstrap are currently included by default.  Using javascript_file and css_file will be mixed in with your component assets at the correct locations according to the order they occur in the dependencies.rb files.
 
