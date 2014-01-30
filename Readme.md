@@ -334,6 +334,7 @@ Because all models provided by Volt are wrapped in a ReactiveValue, you can regi
 
 Models trigger events when their data is updated.  Currently models emit three events: changed, added, and removed.  For example:
 
+```ruby
     model = Model.new
     
     model._name.on('changed') { puts 'name changed' }
@@ -347,7 +348,7 @@ Models trigger events when their data is updated.  Currently models emit three e
     model._items.on('removed') { puts 'item removed' }
     model._items.delete_at(0)
     # => item removed
-
+```
 
 ## Automatic Model Conversion
 
@@ -355,6 +356,7 @@ Models trigger events when their data is updated.  Currently models emit three e
 
 For convience, when placing a hash inside of another model, it is automatically converted into a model.  Models are similar to hashes, but provide support for things like persistance and triggering reactive events.
 
+```ruby
     user = Model.new
     user._name = 'Ryan'
     user._profiles = {
@@ -368,7 +370,7 @@ For convience, when placing a hash inside of another model, it is automatically 
     # => "http://www.twitter.com/ryanstout"
     user._profiles.class
     # => Model
-    
+```  
     
 Models are accessed differently from hashes.  Instead of using model[:symbol] to access, you call a method model.method_name.  This provides a dynamic unified store where setters and getters can be added without changing any access code.
 
@@ -376,6 +378,7 @@ Models are accessed differently from hashes.  Instead of using model[:symbol] to
 
 Arrays inside of models are automatically converted to an instance of ArrayModel.  ArrayModels behave the same as a normal Array except that they can handle things like being bound to backend data and triggering reactive events.
 
+```ruby
     model = Model.new
     model._items << {_name: 'item 1'}
     model._items.class
@@ -384,11 +387,12 @@ Arrays inside of models are automatically converted to an instance of ArrayModel
     model._items[0].class
     # => Model
     model._items[0]
-    
+```    
 
 
 To convert a Model or an ArrayModel back to a normal hash, call .to_h or .to_a respectively.  To convert them to a JavaScript Object (for passing to some JavaScript code), call .to_n (to native).
 
+```ruby
     user = Model.new
     user._name = 'Ryan'
     user._profiles = {
@@ -401,6 +405,7 @@ To convert a Model or an ArrayModel back to a normal hash, call .to_h or .to_a r
     
     items = ArrayModel.new([1,2,3,4])
     items
+```
 
 # Controllers
 
@@ -451,7 +456,7 @@ Apps are made up of Components.  Each folder under app/ is a component.  When yo
 You can also use controls (see below) from one component in another.  To do this, you must require the component from the component you wish to use them.  This can be done in the ```config/dependencies.rb``` file.  Just put
 
 ```ruby
-component 'component_name'
+    component 'component_name'
 ```
 
 in the file.
@@ -562,7 +567,9 @@ This means that routes in volt have to go both from url to params and params to 
 
 Routes are specified on a per-component basis in the config/routes.rb file.  Routes simply map from url to params.
 
+```ruby
     get "/todos", _controller: 'todos'
+```
 
 Routes take two arguments, a path, and a params hash.  When a new url is loaded and the path is matched on a route, the params will be set to the params provided for that route.
 
@@ -572,7 +579,9 @@ When the params are changed, the url will be set to the path for the route that'
 
 Route path's can also contain variables similar to bindings.
 
+```ruby
     get "/todos/{_index}", _controller: 'todos'
+```
     
 In the case above, if any url matches /todos/*, (where * is anything but a slash), it will be the active route. params._controller would be set to 'todos', and params._index would be set to the value in the path.
 
