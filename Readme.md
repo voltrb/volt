@@ -172,7 +172,7 @@ Lastly, we can also pass in other reactive value's as arguments to methods on a 
 
 There are a few simple things to keep in mind with ReactiveValue's.  In order to make them mostly compatible with other ruby objects, a two methods do not return another ReactiveValue.
 
-to_s and inspect
+    to_s and inspect
 
 If you want these to be used reactively, see the section on [with](#with)
 
