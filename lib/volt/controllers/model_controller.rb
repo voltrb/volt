@@ -1,14 +1,10 @@
-class ModelController
-  def initialize
-    self.model = @@default_model
-  end
-  
+class ModelController  
   def self.model(val)
     @@default_model = val
   end
   
   # Sets the current model on this controller
-  def model=(val)
+  def model(val)
     if val.is_a?(Symbol) || val.is_a?(String)
       collections = [:page, :store, :params]
       if collections.include?(val.to_sym)
@@ -19,6 +15,17 @@ class ModelController
     else
       @model = model
     end
+  end
+  
+  def self.new(*args, &block)
+    inst = self.allocate
+    if @@default_model
+      inst.model = (@@default_model || :page)
+    end
+    
+    inst.initialize(*args, &block)
+    
+    return inst
   end
   
   def page

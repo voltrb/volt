@@ -70,6 +70,7 @@ You can access the volt console with:
 2. [Models](#models)
   1. [Reactive Models](#reactive-models)
   2. [Model Events](#model-events)
+  3. [Provided Collections](#provided-collections)
 3. [Components](#components)
   1. [Assets](#assets)
   2. [Component Generator](#component-generator)
@@ -311,7 +312,9 @@ You can also append to a model if its not defined yet.
 
 An array model will automatically be setup to contain the items appended.
 
-Above I mentioned that Volt comes with many different models accessable from a controller.  Each stores in a different location.
+## Provided Collections
+
+Above I mentioned that Volt comes with many default collection models accessable from a controller.  Each stores in a different location.
 
 | Name      | Storage Location                                                          |
 |-----------|---------------------------------------------------------------------------|
@@ -401,15 +404,29 @@ To convert a Model or an ArrayModel back to a normal hash, call .to_h or .to_a r
 
 # Controllers
 
-A controller can be any class in Volt, however it is common to have that class inherit from ModelController.  A model controller lets you specify a model that the controller works off of.  This is a common pattern in Volt.  To assign the current model, simply set @model to one of the provided models in the initializer.
+A controller can be any class in Volt, however it is common to have that class inherit from ModelController.  A model controller lets you specify a model that the controller works off of.  This is a common pattern in Volt.  To assign the current model for a controller, simply call the model method passing in one of the following:
+
+1. A symbol representing the name of a provided collection model:
 
     class TodosController < ModelController
-      def initialize
-        @model = page
-      end
+      model :page
+  
+      ...
     end
 
-Now any methods not defined on the TodosController will fall through to the @model.  All views in views/{controller_name} will have this controller as the target for any ruby run in their bindings.  This means that calls on self (implicit or with self.) will have the model as their target (after calling through the controller).  This lets you add methods to the controller to control how the model is handled.
+This can also be done at anytime on the controller instance:
+    
+    class TodosController < ModelController
+      def initialize
+        model :page
+      end
+    end
+    
+See the [provided collections](#provided-collections) section for a list of the available collection models.
+
+You can also provide your own object to model.
+
+Now any methods not defined on the TodosController will fall through to the provided model.  All views in views/{controller_name} will have this controller as the target for any ruby run in their bindings.  This means that calls on self (implicit or with self.) will have the model as their target (after calling through the controller).  This lets you add methods to the controller to control how the model is handled.
 
 Controllers in the app/home component do not need to be namespaced, all other components should namespace controllers like so:
 
