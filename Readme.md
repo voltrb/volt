@@ -346,6 +346,29 @@ Models trigger events when their data is updated.  Currently models emit three e
     # => item removed
 
 
+## Automatic Model Conversion
+
+### Hash -> Model
+
+For convience, when placing a hash inside of another model, it is automatically converted into a model.  Models are similar to hashes, but provide support for things like persistance and triggering reactive events.
+
+    user = Model.new
+    user._name = 'Ryan'
+    user._profiles = {twitter: 'http://www.twitter.com/ryanstout', dribbble: 'http://dribbble.com/ryanstout'}
+    
+    puts user._name
+    # => Ryan
+    puts user._profiles._twitter
+    # => http://www.twitter.com/ryanstout
+    
+Models are accessed differently from hashes.  Instead of using model[:symbol] to access, you call a method model.method_name.  This provides a dynamic unified store where setters and getters can be added without changing any access code.
+
+### Array -> ArrayModel
+
+Arrays inside of models are automatically converted to an instance of ArrayModel.  ArrayModels behave the same as a normal Array except that they can handle things like being bound to backend data and triggering reactive events.
+
+To convert a Model or an ArrayModel back to a normal hash, call .to_h or .to_a respectively.  To convert them to a JavaScript Object (for passing to some JavaScript code), call .to_n (to native).
+
 # Controllers
 
 A controller can be any class in Volt, however it is common to have that class inherit from ModelController.  A model controller lets you specify a model that the controller works off of.  This is a common pattern in Volt.  To assign the current model, simply set @model to one of the provided models in the initializer.

@@ -21,6 +21,10 @@ class DomSection < BaseSection
       this.$range().insertNode(document.createTextNode(#{value}));
     }
   end
+  
+  def html=(value)
+    set_content_and_rezero_bindings(value, {})
+  end
 
   def remove
     range = self.range()

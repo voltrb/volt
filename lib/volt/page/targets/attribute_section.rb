@@ -14,6 +14,10 @@ class AttributeSection
     set_content_and_rezero_bindings(text, {})
   end
   
+  def html=(value)
+    set_content_and_rezero_bindings(value, {})
+  end
+  
 	# Takes in our html and bindings, and rezero's the comment names, and the
 	# bindings.  Returns an updated bindings hash
 	def set_content_and_rezero_bindings(html, bindings)

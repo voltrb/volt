@@ -224,6 +224,10 @@ class Model
     "<#{self.class.to_s}:#{object_id} #{attributes.inspect}>"
   end
   
+  def [](val)
+    raise "Models do not support hash style lookup.  Hashes inserted into other models are converted to models, see "
+  end
+  
   
   private
     # Clear the previous value and assign a new one

@@ -22,8 +22,9 @@ class ContentBinding < BaseBinding
     # Exception values display the exception as a string
     value = value.to_s
     
-    # Update the text in this section
-    section.text = value
+    # Update the html in this section
+    # TODO: Move the formatter into another class.
+    section.html = value.gsub("\n", "<br />\n")
   end
 
   def remove
