@@ -408,19 +408,23 @@ A controller can be any class in Volt, however it is common to have that class i
 
 1. A symbol representing the name of a provided collection model:
 
+```ruby
     class TodosController < ModelController
       model :page
   
-      ...
+      # ...
     end
+```
 
 This can also be done at anytime on the controller instance:
     
+```ruby
     class TodosController < ModelController
       def initialize
         model :page
       end
     end
+```
     
 See the [provided collections](#provided-collections) section for a list of the available collection models.
 
