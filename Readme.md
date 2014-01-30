@@ -465,10 +465,10 @@ Dependencies act just like require in ruby, but for whole components.
 
 Sometimes you may need to include an externally hosted JS file from a component.  To do this, simply do the following in the dependencies.rb file:
 
-```ruby
+    ```ruby
     javascript_file 'http://code.jquery.com/jquery-2.0.3.min.js'
     css_file '//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css'
-```
+    ```
     
 Note above though that jquery and bootstrap are currently included by default.  Using javascript_file and css_file will be mixed in with your component assets at the correct locations according to the order they occur in the dependencies.rb files.
 
@@ -487,7 +487,7 @@ Components can easily be shared as a gem.  Volt provides a scaffold for componen
 While developing, you can use the component by placing the following in your Gemfile:
 
 ```ruby
-    gem 'volt-{component_name}', path: '/path/to/folder/with/component'
+gem 'volt-{component_name}', path: '/path/to/folder/with/component'
 ```
 
 Once the gem is ready, you can release it to ruby gems with:
