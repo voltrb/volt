@@ -62,6 +62,7 @@ You can access the volt console with:
 
 1. [Rendering](#rendering)
   1. [Reactive Values](#reactive-values)
+    1. [ReactiveValue Gotchyas](#reactivevalue-gotchyas)
   2. [Bindings](#bindings)
     1. [Content Binding](#content-binding)
     2. [If Binding](#if-binding)
@@ -167,6 +168,20 @@ Lastly, we can also pass in other reactive value's as arguments to methods on a 
     # => C changed
 ```
 
+### ReactiveValue Gotchya's
+
+There are a few simple things to keep in mind with ReactiveValue's.  In order to make them mostly compatible with other ruby objects, a two methods do not return another ReactiveValue.
+
+to_s and inspect
+
+If you want these to be used reactively, see the section on [with](#with)
+
+Also, due to a small limitation in ruby, ReactiveValue's always are truthy.  See the [truthy checks](#truthy-checks-true-false-or-and-and) section on how to check for truth.
+
+### Current Status
+
+NOTE: currently ReactiveValue's are not complete.  At the moment, they do not handle methods that are passed blocks (or procs, lambda's).  This is planned, but not complete.  At the moment you can use [with](#with) to accomplish similar things.
+
 ### Truthy Checks: .true?, .false?, .or, and .and
 
 Because a method on a reactive value always returns another reactive value, and because only nil and false are false in ruby, we need a way to check if a ReactiveValue is truthy in our code.  The easiest way to do this is by calling .true? on it.  It will return a non-wrapped boolean.  .nil? and .false? do as you would expect.
@@ -190,7 +205,16 @@ Simply use:
 
 ### With
 
-... TODO: ...
+Normally when you want to have some a value that depends on another value, but transforms it somehow, you simply call your transform method on the ReactiveValue.  However sometimes the transform is not directly on the ReactiveValue's object.
+
+You can call .with on any ReactiveValue.  .with will return a new ReactiveValue that depends on the current ReactiveValue.  .with takes a block, the first argument to the block will be the cur value of the ReactiveValue you called with on.  Any additional arguments to with will be passed in after the first one.  If you pass another ReactiveValue as an argument to .with, the returned ReactiveValue will depend on the argument ReactiveValue as well, and the block will receive the arguments cur value.
+
+```ruby
+    a = ReactiveValue.new(5)
+    b = a.with {|v| v + 10 }
+    b.cur
+    # => 15
+```
 
 ## Bindings
 
