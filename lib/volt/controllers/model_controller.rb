@@ -12,15 +12,17 @@ class ModelController
       else
         raise "#{val} is not the name of a valid model, choose from: #{collections.join(', ')}"
       end
-    else
+    elsif model
       @model = model
+    else
+      raise "model can not be #{model.inspect}"
     end
   end
   
   def self.new(*args, &block)
     inst = self.allocate
     if @@default_model
-      inst.model = (@@default_model || :page)
+      inst.model(@@default_model || :page)
     end
     
     inst.initialize(*args, &block)
