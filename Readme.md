@@ -605,8 +605,6 @@ Routes take two arguments, a path, and a params hash.  When a new url is loaded 
 
 When the params are changed, the url will be set to the path for the route that's params hash matches.
 
-**Note: at the moment nested params do not work, but they are a planned feature**
-
 Route path's can also contain variables similar to bindings.
 
 ```ruby

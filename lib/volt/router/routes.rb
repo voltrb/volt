@@ -98,6 +98,7 @@ class Routes
   
   private
     def path_and_params(params, path, options)
+      puts "---#{params.inspect} - #{path.inspect} -- #{options.inspect}"
       params = params.attributes.dup
       path = path.call(params) if path.class == Proc
     
@@ -108,11 +109,23 @@ class Routes
       return path, params
     end
   
+    # Match one route against the current params.
     def params_match_options?(params, options)
       options.each_pair do |key, value|
-        # A nil value means it can match anything, so we don't want to
-        # fail on nil.        
-        if value != nil && value != params.send(key)
+        # If the value is a hash, we have a nested route.  Get the
+        # matching section in the parameter and loop down to check
+        # the values down.
+        if value.is_a?(Hash)
+          sub_params = params.send(key)
+
+          if sub_params
+            return params_match_options?(sub_params, value)
+          else
+            return false
+          end
+        elsif value != nil && value != params.send(key)
+          # A nil value means it can match anything, so we don't want to
+          # fail on nil.
           return false
         end
       end
