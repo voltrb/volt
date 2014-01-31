@@ -1,4 +1,4 @@
-get "/about", _page: 'about'
+get "/about", _view: 'about'
 
 # The main route
 get '/'
