@@ -346,6 +346,7 @@ Above I mentioned that Volt comes with many default collection models accessable
 | store     | store syncs the data to the backend database and provides query methods.  |
 | session   | values will be stored in a session cookie.                                |
 | params    | values will be stored in the params and url.  Routes can be setup to change how params are shown in the url.  (See routes for more info) |
+| flash     | any strings assigned will be shown at the top of the page and cleared as the user navigates between pages. |
 | controller| a model for the current controller                                        |
 
 **more storage locations are planned**
