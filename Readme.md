@@ -398,6 +398,8 @@ For convience, when placing a hash inside of another model, it is automatically 
     
 Models are accessed differently from hashes.  Instead of using model[:symbol] to access, you call a method model.method_name.  This provides a dynamic unified store where setters and getters can be added without changing any access code.
 
+You can get a ruby hash back out by calling .to_h on a Model.
+
 ### Array -> ArrayModel
 
 Arrays inside of models are automatically converted to an instance of ArrayModel.  ArrayModels behave the same as a normal Array except that they can handle things like being bound to backend data and triggering reactive events.
@@ -430,6 +432,8 @@ To convert a Model or an ArrayModel back to a normal hash, call .to_h or .to_a r
     items = ArrayModel.new([1,2,3,4])
     items
 ```
+
+You can get a normal array again by calling .to_a on an ArrayModel.
 
 # Controllers
 
