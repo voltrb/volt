@@ -3,8 +3,6 @@
 </:title>
 
 <:body>
-  <:volt:notices />
-
   <div class="container">
     <div class="header">
       <ul class="nav nav-pills pull-right">
@@ -13,6 +11,8 @@
       </ul>
       <h3 class="text-muted">Project name</h3>
     </div>
+    
+    <:volt:notices />
     
     {#template params._view.or('home')}
     
