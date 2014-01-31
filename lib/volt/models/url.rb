@@ -9,7 +9,6 @@ class URL
   def initialize(router=nil)
     @router = router
     @params = Model.new({}, persistor: Persistors::Params)
-    #Params.new({}, 'params')
   end
   
   # Parse takes in a url and extracts each sections.
@@ -83,10 +82,14 @@ class URL
       query_hash.merge!(@router.params_for_path(@path))
       
       # Loop through the .params we already have assigned.
+      
       assign_from_old(@params, query_hash)
       assign_new(@params, query_hash)
     end
     
+    # Loop through the old params, and overwrite any existing values,
+    # and delete the values that don't exist in the new params.  Also
+    # remove any assigned to the new params (query_hash)
     def assign_from_old(params, new_params)
       queued_deletes = []
       
@@ -111,6 +114,7 @@ class URL
       queued_deletes.each {|name| params.delete(name) }
     end
     
+    # Assign any new params, which weren't in the old params.
     def assign_new(params, new_params)
       new_params.each_pair do |name, value|
         if value.is_a?(Hash)
@@ -175,7 +179,9 @@ class URL
       results = {}
     
       params.each_pair do |key,value|
-        if value.cur.is_a?(Params) # TODO: Should be a param
+        puts value.inspect
+        if false && value.respond_to?(:persistor) && value.persistor && value.persistor.is_a?(Persistors::Params)
+          # TODO: Should be a param
           # TODO: Broke here somehow for nested
           results.merge!(nested_params_hash(value, path + [key]))
         else

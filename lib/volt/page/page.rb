@@ -75,9 +75,6 @@ class Page
   end
   
   def link_clicked(url)
-    # Skip when href == ''
-    return if url.blank?
-
     # Normalize url
     Benchmark.bm(1) do
       host = `document.location.host`
@@ -130,6 +127,9 @@ class Page
     # Setup to render template
     Element.find('body').html = "<!-- $CONTENT --><!-- $/CONTENT -->"
 
+    # Do the initial url params parse
+    @url_tracker.url_updated(true)
+
     main_controller = IndexController.new
 
     # Setup main page template
@@ -142,8 +142,6 @@ class Page
       `document.title = title;`
     end
     TemplateRenderer.new(title_target, main_controller, "main", "home/index/index/title")
-    
-    @url_tracker.url_updated(true)
   end
 end
 

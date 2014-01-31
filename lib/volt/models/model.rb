@@ -80,6 +80,8 @@ class Model
     __clear_element(args[0])
     attributes.delete(*args)
     trigger_by_attribute!('changed', args[0])
+    
+    @persistor.removed(args[0]) if @persistor
   end
   
   tag_all_methods do
