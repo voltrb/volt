@@ -6,7 +6,9 @@ class CLI < Thor
   
   desc "new PROJECT_NAME", "generates a new project."
   def new(name)
-    directory("project", name)
+    # Grab the current volt version
+    version = File.read(File.join(File.dirname(__FILE__), '../../VERSION'))
+    directory("project", name, {:version => version})
     
     say "Bundling Gems...."
     `cd #{name} ; bundle -j 4`

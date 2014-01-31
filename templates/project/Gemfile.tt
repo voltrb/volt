@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'volt'
+gem 'volt', '<%= config[:version] %>'
 
 # Twitter bootstrap
 gem 'volt-bootstrap'
