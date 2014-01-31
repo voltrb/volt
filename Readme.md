@@ -598,7 +598,7 @@ This means that routes in volt have to go both from url to params and params to 
 Routes are specified on a per-component basis in the config/routes.rb file.  Routes simply map from url to params.
 
 ```ruby
-    get "/todos", _controller: 'todos'
+    get "/todos", _view: 'todos'
 ```
 
 Routes take two arguments, a path, and a params hash.  When a new url is loaded and the path is matched on a route, the params will be set to the params provided for that route.
@@ -610,12 +610,12 @@ When the params are changed, the url will be set to the path for the route that'
 Route path's can also contain variables similar to bindings.
 
 ```ruby
-    get "/todos/{_index}", _controller: 'todos'
+    get "/todos/{_index}", _view: 'todos'
 ```
     
-In the case above, if any url matches /todos/*, (where * is anything but a slash), it will be the active route. params._controller would be set to 'todos', and params._index would be set to the value in the path.
+In the case above, if any url matches /todos/*, (where * is anything but a slash), it will be the active route. params._view would be set to 'todos', and params._index would be set to the value in the path.
 
-If params._controller is 'todos' and params._index is not nil, the route would be matched.
+If params._view is 'todos' and params._index is not nil, the route would be matched.
 
 Routes are matched top to bottom in a routes file.
 
