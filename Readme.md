@@ -613,9 +613,9 @@ Route path's can also contain variables similar to bindings.
     get "/todos/{_index}", _view: 'todos'
 ```
     
-In the case above, if any url matches /todos/*, (where * is anything but a slash), it will be the active route. params._view would be set to 'todos', and params._index would be set to the value in the path.
+In the case above, if any url matches /todos/*, (where * is anything but a slash), it will be the active route. ```params._view``` would be set to 'todos', and ```params._index``` would be set to the value in the path.
 
-If params._view is 'todos' and params._index is not nil, the route would be matched.
+If ```params._view``` is 'todos' and ```params._index``` is not nil, the route would be matched.
 
 Routes are matched top to bottom in a routes file.
 
