@@ -44,8 +44,9 @@ class Routes
     
     add_path_matcher(sections) if Volt.server?
     
+    # Create a path that takes in the params and returns the main
+    # part of the url with the params filled in.
     path = Proc.new do |params|
-      # Create a path using the params in the path
       sections.map do |section|
         if section[0] == '{' && section[-1] == '}'
           params[section[1..-2]]
@@ -63,7 +64,7 @@ class Routes
     match_path = ''
     sections.each do |section|
       if section[0] == '{' && section[-1] == '}'
-        match_path = match_path + "[^\/]+"
+        match_path = match_path + "[^\\/]+"
       else
         match_path = match_path + section
       end
@@ -85,9 +86,15 @@ class Routes
   end
 
   # Takes in a path and returns the matching params.
+  # TODO: Slow, need dfa
   def params_for_path(path)
     routes.each do |route|
-      if route[0] == path
+      puts "ROUTE: #{route.inspect} -- #{path.inspect}"
+      if false && route[0].class == Proc
+        # puts route[0].call(params).inspect
+        
+        return false
+      elsif route[0] == path
         # Found the matching route
         return route[1]
       end
@@ -98,8 +105,8 @@ class Routes
   
   private
     def path_and_params(params, path, options)
-      puts "---#{params.inspect} - #{path.inspect} -- #{options.inspect}"
       params = params.attributes.dup
+      puts params.inspect if path.class == Proc
       path = path.call(params) if path.class == Proc
     
       options.keys.each do |key|

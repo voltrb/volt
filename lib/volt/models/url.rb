@@ -82,9 +82,10 @@ class URL
       query_hash.merge!(@router.params_for_path(@path))
       
       # Loop through the .params we already have assigned.
-      
       assign_from_old(@params, query_hash)
       assign_new(@params, query_hash)
+      
+      puts @params.inspect + '---'
     end
     
     # Loop through the old params, and overwrite any existing values,

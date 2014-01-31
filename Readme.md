@@ -625,3 +625,20 @@ An in browser irb is in the works.  We also have source maps support, but they a
     
 They are disabled by default because they slow down page rendering because so many files are rendered.  We're working with the opal and sprockets teams to make it so everything is still served in one big source maps file (which would show the files as they originated on disk)
 
+
+## Channel
+
+Controllers provide a .channel method, that you can use to get the status of the connection to the backend.  Channel is provided in a ReactiveValue, and when the status changes, the changed events are triggered.  It provides the following:
+
+| method      | description                                               |
+|-------------|-----------------------------------------------------------|
+| connected?  | true if it is connected to the backend                    |
+| status      | possible values: :opening, :open, :closed, :reconnecting  |
+| error       | the error message for the last failed connection          |
+| retry_count | the number of reconnection attempts that have been made without a successful connection |
+| reconnect_interval | the time until the next reconnection attempt (in seconds) |
+
+
+## Notices
+
+Volt ships with a component that provies notices for things like dropped backend connections, flash messages, etc...  

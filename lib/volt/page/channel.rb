@@ -6,15 +6,25 @@ require 'json'
 class Channel
   include ReactiveTags
   
-  attr_reader :state, :error, :reconnect_interval
+  attr_reader :status, :error, :reconnect_interval
   
   def initialize
     @socket = nil
-    @state = :opening
+    @status = :opening
+    @connected = false
     @error = nil
+    @retry_count = 0
     @queue = []
     
     connect!
+  end
+  
+  def connected?
+    @connected
+  end
+  
+  def retry_count
+    @retry_count
   end
   
   def connect!
@@ -36,8 +46,10 @@ class Channel
   end
   
   def opened
-    @state = :open
+    @status = :open
+    @connected = true
     @reconnect_interval = nil
+    @retry_count = 0
     @queue.each do |message|
       send_message(message)
     end
@@ -47,7 +59,8 @@ class Channel
   end
 
   def closed(error)
-    @state = :closed
+    @status = :closed
+    @connected = false
     @error = `error.reason`
     
     trigger!('closed')
@@ -57,8 +70,10 @@ class Channel
   end
   
   def reconnect!
+    @status = :reconnecting
     @reconnect_interval ||= 0
     @reconnect_interval += (2000 + rand(5000))
+    @retry_count += 1
     
     # Trigger changed for reconnect interval
     trigger!('changed')
@@ -82,7 +97,7 @@ class Channel
     destructive!
   end
   def send_message(message)
-    if @state != :open
+    if @status != :open
       @queue << message
     else
       # TODO: Temp: wrap message in an array, so we're sure its valid JSON
@@ -94,7 +109,7 @@ class Channel
   end
   
   def close!
-    @state = :closed
+    @status = :closed
     %x{
       this.socket.close();
     }
