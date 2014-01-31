@@ -449,10 +449,11 @@ describe Model do
     
     all_items = a._items.to_a.cur
     
-    expect(all_items).to eq([
+    a = [
       {:_name=>"Test1", :_other=>{:_time=>"Now"}},
       {:_name=>"Test2", :_other=>{:_time=>"Later"}}
-    ])
+    ]
+    expect(all_items).to eq(a)
   end
   
   
