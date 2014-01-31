@@ -179,10 +179,8 @@ class URL
       results = {}
     
       params.each_pair do |key,value|
-        puts value.inspect
-        if false && value.respond_to?(:persistor) && value.persistor && value.persistor.is_a?(Persistors::Params)
+        if value.respond_to?(:persistor) && value.persistor && value.persistor.is_a?(Persistors::Params)
           # TODO: Should be a param
-          # TODO: Broke here somehow for nested
           results.merge!(nested_params_hash(value, path + [key]))
         else
           results[query_key(path + [key])] = value

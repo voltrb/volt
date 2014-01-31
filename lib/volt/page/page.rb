@@ -75,6 +75,9 @@ class Page
   end
   
   def link_clicked(url)
+    # Skip when href == ''
+    return if url.blank?
+
     # Normalize url
     Benchmark.bm(1) do
       host = `document.location.host`
