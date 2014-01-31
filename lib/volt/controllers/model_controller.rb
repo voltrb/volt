@@ -38,6 +38,10 @@ class ModelController
     $page.store
   end
 
+  def flash
+    $page.flash
+  end
+
   def params
     $page.params 
   end

@@ -62,7 +62,7 @@ class ReactiveValue < BasicObject
     if last_char == '=' && method_name[-2] != '='
       # Method is an assignment (and not a comparator ==)
       return true
-    elsif last_char == '!' || last_char == '<'
+    elsif method_name.size > 1 && last_char == '!' || last_char == '<'
       # Method is tagged as destructive, or is a push ( << )
       return true
     elsif ::DestructiveMethods.might_be_destructive?(method_name)

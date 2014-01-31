@@ -32,7 +32,7 @@ require 'volt/page/draw_cycle'
 require 'volt/page/tasks'
 
 class Page
-  attr_reader :url, :params, :page, :store, :templates, :routes, :draw_cycle
+  attr_reader :url, :params, :page, :store, :flash, :templates, :routes, :draw_cycle
 
   def initialize
 
@@ -42,6 +42,7 @@ class Page
     
     # Run the code to setup the page
     @page = ReactiveValue.new(Model.new)
+    @flash = ReactiveValue.new(Model.new)
     @store = ReactiveValue.new(Model.new({}, persistor: Persistors::StoreFactory.new(tasks)))
     
     @url = ReactiveValue.new(URL.new)
@@ -83,6 +84,9 @@ class Page
       host = `document.location.host`
       @url.parse("http://#{host}" + url)
     end
+    
+    # Clear the flash
+    flash.clear
   end
   
   # We provide a binding_name, so we can bind events on the document

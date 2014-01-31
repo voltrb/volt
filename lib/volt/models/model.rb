@@ -84,6 +84,20 @@ class Model
     @persistor.removed(args[0]) if @persistor
   end
   
+  tag_method(:clear) do
+    destructive!
+  end
+  def clear
+    attributes.each_pair do |key,value|
+      __clear_element(key)      
+    end
+
+    attributes.clear
+    trigger!('changed')
+    
+    @persistor.removed(nil) if @persistor
+  end
+  
   tag_all_methods do
     pass_reactive! do |method_name|
       method_name[0] == '_' && method_name[-1] == '='
