@@ -1,7 +1,9 @@
 require 'volt/models/model_wrapper'
+require 'volt/models/model_helpers'
 
 class ArrayModel < ReactiveArray
   include ModelWrapper
+  include ModelHelpers
   
   attr_reader :parent, :path, :persistor, :options
 
@@ -49,6 +51,16 @@ class ArrayModel < ReactiveArray
   
   def new_array_model(*args)
     ArrayModel.new(*args)
+  end
+  
+  # Convert the model to an array all of the way down
+  def to_a
+    array = []
+    attributes.each do |value|      
+      array << deep_unwrap(value)
+    end
+    
+    return array
   end
   
   private

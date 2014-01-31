@@ -1,5 +1,6 @@
 require 'volt/models/model_wrapper'
 require 'volt/models/array_model'
+require 'volt/models/model_helpers'
 require 'volt/reactive/object_tracking'
 
 class NilMethodCall < NoMethodError
@@ -16,6 +17,7 @@ class Model
   include ReactiveTags
   include ModelWrapper
   include ObjectTracking
+  include ModelHelpers
   
   attr_accessor :attributes
   attr_reader :parent, :path, :persistor, :options
@@ -226,6 +228,16 @@ class Model
   
   def [](val)
     raise "Models do not support hash style lookup.  Hashes inserted into other models are converted to models, see https://github.com/voltrb/volt#automatic-model-conversion"
+  end
+  
+  # Convert the model to a hash all of the way down.
+  def to_h
+    hash = {}
+    attributes.each_pair do |key, value|
+      hash[key] = deep_unwrap(value)
+    end
+    
+    return hash
   end
   
   

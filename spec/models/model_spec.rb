@@ -438,6 +438,23 @@ describe Model do
     expect(a.index(a[1])).to eq(1)
   end
   
+  it "should convert to a hash, and unwrap all of the way down" do
+    a = Model.new
+    a._items << {_name: 'Test1', _other: {_time: 'Now'}}
+    a._items << {_name: 'Test2', _other: {_time: 'Later'}}
+    
+    item1 = a._items[0].to_h.cur
+    expect(item1[:_name]).to eq('Test1')
+    expect(item1[:_other][:_time]).to eq('Now')
+    
+    all_items = a._items.to_a.cur
+    
+    expect(all_items).to eq([
+      {:_name=>"Test1", :_other=>{:_time=>"Now"}},
+      {:_name=>"Test2", :_other=>{:_time=>"Later"}}
+    ])
+  end
+  
   
   describe "model paths" do
     before do
