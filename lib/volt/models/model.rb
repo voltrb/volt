@@ -2,6 +2,7 @@ require 'volt/models/model_wrapper'
 require 'volt/models/array_model'
 require 'volt/models/model_helpers'
 require 'volt/reactive/object_tracking'
+require 'volt/models/model_hash_behaviour'
 
 class NilMethodCall < NoMethodError
   def true?
@@ -18,21 +19,10 @@ class Model
   include ModelWrapper
   include ObjectTracking
   include ModelHelpers
+  include ModelHashBehaviour
   
   attr_accessor :attributes
   attr_reader :parent, :path, :persistor, :options
-  
-  def nil?
-    attributes.nil?
-  end
-  
-  def false?
-    attributes.false?
-  end
-  
-  def true?
-    attributes.true?
-  end
   
   def initialize(attributes={}, options={})
     @options = options
@@ -70,32 +60,6 @@ class Model
   # Pass to the persistor
   def event_removed(event, no_more_events)
     @persistor.event_removed(event, no_more_events) if @persistor
-  end
-  
-  
-  tag_method(:delete) do
-    destructive!
-  end
-  def delete(*args)
-    __clear_element(args[0])
-    attributes.delete(*args)
-    trigger_by_attribute!('changed', args[0])
-    
-    @persistor.removed(args[0]) if @persistor
-  end
-  
-  tag_method(:clear) do
-    destructive!
-  end
-  def clear
-    attributes.each_pair do |key,value|
-      __clear_element(key)      
-    end
-
-    attributes.clear
-    trigger!('changed')
-    
-    @persistor.removed(nil) if @persistor
   end
   
   tag_all_methods do
@@ -240,22 +204,7 @@ class Model
   
   def inspect
     "<#{self.class.to_s} #{attributes.inspect}>"
-  end
-  
-  def [](val)
-    raise "Models do not support hash style lookup.  Hashes inserted into other models are converted to models, see https://github.com/voltrb/volt#automatic-model-conversion"
-  end
-  
-  # Convert the model to a hash all of the way down.
-  def to_h
-    hash = {}
-    attributes.each_pair do |key, value|
-      hash[key] = deep_unwrap(value)
-    end
-    
-    return hash
-  end
-  
+  end  
   
   private
     # Clear the previous value and assign a new one
