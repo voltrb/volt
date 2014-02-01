@@ -239,7 +239,7 @@ class Model
   end
   
   def inspect
-    "<#{self.class.to_s}:#{object_id} #{attributes.inspect}>"
+    "<#{self.class.to_s} #{attributes.inspect}>"
   end
   
   def [](val)
