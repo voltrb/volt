@@ -5,4 +5,5 @@ require 'volt/models/persistors/store_factory'
 require 'volt/models/persistors/array_store'
 require 'volt/models/persistors/model_store'
 require 'volt/models/persistors/params'
+require 'volt/models/persistors/flash'
 

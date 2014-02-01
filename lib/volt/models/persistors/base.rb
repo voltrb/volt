@@ -7,7 +7,7 @@ module Persistors
     def changed(attribute_name)
     end
     
-    def added(model)
+    def added(model, index)
     end
     
     # For removed, the default action is to call changed for it

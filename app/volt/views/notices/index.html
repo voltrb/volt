@@ -10,7 +10,9 @@
 {/}
 {#if !flash.empty?}
   <div class="notices alert alert-info">
-    <p>{flash._notice}</p>
+    {#each flash._notices as notice}
+      <p>{notice}</p>
+    {/}
   </div>
 {/}
 </:body>

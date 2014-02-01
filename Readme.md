@@ -69,14 +69,19 @@ You can access the volt console with:
     3. [Each Binding](#each-binding)
     4. [Attribute Bindings](#attribute-bindings)
 2. [Models](#models)
-  1. [Reactive Models](#reactive-models)
-  2. [Model Events](#model-events)
-  3. [Provided Collections](#provided-collections)
-3. [Components](#components)
+  1. [Provided Collections](#provided-collections)
+  2. [Reactive Models](#reactive-models)
+  3. [Model Events](#model-events)
+  4. [Automatic Model Conversion](#automatic-model-conversion)
+3. [Controllers](#controllers)
+4. [Components](#components)
   1. [Assets](#assets)
   2. [Component Generator](#component-generator)
-4. [Controls](#controls)
-5. [Routes](#routes)
+  3. [Provided Components](#provided-components)
+    1. [Notices](#notices)
+    2. [Flash](#flash)
+5. [Controls](#controls)
+6. [Routes](#routes)
   1. [Routes file](#routes-file)
 
 
@@ -524,6 +529,30 @@ Once the gem is ready, you can release it to ruby gems with:
     rake release
 
 Remove the path: option in the gemfile if you wish to use the rubygems version.
+
+## Provided Components
+
+Volt provides a few components to make web developers lives easier.
+
+### Notices
+
+Volt automatically places ```<:volt:notices />``` into views.  This shows notices for the following:
+
+1. flash messages
+2. connection status (when a disconnect happens, lets the user know why and when a reconnect will be attempted)
+3. page reloading notices (in development)
+
+### Flash
+
+As part of the notices component explained above, you can append messages to any collection on the flash model.
+
+Each collection represents a different type of "flash".  Common examples are ```_notices, _warnings, and _errors```  Using different collections allows you to change how you want the flash displayed.  For example, you might want ```_notices``` and ```_errors``` to show with different colors. 
+
+```ruby
+    flash._notices << "message to flash"
+```
+
+These messages will show for 5 seconds, then disappear (both from the screen and the collection). 
 
 # Controls
 

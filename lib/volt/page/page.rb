@@ -42,7 +42,7 @@ class Page
     
     # Run the code to setup the page
     @page = ReactiveValue.new(Model.new)
-    @flash = ReactiveValue.new(Model.new)
+    @flash = ReactiveValue.new(Model.new({}, persistor: Persistors::Flash))
     @store = ReactiveValue.new(Model.new({}, persistor: Persistors::StoreFactory.new(tasks)))
     
     @url = ReactiveValue.new(URL.new)
@@ -134,6 +134,8 @@ class Page
     # Setup to render template
     Element.find('body').html = "<!-- $CONTENT --><!-- $/CONTENT -->"
 
+    load_stored_page
+
     # Do the initial url params parse
     @url_tracker.url_updated(true)
 
@@ -149,6 +151,25 @@ class Page
       `document.title = title;`
     end
     TemplateRenderer.new(title_target, main_controller, "main", "home/index/index/title")
+  end
+  
+  # When the page is reloaded from the backend, we store the $page.page, so we
+  # can reload the page in the exact same state.  Speeds up development.
+  def load_stored_page
+    if Volt.client?
+      if `sessionStorage`
+        page_obj_str = nil
+        
+        `page_obj_str = sessionStorage.getItem('___page');`
+        `if (page_obj_str) {`
+          `sessionStorage.removeItem('___page');`
+
+          JSON.parse(page_obj_str).each_pair do |key, value|
+            self.page.send(:"#{key}=", value)
+          end
+        `}`
+      end
+    end
   end
 end
 

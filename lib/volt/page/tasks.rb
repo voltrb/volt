@@ -93,6 +93,15 @@ class Tasks
   
   def reload
     puts "RELOAD"
+    # Stash the current page value
+    value = JSON.dump($page.page.cur.to_h)
+    
+    # If this browser supports session storage, store the page, so it will
+    # be in the same state when we reload.
+    if `sessionStorage`
+      `sessionStorage.setItem('___page', value);`
+    end
+    
     $page.page._reloading = true
     `window.location.reload(false);`
   end
