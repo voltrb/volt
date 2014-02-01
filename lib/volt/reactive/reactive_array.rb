@@ -20,6 +20,7 @@ class ReactiveArray# < Array
   tag_method(:each) do
     destructive!
   end
+  # At the moment, each just passes through.
   def each(&block)
     @array.each(&block)
   end
