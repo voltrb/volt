@@ -92,7 +92,6 @@ class ReactiveValue < BasicObject
       return current_obj.__send__(method_name, *pass_args, &block)
     end
     
-    @block_reactives = []
     result = @reactive_manager.with_and_options(args) do |val, in_args|
       # Unwrap arguments if the method doesn't want reactive values
       # TODO: Should cache the lookup on pass_reactive
