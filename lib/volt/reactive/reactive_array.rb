@@ -17,6 +17,13 @@ class ReactiveArray# < Array
     @array.==(*args)
   end
   
+  tag_method(:each) do
+    destructive!
+  end
+  def each(&block)
+    @array.each(&block)
+  end
+  
   tag_method(:[]=) do
     pass_reactive!
   end
