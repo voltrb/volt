@@ -22,7 +22,7 @@ describe Persistors::Store do
     
     @model = ArrayModel.new([1,2,3], persistor: persistor)
     
-    expect(persistor_instance).to receive(:added).with(4)
+    expect(persistor_instance).to receive(:added).with(4,3)
     
     @model << 4
   end
