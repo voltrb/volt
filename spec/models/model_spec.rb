@@ -450,8 +450,8 @@ describe Model do
     all_items = a._items.to_a.cur
     
     a = [
-      {:_name=>"Test1", :_other=>{:_time=>"Now"}},
-      {:_name=>"Test2", :_other=>{:_time=>"Later"}}
+      {:_name => "Test1", :_other => {:_time => "Now"}},
+      {:_name => "Test2", :_other => {:_time => "Later"}}
     ]
     expect(all_items).to eq(a)
   end

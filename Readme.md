@@ -668,3 +668,7 @@ Controllers provide a .channel method, that you can use to get the status of the
 | retry_count | the number of reconnection attempts that have been made without a successful connection |
 | reconnect_interval | the time until the next reconnection attempt (in seconds) |
 
+
+## Accessing DOM section in a controller
+
+TODO

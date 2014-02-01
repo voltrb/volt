@@ -32,7 +32,7 @@ require 'volt/page/draw_cycle'
 require 'volt/page/tasks'
 
 class Page
-  attr_reader :url, :params, :page, :store, :flash, :templates, :routes, :draw_cycle
+  attr_reader :url, :params, :page, :store, :flash, :templates, :routes, :draw_cycle, :events
 
   def initialize
 

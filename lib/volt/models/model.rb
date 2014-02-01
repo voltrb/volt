@@ -199,7 +199,7 @@ class Model
     # Add the new item
     result << value
     
-    return result
+    return nil
   end
   
   def inspect

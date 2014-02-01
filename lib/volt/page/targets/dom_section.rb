@@ -64,6 +64,12 @@ class DomSection < BaseSection
     }
   end
   
+  # Returns the nearest DOM node that contains all of the section.
+  def container_node
+    range = self.range()
+    return `range.commonAncestorContainer`
+  end
+  
 	# Takes in our html and bindings, and rezero's the comment names, and the
 	# bindings.  Returns an updated bindings hash
 	def set_content_and_rezero_bindings(html, bindings)
@@ -133,21 +139,19 @@ class DomSection < BaseSection
 		return new_bindings
 	end
   
-  private
-  
-    def range
-      return @range if @range
+  def range
+    return @range if @range
 
-  		range = nil
-  		%x{
-  		  range = document.createRange();
-  		  range.setStartAfter(this.start_node);
-  		  range.setEndBefore(this.end_node);
-  		}
+		range = nil
+		%x{
+		  range = document.createRange();
+		  range.setStartAfter(this.start_node);
+		  range.setEndBefore(this.end_node);
+		}
 
-      @range = range
+    @range = range
 
-  		return range
-    end
+		return range
+  end
 
 end

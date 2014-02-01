@@ -26,6 +26,10 @@ class TemplateRenderer < BaseBinding
       end
     end
     
+    if @context.respond_to?(:section=)
+      @context.section = self.section
+    end
+    
     if @context.respond_to?(:dom_ready)
       @context.dom_ready
     end

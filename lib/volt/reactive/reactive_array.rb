@@ -209,7 +209,7 @@ class ReactiveArray# < Array
       
       result
     end
-  end
+  end  
   
   def inspect
     "#<#{self.class.to_s} #{@array.inspect}>"
