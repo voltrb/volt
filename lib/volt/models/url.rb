@@ -17,6 +17,7 @@ class URL
     destructive!
   end
   def parse(url)
+    puts "PARSE: #{url}"
     matcher = url.match(/^(https?)[:]\/\/([^\/]+)(.*)$/)
     @scheme = matcher[1]
     @host, @port = matcher[2].split(':')

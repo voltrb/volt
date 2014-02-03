@@ -89,7 +89,7 @@ class Routes
   # TODO: Slow, need dfa
   def params_for_path(path)
     routes.each do |route|
-      puts "ROUTE: #{route.inspect} -- #{path.inspect}"
+      # TODO: Finish nested routes
       if false && route[0].class == Proc
         # puts route[0].call(params).inspect
         

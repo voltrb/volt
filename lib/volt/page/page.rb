@@ -80,10 +80,10 @@ class Page
     return if url.blank?
 
     # Normalize url
-    Benchmark.bm(1) do
+    # Benchmark.bm(1) do
       host = `document.location.host`
       @url.parse("http://#{host}" + url)
-    end
+    # end
     
     # Clear the flash
     flash.clear
