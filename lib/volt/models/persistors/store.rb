@@ -7,7 +7,7 @@ module Persistors
       @is_tracking = false
       @tasks = tasks
     end
-  
+    
     def change_channel_connection(add_or_remove, event=nil, scope=nil)
       if (@model.attributes && @model.path.size > 1) || @model.is_a?(ArrayModel)
         channel_name = self.channel_name.to_s

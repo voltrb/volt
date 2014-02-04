@@ -1,16 +1,21 @@
+require_realtive 'live_query'
+
 class ChannelTasks
   @@listeners = {}
   @@channel_listeners = {}
   
   # The dispatcher passes its self in
-  def initialize(channel, dispatcher=nil)
+  def initialize(channel, dispatcher)
     @channel = channel
+    @dispatcher = dispatcher
   end
   
-  def add_listener(channel_name, scope={})
+  def add_listener(channel_name, query)
+    live_query = LiveQuery.new(@channel, query)
+    
     # Track every channel that is listening
     @@listeners[channel_name] ||= []
-    @@listeners[channel_name] << @channel
+    @@listeners[channel_name] << live_query
     
     # Also keep track of which channel names a channel is listening
     # on so it can be removed if a channel is closed.
@@ -18,7 +23,7 @@ class ChannelTasks
     @@channel_listeners[@channel][channel_name] = true
   end
   
-  def remove_listener(channel_name, scope={})
+  def remove_listener(channel_name, query)
     if @@listeners[channel_name]
       @@listeners[channel_name].delete(@channel)
       if @@channel_listeners[@channel]
