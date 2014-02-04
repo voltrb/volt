@@ -94,7 +94,7 @@ class Tasks
   def reload
     puts "RELOAD"
     # Stash the current page value
-    value = JSON.dump($page.page.cur.to_h)
+    value = JSON.dump($page.page.cur.to_h.reject {|k,v| v.reactive? })
     
     # If this browser supports session storage, store the page, so it will
     # be in the same state when we reload.

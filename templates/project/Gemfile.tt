@@ -2,9 +2,18 @@ source 'https://rubygems.org'
 
 gem 'volt', '<%= config[:version] %>'
 
+
+# The following gem's are optional for themeing
+
 # Twitter bootstrap
 gem 'volt-bootstrap'
 
+# Simple theme for bootstrap, remove to theme yourself.
+gem 'volt-bootstrap-jumbotron-theme'
+
+
+
+#---------------------
 # Needed at the moment
 gem 'opal', git: 'https://github.com/opal/opal.git'
 gem 'opal-jquery', :git => 'https://github.com/opal/opal-jquery.git'

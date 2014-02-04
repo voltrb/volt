@@ -161,6 +161,7 @@ class Page
         page_obj_str = nil
         
         `page_obj_str = sessionStorage.getItem('___page');`
+        `console.log(page_obj_str);`
         `if (page_obj_str) {`
           `sessionStorage.removeItem('___page');`
 
@@ -170,6 +171,8 @@ class Page
         `}`
       end
     end
+  rescue => e
+    puts "Unable to restore: #{e.inspect}"
   end
 end
 
