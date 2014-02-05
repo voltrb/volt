@@ -10,24 +10,24 @@ class ChannelTasks
     @dispatcher = dispatcher
   end
   
-  def add_listener(channel_name, query)
-    live_query = LiveQuery.new(@channel, query)
+  def add_listener(collection, query)
+    live_query = LiveQuery.new(@channel, collection, query)
     
     # Track every channel that is listening
-    @@listeners[channel_name] ||= []
-    @@listeners[channel_name] << live_query
+    @@listeners[collection] ||= []
+    @@listeners[collection] << live_query
     
     # Also keep track of which channel names a channel is listening
     # on so it can be removed if a channel is closed.
     @@channel_listeners[@channel] ||= {}
-    @@channel_listeners[@channel][channel_name] = true
+    @@channel_listeners[@channel][collection] = true
   end
   
-  def remove_listener(channel_name, query)
-    if @@listeners[channel_name]
-      @@listeners[channel_name].delete(@channel)
+  def remove_listener(collection, query)
+    if @@listeners[collection]
+      @@listeners[collection].delete(@channel)
       if @@channel_listeners[@channel]
-        @@channel_listeners[@channel].delete(channel_name)
+        @@channel_listeners[@channel].delete(collection)
       end
     end
   end
@@ -35,17 +35,17 @@ class ChannelTasks
   # Called when a channel is closed, removes its listeners from
   # all channels.
   def close!
-    channel_names = @@channel_listeners.delete(@channel)
+    collections = @@channel_listeners.delete(@channel)
     
-    if channel_names
-      channel_names.each_pair do |channel_name,val|
-        remove_listener(channel_name)
+    if collections
+      collections.each_pair do |collection,val|
+        remove_listener(collection)
       end
     end
   end
   
-  def self.send_message_to_channel(channel_name, message, skip_channel=nil)
-    listeners = @@listeners[channel_name]
+  def self.send_message_to_channel(collection, message, skip_channel=nil)
+    listeners = @@listeners[collection]
     
     if listeners
       listeners.each do |listener|

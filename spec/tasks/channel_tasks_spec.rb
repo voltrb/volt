@@ -14,7 +14,7 @@ if RUBY_PLATFORM != 'opal'
       expect(connection).to receive(:send_message).with('message')
       
       @channel_task = ChannelTasks.new(connection)
-      @channel_task.add_listener('channel1')
+      @channel_task.add_listener('channel1', {})
       
       ChannelTasks.send_message_to_channel('channel1', 'message')
     end
