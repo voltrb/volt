@@ -369,6 +369,7 @@ class Template
   end
   
   def parse_html_node(node)
+  
 		node.attribute_nodes.each do |attribute_node|
 		  if attribute_node.name =~ /^e\-/
         # We have an e- binding
