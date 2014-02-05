@@ -1,8 +1,9 @@
 require_relative 'live_query'
 
 class LiveQueryPool
-  def initialize
+  def initialize(data_store)
     @pool = {}
+    @data_store = data_store
   end
   
   # Called from a live query to remove its self from the pool
@@ -33,10 +34,10 @@ class LiveQueryPool
     return create_live_query(collection, query)
   end
   
-  def updated_collection(collection)
+  def updated_collection(collection, skip_channel)
     if @pool[collection]
       @pool[collection].each_pair do |query,live_query|
-        live_query.run
+        live_query.run(skip_channel)
       end
     end
   end
@@ -47,7 +48,7 @@ class LiveQueryPool
     # TODO: make threadsafe
     def create_live_query(collection, query)
       # If not already setup, create a new one for this collection/query
-      new_live_query = LiveQuery.new(self, collection, query)
+      new_live_query = LiveQuery.new(self, @data_store, collection, query)
     
       @pool[collection] ||= {}
       @pool[collection][query] = new_live_query

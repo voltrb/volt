@@ -1,7 +1,8 @@
+require_relative 'data_store'
 require_relative 'live_query_pool'
 
 class QueryTasks
-  @@live_query_pool = LiveQueryPool.new
+  @@live_query_pool = LiveQueryPool.new(DataStore.new)
   @@channel_live_queries = {}
   
   def self.live_query_pool
@@ -9,11 +10,10 @@ class QueryTasks
   end
     
   # The dispatcher passes its self in
-  def initialize(channel, dispatcher)
+  def initialize(channel, dispatcher=nil)
     @channel = channel
     @dispatcher = dispatcher
   end
-  
   
   def add_listener(collection, query)
     puts "Add listener for #{collection} - #{query.inspect}"
