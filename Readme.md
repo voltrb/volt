@@ -616,6 +616,10 @@ The above would search the following:
 | blog        | comments       | index.html   | :body     |
 | gems/blog   | comments       | index.html   | :body     |
 
+# Context in Controls
+
+Controls that render without a provided controller can access the context they were inserted in with the ```.parent``` method.  Most of the time you want to pass in any data that will be used.  But for things like calling methods on the parent controller, using ```.parent.some_method``` can be useful.
+
 
 # Routes
 
