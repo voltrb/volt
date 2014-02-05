@@ -387,7 +387,7 @@ class Template
   end
   
   def walk_text_node(node)
-		new_html = node.content.gsub(/\{([^\}]+)\}/) do |template_binding|
+		new_html = node.to_html.gsub(/\{([^\}]+)\}/) do |template_binding|
 			add_binding(node, $1)
 		end
 
