@@ -210,7 +210,7 @@ Simply use:
 
 ### With
 
-Normally when you want to have some a value that depends on another value, but transforms it somehow, you simply call your transform method on the ReactiveValue.  However sometimes the transform is not directly on the ReactiveValue's object.
+Normally when you want to have a value that depends on another value, but transforms it somehow, you simply call your transform method on the ReactiveValue.  However sometimes the transform is not directly on the ReactiveValue's object.
 
 You can call .with on any ReactiveValue.  .with will return a new ReactiveValue that depends on the current ReactiveValue.  .with takes a block, the first argument to the block will be the cur value of the ReactiveValue you called with on.  Any additional arguments to with will be passed in after the first one.  If you pass another ReactiveValue as an argument to .with, the returned ReactiveValue will depend on the argument ReactiveValue as well, and the block will receive the arguments cur value.
 
@@ -615,6 +615,10 @@ The above would search the following:
 |             | blog           | comments.html| :body     |
 | blog        | comments       | index.html   | :body     |
 | gems/blog   | comments       | index.html   | :body     |
+
+# Context in Controls
+
+Controls that render without a provided controller can access the context they were inserted in with the ```.parent``` method.  Most of the time you want to pass in any data that will be used.  But for things like calling methods on the parent controller, using ```.parent.some_method``` can be useful.
 
 
 # Routes
