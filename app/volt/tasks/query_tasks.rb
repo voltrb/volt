@@ -1,5 +1,5 @@
-require_relative 'data_store'
-require_relative 'live_query_pool'
+require_relative 'live_query/data_store'
+require_relative 'live_query/live_query_pool'
 
 class QueryTasks
   @@live_query_pool = LiveQueryPool.new(DataStore.new)

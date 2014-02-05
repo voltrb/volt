@@ -1,7 +1,7 @@
 if RUBY_PLATFORM != 'opal'
   describe "LiveQuery" do
     before do
-      load File.join(File.dirname(__FILE__), "../../app/volt/tasks/live_query.rb")
+      load File.join(File.dirname(__FILE__), "../../app/volt/tasks/live_query/live_query.rb")
     end
     
     it "should run a query" do
