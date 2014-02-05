@@ -14,7 +14,7 @@ module Persistors
         channel_name += "-#{event}" if event
 
         puts "Event #{add_or_remove}: #{channel_name} -- #{@model.attributes.inspect}"
-        @tasks.call('ChannelTasks', "#{add_or_remove}_listener", channel_name, scope)
+        # @tasks.call('ChannelTasks', "#{add_or_remove}_listener", channel_name, scope)
       end
     end
     

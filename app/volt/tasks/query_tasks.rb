@@ -1,40 +1,49 @@
+require_relative 'live_query_pool'
+
 class QueryTasks
-  @live_queries = {}
+  @@live_query_pool = LiveQueryPool.new
+  @@channel_live_queries = {}
   
+  def self.live_query_pool
+    @@live_query_pool
+  end
+    
   # The dispatcher passes its self in
   def initialize(channel, dispatcher)
     @channel = channel
     @dispatcher = dispatcher
   end
   
-  # Lookup to see if this query has been setup before.  It is has,
-  # return the previous one, if not, create a new one.
-  def lookup_live_query(collection, query)
-    stored_collection = @live_queries[collection]
-    
-    if stored_collection
-      stored_query = stored_collection[query]
-      
-      return stored_query if stored_query
-    end
-      
-    return LiveQuery.new(collection, query)
-  end
   
   def add_listener(collection, query)
-    query = normalize_query(query)
+    puts "Add listener for #{collection} - #{query.inspect}"
+    live_query = @@live_query_pool.lookup_live_query(collection, query)
+    track_channel_in_live_query(live_query)
     
-    live_query = lookup_live_query(collection, query)
+    live_query.add_channel(@channel)
     
-    @live_queries[collection] ||= {}
-    @live_queries[collection][query] = live_query
+    live_query.update!(nil, @channel)
+    puts "Update for new"
   end
   
-  
-  # Normalizes a query so we don't end up creating more than needed
-  # live queries.
-  def normalize_query(query)
-    # TODO: Add normalizer
-    return query
-  end
+  private
+    # Tracks that this channel will be notified from the live query.
+    def track_channel_in_live_query(live_query)
+      @@channel_live_queries[@channel] ||= []
+      @@channel_live_queries[@channel] << live_query
+    end
+    
+    # Removes a channel from all associated live queries
+    def close!
+      live_queries = @@channel_live_queries[channel]
+      
+      if live_queries
+        live_queries.each do |live_query|
+          live_query.remove_channel(@channel)
+        end
+      end
+      
+      @@channel_live_queries.delete(channel)
+    end
+
 end

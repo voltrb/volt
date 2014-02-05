@@ -40,17 +40,11 @@ class StoreTasks
       end
     end
     
+    QueryTasks.live_query_pool.updated_collection(collection)
 
-    ChannelTasks.send_message_to_channel("#{collection}##{id}", ['changed', nil, id, data], @channel)
+    # ChannelTasks.send_message_to_channel("#{collection}##{id}", ['changed', nil, id, data], @channel)
   end
-  
-  def find(collection, scope, query=nil)
-    results = @@db[collection].find(scope).to_a.map {|item| item.symbolize_keys }
-    puts "FIND: #{collection.inspect} - #{scope} - #{results.inspect}"
-    
-    return results
-  end
-  
+
   def delete(collection, id)
     puts "DELETE: #{collection.inspect} - #{id.inspect}"
     @@db[collection].remove('_id' => id)

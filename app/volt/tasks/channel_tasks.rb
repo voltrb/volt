@@ -1,4 +1,4 @@
-require_realtive 'live_query'
+require_relative 'live_query'
 
 class ChannelTasks
   @@listeners = {}

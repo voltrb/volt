@@ -2,12 +2,13 @@ require 'volt/models/persistors/store'
 
 module Persistors
   class ArrayStore < Store
+    @@live_queries = {}
+    
     
     # Called when a collection loads
     def loaded
-      scope = {}
-    
-    
+      query = {}
+      collection = @model.path.last
     
       # Scope to the parent
       if @model.path.size > 1
@@ -17,30 +18,58 @@ module Persistors
         puts @model.parent.inspect
         
         if parent && (attrs = parent.attributes) && attrs[:_id].true?
-          scope[:"#{@model.path[-3].singularize}_id"] = attrs[:_id]
+          query[:"#{@model.path[-3].singularize}_id"] = attrs[:_id]
         end
       end
       
-      puts "Load At Scope: #{scope.inspect}"
+
+      track_in_live_query(collection, query)
+      puts "Load with Query: #{collection.inspect} - #{query.inspect}"
+      self.query(collection, query)
       
-      query(scope)
-      
-      change_channel_connection('add', 'added')
-      change_channel_connection('add', 'removed')
+      # change_channel_connection('add', 'added')
+      # change_channel_connection('add', 'removed')
     end
     
-    def query(query)
-      @tasks.call('StoreTasks', 'find', @model.path.last, query) do |results|
-        # TODO: Globals evil, replace
-        $loading_models = true
+    # Register this class so we can get notified when the live query
+    # results update.
+    def track_in_live_query(collection, query)
+      @@live_queries[collection] ||= {}
+      @@live_queries[collection][query] ||= []
+      @@live_queries[collection][query] << self
+    end
+    
+    def query(collection, query)
+      @tasks.call('QueryTasks', 'add_listener', collection, query)
+    end
+
+    # Called from the backend when new results for this query arrive.
+    def self.updated(collection, query, data)
+      # TODO: Normalize query
+      
+      stored_collection = @@live_queries[collection]
+      if stored_collection
+        model_persistors = stored_collection[query]
         
-        new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
-        
-        results.each do |result|
-          @model << Model.new(result, new_options)
+        if model_persistors
+          model_persistors.each do |model_persistor|
+            model_persistor.update(data)
+          end
         end
-        $loading_models = false
       end
+    end
+    
+    def update(data)
+      # TODO: Globals evil, replace
+      $loading_models = true
+      
+      new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
+      
+      @model.clear
+      data.each do |result|
+        @model << Model.new(result, new_options)
+      end
+      $loading_models = false
     end
     
     def channel_name

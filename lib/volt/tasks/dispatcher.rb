@@ -18,6 +18,9 @@ class Dispatcher
         result = klass.new(channel, self).send(method_name, *args)
         error = nil
       rescue => e
+        # TODO: Log these errors better
+        puts "ERROR: #{e.inspect}"
+        puts e.backtrace
         result = nil
         error = e
       end

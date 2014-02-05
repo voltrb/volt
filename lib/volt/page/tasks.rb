@@ -28,6 +28,7 @@ class Tasks
   
   
   def received_message(name, callback_id, *args)
+    puts "GOT: #{name} - #{args.inspect}"
     case name
     when 'response'
       response(callback_id, *args)
@@ -37,6 +38,8 @@ class Tasks
       added(*args)
     when 'removed'
       removed(*args)
+    when 'updated'
+      updated(*args)
     when 'reload'
       reload
     end
@@ -89,6 +92,12 @@ class Tasks
     model = Persistors::ModelStore.from_id(id)
     model.delete!
     $loading_models = false
+  end
+  
+  # Called when the results of a query are changed, or on initial load
+  def updated(collection, query, data)
+    puts "UPDATED: #{collection.inspect} - #{query.inspect} - #{data.inspect}"
+    Persistors::ArrayStore.updated(collection, query, data)
   end
   
   def reload

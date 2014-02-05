@@ -54,6 +54,7 @@ class SocketConnectionHandler < SockJS::Session
     
     # Remove any listening channels
     ChannelTasks.new(self).close!
+    QueryTasks.new(self).close!
   end
 
 end
