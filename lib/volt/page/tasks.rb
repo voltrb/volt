@@ -53,13 +53,6 @@ class Tasks
     end
   end
   
-  def changed(model_id, data)
-    $loading_models = true
-    puts "From Backend: UPDATE: #{model_id} with #{data.inspect}"
-    Persistors::ModelStore.update(model_id, data)
-    $loading_models = false
-  end
-  
   # Called when the backend sends a notification to change the results of
   # a query.
   def notify_query(method_name, collection, query, *args)

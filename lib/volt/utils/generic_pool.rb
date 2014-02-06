@@ -9,6 +9,7 @@
 #
 # TODO: make the lookup/create threadsafe
 class GenericPool
+  attr_reader :pool
   def initialize
     @pool = {}
   end
@@ -16,13 +17,19 @@ class GenericPool
   def lookup(*args, &block)
     section = @pool
     
+    # TODO: This is to work around opal issue #500
+    args.pop if args.last == nil
+    
+    
     args.each_with_index do |arg, index|
       last = (args.size-1) == index
       
       if last
+        puts "LAST: #{arg.inspect}"
         # return, creating if needed
-        return section[arg] ||= create_new_item(*args, &block)
+        return(section[arg] ||= create_new_item(*args, &block))
       else
+        puts "INTO: #{arg.inspect}"
         next_section = section[arg]
         next_section ||= (section[arg] = {})
         section = next_section

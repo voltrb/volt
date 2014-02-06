@@ -52,4 +52,11 @@ class QueryListener
       store.remove(ids)
     end
   end
+  
+  def changed(model_id, data)
+    $loading_models = true
+    puts "From Backend: UPDATE: #{model_id} with #{data.inspect}"
+    Persistors::ModelStore.changed(model_id, data)
+    $loading_models = false
+  end
 end

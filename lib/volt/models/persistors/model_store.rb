@@ -1,12 +1,20 @@
 require 'volt/models/persistors/store'
+require 'volt/models/persistors/model_identity_map'
 
 module Persistors
   class ModelStore < Store
     ID_CHARS = [('a'..'z'), ('A'..'Z'), ('0'..'9')].map {|v| v.to_a }.flatten
   
-    @@identity_map = {}
+    @@identity_map = ModelIdentityMap.new
     
     attr_reader :model
+    attr_accessor :in_identity_map
+    
+    def initialize(model, tasks=nil)
+      super
+      
+      @in_identity_map = false
+    end
     
     def add_to_collection
       @in_collection = true
@@ -24,10 +32,8 @@ module Persistors
       if @model.attributes
         @model.attributes[:_id] ||= generate_id
 
-        if !model_in_identity_map?
-          @@identity_map[@model.attributes[:_id]] ||= self
-        end
-
+        add_to_identity_map
+        
         # Check to see if we already have listeners setup
         if @model.listeners[:changed]
           listen_for_changes
@@ -35,10 +41,14 @@ module Persistors
       end
     end
     
-    def model_in_identity_map?
-      @@identity_map[@model.attributes[:_id]]
+    def add_to_identity_map
+      unless @in_identity_map
+        @@identity_map.add(@model._id, @model)
+        
+        @in_identity_map = true
+      end      
     end
-    
+
     # Create a random unique id that can be used as the mongo id as well
     def generate_id
       id = []
@@ -109,20 +119,19 @@ module Persistors
     
     # Update the models based on the id/identity map.  Usually these requests
     # will come from the backend.
-    def self.update(model_id, data)
-      persistor = @@identity_map[model_id]
+    def self.changed(model_id, data)
+      puts @@identity_map.pool.keys.inspect
+      puts "CH#{model_id.inspect} - #{data.inspect}"
+      model = @@identity_map.lookup(model_id)
+      puts "Model: #{model.inspect}"
     
-      if persistor
+      if model
         data.each_pair do |key, value|
           if key != '_id'
-            persistor.model.send(:"#{key}=", value)
+            model.send(:"#{key}=", value)
           end
         end
       end
-    end
-    
-    def self.from_id(id)
-      @@identity_map[id]
     end
 
     private

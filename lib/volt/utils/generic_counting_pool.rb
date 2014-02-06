@@ -1,4 +1,4 @@
-require_relative 'generic_pool'
+require 'volt/utils/generic_pool'
 
 # A counting pool behaves like a normal GenericPool, except for
 # each time lookup is called, remove should be called when complete.
@@ -11,10 +11,21 @@ class GenericCountingPool < GenericPool
     [0, create(*args)]
   end
   
-  def lookup(*args)
-    item = super(*args)
+  # Finds an item and tracks that it was checked out.  Use
+  # #remove when the item is no longer needed.
+  def find(*args, &block)
+    item = __lookup(*args, &block)
     
     item[0] += 1
+    
+    return item[1]
+  end
+
+  # Lookups an item
+  def lookup(*args, &block)
+    puts "LOOKUP: #{args.inspect}"
+    item = super(*args, &block)
+    puts "FOUND: #{item.inspect}"
     
     return item[1]
   end

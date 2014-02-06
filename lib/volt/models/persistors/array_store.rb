@@ -43,9 +43,11 @@ module Persistors
       
       new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
       
-      @model.insert(index, Model.new(data, new_options))
+      # Find the existing model, or create one
+      new_model = @@identity_map.find(data['_id']) { Model.new(data, new_options) }
       
-      puts "====" + @model.inspect
+      @model.insert(index, new_model)
+      
       $loading_models = false      
     end
     
