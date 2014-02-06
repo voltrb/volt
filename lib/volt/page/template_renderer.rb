@@ -25,15 +25,6 @@ class TemplateRenderer < BaseBinding
         @sub_bindings << binding.call(target, context, id)
       end
     end
-    
-    if @context.respond_to?(:section=)
-      @context.section = self.section
-    end
-    
-    if @context.respond_to?(:dom_ready)
-      @context.dom_ready
-    end
-
   end
 
   def remove
@@ -49,11 +40,6 @@ class TemplateRenderer < BaseBinding
     end
 
     @sub_bindings = []
-
-    # Let the controller know we removed
-    if @context.respond_to?(:dom_removed)
-      @context.dom_removed
-    end
     
     super
   end

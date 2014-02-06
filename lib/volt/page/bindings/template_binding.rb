@@ -3,7 +3,7 @@ require 'volt/page/template_renderer'
 
 class TemplateBinding < BaseBinding
   def initialize(target, context, binding_name, binding_in_path, getter)
-    # puts "New template binding: #{context.inspect} - #{binding_name.inspect} - #{getter.inspect}"
+    # puts "New template binding: #{context.inspect} - #{binding_name.inspect}"
     super(target, context, binding_name)
     
     # Binding in path is the path for the template this binding is in
@@ -108,6 +108,7 @@ class TemplateBinding < BaseBinding
 
   def update
     full_path, controller_name = path_for_template(@path.cur, @section.cur)
+    puts "Update: #{full_path} - #{controller_name.inspect}"
 
     @current_template.remove if @current_template
         
@@ -140,7 +141,20 @@ class TemplateBinding < BaseBinding
       current_context = @context
     end
 
-    @current_template = TemplateRenderer.new(@target, current_context, @binding_name, full_path)    
+    @current_template = TemplateRenderer.new(@target, current_context, @binding_name, full_path)   
+    
+    if controller
+      if current_context.respond_to?(:section=)
+        current_context.section = @current_template.section
+      end
+    
+      if current_context.respond_to?(:dom_ready)
+        current_context.dom_ready
+      end
+
+      @controller = controller
+    end
+     
   end
 
   def remove
@@ -161,6 +175,15 @@ class TemplateBinding < BaseBinding
     end
 
     super
+    
+    if @controller
+      # Let the controller know we removed
+      if @controller.respond_to?(:dom_removed)
+        @controller.dom_removed
+      end
+      
+      @controller = nil
+    end
   end
   
   private
