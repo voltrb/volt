@@ -49,7 +49,7 @@ class LiveQuery
     
     if @channels.size == 0
       # remove this query, no one is listening anymore
-      @pool.remove(self)
+      @pool.remove(@collection, @query)
     end
   end
   

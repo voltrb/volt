@@ -17,7 +17,7 @@ class QueryTasks
   
   def add_listener(collection, query)
     puts "Add listener for #{collection} - #{query.inspect}"
-    live_query = @@live_query_pool.lookup_live_query(collection, query)
+    live_query = @@live_query_pool.lookup(collection, query)
     track_channel_in_live_query(live_query)
     
     live_query.add_channel(@channel)
