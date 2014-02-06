@@ -75,14 +75,13 @@ class Page
     @tasks ||= Tasks.new(self)
   end
   
-  def link_clicked(url)
+  def link_clicked(url='')
     # Skip when href == ''
     return if url.blank?
 
     # Normalize url
     # Benchmark.bm(1) do
-      host = `document.location.host`
-      @url.parse("http://#{host}" + url)
+      @url.parse(url)
     # end
     
     # Clear the flash
@@ -161,7 +160,6 @@ class Page
         page_obj_str = nil
         
         `page_obj_str = sessionStorage.getItem('___page');`
-        `console.log(page_obj_str);`
         `if (page_obj_str) {`
           `sessionStorage.removeItem('___page');`
 

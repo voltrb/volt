@@ -17,17 +17,29 @@ class URL
     destructive!
   end
   def parse(url)
-    puts "PARSE: #{url}"
-    matcher = url.match(/^(https?)[:]\/\/([^\/]+)(.*)$/)
-    @scheme = matcher[1]
-    @host, @port = matcher[2].split(':')
-    @port ||= 80
+    if url[0] == '#'
+      # url only updates fragment
+      @fragment = url[1..-1]
+    else
+      # Add the host for localized names
+      if url[0..3] != 'http'
+        host = `document.location.host`
+        url = "http://#{host}" + url
+      end
+      
+      matcher = url.match(/^(https?)[:]\/\/([^\/]+)(.*)$/)
+      @scheme = matcher[1]
+      @host, @port = matcher[2].split(':')
+      @port ||= 80
     
-    @path = matcher[3]
-    @path, @fragment = @path.split('#', 2)
-    @path, @query = @path.split('?', 2)
+      @path = matcher[3]
+      @path, @fragment = @path.split('#', 2)
+      @path, @query = @path.split('?', 2)
 
-    assign_query_hash_to_params
+      assign_query_hash_to_params
+    end
+    
+    scroll
   end
 
   # Full url rebuilds the url from it's constituent parts
@@ -55,6 +67,8 @@ class URL
       new_url += query_parts.join('&')
     end
     
+    new_url += '#' + @fragment if @fragment
+    
     return new_url
   end
   
@@ -62,10 +76,29 @@ class URL
   # browser should be updated
   # Called when an attribute changes to update the url
   def update!
-    new_url = full_url()
+    if Volt.client?
+      new_url = full_url()
     
-    if `(document.location.href != new_url)`
-      `history.pushState(null, null, new_url)`
+      if `(document.location.href != new_url)`
+        `history.pushState(null, null, new_url)`
+      end
+    end
+  end
+  
+  def scroll
+    if Volt.client?
+      if @fragment
+        # Scroll to anchor
+        %x{
+          var anchor = $('a[name="' + this.fragment + '"]');
+          if (anchor) {
+            $(document.body).scrollTop(anchor.offset().top);
+          }
+        }
+      else
+        # Scroll to the top by default
+        `$(document.body).scrollTop(0);`
+      end
     end
   end
   
@@ -85,8 +118,6 @@ class URL
       # Loop through the .params we already have assigned.
       assign_from_old(@params, query_hash)
       assign_new(@params, query_hash)
-      
-      puts @params.inspect + '---'
     end
     
     # Loop through the old params, and overwrite any existing values,

@@ -49,14 +49,13 @@ class TemplateRenderer < BaseBinding
     end
 
     @sub_bindings = []
-    
-    super
 
     # Let the controller know we removed
     if @context.respond_to?(:dom_removed)
       @context.dom_removed
     end
     
+    super
   end
   
   def remove_anchors
