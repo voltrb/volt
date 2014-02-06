@@ -38,6 +38,10 @@ Many of the core Volt features are implemented.  We still have a bit to go befor
 5. Full managed render loop (for fast rendering)
 6. Fix N+1 issue with some reactive values (I know how to fix, just haven't gotten around to doing it)
 
+# Getting Help
+
+Volt is still a work in progress, but early feedback is appericiated.  For specific questions about volt, post on [stackoverflow.com](http://www.stackoverflow.com), be sure to tag your question with voltrb, and we'll get back soon.  Discussion about volt is done at #voltrb on freenode.
+
 # VOLT guide
 
 This guide will take you through creating a basic web application in Volt.  This tutorial assumes a basic knowledge of ruby and web development.
