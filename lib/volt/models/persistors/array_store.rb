@@ -22,7 +22,6 @@ module Persistors
         end
       end
       
-
       track_in_live_query(collection, query)
       puts "Load with Query: #{collection.inspect} - #{query.inspect}"
       self.query(collection, query)
