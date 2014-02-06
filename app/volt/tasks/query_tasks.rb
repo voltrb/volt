@@ -26,6 +26,14 @@ class QueryTasks
     puts "Update for new"
   end
   
+  # Remove a listening channel, the LiveQuery will automatically remove 
+  # itsself from the pool when there are no channels.
+  def remove_listener(collection, query)
+    puts "Remove Channel"
+    live_query = @@live_query_pool.lookup(collection, query)
+    live_query.remove_channel(@channel)
+  end
+  
   
   # Removes a channel from all associated live queries
   def close!

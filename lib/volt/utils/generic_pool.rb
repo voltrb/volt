@@ -21,13 +21,19 @@ class GenericPool
       
       if last
         # return, creating if needed
-        return section[arg] ||= create(*args)
+        return section[arg] ||= generate_new(*args)
       else
         next_section = section[arg]
         next_section ||= (section[arg] = {})
         section = next_section
       end
     end
+  end
+  
+  # Allow other pools to override what gets created.  Normally
+  # a pool implementation class would provide #create
+  def generate_new(*args)
+    create(*args)
   end
   
   # Make sure we call the pool one from lookup_all and not

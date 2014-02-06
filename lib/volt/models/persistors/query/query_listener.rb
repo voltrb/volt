@@ -26,8 +26,16 @@ class QueryListener
   def remove_store(store)
     @stores.delete(store)
     
+    # When there are no stores left, remove the query listener from
+    # the pool, it can get created again later.
     if @stores.size == 0
       @query_listener_pool.remove(@collection, @query)
+      
+      # Stop listening
+      if @listening
+        @listening = false
+        $page.tasks.call('QueryTasks', 'remove_listener', @collection, @query)        
+      end
     end
   end
   
