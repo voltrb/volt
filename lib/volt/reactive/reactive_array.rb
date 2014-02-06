@@ -126,13 +126,16 @@ class ReactiveArray# < Array
   tag_method(:insert) do
     destructive!
   end
-  # alias :__old_insert :insert
   def insert(index, *objects)
     result = @array.insert(index, *objects)
 
+    # All objects from index to the end have "changed"
     index.upto(result.size-1) do |idx|
       trigger_for_index!('changed', idx)
-      trigger_on_direct_listeners!('added', index+idx)
+    end
+
+    objects.size.times do |count|
+      trigger_on_direct_listeners!('added', index+count)
     end
     
     trigger_size_change!

@@ -14,24 +14,31 @@ class LiveQuery
     @data_store = data_store
     
     @query_tracker = QueryTracker.new(self, @data_store)
-    @query_tracker.run
+    
+    run
   end
   
+  def run(skip_channel=nil)
+    @query_tracker.run(skip_channel)
+  end
   
   def notify_removed(ids, skip_channel)
     notify!(skip_channel) do |channel|
+      puts "Removed: #{ids.inspect} to #{channel.inspect}"
       channel.send_message("removed", nil, @collection, @query, ids)
     end
   end
   
   def notify_added(index, data, skip_channel)
     notify!(skip_channel) do |channel|
+      puts "Added: #{index} - #{data.inspect} to #{channel.inspect}"
       channel.send_message("added", nil, @collection, @query, index, data)
     end
   end
   
   def notify_moved(id, new_position, skip_channel)
     notify!(skip_channel) do |channel|
+      puts "Moved: #{id}, #{new_position} to #{channel.inspect}"
       channel.send_message("moved", nil, @collection, @query, id, new_position)
     end
   end
@@ -41,7 +48,7 @@ class LiveQuery
     puts "NOTIFY INITIAL"
     notify!(nil, channel) do |channel|
       @query_tracker.results.each_with_index do |result, index|
-        puts "SEND: #{result.inspect}"
+        puts "SEND: #{result.inspect} to #{channel.inspect}"
         channel.send_message("added", nil, @collection, @query, index, result)
       end
     end
@@ -67,12 +74,10 @@ class LiveQuery
       channels = @channels
     end
     
-    channels.reject! {|c| c == skip_channel }
+    channels = channels.reject {|c| c == skip_channel }
     
     channels.each do |channel|
-      puts "PUSH: #{@results.inspect}"
       yield(channel)
-      # channel.send_message("updated", nil, @collection, @query, @results)
     end
   end
   

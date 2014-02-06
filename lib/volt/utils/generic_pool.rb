@@ -30,8 +30,12 @@ class GenericPool
     end
   end
   
+  # Make sure we call the pool one from lookup_all and not
+  # an overridden one.
+  alias_method :__lookup, :lookup
+  
   def lookup_all(*args)
-    lookup(*args).values
+    __lookup(*args).values
   end
   
   def remove(*args)

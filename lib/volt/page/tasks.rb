@@ -28,7 +28,6 @@ class Tasks
   
   
   def received_message(name, callback_id, *args)
-    puts "GOT: #{name} - #{args.inspect}"
     case name
     when 'response'
       response(callback_id, *args)

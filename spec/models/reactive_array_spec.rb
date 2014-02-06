@@ -35,6 +35,31 @@ describe ReactiveArray do
     expect(model._my_ary.cur).to eq([1,10,2,3])
   end
   
+  it "should pass the index the item was inserted at" do
+    model = ReactiveValue.new(Model.new)
+    model._my_ary = [1,2,3]
+    
+    model._my_ary.on('added') do |_, index|
+      expect(index).to eq(2)
+    end
+    
+    model._my_ary.insert(2, 20)
+  end
+  
+  it "should pass the index the item was inserted at with multiple inserted objects" do
+    model = ReactiveValue.new(Model.new)
+    model._my_ary = [1,2,3]
+    
+    received = []
+    model._my_ary.on('added') do |_, index|
+      received << index
+    end
+    
+    model._my_ary.insert(2, 20, 30)
+    
+    expect(received).to eq([2, 3])
+  end
+  
   it "should trigger changed on methods of an array model that involve just one cell" do
     model = ReactiveValue.new(ReactiveArray.new)
     

@@ -37,7 +37,6 @@ class SocketConnectionHandler < SockJS::Session
     # Messages are json and wrapped in an array
     message = JSON.parse(message).first
     
-    puts "GOT: #{message.inspect}"
     @@dispatcher.dispatch(self, message)
   end
   
@@ -48,13 +47,15 @@ class SocketConnectionHandler < SockJS::Session
   end
   
   def closed
-    puts "CHANNEL CLOSED"
+    puts "CHANNEL CLOSED: #{self.inspect}"
     # Remove ourself from the available channels
     @@channels.delete(self)
-    
-    # Remove any listening channels
-    ChannelTasks.new(self).close!
+
     QueryTasks.new(self).close!
+  end
+  
+  def inspect
+    "<#{self.class.to_s}:#{object_id}>"
   end
 
 end

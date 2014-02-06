@@ -38,7 +38,10 @@ class QueryTracker
   def detect_removed(skip_channel)
     # Removed models
     removed_ids = @previous_ids - @current_ids
-    @live_query.notify_removed(removed_ids, skip_channel)
+    if removed_ids.size > 0
+      @live_query.notify_removed(removed_ids, skip_channel)
+    end
+    
     # Update @previous_ids to relect the removed
     @previous_ids = @previous_ids & @current_ids
   end

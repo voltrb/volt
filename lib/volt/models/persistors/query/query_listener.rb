@@ -38,4 +38,10 @@ class QueryListener
     end
     puts "Added: #{index} - #{data.inspect}"
   end
+  
+  def removed(ids)
+    @stores.each do |store|
+      store.remove(ids)
+    end
+  end
 end

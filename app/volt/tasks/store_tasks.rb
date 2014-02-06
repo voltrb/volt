@@ -14,7 +14,7 @@ class StoreTasks
   end
   
   def save(collection, data)
-    puts "Insert: #{data.inspect} on #{collection.inspect}"
+    # puts "Insert: #{data.inspect} on #{collection.inspect}"
     
     data = data.symbolize_keys
     id = data[:_id]
@@ -35,13 +35,13 @@ class StoreTasks
       end
     end
     
-    QueryTasks.live_query_pool.updated_collection(collection, nil)
+    QueryTasks.live_query_pool.updated_collection(collection, @channel)
   end
 
   def delete(collection, id)
     puts "DELETE: #{collection.inspect} - #{id.inspect}"
     @@db[collection].remove('_id' => id)
     
-    QueryTasks.live_query_pool.updated_collection(collection)
+    QueryTasks.live_query_pool.updated_collection(collection, @channel)
   end
 end

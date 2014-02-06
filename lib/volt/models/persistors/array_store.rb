@@ -5,6 +5,8 @@ module Persistors
   class ArrayStore < Store
     @@query_pool = QueryListenerPool.new
     
+    attr_reader :model
+    
     def self.query_pool
       @@query_pool
     end
@@ -64,15 +66,32 @@ module Persistors
       $loading_models = false
     end
     
+    # Called from backend
     def add(index, data)
       $loading_models = true
       
       new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
       
       @model.insert(index, Model.new(data, new_options))
+      # @model << Model.new(data, new_options)
       
       puts "====" + @model.inspect
       $loading_models = false      
+    end
+    
+    def remove(ids)
+      puts "Removed"
+      ids.each do |id|
+        puts "delete at: #{id} on #{@model.inspect}"
+        
+        # TODO: optimize this delete so we don't need to loop
+        @model.each_with_index do |model, index|
+          if model._id == id
+            @model.delete_at(index)
+            break
+          end
+        end
+      end
     end
     
     def channel_name
