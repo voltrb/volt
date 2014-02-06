@@ -1,0 +1,24 @@
+# The query listener is what gets notified on the backend when the results from
+# a query have changed.  It then will make the necessary changes to any ArrayStore's
+# to get them to display the new data.
+class QueryListener
+  def initialize(query_listener_pool, collection, query)
+    @query_listener_pool = query_listener_pool
+    @stores = []
+    
+    @collection = collection
+    @query = query
+  end
+  
+  def add_store(store)
+    @stores << store
+  end
+  
+  def remove_store(store)
+    @stores.delete(store)
+    
+    if @stores.size == 0
+      @query_listener_pool.remove(@collection, @query)
+    end
+  end
+end
