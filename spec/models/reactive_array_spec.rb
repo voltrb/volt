@@ -21,12 +21,16 @@ describe ReactiveArray do
     model = ReactiveValue.new(Model.new)
     model._my_ary = [1,2,3]
     
-    count = 0
-    model._my_ary[2].on('changed') { count += 1 }
-    expect(count).to eq(0)
+    count1 = 0
+    count2 = 0
+    model._my_ary[1].on('changed') { count1 += 1 }
+    model._my_ary[3].on('changed') { count2 += 1 }
+    expect(count1).to eq(0)
+    expect(count2).to eq(0)
     
     model._my_ary.insert(1, 10)
-    expect(count).to eq(1)
+    expect(count1).to eq(1)
+    expect(count2).to eq(1)
     
     expect(model._my_ary.cur).to eq([1,10,2,3])
   end
