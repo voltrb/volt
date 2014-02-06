@@ -38,15 +38,6 @@ Many of the core Volt features are implemented.  We still have a bit to go befor
 5. Full managed render loop (for fast rendering)
 6. Fix N+1 issue with some reactive values (I know how to fix, just haven't gotten around to doing it)
 
-# Getting Help
-
-Volt is still a work in progress, but early feedback is appericiated.  Use the following to communicate with the developers, someone will get back to you very quickly:
-
-- **If you need help**: post on [stackoverflow.com](http://www.stackoverflow.com), be sure to tag your question with voltrb
-- **If you found a bug**: post on [github issues](https://github.com/voltrb/volt/issues)
-- **If you have an idea or need a feature**: post on [github issues](https://github.com/voltrb/volt/issues)
-- **If you want to discuss volt**: use #voltrb on freenode.
-
 # VOLT guide
 
 This guide will take you through creating a basic web application in Volt.  This tutorial assumes a basic knowledge of ruby and web development.
@@ -69,7 +60,8 @@ You can access the volt console with:
 
 # Guide Sections
 
-1. [Rendering](#rendering)
+1. [Getting Help](#getting-help)
+2. [Rendering](#rendering)
   1. [Reactive Values](#reactive-values)
     1. [ReactiveValue Gotchyas](#reactivevalue-gotchyas)
   2. [Bindings](#bindings)
@@ -77,21 +69,31 @@ You can access the volt console with:
     2. [If Binding](#if-binding)
     3. [Each Binding](#each-binding)
     4. [Attribute Bindings](#attribute-bindings)
-2. [Models](#models)
+3. [Models](#models)
   1. [Provided Collections](#provided-collections)
   2. [Reactive Models](#reactive-models)
   3. [Model Events](#model-events)
   4. [Automatic Model Conversion](#automatic-model-conversion)
-3. [Controllers](#controllers)
-4. [Components](#components)
+4. [Controllers](#controllers)
+5. [Components](#components)
   1. [Assets](#assets)
   2. [Component Generator](#component-generator)
   3. [Provided Components](#provided-components)
     1. [Notices](#notices)
     2. [Flash](#flash)
-5. [Controls](#controls)
-6. [Routes](#routes)
+6. [Controls](#controls)
+7. [Routes](#routes)
   1. [Routes file](#routes-file)
+
+
+# Getting Help
+
+Volt is still a work in progress, but early feedback is appericiated.  Use the following to communicate with the developers, someone will get back to you very quickly:
+
+- **If you need help**: post on [stackoverflow.com](http://www.stackoverflow.com), be sure to tag your question with voltrb
+- **If you found a bug**: post on [github issues](https://github.com/voltrb/volt/issues)
+- **If you have an idea or need a feature**: post on [github issues](https://github.com/voltrb/volt/issues)
+- **If you want to discuss volt**: use #voltrb on freenode.
 
 
 # Rendering
