@@ -43,6 +43,14 @@ class LiveQuery
     end
   end
   
+  def notify_changed(id, data, skip_channel)
+    notify!(skip_channel) do |channel|
+      puts "Changed: #{id}, #{data} to #{channel.inspect}"
+      channel.send_message("changed", nil, @collection, @query, id, data)
+    end
+  end
+  
+  
   # Sends the query results the first time a channel connects
   def notify_initial_data!(channel)
     puts "NOTIFY INITIAL"

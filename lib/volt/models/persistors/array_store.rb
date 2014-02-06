@@ -36,35 +36,6 @@ module Persistors
       # change_channel_connection('add', 'added')
       # change_channel_connection('add', 'removed')
     end
-
-    # Called from the backend when new results for this query arrive.
-    def self.updated(collection, query, data)
-      # TODO: Normalize query
-      
-      stored_collection = @@live_queries[collection]
-      if stored_collection
-        model_persistors = stored_collection[query]
-        
-        if model_persistors
-          model_persistors.each do |model_persistor|
-            model_persistor.update(data)
-          end
-        end
-      end
-    end
-    
-    def update(data)
-      # TODO: Globals evil, replace
-      $loading_models = true
-      
-      new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
-      
-      @model.clear
-      data.each do |result|
-        @model << Model.new(result, new_options)
-      end
-      $loading_models = false
-    end
     
     # Called from backend
     def add(index, data)
@@ -80,6 +51,7 @@ module Persistors
     end
     
     def remove(ids)
+      $loading_models = true
       puts "Removed"
       ids.each do |id|
         puts "delete at: #{id} on #{@model.inspect}"
@@ -92,6 +64,8 @@ module Persistors
           end
         end
       end
+      
+      $loading_models = false
     end
     
     def channel_name

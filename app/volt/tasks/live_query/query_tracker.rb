@@ -9,11 +9,13 @@ class QueryTracker
     # Stores the list of id's currently associated with this query
     @current_ids = []
     @results = []
+    @results_hash = {}
   end
   
   # Runs the query, stores the results and updates the current_ids
   def run(skip_channel=nil)
     @previous_results = @results
+    @previous_results_hash = @results_hash
     @previous_ids = @current_ids
     
     # Run the query again
@@ -21,6 +23,7 @@ class QueryTracker
     
     # Update the current_ids
     @current_ids = @results.map {|r| r['_id'] }
+    @results_hash = Hash[@results.map {|r| [r['_id'], r] }]
     
     process_changes(skip_channel)
   end
@@ -32,6 +35,8 @@ class QueryTracker
       detect_removed(skip_channel)
 
       detect_added_and_moved(skip_channel)
+
+      detect_changed(skip_channel)
     end
   end
   
@@ -58,6 +63,7 @@ class QueryTracker
       end
       
       # We have an item that didn't match the current position's previous
+      # TODO: make a hash so we don't have to do include?
       if @previous_ids.include?(id)
         # The location from the previous has changed, move to correct location.
         
@@ -67,7 +73,7 @@ class QueryTracker
         @live_query.notify_moved(id, index, skip_channel)
       else
         # TODO: Faster lookup
-        data = @results.find {|r| r['_id'] == id }
+        data = @results_hash[id]
         @live_query.notify_added(index, data, skip_channel)
       end
     end
@@ -75,11 +81,14 @@ class QueryTracker
   
   # Finds all items in the previous results that have new values, and alerts
   # of changes.
-  def detect_changed
+  def detect_changed(skip_channel)
     not_added_or_removed = @previous_ids & @current_ids
     
     not_added_or_removed.each do |id|
-      
+      if @previous_results_hash[id] != (data = @results_hash[id])
+        # Data hash changed
+        @live_query.notify_changed(id, data, skip_channel)
+      end
     end
   end
 

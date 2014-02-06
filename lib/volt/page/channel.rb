@@ -89,7 +89,6 @@ class Channel
   
   def message_received(message)
     message = JSON.parse(message)
-    # puts "GOT: #{message.inspect}"
     trigger!('message', nil, *message)
   end
   

@@ -29,21 +29,17 @@ class Tasks
   
   def received_message(name, callback_id, *args)
     case name
+    when 'added', 'removed', 'updated', 'changed'
+      notify_query(name, *args)
     when 'response'
       response(callback_id, *args)
-    when 'changed'
-      changed(*args)
-    when 'added', 'removed', 'updated'
-      notify_query(name, *args)
-    when 'removed'
-      removed(*args)
-    when 'updated'
-      updated(*args)
     when 'reload'
       reload
     end
   end
   
+  # When a request is sent to the backend, it can attach a callback,
+  # this is called from the backend to pass to the callback.
   def response(callback_id, result, error)
     callback = @callbacks.delete(callback_id)
     
@@ -63,8 +59,6 @@ class Tasks
     Persistors::ModelStore.update(model_id, data)
     $loading_models = false
   end
-  
-
   
   # Called when the backend sends a notification to change the results of
   # a query.
