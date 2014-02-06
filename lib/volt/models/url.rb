@@ -20,6 +20,7 @@ class URL
     if url[0] == '#'
       # url only updates fragment
       @fragment = url[1..-1]
+      update!
     else
       # Add the host for localized names
       if url[0..3] != 'http'
