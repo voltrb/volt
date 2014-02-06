@@ -1,8 +1,8 @@
 # GenericPool is a base class you can inherit from to cache items
 # based on a lookup.
 #
-# GenericPool assumes a #create method, that takes the path arguments
-# and reutrns a new instance.
+# GenericPool assumes either a block is passed to lookup, or a
+# #create method, that takes the path arguments and reutrns a new instance.
 #
 # GenericPool can handle as deep of paths as needed.  You can also lookup
 # all of the items at a sub-path with #lookup_all
@@ -13,7 +13,7 @@ class GenericPool
     @pool = {}
   end
   
-  def lookup(*args)
+  def lookup(*args, &block)
     section = @pool
     
     args.each_with_index do |arg, index|
@@ -21,7 +21,7 @@ class GenericPool
       
       if last
         # return, creating if needed
-        return section[arg] ||= generate_new(*args)
+        return section[arg] ||= create_new_item(*args, &block)
       else
         next_section = section[arg]
         next_section ||= (section[arg] = {})
@@ -30,10 +30,21 @@ class GenericPool
     end
   end
   
-  # Allow other pools to override what gets created.  Normally
-  # a pool implementation class would provide #create
-  def generate_new(*args)
-    create(*args)
+  # Does the actual creating, if a block is not passed in, it calls
+  # #create on the class.
+  def create_new_item(*args)
+    if block_given?
+      new_item = yield(*args)
+    else
+      new_item = create(*args)
+    end
+    
+    return transform_item(new_item)
+  end
+  
+  # Allow other pools to override how the created item gets stored.
+  def transform_item(item)
+    item
   end
   
   # Make sure we call the pool one from lookup_all and not

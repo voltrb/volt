@@ -4,8 +4,12 @@ module Persistors
   class Store < Base
     def initialize(model, tasks=nil)
       @model = model
-      @is_tracking = false
+      @saved = false
       @tasks = tasks
+    end
+    
+    def saved?
+      @saved
     end
     
     def change_channel_connection(add_or_remove, event=nil, scope=nil)

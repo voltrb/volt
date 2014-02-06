@@ -44,7 +44,6 @@ module Persistors
       new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
       
       @model.insert(index, Model.new(data, new_options))
-      # @model << Model.new(data, new_options)
       
       puts "====" + @model.inspect
       $loading_models = false      
