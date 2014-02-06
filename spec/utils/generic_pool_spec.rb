@@ -1,11 +1,12 @@
 require 'volt/utils/generic_pool'
 
-describe GenericPool do
-  class PoolTest < GenericPool
-    def create(collection, query)
-      return Object.new
-    end
+class PoolTest < GenericPool
+  def create(collection, query)
+    return Object.new
   end
+end
+
+describe GenericPool do
 
   before do
     @pool_test = PoolTest.new
