@@ -1,10 +1,12 @@
 # The query tracker runs queries and then tracks the changes
 # that take place.
 class QueryTracker
+  attr_accessor :results
   def initialize(live_query, data_store)
     @live_query = live_query
     @data_store = data_store
     
+    # Stores the list of id's currently associated with this query
     @current_ids = []
     @results = []
   end
@@ -16,6 +18,7 @@ class QueryTracker
     
     # Run the query again
     @results = @data_store.query(@live_query.collection, @live_query.query)
+    puts "RESULTS ON #{@live_query.collection} and #{@live_query.query} - #{@results.inspect}"
     
     # Update the current_ids
     @current_ids = @results.map {|r| r['_id'] }
@@ -63,7 +66,7 @@ class QueryTracker
       else
         # TODO: Faster lookup
         data = @results.find {|r| r['_id'] == id }
-        @live_query.notify_added(id, index, data, skip_channel)
+        @live_query.notify_added(index, data, skip_channel)
       end
     end
   end

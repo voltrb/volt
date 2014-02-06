@@ -35,7 +35,7 @@ class StoreTasks
       end
     end
     
-    QueryTasks.live_query_pool.updated_collection(collection)
+    QueryTasks.live_query_pool.updated_collection(collection, nil)
   end
 
   def delete(collection, id)

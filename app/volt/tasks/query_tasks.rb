@@ -22,7 +22,7 @@ class QueryTasks
     
     live_query.add_channel(@channel)
     
-    live_query.update!(nil, @channel)
+    live_query.notify_initial_data!(@channel)
     puts "Update for new"
   end
   

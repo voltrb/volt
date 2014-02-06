@@ -21,7 +21,7 @@ if RUBY_PLATFORM != 'opal'
         @items.reject! {|item| ids.include?(item['_id']) }
       end
       
-      def notify_added(id, index, data, skip_channel)
+      def notify_added(index, data, skip_channel)
         @items.insert(index, data)
       end
       

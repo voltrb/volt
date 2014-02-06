@@ -6,16 +6,13 @@ class LiveQuery
   attr_reader :current_ids, :collection, :query
   
   def initialize(pool, data_store, collection, query)
+    puts "INIT LIVE QUERY: #{collection}, #{query.inspect}"
     @pool = pool
     @collection = collection
     @query = query
     
     @channels = []
     @data_store = data_store
-    
-    # Stores the list of id's currently associated with this query
-    @current_ids = []
-    @results = []
     
     @query_tracker = QueryTracker.new(self, @data_store)
     @query_tracker.run
@@ -28,15 +25,26 @@ class LiveQuery
     end
   end
   
-  def notify_added(id, index, data, skip_channel)
+  def notify_added(index, data, skip_channel)
     notify!(skip_channel) do |channel|
-      channel.send_message("added", nil, @collection, @query, id, data)
+      channel.send_message("added", nil, @collection, @query, index, data)
     end
   end
   
   def notify_moved(id, new_position, skip_channel)
     notify!(skip_channel) do |channel|
       channel.send_message("moved", nil, @collection, @query, id, new_position)
+    end
+  end
+  
+  # Sends the query results the first time a channel connects
+  def notify_initial_data!(channel)
+    puts "NOTIFY INITIAL"
+    notify!(nil, channel) do |channel|
+      @query_tracker.results.each_with_index do |result, index|
+        puts "SEND: #{result.inspect}"
+        channel.send_message("added", nil, @collection, @query, index, result)
+      end
     end
   end
   

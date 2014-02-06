@@ -3,7 +3,7 @@ require 'volt/utils/generic_pool'
 
 class LiveQueryPool < GenericPool
   def initialize(data_store)
-    super
+    super()
     @data_store = data_store
   end
   
@@ -14,10 +14,8 @@ class LiveQueryPool < GenericPool
   end
   
   def updated_collection(collection, skip_channel)
-    if @pool[collection]
-      @pool[collection].each_pair do |query,live_query|
-        live_query.run(skip_channel)
-      end
+    lookup_all(collection).each do |live_query|
+      live_query.run(skip_channel)
     end
   end
   
