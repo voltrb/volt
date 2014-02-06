@@ -409,12 +409,11 @@ class TemplateParser
     @template_path = template_path
 
     template_fragment = Nokogiri::HTML::DocumentFragment.parse(template)
-
     # Add templates for each section
     
     # Check for sections
     sections = []
-    if template_fragment.children[0].name[0] == ':'
+    if (first_child = template_fragment.children[0]) && first_child.name[0] == ':'
       template_fragment.children.each do |child|
         if child.is_a?(Nokogiri::XML::Element)
           sections << [child, child.name[1..-1]]
