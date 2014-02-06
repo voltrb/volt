@@ -17,6 +17,20 @@ describe ReactiveArray do
     expect(@changed).to eq(true)
   end
   
+  it "should trigger changed from an insert in all places after the index" do
+    model = ReactiveValue.new(Model.new)
+    model._my_ary = [1,2,3]
+    
+    count = 0
+    model._my_ary[2].on('changed') { count += 1 }
+    expect(count).to eq(0)
+    
+    model._my_ary.insert(1, 10)
+    expect(count).to eq(1)
+    
+    expect(model._my_ary.cur).to eq([1,10,2,3])
+  end
+  
   it "should trigger changed on methods of an array model that involve just one cell" do
     model = ReactiveValue.new(ReactiveArray.new)
     

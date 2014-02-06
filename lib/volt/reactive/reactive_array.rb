@@ -127,13 +127,12 @@ class ReactiveArray# < Array
     destructive!
   end
   # alias :__old_insert :insert
-  def insert(*args)
-    old_size = self.size
-    result = @array.insert(*args)
+  def insert(index, *objects)
+    result = @array.insert(index, *objects)
 
-    old_size.upto(result.size-1) do |index|
-      trigger_for_index!('changed', index)
-      trigger_on_direct_listeners!('added', old_size+index)
+    index.upto(result.size-1) do |idx|
+      trigger_for_index!('changed', idx)
+      trigger_on_direct_listeners!('added', index+idx)
     end
     
     trigger_size_change!

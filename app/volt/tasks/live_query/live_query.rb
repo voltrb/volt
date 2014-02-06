@@ -6,7 +6,6 @@ class LiveQuery
   attr_reader :current_ids, :collection, :query
   
   def initialize(pool, data_store, collection, query)
-    puts "INIT LIVE QUERY: #{collection}, #{query.inspect}"
     @pool = pool
     @collection = collection
     @query = query

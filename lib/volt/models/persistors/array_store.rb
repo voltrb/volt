@@ -26,10 +26,10 @@ module Persistors
         end
       end
       
-      puts "Load with Query: #{collection.inspect} - #{query.inspect}"
-      
       query_listener = @@query_pool.lookup(collection, query)
       query_listener.add_store(self)
+    rescue => e
+      puts "ERROR: #{e.inspect}"
       
       # change_channel_connection('add', 'added')
       # change_channel_connection('add', 'removed')
@@ -62,6 +62,15 @@ module Persistors
         @model << Model.new(result, new_options)
       end
       $loading_models = false
+    end
+    
+    def add(index, data)
+      $loading_models = true
+      
+      new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
+      
+      @model.insert(index, Model.new(data, new_options))
+      $loading_models = false      
     end
     
     def channel_name

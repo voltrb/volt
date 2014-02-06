@@ -14,7 +14,7 @@ class QueryListener
   
   def add_listener
     @listening = true
-    @tasks.call('QueryTasks', 'add_listener', @collection, @query)
+    $page.tasks.call('QueryTasks', 'add_listener', @collection, @query)
   end
   
   def add_store(store)
@@ -29,5 +29,13 @@ class QueryListener
     if @stores.size == 0
       @query_listener_pool.remove(@collection, @query)
     end
+  end
+  
+  def added(index, data)
+    @stores.each do |store|
+      puts "Add to #{store.inspect}"
+      store.add(index, data)
+    end
+    puts "Added: #{index} - #{data.inspect}"
   end
 end
