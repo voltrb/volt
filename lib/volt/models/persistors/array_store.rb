@@ -1,9 +1,13 @@
 require 'volt/models/persistors/store'
+require 'volt/models/persistors/query/query_listener_pool'
 
 module Persistors
   class ArrayStore < Store
-    @@live_queries = {}
+    @@query_pool = QueryListenerPool.new
     
+    def self.query_pool
+      @@query_pool
+    end
     
     # Called when a collection loads
     def loaded
@@ -22,24 +26,13 @@ module Persistors
         end
       end
       
-      track_in_live_query(collection, query)
       puts "Load with Query: #{collection.inspect} - #{query.inspect}"
-      self.query(collection, query)
+      
+      query_listener = @@query_pool.lookup(collection, query)
+      query_listener.add_store(self)
       
       # change_channel_connection('add', 'added')
       # change_channel_connection('add', 'removed')
-    end
-    
-    # Register this class so we can get notified when the live query
-    # results update.
-    def track_in_live_query(collection, query)
-      @@live_queries[collection] ||= {}
-      @@live_queries[collection][query] ||= []
-      @@live_queries[collection][query] << self
-    end
-    
-    def query(collection, query)
-      @tasks.call('QueryTasks', 'add_listener', collection, query)
     end
 
     # Called from the backend when new results for this query arrive.

@@ -34,8 +34,8 @@ class Tasks
       response(callback_id, *args)
     when 'changed'
       changed(*args)
-    when 'added'
-      added(*args)
+    when 'added', 'removed', 'updated'
+      notify_query(name, *args)
     when 'removed'
       removed(*args)
     when 'updated'
@@ -65,39 +65,14 @@ class Tasks
     $loading_models = false
   end
   
-  def added(path, data)
-    $loading_models = true
-    
-    # Don't add if already in there
-    # TODO: shouldn't send twice
-    unless Persistors::ModelStore.from_id(data[:_id])
-    
-      _, parent_id = data.find {|k,v| k != :_id && k[-3..-1] == '_id'}
-      if parent_id
-        parent_collection = Persistors::ModelStore.from_id(parent_id).model
-      else
-        # On the root
-        parent_collection = $page.store
-      end
-    
-      puts "From Backend: Add: #{path.inspect} - #{data.inspect}"
-      parent_collection.send(path) << data
-    end
-    $loading_models = false
-  end
+
   
-  def removed(id)
-    puts "From Backend: Remove: #{id}"
-    $loading_models = true
-    model = Persistors::ModelStore.from_id(id)
-    model.delete!
-    $loading_models = false
-  end
-  
-  # Called when the results of a query are changed, or on initial load
-  def updated(collection, query, data)
-    puts "UPDATED: #{collection.inspect} - #{query.inspect} - #{data.inspect}"
-    Persistors::ArrayStore.updated(collection, query, data)
+  # Called when the backend sends a notification to change the results of
+  # a query.
+  def notify_query(method_name, collection, query, *args)
+    puts "NOTIFY: #{collection.inspect} - #{query.inspect} - #{method_name} - #{args.inspect}"
+    query_obj = Persistors::ArrayStore.query_pool.lookup(collection, query)
+    query_obj.send(method_name, *args)
   end
   
   def reload

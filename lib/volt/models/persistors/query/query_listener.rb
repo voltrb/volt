@@ -8,10 +8,19 @@ class QueryListener
     
     @collection = collection
     @query = query
+    
+    @listening = false
+  end
+  
+  def add_listener
+    @listening = true
+    @tasks.call('QueryTasks', 'add_listener', @collection, @query)
   end
   
   def add_store(store)
     @stores << store
+    
+    add_listener unless @listening
   end
   
   def remove_store(store)

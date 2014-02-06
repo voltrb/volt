@@ -1,5 +1,5 @@
 require_relative 'live_query'
-require 'utils/generic_pool'
+require 'volt/utils/generic_pool'
 
 class LiveQueryPool < GenericPool
   def initialize(data_store)

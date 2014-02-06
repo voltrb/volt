@@ -1,4 +1,5 @@
-require 'utils/generic_pool'
+require 'volt/utils/generic_pool'
+require 'volt/models/persistors/query/query_listener'
 
 # Keeps track of all query listeners, so they can be reused in different
 # places.  Dynamically generated queries may end up producing the same
