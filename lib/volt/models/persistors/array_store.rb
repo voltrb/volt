@@ -28,10 +28,13 @@ module Persistors
         end
       end
       
-      query_listener = @@query_pool.lookup(collection, query)
+      query_listener = @@query_pool.lookup(collection, query) do
+        # Create if it does not exist
+        QueryListener.new(self, @tasks, collection, query)
+      end
       query_listener.add_store(self)
-    rescue => e
-      puts "ERROR: #{e.inspect}"
+    # rescue => e
+    #   puts "ERROR: #{e.inspect}"
       
       # change_channel_connection('add', 'added')
       # change_channel_connection('add', 'removed')
@@ -44,7 +47,7 @@ module Persistors
       new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
       
       # Find the existing model, or create one
-      new_model = @@identity_map.find(data['_id']) { Model.new(data, new_options) }
+      new_model = @@identity_map.find(data['_id']) { Model.new(data.symbolize_keys, new_options) }
       
       @model.insert(index, new_model)
       

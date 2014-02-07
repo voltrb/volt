@@ -5,8 +5,5 @@ require 'volt/models/persistors/query/query_listener'
 # places.  Dynamically generated queries may end up producing the same
 # query in different places.  This makes it so we only need to track a
 # single query at once.  Data updates will only be sent once as well.
-class QueryListenerPool < GenericPool  
-  def create(collection, query)
-    return QueryListener.new(self, collection, query)
-  end
+class QueryListenerPool < GenericPool 
 end

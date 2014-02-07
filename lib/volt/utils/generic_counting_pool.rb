@@ -23,9 +23,7 @@ class GenericCountingPool < GenericPool
 
   # Lookups an item
   def lookup(*args, &block)
-    puts "LOOKUP: #{args.inspect}"
     item = super(*args, &block)
-    puts "FOUND: #{item.inspect}"
     
     return item[1]
   end

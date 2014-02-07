@@ -1,16 +1,14 @@
 require 'volt/models/persistors/store'
-require 'volt/models/persistors/model_identity_map'
+
 
 module Persistors
   class ModelStore < Store
     ID_CHARS = [('a'..'z'), ('A'..'Z'), ('0'..'9')].map {|v| v.to_a }.flatten
-  
-    @@identity_map = ModelIdentityMap.new
     
     attr_reader :model
     attr_accessor :in_identity_map
     
-    def initialize(model, tasks=nil)
+    def initialize(model, tasks)
       super
       
       @in_identity_map = false

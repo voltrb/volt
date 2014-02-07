@@ -2,8 +2,9 @@
 # a query have changed.  It then will make the necessary changes to any ArrayStore's
 # to get them to display the new data.
 class QueryListener
-  def initialize(query_listener_pool, collection, query)
+  def initialize(query_listener_pool, tasks, collection, query)
     @query_listener_pool = query_listener_pool
+    @tasks = tasks
     @stores = []
     
     @collection = collection
@@ -14,7 +15,7 @@ class QueryListener
   
   def add_listener
     @listening = true
-    $page.tasks.call('QueryTasks', 'add_listener', @collection, @query)
+    @tasks.call('QueryTasks', 'add_listener', @collection, @query)
   end
   
   def add_store(store)
@@ -34,7 +35,7 @@ class QueryListener
       # Stop listening
       if @listening
         @listening = false
-        $page.tasks.call('QueryTasks', 'remove_listener', @collection, @query)        
+        @tasks.call('QueryTasks', 'remove_listener', @collection, @query)        
       end
     end
   end

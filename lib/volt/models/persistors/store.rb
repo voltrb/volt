@@ -1,11 +1,16 @@
 require 'volt/models/persistors/base'
+require 'volt/models/persistors/model_identity_map'
 
 module Persistors
   class Store < Base
-    def initialize(model, tasks=nil)
-      @model = model
-      @saved = false
+  
+    @@identity_map = ModelIdentityMap.new
+    
+    def initialize(model, tasks=nil)      
       @tasks = tasks
+      @model = model
+      
+      @saved = false
     end
     
     def saved?
