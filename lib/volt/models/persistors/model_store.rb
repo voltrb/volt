@@ -108,22 +108,10 @@ module Persistors
        @channel_name ||= "#{@model.path[-2]}##{@model.attributes[:_id]}"
     end
     
-    # Finds the model in its parent collection and deletes it.
-    def delete!
-      if @model.path.size == 0
-        raise "Not in a collection"
-      end
-    
-      @model.parent.delete(@model)
-    end
-    
     # Update the models based on the id/identity map.  Usually these requests
     # will come from the backend.
     def self.changed(model_id, data)
-      puts @@identity_map.pool.keys.inspect
-      puts "CH#{model_id.inspect} - #{data.inspect}"
       model = @@identity_map.lookup(model_id)
-      puts "Model: #{model.inspect}"
     
       if model
         data.each_pair do |key, value|
