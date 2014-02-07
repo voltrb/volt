@@ -8,7 +8,7 @@ class CLI < Thor
   def new(name)
     # Grab the current volt version
     version = File.read(File.join(File.dirname(__FILE__), '../../VERSION'))
-    directory("project", name, {:version => version})
+    directory("project", name, {version: version, name: name})
     
     say "Bundling Gems...."
     `cd #{name} ; bundle -j 4`
