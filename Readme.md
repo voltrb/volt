@@ -12,6 +12,8 @@ Instead of syncing data between the client and server via HTTP, volt uses a pers
 
 Pages HTML is written in a handlebars like template language.  Volt uses data flow/reactive programming to automatically and intellegently propigate changes to the dom (or anything other code wanting to know when a value updates)  When something in the dom changes, Volt intellegent updates only the nodes that need to be changed.
 
+See a quick demo video here: [http://www.youtube.com/watch?v=j0vFIRMzarI](http://www.youtube.com/watch?v=j0vFIRMzarI)
+
 ## Goals
 
 Volt has the following goals:
