@@ -6,6 +6,7 @@ module Persistors
     @@query_pool = QueryListenerPool.new
     
     attr_reader :model
+    attr_accessor :state
     
     def self.query_pool
       @@query_pool
@@ -13,6 +14,8 @@ module Persistors
     
     # Called when a collection loads
     def loaded
+      @state = :not_loaded
+      
       query = {}
       collection = @model.path.last
     
@@ -27,17 +30,23 @@ module Persistors
           query[:"#{@model.path[-3].singularize}_id"] = attrs[:_id]
         end
       end
-      
-      query_listener = @@query_pool.lookup(collection, query) do
-        # Create if it does not exist
-        QueryListener.new(self, @tasks, collection, query)
-      end
-      query_listener.add_store(self)
     # rescue => e
     #   puts "ERROR: #{e.inspect}"
       
       # change_channel_connection('add', 'added')
       # change_channel_connection('add', 'removed')
+    end
+
+    # Called the first time data is requested from this collection
+    def load_data
+      if @state == :not_loaded
+        @state = :loaded
+        query_listener = @@query_pool.lookup(collection, query) do
+          # Create if it does not exist
+          QueryListener.new(self, @tasks, collection, query)
+        end
+        query_listener.add_store(self)
+      end
     end
     
     # Called from backend

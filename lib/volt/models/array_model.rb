@@ -20,6 +20,26 @@ class ArrayModel < ReactiveArray
     @persistor.loaded if @persistor
   end
   
+  # For stored items, tell the collection to load the data when it 
+  # is requested.
+  def [](index)
+    load_data
+    super
+  end
+  
+  def size
+    load_data
+    super
+  end
+  
+  def state
+    if @persistor
+      @persistor.state
+    else
+      :loaded
+    end
+  end
+  
   def attributes
     self
   end
@@ -70,4 +90,13 @@ class ArrayModel < ReactiveArray
         @persistor = persistor.new(self)
       end
     end
+    
+    # Loads data in an array store persistor when data is requested.
+    def load_data
+      if @persistor && @persistor.is_a?(Persistors::ArrayStore)
+        @persistor.load_data
+      end
+    end
+  
+    
 end
