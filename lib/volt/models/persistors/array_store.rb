@@ -15,32 +15,44 @@ module Persistors
     # Called when a collection loads
     def loaded
       @state = :not_loaded
-      
-      query = {}
-      collection = @model.path.last
-    
-      # Scope to the parent
-      if @model.path.size > 1
-        parent = @model.parent
-        
-        parent.persistor.ensure_setup if parent.persistor
-        puts @model.parent.inspect
-        
-        if parent && (attrs = parent.attributes) && attrs[:_id].true?
-          query[:"#{@model.path[-3].singularize}_id"] = attrs[:_id]
-        end
-      end
     # rescue => e
     #   puts "ERROR: #{e.inspect}"
       
       # change_channel_connection('add', 'added')
       # change_channel_connection('add', 'removed')
+      # load_data
+    end
+    
+    def event_added(event, scope_provider, first)
+      puts "EVENT ADDED -- #{event}"
+      if event == :added
+        load_data
+      end
+    end
+    
+    def event_removed(event, no_more_events)
     end
 
     # Called the first time data is requested from this collection
     def load_data
       if @state == :not_loaded
+        puts "Load Data"
         @state = :loaded
+
+        collection = @model.path.last
+        query = {}
+        # Scope to the parent
+        if @model.path.size > 1
+          parent = @model.parent
+        
+          parent.persistor.ensure_setup if parent.persistor
+          puts @model.parent.inspect
+        
+          if parent && (attrs = parent.attributes) && attrs[:_id].true?
+            query[:"#{@model.path[-3].singularize}_id"] = attrs[:_id]
+          end
+        end
+
         query_listener = @@query_pool.lookup(collection, query) do
           # Create if it does not exist
           QueryListener.new(self, @tasks, collection, query)
@@ -88,7 +100,7 @@ module Persistors
     
     # When a model is added to this collection, we call its "changed"
     # method.  This should trigger a save.
-    def added(model)
+    def added(model, index)
       unless defined?($loading_models) && $loading_models
         model.persistor.changed
       end
