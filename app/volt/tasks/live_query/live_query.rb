@@ -56,7 +56,7 @@ class LiveQuery
     puts "NOTIFY INITIAL"
     notify!(nil, channel) do |channel|
       @query_tracker.results.each_with_index do |result, index|
-        puts "SEND: #{result.inspect} to #{channel.inspect}"
+        puts "SEND: #{result.inspect} for #{@collection.inspect} - #{@query.inspect} to #{channel.inspect}"
         channel.send_message("added", nil, @collection, @query, index, result)
       end
     end

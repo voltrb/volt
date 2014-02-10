@@ -20,6 +20,7 @@ class QueryTracker
     
     # Run the query again
     @results = @data_store.query(@live_query.collection, @live_query.query)
+    puts "QUERY RESULTS FOR #{@live_query.query.inspect} - #{@results.inspect}"
     
     # Update the current_ids
     @current_ids = @results.map {|r| r['_id'] }
