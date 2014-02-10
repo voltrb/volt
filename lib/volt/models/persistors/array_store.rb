@@ -35,11 +35,12 @@ module Persistors
 
     # Called the first time data is requested from this collection
     def load_data
+      # Don't load data from any queried
       if @state == :not_loaded
         puts "Load Data"
         @state = :loaded
         
-        run_query(@model)
+        run_query(@model, @model.options[:query] || {})
       end
     end
     
@@ -50,26 +51,23 @@ module Persistors
         parent = model.parent
       
         parent.persistor.ensure_setup if parent.persistor
-        puts model.parent.inspect
       
         if parent && (attrs = parent.attributes) && attrs[:_id].true?
           query[:"#{model.path[-3].singularize}_id"] = attrs[:_id]
         end
       end
 
-      puts "QUERY: #{collection} - #{query.inspect}"
       query_listener = @@query_pool.lookup(collection, query) do
         # Create if it does not exist
-        QueryListener.new(self, @tasks, collection, query)
+        QueryListener.new(@@query_pool, @tasks, collection, query)
       end
-      query_listener.add_store(@model.persistor)
+      query_listener.add_store(model.persistor)
     end
     
     def find(query={})
-      puts "FIND: #{query.inspect}"
-      model = ArrayModel.new([], @model.options)
+      model = ArrayModel.new([], @model.options.merge(:query => query))
       
-      run_query(model, query)
+      # run_query(model, query)
       
       return model
     end
@@ -90,14 +88,15 @@ module Persistors
     
     def remove(ids)
       $loading_models = true
-      puts "Removed"
       ids.each do |id|
         puts "delete at: #{id} on #{@model.inspect}"
         
         # TODO: optimize this delete so we don't need to loop
         @model.each_with_index do |model, index|
+          puts "#{model._id.inspect} vs #{id.inspect} - #{index}"
           if model._id == id
-            @model.delete_at(index)
+            del = @model.delete_at(index)
+            puts "DELETED AT #{index}: #{del.inspect} - #{@model.inspect}"
             break
           end
         end

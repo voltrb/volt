@@ -19,6 +19,7 @@ class QueryListener
   end
   
   def add_store(store)
+    puts "ADD STORE: #{store.inspect} - to #{self.inspect}"
     @stores << store
     
     add_listener unless @listening
@@ -42,7 +43,6 @@ class QueryListener
   
   def added(index, data)
     @stores.each do |store|
-      puts "Add to #{store.inspect}"
       store.add(index, data)
     end
     puts "Added: #{index} - #{data.inspect}"

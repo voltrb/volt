@@ -81,10 +81,7 @@ class EachBinding < BaseBinding
     
     item_context = SubContext.new({@item_name => value, :index => index, :parent => @value}, @context)
 
-    # ObjectTracker.enable_cache
     @templates << TemplateRenderer.new(@target, item_context, binding_name, @template_name)
-    # puts "ADDED 2"
-    # ObjectTracker.disable_cache
   end
 
   def update(item=nil)
