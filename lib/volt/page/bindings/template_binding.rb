@@ -134,7 +134,7 @@ class TemplateBinding < BaseBinding
       args << SubContext.new(@model) if @model
       
       # Setup the controller
-      current_context = controller.new(*args)
+      current_context = controller_class.new(*args)
       @controller = current_context
     else
       # Pass the context directly
