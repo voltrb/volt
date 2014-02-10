@@ -43,7 +43,7 @@ module Persistors
       end
     end
     
-    def run_query(model, query={}
+    def run_query(model, query={})
       collection = model.path.last
       # Scope to the parent
       if model.path.size > 1
@@ -62,7 +62,16 @@ module Persistors
         # Create if it does not exist
         QueryListener.new(self, @tasks, collection, query)
       end
-      query_listener.add_store(self)
+      query_listener.add_store(@model.persistor)
+    end
+    
+    def find(query={})
+      puts "FIND: #{query.inspect}"
+      model = ArrayModel.new([], @model.options)
+      
+      run_query(model, query)
+      
+      return model
     end
     
     # Called from backend

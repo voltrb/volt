@@ -40,6 +40,10 @@ class ArrayModel < ReactiveArray
     end
   end
   
+  tag_method(:find) do
+    destructive!
+    pass_reactive!
+  end
   def find(*args)
     if @persistor
       return @persistor.find(*args)
