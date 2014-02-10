@@ -9,16 +9,16 @@ class ComponentBinding < TemplateBinding
   def render_template(full_path, controller_name)
     # TODO: at the moment a :body section and a :title will both initialize different
     # controllers.  Maybe we should have a way to tie them together?
-    controller = get_controller(controller_name)
+    controller_class = get_controller(controller_name)
     model_with_parent = {parent: @context}.merge(@model || {})
     
-    if controller
+    if controller_class
       # The user provided a controller, pass in the model as an argument (in a 
       # sub-context)
       args = []
       args << SubContext.new(model_with_parent) if @model
       
-      current_context = controller.new(*args)
+      current_context = controller_class.new(*args)
       @controller = current_context
     else
       # There is not a controller
