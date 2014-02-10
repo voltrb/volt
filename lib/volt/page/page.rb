@@ -150,6 +150,9 @@ class Page
       `document.title = title;`
     end
     TemplateRenderer.new(title_target, main_controller, "main", "home/index/index/title")
+    
+    # TODO: this dom ready should really happen in the template renderer
+    main_controller.dom_ready if main_controller.respond_to?(:dom_ready)
   end
   
   # When the page is reloaded from the backend, we store the $page.page, so we

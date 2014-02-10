@@ -19,11 +19,14 @@ class ComponentBinding < TemplateBinding
       args << SubContext.new(model_with_parent) if @model
       
       current_context = controller.new(*args)
+      @controller = current_context
     else
       # There is not a controller
       current_context = SubContext.new(model_with_parent, $page)
     end
 
-    @current_template = TemplateRenderer.new(@target, current_context, @binding_name, full_path)    
+    @current_template = TemplateRenderer.new(@target, current_context, @binding_name, full_path)
+    
+    call_ready
   end
 end
