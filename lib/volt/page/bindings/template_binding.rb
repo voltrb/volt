@@ -108,7 +108,6 @@ class TemplateBinding < BaseBinding
 
   def update
     full_path, controller_name = path_for_template(@path.cur, @section.cur)
-    puts "Update: #{full_path} - #{controller_name.inspect}"
 
     @current_template.remove if @current_template
         
@@ -129,13 +128,14 @@ class TemplateBinding < BaseBinding
     # TODO: at the moment a :body section and a :title will both initialize different
     # controllers.  Maybe we should have a way to tie them together?
     
-    controller = get_controller(controller_name)
-    if controller
+    controller_class = get_controller(controller_name)
+    if controller_class
       args = []
       args << SubContext.new(@model) if @model
       
       # Setup the controller
       current_context = controller.new(*args)
+      @controller = current_context
     else
       # Pass the context directly
       current_context = @context
@@ -143,18 +143,19 @@ class TemplateBinding < BaseBinding
 
     @current_template = TemplateRenderer.new(@target, current_context, @binding_name, full_path)   
     
-    if controller
-      if current_context.respond_to?(:section=)
-        current_context.section = @current_template.section
+    call_ready
+  end
+  
+  def call_ready
+    if @controller
+      if @controller.respond_to?(:section=)
+        @controller.section = @current_template.section
       end
     
-      if current_context.respond_to?(:dom_ready)
-        current_context.dom_ready
+      if @controller.respond_to?(:dom_ready)
+        @controller.dom_ready
       end
-
-      @controller = controller
-    end
-     
+    end    
   end
 
   def remove
