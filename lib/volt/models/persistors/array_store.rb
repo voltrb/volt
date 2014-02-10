@@ -38,27 +38,31 @@ module Persistors
       if @state == :not_loaded
         puts "Load Data"
         @state = :loaded
-
-        collection = @model.path.last
-        query = {}
-        # Scope to the parent
-        if @model.path.size > 1
-          parent = @model.parent
         
-          parent.persistor.ensure_setup if parent.persistor
-          puts @model.parent.inspect
-        
-          if parent && (attrs = parent.attributes) && attrs[:_id].true?
-            query[:"#{@model.path[-3].singularize}_id"] = attrs[:_id]
-          end
-        end
-
-        query_listener = @@query_pool.lookup(collection, query) do
-          # Create if it does not exist
-          QueryListener.new(self, @tasks, collection, query)
-        end
-        query_listener.add_store(self)
+        run_query(@model)
       end
+    end
+    
+    def run_query(model, query={}
+      collection = model.path.last
+      # Scope to the parent
+      if model.path.size > 1
+        parent = model.parent
+      
+        parent.persistor.ensure_setup if parent.persistor
+        puts model.parent.inspect
+      
+        if parent && (attrs = parent.attributes) && attrs[:_id].true?
+          query[:"#{model.path[-3].singularize}_id"] = attrs[:_id]
+        end
+      end
+
+      puts "QUERY: #{collection} - #{query.inspect}"
+      query_listener = @@query_pool.lookup(collection, query) do
+        # Create if it does not exist
+        QueryListener.new(self, @tasks, collection, query)
+      end
+      query_listener.add_store(self)
     end
     
     # Called from backend

@@ -40,6 +40,14 @@ class ArrayModel < ReactiveArray
     end
   end
   
+  def find(*args)
+    if @persistor
+      return @persistor.find(*args)
+    else
+      raise "this model's persistance layer does not support find, try using store"
+    end
+  end
+  
   def attributes
     self
   end
