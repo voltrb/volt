@@ -2,12 +2,12 @@ require 'volt/page/bindings/base_binding'
 
 class TemplateRenderer < BaseBinding
   attr_reader :context
-  def initialize(target, context, binding_name, template_name)
+  def initialize(target, context, binding_name, template_name, templates=$page.templates)
     # puts "new template renderer: #{context.inspect} - #{binding_name.inspect}"
     super(target, context, binding_name)
 
     # puts "Template Name: #{template_name}"
-    @template = $page.templates[template_name]
+    @template = (templates || $page.templates)[template_name]
     @sub_bindings = []
 
     if @template
