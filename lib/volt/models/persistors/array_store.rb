@@ -15,12 +15,6 @@ module Persistors
     # Called when a collection loads
     def loaded
       @state = :not_loaded
-    # rescue => e
-    #   puts "ERROR: #{e.inspect}"
-      
-      # change_channel_connection('add', 'added')
-      # change_channel_connection('add', 'removed')
-      # load_data
     end
     
     def event_added(event, scope_provider, first)
@@ -66,8 +60,6 @@ module Persistors
     
     def find(query={})
       model = ArrayModel.new([], @model.options.merge(:query => query))
-      
-      # run_query(model, query)
       
       return ReactiveValue.new(model)
     end

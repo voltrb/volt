@@ -16,17 +16,6 @@ module Persistors
     def saved?
       @saved
     end
-    
-    def change_channel_connection(add_or_remove, event=nil, scope=nil)
-      if (@model.attributes && @model.path.size > 1) || @model.is_a?(ArrayModel)
-        channel_name = self.channel_name.to_s
-        channel_name += "-#{event}" if event
-
-        puts "Event #{add_or_remove}: #{channel_name} -- #{@model.attributes.inspect}"
-        # @tasks.call('ChannelTasks', "#{add_or_remove}_listener", channel_name, scope)
-      end
-    end
-    
 
     # On stores, we store the model so we don't have to look it up
     # every time we do a read.
