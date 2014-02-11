@@ -92,7 +92,7 @@ class URL
         # Scroll to anchor
         %x{
           var anchor = $('a[name="' + this.fragment + '"]');
-          if (anchor) {
+          if (anchor && anchor.length > 0) {
             $(document.body).scrollTop(anchor.offset().top);
           }
         }

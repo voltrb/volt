@@ -5,7 +5,7 @@ class Console
     $LOAD_PATH << 'lib'
     ENV['SERVER'] = 'true'
 
-    require 'volt/extra_core/extra_core'
+    require 'volt'
     require 'volt/models'
     require 'volt/server/template_parser'
     require 'volt'

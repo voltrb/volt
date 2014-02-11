@@ -1,12 +1,11 @@
 require 'volt/page/bindings/base_binding'
 
 class IfBinding < BaseBinding
-  def initialize(target, context, binding_name, branches)
-    getter, template_name = branches[0]
+  def initialize(page, target, context, binding_name, branches)
     # puts "New If Binding: #{binding_name}, #{getter.inspect}"
+    super(page, target, context, binding_name)
 
-
-    super(target, context, binding_name)
+    getter, template_name = branches[0]
 
     @branches = []
     @listeners = []
@@ -58,7 +57,7 @@ class IfBinding < BaseBinding
       end
       
       if true_template
-        @template = TemplateRenderer.new(@target, @context, binding_name, true_template)
+        @template = TemplateRenderer.new(@page, @target, @context, binding_name, true_template)
       end
     end
   end

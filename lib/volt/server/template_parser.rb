@@ -72,7 +72,7 @@ class Template
 	def add_template(node, content, name='Template')
 		html = "<!-- $#{@binding_number} --><!-- $/#{@binding_number} -->"
 
-		@current_scope.add_binding(@binding_number, "lambda { |target, context, id| #{name}Binding.new(target, context, id, #{@template_parser.template_path.inspect}, Proc.new { [#{content}] }) }")
+		@current_scope.add_binding(@binding_number, "lambda { |__p, __t, __c, __id| #{name}Binding.new(__p, __t, __c, __id, #{@template_parser.template_path.inspect}, Proc.new { [#{content}] }) }")
 
 		@binding_number += 1
 		return html
@@ -84,7 +84,7 @@ class Template
     content, variable_name = content.strip.split(/ as /)
 
     template_name = "#{@template_parser.template_path}/#{section_name}/__template/#{@binding_number}"
-		@current_scope.add_binding(@binding_number, "lambda { |target, context, id| EachBinding.new(target, context, id, Proc.new { #{content} }, #{variable_name.inspect}, #{template_name.inspect}) }")
+		@current_scope.add_binding(@binding_number, "lambda { |__p, __t, __c, __id| EachBinding.new(__p, __t, __c, __id, Proc.new { #{content} }, #{variable_name.inspect}, #{template_name.inspect}) }")
 
 		# Add the node, the binding number, then store the location where the
 		# bindings for this block starts.
@@ -151,7 +151,7 @@ class Template
 	def add_text_binding(content)
 		html = "<!-- $#{@binding_number} --><!-- $/#{@binding_number} -->"
 
-		@current_scope.add_binding(@binding_number, "lambda { |target, context, id| ContentBinding.new(target, context, id, Proc.new { #{content} }) }")
+		@current_scope.add_binding(@binding_number, "lambda { |__p, __t, __c, __id| ContentBinding.new(__p, __t, __c, __id, Proc.new { #{content} }) }")
 
 		@binding_number += 1
 		return html
@@ -194,7 +194,7 @@ class Template
       getter = "_tmp = #{content[1..-2]}.or('') ; _tmp.reactive_manager.setter! { |val| self.#{content[1..-2]} = val } ; _tmp"
     end
     
-    @current_scope.add_binding(node['id'], "lambda { |target, context, id| AttributeBinding.new(target, context, id, #{attribute.inspect}, Proc.new { #{getter} }) }")
+    @current_scope.add_binding(node['id'], "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, #{attribute.inspect}, Proc.new { #{getter} }) }")
   end
   
   def add_multiple_getters(node, attribute, content)
@@ -208,7 +208,7 @@ class Template
     
     reactive_template_path = add_reactive_template(content)
     
-    @current_scope.add_binding(node['id'], "lambda { |target, context, id| AttributeBinding.new(target, context, id, #{attribute.inspect}, Proc.new { ReactiveTemplate.new(context, #{reactive_template_path.inspect}) }) }")
+    @current_scope.add_binding(node['id'], "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, #{attribute.inspect}, Proc.new { ReactiveTemplate.new(__p, __c, #{reactive_template_path.inspect}) }) }")
   end
   
   # Returns a path to a template for the content.  This can be passed
@@ -237,7 +237,7 @@ class Template
       node['href'] ||= ''
     end
 
-    @current_scope.add_binding(node['id'], "lambda { |target, context, id| EventBinding.new(target, context, id, #{event.inspect}, Proc.new {|event| #{content} })}")
+    @current_scope.add_binding(node['id'], "lambda { |__p, __t, __c, __id| EventBinding.new(__p, __t, __c, __id, #{event.inspect}, Proc.new {|event| #{content} })}")
   end
 
 	def pull_closed_block_scopes(scope=@current_scope)
@@ -337,7 +337,7 @@ class Template
         # Has multiple bindings, we need to render a template here
         attr_template_path = add_reactive_template(content)
         
-        value = "Proc.new { ReactiveTemplate.new(context, #{attr_template_path.inspect}) }"
+        value = "Proc.new { ReactiveTemplate.new(__p, __c, #{attr_template_path.inspect}) }"
       end
       
       attribute_hash[attribute_node.name] = value

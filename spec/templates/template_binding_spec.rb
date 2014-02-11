@@ -9,11 +9,17 @@ end
 
 describe TemplateBinding do
   before do
-    $page = Page.new
+    @page = double('page')
+    expect(@page).to receive(:templates).at_least(1).times.and_return { @templates }
     
     # TODO: We should decouple things so we don't need to allocate
     @template_binding = TemplateBinding.allocate
+    @template_binding.instance_variable_set('@page', @page)
     @template_binding.setup_path('home/index/index')
+  end
+  
+  def set_template(templates)
+    @page.instance_variable_set('@templates', templates)
   end
   
   after do
@@ -21,7 +27,7 @@ describe TemplateBinding do
   end
   
   it "should lookup sub-templates within its own file" do
-    $page.templates = {
+    @templates = {
       'home/index/blog/nav' => '',
       'home/index/index/nav' => '',
     }
@@ -30,7 +36,7 @@ describe TemplateBinding do
   end
   
   it "should lookup sub-templates within another local view" do
-    $page.templates = {
+    @templates = {
       'home/index/blog/nav' => '',
       'home/index/index/nav' => '',
     }
@@ -39,7 +45,7 @@ describe TemplateBinding do
   end
   
   it "should lookup in another view" do
-    $page.templates = {
+    @templates = {
       'home/index/nav/body' => '',
     }
     
@@ -47,7 +53,7 @@ describe TemplateBinding do
   end
   
   it "should lookup in a controller" do
-    $page.templates = {
+    @templates = {
       'home/nav/index/body' => ''
     }
     
@@ -55,7 +61,7 @@ describe TemplateBinding do
   end
   
   it "should lookup in a controller/view" do
-    $page.templates = {
+    @templates = {
       'home/blog/nav/body' => ''
     }
     
@@ -63,7 +69,7 @@ describe TemplateBinding do
   end
   
   it "should lookup in a controller" do
-    $page.templates = {
+    @templates = {
       'home/nav/index/body' => ''
     }
     
@@ -71,7 +77,7 @@ describe TemplateBinding do
   end
   
   it "should lookup in a component" do
-    $page.templates = {
+    @templates = {
       'nav/index/index/body' => ''
     }
     
@@ -79,7 +85,7 @@ describe TemplateBinding do
   end
   
   it "should lookup in a component/controller/view" do
-    $page.templates = {
+    @templates = {
       'nav/index/index/body' => '',
       'auth/login/new/body' => ''
     }
@@ -88,7 +94,7 @@ describe TemplateBinding do
   end
   
   it "should let you force a sub template" do
-    $page.templates = {
+    @templates = {
       'nav/index/index/title' => '',
       'auth/login/new/title' => ''
     }

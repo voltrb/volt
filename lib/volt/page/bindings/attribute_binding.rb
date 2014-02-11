@@ -2,9 +2,9 @@ require 'volt/page/bindings/base_binding'
 require 'volt/page/targets/attribute_target'
 
 class AttributeBinding < BaseBinding
-  def initialize(target, context, binding_name, attribute_name, getter)
+  def initialize(page, target, context, binding_name, attribute_name, getter)
     # puts "New Attribute Binding: #{binding_name}, #{attribute_name}, #{getter}"
-    super(target, context, binding_name)
+    super(page, target, context, binding_name)
 
     @attribute_name = attribute_name
     @getter = getter

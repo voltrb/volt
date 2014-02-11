@@ -24,6 +24,8 @@ class IfBindingSetup < BindingSetup
       "[#{content}, #{branch[1].inspect}]"
     end.join(', ')
     
-    "lambda { |target, context, id| IfBinding.new(target, context, id, [#{branches}]) }"
+    # variables are captured for branches, so we must prefix them so they don't conflict.
+    # page, target, context, id
+    "lambda { |__p, __t, __c, __id| IfBinding.new(__p, __t, __c, __id, [#{branches}]) }"
   end
 end

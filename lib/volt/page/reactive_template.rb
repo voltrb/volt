@@ -1,11 +1,11 @@
 class ReactiveTemplate
   include Events
   
-  def initialize(context, template_path)
+  def initialize(page, context, template_path)
     # puts "New Reactive Template: #{context.inspect} - #{template_path.inspect}"
     @template_path = template_path
     @target = AttributeTarget.new
-    @template = TemplateRenderer.new(@target, context, "main", template_path)
+    @template = TemplateRenderer.new(page, @target, context, "main", template_path)
   end
   
   def event_added(event, scope_provider, first)
