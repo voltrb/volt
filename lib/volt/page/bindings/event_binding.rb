@@ -21,10 +21,8 @@ end
 
 class EventBinding < BaseBinding
   attr_accessor :context, :binding_name
-  def initialize(target, context, binding_name, event_name, call_proc)
-    @target = target
-    @context = context
-    @binding_name = binding_name
+  def initialize(page, target, context, binding_name, event_name, call_proc)
+    super(page, target, context, binding_name)
     @event_name = event_name
     
     handler = Proc.new do |js_event|
@@ -36,12 +34,12 @@ class EventBinding < BaseBinding
       result = @context.instance_exec(event, &call_proc)
     end
 
-    @listener = $page.events.add(event_name, self, handler)
+    @listener = @page.events.add(event_name, self, handler)
   end
 
   # Remove the event binding
   def remove
     # puts "REMOVE EL FOR #{@event}"
-    $page.events.remove(@event_name, self)
+    @page.events.remove(@event_name, self)
   end
 end

@@ -2,12 +2,12 @@ require 'volt/page/bindings/base_binding'
 
 class TemplateRenderer < BaseBinding
   attr_reader :context
-  def initialize(target, context, binding_name, template_name, templates=$page.templates)
+  def initialize(page, target, context, binding_name, template_name)
     # puts "new template renderer: #{context.inspect} - #{binding_name.inspect}"
-    super(target, context, binding_name)
+    super(page, target, context, binding_name)
 
     # puts "Template Name: #{template_name}"
-    @template = (templates || $page.templates)[template_name]
+    @template = @page.templates[template_name]
     @sub_bindings = []
 
     if @template
@@ -22,7 +22,7 @@ class TemplateRenderer < BaseBinding
 
     bindings.each_pair do |id,bindings_for_id|
       bindings_for_id.each do |binding|
-        @sub_bindings << binding.call(target, context, id)
+        @sub_bindings << binding.call(page, target, context, id)
       end
     end
   end

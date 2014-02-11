@@ -33,6 +33,10 @@ class ModelController
   def page
     $page.page
   end
+  
+  def paged
+    $page.page
+  end
 
   def store
     $page.store

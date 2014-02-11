@@ -1,10 +1,10 @@
 require 'volt/page/bindings/base_binding'
 
 class EachBinding < BaseBinding
-  def initialize(target, context, binding_name, getter, variable_name, template_name)
+  def initialize(page, target, context, binding_name, getter, variable_name, template_name)
     # puts "New EACH Binding"
 
-    super(target, context, binding_name)
+    super(page, target, context, binding_name)
 
     @item_name = variable_name
     @template_name = template_name
@@ -82,7 +82,7 @@ class EachBinding < BaseBinding
     item_context = SubContext.new({@item_name => value, :index => index, :parent => @value}, @context)
 
     # ObjectTracker.enable_cache
-    @templates << TemplateRenderer.new(@target, item_context, binding_name, @template_name)
+    @templates << TemplateRenderer.new(@page, @target, item_context, binding_name, @template_name)
     # puts "ADDED 2"
     # ObjectTracker.disable_cache
   end

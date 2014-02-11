@@ -61,7 +61,7 @@ class Page
           }
         });
       
-        $(document).on('click', 'a', function(event) {        
+        $(document).on('click', 'a', function(event) {
           Opal.gvars.page.$link_clicked($(this).attr('href'));
           event.stopPropagation();
         
@@ -141,7 +141,7 @@ class Page
     main_controller = IndexController.new
 
     # Setup main page template
-    TemplateRenderer.new(DomTarget.new, main_controller, 'CONTENT', 'home/index/index/body')
+    TemplateRenderer.new(self, DomTarget.new, main_controller, 'CONTENT', 'home/index/index/body')
 
     # Setup title listener template
     title_target = AttributeTarget.new
@@ -149,7 +149,7 @@ class Page
       title = title_target.to_html
       `document.title = title;`
     end
-    TemplateRenderer.new(title_target, main_controller, "main", "home/index/index/title")
+    TemplateRenderer.new(self, title_target, main_controller, "main", "home/index/index/title")
     
     # TODO: this dom ready should really happen in the template renderer
     main_controller.dom_ready if main_controller.respond_to?(:dom_ready)
@@ -181,7 +181,7 @@ if Volt.client?
   $page = Page.new
 
   # Call start once the page is loaded
-  Document.ready? do
+  Document.ready? do    
     $page.start
   end
 end

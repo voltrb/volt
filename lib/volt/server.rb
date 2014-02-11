@@ -10,7 +10,7 @@ require "sass"
 require "sprockets-sass"
 require 'listen'
 
-require 'volt/extra_core/extra_core'
+require 'volt'
 require 'volt/server/component_handler'
 if RUBY_PLATFORM != 'java'
   require 'volt/server/socket_connection_handler'

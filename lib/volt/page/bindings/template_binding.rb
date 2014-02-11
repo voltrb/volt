@@ -2,9 +2,9 @@ require 'volt/page/bindings/base_binding'
 require 'volt/page/template_renderer'
 
 class TemplateBinding < BaseBinding
-  def initialize(target, context, binding_name, binding_in_path, getter)
+  def initialize(page, target, context, binding_name, binding_in_path, getter)
     # puts "New template binding: #{context.inspect} - #{binding_name.inspect}"
-    super(target, context, binding_name)
+    super(page, target, context, binding_name)
     
     # Binding in path is the path for the template this binding is in
     setup_path(binding_in_path)
@@ -40,7 +40,7 @@ class TemplateBinding < BaseBinding
   
   # Returns true if there is a template at the path
   def check_for_template?(path)
-    $page.templates[path]
+    @page.templates[path]
   end
   
   # Takes in a lookup path and returns the full path for the matching
@@ -141,7 +141,7 @@ class TemplateBinding < BaseBinding
       current_context = @context
     end
 
-    @current_template = TemplateRenderer.new(@target, current_context, @binding_name, full_path)   
+    @current_template = TemplateRenderer.new(@page, @target, current_context, @binding_name, full_path)   
     
     call_ready
   end
