@@ -22,7 +22,6 @@ module Persistors
     
     def remove_from_collection
       @in_collection = false
-      stop_listening_for_changes
     end
     
     # Called the first time a value is assigned into this model
@@ -31,11 +30,6 @@ module Persistors
         @model.attributes[:_id] ||= generate_id
 
         add_to_identity_map
-        
-        # Check to see if we already have listeners setup
-        if @model.listeners[:changed]
-          listen_for_changes
-        end
       end
     end
     
@@ -71,39 +65,19 @@ module Persistors
       end
     end
 
-    def listen_for_changes
-      unless @change_listening
-        if @in_collection
-          @change_listening = true
-          change_channel_connection("add")
-        end
-      end
-    end
-    
-    def stop_listening_for_changes
-      if @change_listening
-        @change_listening = false
-        change_channel_connection("remove")
-      end
-    end
-
     def event_added(event, scope_provider, first)
       if first && event == :changed
         # Start listening
         ensure_setup
-        listen_for_changes
+        # listen_for_changes
       end
     end
   
     def event_removed(event, no_more_events)
       if no_more_events && event == :changed
         # Stop listening
-        stop_listening_for_changes
+        # stop_listening_for_changes
       end
-    end
-
-    def channel_name
-       @channel_name ||= "#{@model.path[-2]}##{@model.attributes[:_id]}"
     end
     
     # Update the models based on the id/identity map.  Usually these requests
