@@ -73,15 +73,21 @@ class EachBinding < BaseBinding
     binding_name = @@binding_number
     @@binding_number += 1
 
-    # Setup new bindings in the spot we want to insert the item
-    section.insert_anchor_before_end(binding_name)
+    if position >= @templates.size
+      # Setup new bindings in the spot we want to insert the item
+      section.insert_anchor_before_end(binding_name)
+    else
+      # Insert the item before an existing item 
+      section.insert_anchor_before(binding_name, @templates[position].binding_name)
+    end
 
     index = ReactiveValue.new(position)
     value = @value[index]
     
     item_context = SubContext.new({@item_name => value, :index => index, :parent => @value}, @context)
 
-    @templates << TemplateRenderer.new(@target, item_context, binding_name, @template_name)
+    item_template = TemplateRenderer.new(@target, item_context, binding_name, @template_name)
+    @templates.insert(position, item_template)
   end
 
   def update(item=nil)

@@ -69,7 +69,7 @@ module Persistors
       
       # run_query(model, query)
       
-      return model
+      return ReactiveValue.new(model)
     end
     
     # Called from backend

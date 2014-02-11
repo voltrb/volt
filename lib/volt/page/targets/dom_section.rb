@@ -47,6 +47,11 @@ class DomSection < BaseSection
     Element.find(@end_node).before("<!-- $#{binding_name} --><!-- $/#{binding_name} -->")
   end
   
+  def insert_anchor_before(binding_name, insert_after_binding)
+    node = find_by_comment("$#{insert_after_binding}")
+    Element.find(node).before("<!-- $#{binding_name} --><!-- $/#{binding_name} -->")
+  end
+  
   # Takes in an array of dom nodes and replaces the current content
   # with the new nodes
   def nodes=(nodes)
