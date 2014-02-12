@@ -57,10 +57,12 @@ class LiveQuery
   end
   
   def add_channel(channel)
+    puts "ADD CHANNEL"
     @channels << channel
   end
   
   def remove_channel(channel)
+    puts "REMOVE CHANNEL"
     @channels.delete(channel)
     
     if @channels.size == 0

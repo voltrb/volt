@@ -22,11 +22,8 @@ class QueryTasks
     
     live_query.add_channel(@channel)
     
-    puts "Update for new"
-    initial_data = live_query.initial_data
-    
-    puts "ID-------" + initial_data.inspect
-    return initial_data
+    # Return the initial data
+    return live_query.initial_data
   end
   
   # Remove a listening channel, the LiveQuery will automatically remove 

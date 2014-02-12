@@ -16,7 +16,7 @@ class QueryListener
   def add_listener
     @listening = true
     @tasks.call('QueryTasks', 'add_listener', @collection, @query) do |results|
-      puts "RESULTS: #{results.inspect}"
+      # When the initial data comes back, add it into the stores.
       results.each do |index, data|
         @stores.each do |store|
           store.add(index, data)
@@ -30,6 +30,8 @@ class QueryListener
     @stores << store
     
     if @listening
+      # We are already listening and have this model somewhere else,
+      # copy the data from the existing model.
       @stores.first.each_with_index do |item, index|
         store.add(index, item)
       end
@@ -46,11 +48,14 @@ class QueryListener
     # When there are no stores left, remove the query listener from
     # the pool, it can get created again later.
     if @stores.size == 0
+      puts "OM"
       @query_listener_pool.remove(@collection, @query)
+      puts "PM"
       
       # Stop listening
       if @listening
         @listening = false
+        puts "TOTAL REMOVE"
         @tasks.call('QueryTasks', 'remove_listener', @collection, @query)        
       end
     end

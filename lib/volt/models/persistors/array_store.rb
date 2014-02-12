@@ -23,6 +23,7 @@ module Persistors
     end
     
     def event_removed(event, no_more_events)
+      @query_listener.remove_store(self) if no_more_events && @query_listener
     end
 
     # Called the first time data is requested from this collection
@@ -49,11 +50,11 @@ module Persistors
         end
       end
 
-      query_listener = @@query_pool.lookup(collection, query) do
+      @query_listener = @@query_pool.lookup(collection, query) do
         # Create if it does not exist
         QueryListener.new(@@query_pool, @tasks, collection, query)
       end
-      query_listener.add_store(model.persistor)
+      @query_listener.add_store(model.persistor)
     end
     
     def find(query={})

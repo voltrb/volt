@@ -1,7 +1,7 @@
 require 'volt/utils/generic_pool'
 
 class PoolTest < GenericPool
-  def create(collection, query)
+  def create(collection, query, other=nil)
     return Object.new
   end
 end

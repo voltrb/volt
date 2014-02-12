@@ -1,36 +1,36 @@
 require 'volt/utils/generic_counting_pool'
 
 class CountingPoolTest < GenericCountingPool
-  def create(id)
+  def create(id, name=nil)
     return Object.new
   end
 end
 
 describe GenericCountingPool do
   before do
-    @pool_test = CountingPoolTest.new
+    @count_pool = CountingPoolTest.new
   end
   
   it "should lookup and retrieve" do
-    item1 = @pool_test.find('one')
+    item1 = @count_pool.find('one')
     
-    item2 = @pool_test.find('one')
-    item3 = @pool_test.find('two')
+    item2 = @count_pool.find('one')
+    item3 = @count_pool.find('two')
     
     expect(item1).to eq(item2)
     expect(item2).to_not eq(item3)
   end
   
   it "should only remove items when the same number have been removed as have been added" do
-    item1 = @pool_test.find('_items', 'one')
-    item2 = @pool_test.find('_items', 'one')
-    expect(@pool_test.instance_variable_get('@pool')).to_not eq({})
+    item1 = @count_pool.find('_items', 'one')
+    item2 = @count_pool.find('_items', 'one')
+    expect(@count_pool.instance_variable_get('@pool')).to_not eq({})
 
-    @pool_test.remove('_items', 'one')
-    expect(@pool_test.instance_variable_get('@pool')).to_not eq({})
+    @count_pool.remove('_items', 'one')
+    expect(@count_pool.instance_variable_get('@pool')).to_not eq({})
 
-    @pool_test.remove('_items', 'one')
-    expect(@pool_test.instance_variable_get('@pool')).to eq({})
+    @count_pool.remove('_items', 'one')
+    expect(@count_pool.instance_variable_get('@pool')).to eq({})
     
   end
 end
