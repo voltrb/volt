@@ -695,6 +695,13 @@ TODO
 
 # Data Store
 
+Volt provides a data store collection on the front-end and the back-end.  Unlike the other [collections](#provided-collections), all plural names are assumed to be collections (like an array), and all singluar are assumed to be a model (like a hash).
+
+```ruby
+
+store._things
+```
+
 **Work in process**
 
 | state       | events bound | description                                                  |
