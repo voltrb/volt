@@ -201,5 +201,15 @@ module Events
   def trigger_by_scope!(event, *args, &block)
     trigger!(event, block, *args)
   end
+  
+  # Takes an event and a list of method names, and triggers the event for each listener
+  # coming off of those methods.
+  def trigger_for_methods!(event, *method_names)
+    trigger_by_scope!(event, [], nil) do |scope|
+      method_name = scope.first
+      
+      method_names.include?(method_name)
+    end
+  end
 
 end

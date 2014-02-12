@@ -42,7 +42,7 @@ class ReactiveValue < BasicObject
   # Proxy methods to the ReactiveManager.  We want to have as few
   # as possible methods on reactive values, so all other methods
   # are forwarded to the object the reactive value points to.
-  [:cur, :cur=, :on, :trigger!, :trigger_by_scope!].each do |method_name|
+  [:cur, :cur=, :deep_cur, :on, :trigger!, :trigger_by_scope!].each do |method_name|
     define_method(method_name) do |*args, &block|
       @reactive_manager.send(method_name, *args, &block)
     end
@@ -173,6 +173,63 @@ class ReactiveValue < BasicObject
       return [wrapped_object, self]
     end
   end
+  
+  # Return a new reactive value that listens for changes on any
+  # ReactiveValues inside of its children (hash values, array items, etc..)
+  # This is useful if someone is passing in a set of options, but the main
+  # hash isn't a ReactiveValue, but you want to listen for changes inside
+  # of the hash.
+  #
+  # skip_if_no_reactives lets you get back a non-reactive value in the event
+  #    that there are no child reactive values.
+  def self.from_hash(hash, skip_if_no_reactives=false)
+    ::ReactiveGenerator.from_hash(hash)
+  end
+end
+
+class ReactiveGenerator
+  # Takes a hash and returns a ReactiveValue that depends on
+  # any ReactiveValue's inside of the hash (or children).
+  def self.from_hash(hash, skip_if_no_reactives=false)
+    reactives = find_reactives(hash)
+    
+    if skip_if_no_reactives && reactives.size == 0
+      # There weren't any reactives, we can just use the hash
+      return hash
+    else
+      # Create a new reactive value that listens on all of its
+      # child reactive values.
+      value = ReactiveValue.new(hash)
+    
+      reactives.each do |child|
+        value.reactive_manager.add_parent!(child)
+      end
+    
+      return value
+    end
+  end
+
+  # Recursively loop through the data, returning a list of all
+  # reactive values in the hash, array, etc..
+  def self.find_reactives(object)
+    found = []
+    if object.reactive?
+      found << object
+      
+      found += find_reactives(object.cur)
+    elsif object.is_a?(Array)
+      object.each do |item|
+        found += find_reactives(item)
+      end
+    elsif object.is_a?(Hash)
+      object.each_pair do |key, value|
+        found += find_reactives(key)
+        found += find_reactives(value)
+      end
+    end
+    
+    return found.flatten
+  end
 end
 
 class ReactiveManager
@@ -266,6 +323,13 @@ class ReactiveManager
     end
   end
   
+  # Returns a copy of the object with where all ReactiveValue's are replaced
+  # with their current value.
+  # NOTE: Classes need to implement their own deep_cur method for this to work,
+  # it works out of the box with arrays and hashes.
+  def deep_cur
+    self.cur.deep_cur
+  end
   
   # Method calls can be tagged so the reactive value knows
   # how to handle them.  This lets you check the state of

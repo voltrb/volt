@@ -196,6 +196,8 @@ If you want these to be used reactively, see the section on [with](#with)
 
 Also, due to a small limitation in ruby, ReactiveValue's always are truthy.  See the [truthy checks](#truthy-checks-true-false-or-and-and) section on how to check for truth.
 
+When passing something that may contain reactive values to a JS function, you can call ```.deep_cur``` on any object to get back a copy that will have all reactive value's turned into their current value.
+
 ### Current Status
 
 NOTE: currently ReactiveValue's are not complete.  At the moment, they do not handle methods that are passed blocks (or procs, lambda's).  This is planned, but not complete.  At the moment you can use [with](#with) to accomplish similar things.
@@ -689,3 +691,15 @@ Controllers provide a .channel method, that you can use to get the status of the
 ## Accessing DOM section in a controller
 
 TODO
+
+
+# Data Store
+
+**Work in process**
+
+| state       | events bound | description                                                  |
+|-------------|--------------|--------------------------------------------------------------|
+| not_loaded  | no           | no events and no one has accessed the data in the model      |
+| loading     | maybe        | someone either accessed the data or bound an event           |
+| loaded      | yes          | data is loaded and there is an event bound                   |
+| dirty       | no           | data was either accessed without binding an event, or an event was bound, but later unbound. |

@@ -23,7 +23,7 @@ class QueryListener
           store.add(index, data)
         end
         
-        store.loaded!
+        store.change_state_to(:loaded)
       end
     end
   end
@@ -36,7 +36,7 @@ class QueryListener
       # We are already listening and have this model somewhere else,
       # copy the data from the existing model.
       store.model.clear
-      @stores.first.each_with_index do |item, index|
+      @stores.first.model.each_with_index do |item, index|
         store.add(index, item)
       end
     else

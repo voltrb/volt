@@ -40,6 +40,10 @@ class ArrayModel < ReactiveArray
     end
   end
   
+  def loaded?
+    state == :loaded
+  end
+  
   tag_method(:find) do
     destructive!
     pass_reactive!

@@ -344,4 +344,10 @@ describe ReactiveValue do
       expect(count).to eq(2)
     end
   end
+  
+  it "should give you back the object without any ReactiveValue's if you call .deep_cur on it." do
+    a = ReactiveValue.new({_names: [ReactiveValue.new('bob'), ReactiveValue.new('jim')]})
+    
+    expect(a.deep_cur).to eq({_names: ['bob', 'jim']})
+  end
 end

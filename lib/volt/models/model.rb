@@ -195,7 +195,11 @@ class Model
   
   def inspect
     "<#{self.class.to_s} #{attributes.inspect}>"
-  end  
+  end
+  
+  def deep_cur
+    attributes
+  end
   
   private
     # Clear the previous value and assign a new one

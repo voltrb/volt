@@ -18,7 +18,9 @@ class GenericPool
     section = @pool
     
     # TODO: This is to work around opal issue #500
-    args.pop if args.last == nil
+    if RUBY_PLATFORM == 'opal'
+      args.pop if args.last == nil
+    end
     
     
     args.each_with_index do |arg, index|
@@ -38,7 +40,6 @@ class GenericPool
   # Does the actual creating, if a block is not passed in, it calls
   # #create on the class.
   def create_new_item(*args)
-    puts "ADD POOL: #{args.inspect}"
     if block_given?
       new_item = yield(*args)
     else
@@ -62,7 +63,6 @@ class GenericPool
   end
   
   def remove(*args)
-    puts "REMOVE FROM POOL: #{args.inspect} - #{@pool.inspect}"
     stack = []
     section = @pool
     

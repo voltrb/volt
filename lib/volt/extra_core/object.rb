@@ -33,4 +33,8 @@ class Object
       __send__(*a, &b)
     end
   end
+  
+  def deep_cur
+    self.cur
+  end
 end

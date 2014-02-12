@@ -12,9 +12,16 @@ module Persistors
       @@query_pool
     end
     
+    def initialize(model, tasks=nil)
+      super
+      
+      @query = ReactiveValue.from_hash(@model.options[:query] || {})
+      
+    end
+    
     # Called when a collection loads
     def loaded
-      @state = :not_loaded
+      change_state_to :not_loaded
     end
     
     def event_added(event, scope_provider, first)
@@ -26,16 +33,25 @@ module Persistors
     def event_removed(event, no_more_events)
       # Remove listener where there are no more events on this model
       if no_more_events && @query_listener && @model.listeners.size == 0
-        @query_listener.remove_store(self)
-        @query_listener = nil
-
-        @state = :dirty
+        stop_listening
       end
+    end
+    
+    # Called when an event is removed and we no longer want to keep in
+    # sync with the database.
+    def stop_listening
+      @query_listener.remove_store(self)
+      @query_listener = nil
+
+      change_state_to :dirty
     end
 
     # Called from the QueryListener when the data is loaded
-    def loaded!
-      @state = :loaded
+    def change_state_to(new_state)
+      @state = new_state
+      
+      # Trigger changed on the 'state' method
+      trigger_for_methods!('changed', :state, :loaded?)
     end
 
     # Called the first time data is requested from this collection
@@ -43,15 +59,27 @@ module Persistors
       # Don't load data from any queried
       if @state == :not_loaded || @state == :dirty
         puts "Load Data"
-        @state = :loading
+        change_state_to :loading
         
-        run_query(@model, @model.options[:query] || {})
+        @query_changed_listener.remove if @query_changed_listener
+        if @query.reactive?
+          # Query might change, change the query when it does
+          @query_changed_listener = @query.on('changed') do
+            stop_listening
+            
+            load_data
+          end
+        end
+        
+        puts "QUERY: #{@query.deep_cur.inspect}"
+
+        run_query(@model, @query.deep_cur)
       end
     end
     
     # Clear out the models data, since we're not listening anymore.
     def unload_data
-      @state = :not_loaded
+      change_state_to :not_loaded
       @model.clear
     end
     
