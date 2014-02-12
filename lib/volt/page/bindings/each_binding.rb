@@ -51,20 +51,8 @@ class EachBinding < BaseBinding
     @templates[position].remove
     @templates.delete_at(position)
     
-    value_obj = @value.cur
-    
-    if value_obj
-      size = value_obj.size - 1
-    else
-      size = 0
-    end
-    
-    # puts "Position: #{position} to #{size}"
-    
     # Removed at the position, update context for every item after this position
-    position.upto(size) do |index|
-      @templates[index].context.locals[:index].cur = index
-    end
+    update_indexes_after(position)
   end
 
   def item_added(position)
@@ -88,6 +76,19 @@ class EachBinding < BaseBinding
 
     item_template = TemplateRenderer.new(@page, @target, item_context, binding_name, @template_name)
     @templates.insert(position, item_template)
+    
+    update_indexes_after(position)
+  end
+  
+  # When items are added or removed in the middle of the list, we need
+  # to update each templates index value.
+  def update_indexes_after(start_index)
+    size = @templates.size
+    if size > 0
+      start_index.upto(@templates.size-1) do |index|
+        @templates[index].context.locals[:index].cur = index
+      end
+    end
   end
 
   def update(item=nil)

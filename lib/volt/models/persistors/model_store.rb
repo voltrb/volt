@@ -67,16 +67,7 @@ module Persistors
 
     def event_added(event, scope_provider, first)
       if first && event == :changed
-        # Start listening
         ensure_setup
-        # listen_for_changes
-      end
-    end
-  
-    def event_removed(event, no_more_events)
-      if no_more_events && event == :changed
-        # Stop listening
-        # stop_listening_for_changes
       end
     end
     

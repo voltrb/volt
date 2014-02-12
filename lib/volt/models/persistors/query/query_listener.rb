@@ -15,14 +15,29 @@ class QueryListener
   
   def add_listener
     @listening = true
-    @tasks.call('QueryTasks', 'add_listener', @collection, @query)
+    @tasks.call('QueryTasks', 'add_listener', @collection, @query) do |results|
+      puts "RESULTS: #{results.inspect}"
+      results.each do |index, data|
+        @stores.each do |store|
+          store.add(index, data)
+        end
+      end
+    end
   end
   
-  def add_store(store)
+  def add_store(store, &block)
     puts "ADD STORE: #{store.inspect} - to #{self.inspect}"
     @stores << store
     
-    add_listener unless @listening
+    if @listening
+      @stores.first.each_with_index do |item, index|
+        store.add(index, item)
+      end
+    else
+      # First time we've added a store, setup the listener and get
+      # the initial data.
+      add_listener
+    end
   end
   
   def remove_store(store)

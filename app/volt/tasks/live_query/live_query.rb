@@ -51,15 +51,9 @@ class LiveQuery
   end
   
   
-  # Sends the query results the first time a channel connects
-  def notify_initial_data!(channel)
-    puts "NOTIFY INITIAL"
-    notify!(nil, channel) do |channel|
-      @query_tracker.results.each_with_index do |result, index|
-        puts "SEND: #{result.inspect} for #{@collection.inspect} - #{@query.inspect} to #{channel.inspect}"
-        channel.send_message("added", nil, @collection, @query, index, result)
-      end
-    end
+  # return the query results the first time a channel connects
+  def initial_data
+    @query_tracker.results.map.with_index {|data, index| [index, data] }
   end
   
   def add_channel(channel)

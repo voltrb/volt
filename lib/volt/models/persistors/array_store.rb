@@ -18,10 +18,8 @@ module Persistors
     end
     
     def event_added(event, scope_provider, first)
-      puts "EVENT ADDED -- #{event}"
-      if event == :added
-        load_data
-      end
+      # First event, we load the data.
+      load_data if first
     end
     
     def event_removed(event, no_more_events)

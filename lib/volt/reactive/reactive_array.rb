@@ -131,6 +131,7 @@ class ReactiveArray# < Array
 
     # All objects from index to the end have "changed"
     index.upto(result.size-1) do |idx|
+      puts "CHANGED FOR #{idx}"
       trigger_for_index!('changed', idx)
     end
 
