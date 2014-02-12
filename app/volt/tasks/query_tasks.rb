@@ -16,7 +16,6 @@ class QueryTasks
   end
   
   def add_listener(collection, query)
-    puts "Add listener for #{collection} - #{query.inspect}"
     live_query = @@live_query_pool.lookup(collection, query)
     track_channel_in_live_query(live_query)
     
@@ -29,7 +28,6 @@ class QueryTasks
   # Remove a listening channel, the LiveQuery will automatically remove 
   # itsself from the pool when there are no channels.
   def remove_listener(collection, query)
-    puts "Remove Channel"
     live_query = @@live_query_pool.lookup(collection, query)
     live_query.remove_channel(@channel)
   end

@@ -206,9 +206,13 @@ module Events
   # coming off of those methods.
   def trigger_for_methods!(event, *method_names)
     trigger_by_scope!(event, [], nil) do |scope|
-      method_name = scope.first
+      if scope
+        method_name = scope.first
       
-      method_names.include?(method_name)
+        method_names.include?(method_name)
+      else
+        false
+      end
     end
   end
 

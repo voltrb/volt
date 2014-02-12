@@ -51,7 +51,7 @@ module Persistors
       @state = new_state
       
       # Trigger changed on the 'state' method
-      trigger_for_methods!('changed', :state, :loaded?)
+      @model.trigger_for_methods!('changed', :state, :loaded?)
     end
 
     # Called the first time data is requested from this collection
