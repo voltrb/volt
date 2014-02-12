@@ -18,23 +18,41 @@ module Persistors
     end
     
     def event_added(event, scope_provider, first)
+      puts "ADD EV: #{event} - #{first}"
       # First event, we load the data.
       load_data if first
     end
     
     def event_removed(event, no_more_events)
-      @query_listener.remove_store(self) if no_more_events && @query_listener
+      # Remove listener where there are no more events on this model
+      if no_more_events && @query_listener && @model.listeners.size == 0
+        @query_listener.remove_store(self)
+        @query_listener = nil
+
+        @state = :dirty
+      end
+    end
+
+    # Called from the QueryListener when the data is loaded
+    def loaded!
+      @state = :loaded
     end
 
     # Called the first time data is requested from this collection
     def load_data
       # Don't load data from any queried
-      if @state == :not_loaded
+      if @state == :not_loaded || @state == :dirty
         puts "Load Data"
-        @state = :loaded
+        @state = :loading
         
         run_query(@model, @model.options[:query] || {})
       end
+    end
+    
+    # Clear out the models data, since we're not listening anymore.
+    def unload_data
+      @state = :not_loaded
+      @model.clear
     end
     
     def run_query(model, query={})

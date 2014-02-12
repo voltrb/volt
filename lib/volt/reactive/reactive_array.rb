@@ -87,6 +87,15 @@ class ReactiveArray# < Array
     self.delete_at(@array.index(val))
   end
   
+  # Removes all items in the array model.
+  tag_method(:clear) do
+    destructive!
+  end
+  def clear
+    @array = []
+    trigger!('changed')
+  end
+  
 
   tag_method(:<<) do
     pass_reactive!

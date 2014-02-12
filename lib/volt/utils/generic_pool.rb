@@ -38,6 +38,7 @@ class GenericPool
   # Does the actual creating, if a block is not passed in, it calls
   # #create on the class.
   def create_new_item(*args)
+    puts "ADD POOL: #{args.inspect}"
     if block_given?
       new_item = yield(*args)
     else
@@ -61,6 +62,7 @@ class GenericPool
   end
   
   def remove(*args)
+    puts "REMOVE FROM POOL: #{args.inspect} - #{@pool.inspect}"
     stack = []
     section = @pool
     

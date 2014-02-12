@@ -17,10 +17,13 @@ class QueryListener
     @listening = true
     @tasks.call('QueryTasks', 'add_listener', @collection, @query) do |results|
       # When the initial data comes back, add it into the stores.
-      results.each do |index, data|
-        @stores.each do |store|
+      @stores.each do |store|
+        store.model.clear
+        results.each do |index, data|
           store.add(index, data)
         end
+        
+        store.loaded!
       end
     end
   end
@@ -32,6 +35,7 @@ class QueryListener
     if @listening
       # We are already listening and have this model somewhere else,
       # copy the data from the existing model.
+      store.model.clear
       @stores.first.each_with_index do |item, index|
         store.add(index, item)
       end
