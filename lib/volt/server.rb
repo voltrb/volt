@@ -1,6 +1,7 @@
 ENV['SERVER'] = 'true'
 
 require 'opal'
+require 'thin'
 require "rack"
 if RUBY_PLATFORM != 'java'
   require "rack/sockjs"
@@ -42,8 +43,8 @@ module Rack
 end
 
 class Server
-  def initialize
-    @app_path = File.expand_path(File.join(Dir.pwd, "app"))
+  def initialize(path=nil)
+    @app_path = path || File.expand_path(File.join(Dir.pwd, "app"))
     @component_paths = ComponentPaths.new
     
     setup_change_listener

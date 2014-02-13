@@ -43,4 +43,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "guard-rspec", "~> 1.2.0"
   spec.add_development_dependency "opal-rspec", "0.3.0.beta2"
   spec.add_development_dependency "yard", "~> 0.8.7.0"
+  spec.add_development_dependency "capybara", "~> 2.2.0"
+  spec.add_development_dependency "selenium-webdriver", "~> 2.39.0"
+  spec.add_development_dependency "chromedriver2-helper", "~> 0.0.8"
+  
 end

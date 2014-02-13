@@ -62,7 +62,6 @@ class ArrayModel < ReactiveArray
   
   # Make sure it gets wrapped
   def <<(model)
-    puts "ITEM: #{model.cur.inspect}"
     if model.cur.is_a?(Model)
       # Set the new path
       model.cur.options = @options.merge(path: @options[:path] + [:[]])

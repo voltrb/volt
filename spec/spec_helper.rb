@@ -5,7 +5,21 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
+require 'capybara/rspec'
+
+# Needed at the moment to get chrome tests working
+require 'chromedriver2/helper'
 require 'volt'
+require 'volt/server'
+
+Capybara.app = Server.new.app
+
+Capybara.register_driver :selenium_chrome do |app|
+  Capybara::Selenium::Driver.new(app, :browser => :chrome)
+end
+
+Capybara.default_driver = :selenium_chrome
+
 
 if RUBY_PLATFORM != 'opal'
   RSpec.configure do |config|

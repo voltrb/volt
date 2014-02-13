@@ -3,9 +3,9 @@ if RUBY_PLATFORM != 'opal'
 
   describe AssetFiles do
     before do
-      spec_app_root = File.join(File.dirname(__FILE__), "../..")
+      spec_app_root = File.join(File.dirname(__FILE__), "../../apps/file_loading")
     
-      path_to_main = File.join(File.dirname(__FILE__), "../../app/main")
+      path_to_main = File.join(File.dirname(__FILE__), "../../apps/file_loading/app/main")
       @component_paths = ComponentPaths.new(spec_app_root)
     end
   
