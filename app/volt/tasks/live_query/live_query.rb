@@ -30,7 +30,7 @@ class LiveQuery
   end
   
   def notify_added(index, data, skip_channel)
-    notify! do |channel|
+    notify!(skip_channel) do |channel|
       # puts "Added: #{index} - #{data.inspect} to #{channel.inspect}"
       channel.send_message("added", nil, @collection, @query, index, data)
     end

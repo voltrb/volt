@@ -47,18 +47,23 @@ class ComponentPaths
     return @components
   end
   
-  # Makes each components classes available on the load path
-  def setup_components_load_path
+  # Makes each components classes available on the load path, require classes.
+  def require_in_components
+    # app_folders do |app_folder|
+    #   $LOAD_PATH.unshift(app_folder)
+    #   
+    #   Dir["#{app_folder}/*/{controllers,model}/*.rb"].each do |ruby_file|
+    #     path = ruby_file.gsub(/^#{app_folder}\//, '')[0..-4]
+    #     puts "Path: #{path}"
+    #     # require(path)
+    #   end
+    # end
+    
+    # add each tasks folder directly
     components.each do |name,component_folders|
       component_folders.each do |component_folder|
-        Dir["#{component_folder}/{controllers,models,tasks}"].sort.each do |folder|
-          $LOAD_PATH.unshift(folder)
-          
-          # Dir["#{folder}/*.rb"].each do |ruby_file|
-          #   require_name = ruby_file[/[^\/.]+[.]rb$/][0..-4]
-          #   puts "REQUIRE: #{require_name}"
-          #   require(require_name)
-          # end
+        Dir["#{component_folder}/tasks"].sort.each do |tasks_folder|
+          $LOAD_PATH.unshift(tasks_folder)
         end
       end
     end

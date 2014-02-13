@@ -18,7 +18,7 @@ class Console
         
     app_path = File.expand_path(File.join(Dir.pwd, "app"))
     component_paths = ComponentPaths.new
-    component_paths.setup_components_load_path
+    component_paths.require_in_components
 
     Pry.config.prompt_name = 'volt'
 

@@ -93,7 +93,7 @@ class Server
     
     # Handle socks js connection
     if RUBY_PLATFORM != 'java'
-      component_paths.setup_components_load_path
+      component_paths.require_in_components
       SocketConnectionHandler.dispatcher = Dispatcher.new
       
       @app.map "/channel" do
