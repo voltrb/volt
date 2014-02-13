@@ -20,4 +20,27 @@ module ModelHelpers
   def event_removed(event, no_more_events)
     @persistor.event_removed(event, no_more_events) if @persistor
   end
+  
+  # Gets the class for a model at the specified path.
+  def class_at_path(path)
+    if path && path.last == :[]
+      begin
+        # TODO: SECURITY on the back-end we need to check that the model class we're loading
+        # is coming from the models folder.
+        
+        # remove the _ and then singularize
+        klass_name = path[-2][1..-1].singularize.camelize
+        
+        klass_name = klass_name.camelize
+        klass = Object.send(:const_get, klass_name.to_sym)
+      rescue NameError => e
+        # Ignore exception, just means the model isn't defined
+        klass = Model
+      end
+    else
+      klass = Model
+    end
+    
+    return klass
+  end
 end

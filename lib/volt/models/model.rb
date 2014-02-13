@@ -132,8 +132,8 @@ class Model
     end
   end
   
-  def new_model(*args)
-    Model.new(*args)
+  def new_model(attributes, options)
+    class_at_path(options[:path]).new(attributes, options)
   end
   
   def new_array_model(*args)

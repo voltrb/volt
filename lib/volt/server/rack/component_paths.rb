@@ -51,8 +51,14 @@ class ComponentPaths
   def setup_components_load_path
     components.each do |name,component_folders|
       component_folders.each do |component_folder|
-        Dir["#{component_folder}/tasks"].sort.each do |tasks_folder|
-          $LOAD_PATH.unshift(tasks_folder)
+        Dir["#{component_folder}/{controllers,models,tasks}"].sort.each do |folder|
+          $LOAD_PATH.unshift(folder)
+          
+          # Dir["#{folder}/*.rb"].each do |ruby_file|
+          #   require_name = ruby_file[/[^\/.]+[.]rb$/][0..-4]
+          #   puts "REQUIRE: #{require_name}"
+          #   require(require_name)
+          # end
         end
       end
     end

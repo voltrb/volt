@@ -35,7 +35,6 @@ class Page
   attr_reader :url, :params, :page, :store, :flash, :templates, :routes, :draw_cycle, :events
 
   def initialize
-
     # debugger
     puts "------ Page Loaded -------"
     @model_classes = {}
