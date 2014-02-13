@@ -25,16 +25,22 @@ class Model
   attr_reader :parent, :path, :persistor, :options
   
   def initialize(attributes={}, options={})
-    @options = options
-    @parent = options[:parent]
-    @path = options[:path] || []
-    @class_paths = options[:class_paths]
-    @persistor = setup_persistor(options[:persistor])
+    self.options = options
 
     self.attributes = wrap_values(attributes)
     
     @persistor.loaded if @persistor
   end
+  
+  # Update the options
+  def options=(options)
+    @options = options
+    @parent = options[:parent]
+    @path = options[:path] || []
+    @class_paths = options[:class_paths]
+    @persistor = setup_persistor(options[:persistor])
+  end
+  
   
   # Pass the comparison through
   def ==(val)

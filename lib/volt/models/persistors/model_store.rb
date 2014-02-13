@@ -84,7 +84,11 @@ module Persistors
         end
       end
     end
-
+  
+    def [](val)
+      raise "Models do not support hash style lookup.  Hashes inserted into other models are converted to models, see https://github.com/voltrb/volt#automatic-model-conversion"
+    end
+  
     private
       # Return the attributes that are only for this store, not any sub-associations.
       def self_attributes

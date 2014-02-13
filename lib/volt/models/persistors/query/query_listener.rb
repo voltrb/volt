@@ -29,7 +29,6 @@ class QueryListener
   end
   
   def add_store(store, &block)
-    puts "ADD STORE: #{store.inspect} - to #{self.inspect}"
     @stores << store
     
     if @listening
@@ -52,14 +51,11 @@ class QueryListener
     # When there are no stores left, remove the query listener from
     # the pool, it can get created again later.
     if @stores.size == 0
-      puts "OM"
       @query_listener_pool.remove(@collection, @query)
-      puts "PM"
       
       # Stop listening
       if @listening
         @listening = false
-        puts "TOTAL REMOVE"
         @tasks.call('QueryTasks', 'remove_listener', @collection, @query)        
       end
     end

@@ -61,12 +61,18 @@ class ArrayModel < ReactiveArray
   end
   
   # Make sure it gets wrapped
-  def <<(*args)
-    args = wrap_values(args)
+  def <<(model)
+    puts "ITEM: #{model.cur.inspect}"
+    if model.cur.is_a?(Model)
+      # Set the new path
+      model.cur.options = @options.merge(path: @options[:path] + [:[]])
+    else
+      model = wrap_values([model]).first
+    end
     
-    super(*args)
+    super(model)
     
-    @persistor.added(args[0], @array.size-1) if @persistor
+    @persistor.added(model, @array.size-1) if @persistor
   end
   
   # Make sure it gets wrapped

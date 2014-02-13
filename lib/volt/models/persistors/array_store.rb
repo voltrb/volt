@@ -70,8 +70,6 @@ module Persistors
             load_data
           end
         end
-        
-        puts "QUERY: #{@query.deep_cur.inspect}"
 
         run_query(@model, @query.deep_cur)
       end
