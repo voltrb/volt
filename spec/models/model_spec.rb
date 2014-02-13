@@ -1,5 +1,10 @@
 require 'volt/models'
 
+
+class TestItem < Model
+  
+end
+
 describe Model do
   
   it "should allow _ methods to be used to store values without predefining them" do
@@ -476,6 +481,13 @@ describe Model do
     it "should set the model path for sub sub arrays" do
       @model._lists << {_name: 'List 1', _items: []}
       expect(@model._lists[0]._items.path.cur).to eq([:_lists, :[], :_items])
+    end
+    
+    it "should update the path when added from a model instance to a collection" do
+      test_item = TestItem.new
+      
+      @model._items << test_item
+      expect(@model._items[0].path).to eq([:_items, :[]])
     end
   end
   
