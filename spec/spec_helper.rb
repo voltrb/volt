@@ -5,20 +5,48 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
+ENV['SAUCE_USERNAME'] = 'ryanstout'
+ENV['SAUCE_ACCESS_KEY'] = 'a537b01d-33ed-4028-9e80-eeb602748a5f'
+
 require 'capybara/rspec'
 
-# Needed at the moment to get chrome tests working
-require 'chromedriver2/helper'
-require 'volt'
-require 'volt/server'
-
-Capybara.app = Server.new.app
-
-Capybara.register_driver :selenium_chrome do |app|
-  Capybara::Selenium::Driver.new(app, :browser => :chrome)
+if ENV['IN_BROWSER']
+  # Needed at the moment to get chrome tests working
+  require 'chromedriver2/helper'
+  require 'capybara/poltergeist'
+  # require "sauce/capybara"
+  # require 'sauce/connect'
 end
 
-Capybara.default_driver = :selenium_chrome
+require 'volt'
+
+# Capybara.default_driver = :sauce
+# Capybara.server_port = 2020
+# 
+# Sauce.config do |conf|
+#   conf[:start_tunnel] = true
+#   conf[:browsers] = [
+#     ["Windows 7","Firefox","26"]
+#   ]
+#   # conf[:application_host] = "127.0.0.1"
+#   # conf[:application_port] = "2020"
+#   # conf[:browser_url] = "http://127.0.0.1:2020/"
+# end
+
+# Capybara.register_driver :selenium do |app|
+#   Capybara::Selenium::Driver.new(app, :browser => :chrome)
+# end
+
+# Capybara.default_driver = :selenium
+if ENV['IN_BROWSER']
+  require 'volt/server'
+
+
+  kitchen_sink_path = File.expand_path(File.join(File.dirname(__FILE__), "apps/kitchen_sink"))
+  Capybara.app = Server.new(kitchen_sink_path).app
+  
+  Capybara.default_driver = :poltergeist
+end
 
 
 if RUBY_PLATFORM != 'opal'

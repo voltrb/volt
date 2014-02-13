@@ -10,7 +10,8 @@ class IndexFiles
     
     @@router ||= Routes.new.define do
       # Find the route file
-      route_file = File.read('app/home/config/routes.rb')
+      home_path = component_paths.component_path('home')
+      route_file = File.read("#{home_path}/config/routes.rb")
       eval(route_file)
     end
   end
@@ -32,7 +33,7 @@ class IndexFiles
   end
   
   def html
-    index_path = File.expand_path(File.join(Dir.pwd, "public/index.html"))
+    index_path = File.expand_path(File.join(Volt.root, "public/index.html"))
     html = File.read(index_path)
     
     ERB.new(html).result(binding)

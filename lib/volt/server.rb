@@ -43,9 +43,13 @@ module Rack
 end
 
 class Server
-  def initialize(path=nil)
-    @app_path = path || File.expand_path(File.join(Dir.pwd, "app"))
-    @component_paths = ComponentPaths.new
+  def initialize(root_path=nil)
+    root_path ||= Dir.pwd
+    Volt.root = root_path
+
+    @app_path = File.expand_path(File.join(root_path, "app"))
+    
+    @component_paths = ComponentPaths.new(root_path)
     
     setup_change_listener
     

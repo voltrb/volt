@@ -46,5 +46,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "capybara", "~> 2.2.0"
   spec.add_development_dependency "selenium-webdriver", "~> 2.39.0"
   spec.add_development_dependency "chromedriver2-helper", "~> 0.0.8"
+  spec.add_development_dependency "poltergeist", "~> 1.5.0"
+  spec.add_development_dependency "sauce", "~> 3.3.0"
+  spec.add_development_dependency "sauce-connect", "~> 3.3.0"
   
 end

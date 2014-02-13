@@ -7,6 +7,10 @@ class Volt
     @root ||= File.expand_path(Dir.pwd)
   end
   
+  def self.root=(val)
+    @root = val
+  end
+  
   def self.server?
     !!ENV['SERVER']
   end
