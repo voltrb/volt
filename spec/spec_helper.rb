@@ -8,9 +8,8 @@
 ENV['SAUCE_USERNAME'] = 'ryanstout'
 ENV['SAUCE_ACCESS_KEY'] = 'a537b01d-33ed-4028-9e80-eeb602748a5f'
 
-require 'capybara/rspec'
-
 if ENV['IN_BROWSER']
+  require 'capybara/rspec'
   # Needed at the moment to get chrome tests working
   require 'chromedriver2/helper'
   require 'capybara/poltergeist'
