@@ -16,6 +16,10 @@ class JSEvent
     # `this.js_event.stopPropagation();`
     `this.js_event.preventDefault();`
   end
+  
+  def target
+    `this.js_event.toElement`
+  end
 end
 
 
