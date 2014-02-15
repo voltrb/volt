@@ -76,6 +76,13 @@ describe SandlebarsParser do
     test_html(html)
   end
   
+  it "should close tags" do
+    html = "<div><p>test</p>"
+    match = "<div><p>test</p></div>"
+    
+    test_html(html, match)
+  end
+  
   it "should handle a script tag with html in it" do
     html = "<script><!-- some js code <a>cool</a> here --></script>"
     match = "<script> some js code <a>cool</a> here </script>"
