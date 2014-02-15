@@ -34,6 +34,29 @@ class HTMLHandler
   end
 end
 
+class StubHTMLHandler
+  attr_reader :html
+  
+  def initialize
+    @html = ''
+  end
+  
+  def comment(comment)
+  end
+  
+  def text(text)
+  end
+  
+  def binding(binding)
+  end
+  
+  def start_tag(tag_name, attributes, unary)
+  end
+  
+  def end_tag(tag_name)
+  end
+end
+
 def parse_url(url)
   require 'open-uri'
   html = open("http://#{url}").read
@@ -174,12 +197,13 @@ describe SandlebarsParser do
   
   it "should be fast" do
     html = File.read(File.join(File.dirname(__FILE__), 'sample_page.html'))
-    handler = HTMLHandler.new
+    handler = StubHTMLHandler.new
     time = Benchmark.measure do
       SandlebarsParser.new(html, handler)
     end
     
     # Less than 100ms
+    puts time.utime
     expect(time.utime).to be < 0.1
   end
   
