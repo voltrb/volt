@@ -19,3 +19,4 @@ tmp
 .yardoc
 .sass-cache
 .DS_Store
+sauce_connect.log
