@@ -22,10 +22,17 @@ class URL
       @fragment = url[1..-1]
       update!
     else
-      # Add the host for localized names
+      host = `document.location.host`
+
       if url[0..3] != 'http'
-        host = `document.location.host`
+        # Add the host for localized names
         url = "http://#{host}" + url
+      else
+        # Make sure its on the same host, otherwise its external.
+        if url !~ /https?[:]\/\/#{host}/
+          # Different host, don't process
+          return false
+        end
       end
       
       matcher = url.match(/^(https?)[:]\/\/([^\/]+)(.*)$/)
@@ -41,6 +48,8 @@ class URL
     end
     
     scroll
+    
+    return true
   end
 
   # Full url rebuilds the url from it's constituent parts
