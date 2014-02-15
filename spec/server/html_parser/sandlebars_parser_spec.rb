@@ -1,3 +1,4 @@
+require 'benchmark'
 require 'volt/server/html_parser/sandlebars_parser'
 
 class HTMLHandler
@@ -35,11 +36,11 @@ end
 
 def parse_url(url)
   require 'open-uri'
-  # html = open("http://#{url}").read
+  html = open("http://#{url}").read
   
-  html = File.read("/Users/ryanstout/Desktop/tests/#{url}1.html")
+  # html = File.read("/Users/ryanstout/Desktop/tests/#{url}1.html")
   
-  # File.open("/Users/ryanstout/Desktop/tests/#{url}1.html", 'w') {|f| f.write(html) }
+  File.open("/Users/ryanstout/Desktop/tests/#{url}1.html", 'w') {|f| f.write(html) }
   
   handler = HTMLHandler.new
   SandlebarsParser.new(html, handler)
@@ -169,6 +170,17 @@ describe SandlebarsParser do
   it "should handle conditional comments for IE" do
     html = "<!--[if ie6]>some ie only stuff<![endif]-->\n<br />"
     test_html(html)
+  end
+  
+  it "should be fast" do
+    html = File.read(File.join(File.dirname(__FILE__), 'sample_page.html'))
+    handler = HTMLHandler.new
+    time = Benchmark.measure do
+      SandlebarsParser.new(html, handler)
+    end
+    
+    # Less than 100ms
+    expect(time.utime).to be < 0.1
   end
   
   # it "should warn you when you over close tags" do
