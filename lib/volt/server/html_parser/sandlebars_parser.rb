@@ -2,11 +2,13 @@ require 'strscan'
 
 class HTMLParseError < RuntimeError
 end
-# Parses html
+# Parses html and bindings
 # based on http://ejohn.org/files/htmlparser.js
 #
 # takes the html and a handler object that will have the following methods
 # called as each is seen: comment, text, binding, start_tag, end_tag
+#
+# This is not a full html parser, but should cover most common cases.
 class SandlebarsParser
   def self.truth_hash(array)
     hash = {}
