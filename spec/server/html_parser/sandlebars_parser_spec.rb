@@ -166,6 +166,11 @@ describe SandlebarsParser do
     test_html(html)
   end
   
+  it "should handle conditional comments for IE" do
+    html = "<!--[if ie6]>some ie only stuff<![endif]-->\n<br />"
+    test_html(html)
+  end
+  
   # it "should warn you when you over close tags" do
   #   html = "<div><p>test</p></div></div>"
   #   
