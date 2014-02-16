@@ -101,29 +101,38 @@ describe ViewParser do
       }
     })
   end
-  # 
-  # 
-  # it "should parse in templates bindings" do
-  #   html = <<-END
-  #     <div class="main">
-  #       {#each _items as item}
-  #         <p>{item}</p>
-  #       {/}
-  #     </div>
-  #   END
-  #   
-  #   view = ViewParser.new(html, "home/index/index/body")
-  #   
-  #   puts view.templates.inspect
-  #   # expect(view.templates).to eq({
-  #   #   'home/index/index/body' => {
-  #   #     'html' => '<p>Some <!-- $0 --><!-- $/0 --> binding, <!-- $1 --><!-- $/1 --></p>',
-  #   #     'bindings' => {
-  #   #       0 => ["lambda { |__p, __t, __c, __id| ContentBinding.new(__p, __t, __c, __id, Proc.new { content }) }"],
-  #   #       1 => ["lambda { |__p, __t, __c, __id| ContentBinding.new(__p, __t, __c, __id, Proc.new { name }) }"]
-  #   #     }
-  #   #   }
-  #   # })
-  # end
+  
+  
+  it "should parse each bindings" do
+    html = <<-END
+      <div class="main">
+        {#each _items as item}
+          <p>{item}</p>
+        {/}
+      </div>
+    END
+    
+    view = ViewParser.new(html, "home/index/index/body")
+
+    puts view.templates.inspect
+    expect(view.templates).to eq({
+      "home/index/index/body/_template/0" => {
+        "html" => "\n          <p><!-- $0 --><!-- $/0 --></p>\n        ",
+        "bindings" => {
+          0 => [
+            "lambda { |__p, __t, __c, __id| ContentBinding.new(__p, __t, __c, __id, Proc.new { item }) }"
+          ]
+        }
+      },
+      "home/index/index/body" => {
+        "html" => "      <div class=\"main\">\n        <!-- $0 --><!-- $/0 -->\n      </div>\n",
+        "bindings" => {
+          0 => [
+            "lambda { |__p, __t, __c, __id| EachBinding.new(__p, __t, __c, __id, Proc.new { _items }, \"item\", \"home/index/index/body/_template/0\") }"
+          ]
+        }
+      }
+    })
+  end
   
 end

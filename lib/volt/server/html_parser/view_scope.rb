@@ -31,6 +31,8 @@ class ViewScope
         end
       when '#each'
         add_each(content)
+      when '#template'
+        add_template(content)
       end
     when '/'
       # close binding
@@ -57,6 +59,13 @@ class ViewScope
   
   def add_each(content)
     @handler.scope << EachScope.new(@handler, @path, content)
+  end
+  
+  def add_template(content)
+    @handler.html << "<!-- $#{@binding_number} --><!-- $/#{@binding_number} -->"
+    save_binding(@binding_number, "lambda { |__p, __t, __c, __id| TemplateBinding.new(__p, __t, __c, __id, Proc.new { [#{content}] }) }")
+
+    @binding_number += 1
   end
   
   # Called when this scope should be closed out
