@@ -8,7 +8,7 @@ class ComponentBinding < TemplateBinding
   # components access to the page collections.
   def render_template(full_path, controller_name)
     # TODO: at the moment a :body section and a :title will both initialize different
-    # controllers.  Maybe we should have a way to tie them together?
+    # controllers.  Maybe we should have a way to tie them together?    
     controller_class = get_controller(controller_name)
     model_with_parent = {parent: @context}.merge(@model || {})
     
@@ -23,6 +23,7 @@ class ComponentBinding < TemplateBinding
     else
       # There is not a controller
       current_context = SubContext.new(model_with_parent, $page)
+      @controller = nil
     end
 
     @current_template = TemplateRenderer.new(@page, @target, current_context, @binding_name, full_path)
