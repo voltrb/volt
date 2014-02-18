@@ -106,7 +106,6 @@ class Routes
   private
     def path_and_params(params, path, options)
       params = params.attributes.dup
-      puts params.inspect if path.class == Proc
       path = path.call(params) if path.class == Proc
     
       options.keys.each do |key|

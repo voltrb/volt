@@ -114,7 +114,6 @@ describe ViewParser do
     
     view = ViewParser.new(html, "home/index/index/body")
 
-    puts view.templates.inspect
     expect(view.templates).to eq({
       "home/index/index/body/_template/0" => {
         "html" => "\n          <p><!-- $0 --><!-- $/0 --></p>\n        ",

@@ -5,7 +5,6 @@ class EachScope < ViewScope
   end
   
   def close_scope
-    puts "CLOSE EACH"
     binding_number = @handler.scope[-2].binding_number
     @handler.scope[-2].binding_number += 1
     @path += "/_template/#{binding_number}"
