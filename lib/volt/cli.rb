@@ -71,6 +71,8 @@ class CLI < Thor
   end
 end
 
+# Add in more features
+require 'volt/cli/asset_compile'
 
 puts "Volt #{File.read(File.join(File.dirname(__FILE__), "../../VERSION"))}"
 CLI.start(ARGV)
