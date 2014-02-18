@@ -69,7 +69,11 @@ class AttributeBinding < BaseBinding
   def value=(val)
     case @attribute_name
     when 'value'
-      element.value = val
+      # TODO: only update if its not the same, this keeps it from moving the
+      # cursor in text fields.
+      if val != element.value
+        element.value = val
+      end
     else
       element[@attribute_name] = val
     end

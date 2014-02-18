@@ -22,10 +22,17 @@ class URL
       @fragment = url[1..-1]
       update!
     else
-      # Add the host for localized names
+      host = `document.location.host`
+
       if url[0..3] != 'http'
-        host = `document.location.host`
+        # Add the host for localized names
         url = "http://#{host}" + url
+      else
+        # Make sure its on the same host, otherwise its external.
+        if url !~ /https?[:]\/\/#{host}/
+          # Different host, don't process
+          return false
+        end
       end
       
       matcher = url.match(/^(https?)[:]\/\/([^\/]+)(.*)$/)
@@ -41,6 +48,8 @@ class URL
     end
     
     scroll
+    
+    return true
   end
 
   # Full url rebuilds the url from it's constituent parts
@@ -89,9 +98,13 @@ class URL
   def scroll
     if Volt.client?
       if @fragment
-        # Scroll to anchor
+        # Scroll to anchor via http://www.w3.org/html/wg/drafts/html/master/browsers.html#scroll-to-fragid
         %x{
-          var anchor = $('a[name="' + this.fragment + '"]');
+          var anchor = $('#' + this.fragment);
+          if (anchor.length == 0) {
+            anchor = $('*[name="' + this.fragment + '"]:first');
+          }
+          console.log('found anchor: ', anchor);
           if (anchor && anchor.length > 0) {
             $(document.body).scrollTop(anchor.offset().top);
           }

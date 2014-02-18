@@ -61,10 +61,7 @@ class Page
         });
       
         $(document).on('click', 'a', function(event) {
-          Opal.gvars.page.$link_clicked($(this).attr('href'));
-          event.stopPropagation();
-        
-          return false;
+          return Opal.gvars.page.$link_clicked($(this).attr('href'), event);
         });
       }
     end
@@ -74,17 +71,28 @@ class Page
     @tasks ||= Tasks.new(self)
   end
   
-  def link_clicked(url='')
+  def link_clicked(url='', event=nil)
     # Skip when href == ''
     return if url.blank?
 
     # Normalize url
     # Benchmark.bm(1) do
-      @url.parse(url)
+    if @url.parse(url)
+      if event
+        # Handled new url
+        `event.stopPropagation();`
+      end
+
+      # Clear the flash
+      flash.clear
+      
+      # return false to stop the event propigation
+      return false
+    end
     # end
     
-    # Clear the flash
-    flash.clear
+    # Not stopping, process link normally
+    return true
   end
   
   # We provide a binding_name, so we can bind events on the document

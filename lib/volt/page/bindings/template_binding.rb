@@ -127,7 +127,6 @@ class TemplateBinding < BaseBinding
   def render_template(full_path, controller_name)    
     # TODO: at the moment a :body section and a :title will both initialize different
     # controllers.  Maybe we should have a way to tie them together?
-    
     controller_class = get_controller(controller_name)
     if controller_class
       args = []
@@ -139,6 +138,7 @@ class TemplateBinding < BaseBinding
     else
       # Pass the context directly
       current_context = @context
+      @controller = nil
     end
 
     @current_template = TemplateRenderer.new(@page, @target, current_context, @binding_name, full_path)   
