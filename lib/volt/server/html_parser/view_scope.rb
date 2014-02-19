@@ -104,6 +104,14 @@ class ViewScope
     @binding_number += 1
   end
   
+  def add_textarea(tag_name, attributes, unary)
+    @handler.scope << TextareaScope.new(@handler, @path + "/__txtarea#{@binding_number}", attributes)
+    @binding_number += 1
+    
+    # close right away if unary
+    @handler.last.close_scope if unary
+  end
+  
   # Called when this scope should be closed out
   def close_scope(pop=true)
     if pop
@@ -115,14 +123,13 @@ class ViewScope
     raise "template path already exists: #{scope.path}" if @handler.templates[scope.path]
     
     template = {
-      'html' => scope.html,
+      'html' => scope.html
     }
     
     if scope.bindings.size > 0
       # Add the bindings if there are any
       template['bindings'] = scope.bindings
     end
-    
     
     @handler.templates[scope.path] = template
   end

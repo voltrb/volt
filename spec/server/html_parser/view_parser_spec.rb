@@ -116,6 +116,8 @@ describe ViewParser do
         }
       }
     })
+    
+
   end
   
   it "should parse a single attribute binding" do
@@ -231,6 +233,16 @@ describe ViewParser do
         "html" => "\n      <p>This text goes in the body</p> \n"
       }
     })
+  end
+  
+  it "should setup bindings for textarea values" do
+    html = <<-END
+    <textarea name="cool">  - {awesome} - </textarea>
+    END
+    
+    view = ViewParser.new(html, "home/index/index")
+    
+    puts view.templates.inspect
   end
   
 end

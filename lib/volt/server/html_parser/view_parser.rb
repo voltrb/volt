@@ -3,6 +3,7 @@ require 'volt/server/html_parser/view_scope'
 require 'volt/server/html_parser/if_view_scope'
 require 'volt/server/html_parser/view_handler'
 require 'volt/server/html_parser/each_scope'
+require 'volt/server/html_parser/textarea_scope'
 
 class ViewParser
   attr_reader :templates

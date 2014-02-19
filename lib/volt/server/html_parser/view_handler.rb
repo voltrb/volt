@@ -12,7 +12,9 @@ class ViewHandler
   def initialize(initial_path, allow_sections=true)
     @original_path = initial_path
     
+    # Default to the body section
     initial_path += '/body' if allow_sections
+    
     @scope = [ViewScope.new(self, initial_path)]
     @templates = {}
   end
@@ -35,20 +37,31 @@ class ViewHandler
       # Component
       last.add_component(tag_name, attributes, unary)
     else
-      # Normal tag
-      attributes = last.process_attributes(tag_name, attributes)
+      if tag_name == 'textarea'
+        @in_textarea = true
+        last.add_textarea(tag_name, attributes, unary)
+      else
+        
+        # Normal tag
+        attributes = last.process_attributes(tag_name, attributes)
     
-      attr_str = attributes.map {|v| "#{v[0]}=\"#{v[1]}\"" }.join(' ')
-      if attr_str.size > 0
-        # extra space
-        attr_str = " " + attr_str
+        attr_str = attributes.map {|v| "#{v[0]}=\"#{v[1]}\"" }.join(' ')
+        if attr_str.size > 0
+          # extra space
+          attr_str = " " + attr_str
+        end
+        html << "<#{tag_name}#{attr_str}#{unary ? ' /' : ''}>"
       end
-      html << "<#{tag_name}#{attr_str}#{unary ? ' /' : ''}>"
     end
   end
 
   def end_tag(tag_name)
-    html << "</#{tag_name}>"
+    if @in_textarea && tag_name == 'textarea'
+      last.close_scope
+      @in_textarea = nil
+    else
+      html << "</#{tag_name}>"
+    end
   end
   
   def start_section(tag_name, attributes, unary)
