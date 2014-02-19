@@ -5,17 +5,17 @@ class ModelController
   
   # Sets the current model on this controller
   def model(val)
-    if val.is_a?(Symbol) || val.is_a?(String)
+    if Symbol === val || String === val
       collections = [:page, :store, :params]
       if collections.include?(val.to_sym)
         @model = self.send(val)
       else
         raise "#{val} is not the name of a valid model, choose from: #{collections.join(', ')}"
       end
-    elsif model
-      @model = model
+    elsif val
+      @model = val
     else
-      raise "model can not be #{model.inspect}"
+      raise "model can not be #{val.inspect}"
     end
   end
   
