@@ -1,17 +1,17 @@
 <:Body>
-{#if page._reloading}
-  <div class="notices alert alert-info">Reloading...</div>
-{/}
-{#if channel.status == :reconnecting}
-  <div class="notices alert alert-info">
-    Connection Lost... {channel.error}...
-    {#if channel.reconnect_interval}  Reconnecting in {(channel.reconnect_interval / 1000.0).round} sec{/}
-  </div>
-{/}
-{#if !flash.empty?}
-  <div class="notices alert alert-info" e-click="flash.clear">
-    {#each flash._notices as notice}
-      <p>{notice}</p>
-    {/}
-  </div>
-{/}
+  {#if page._reloading}
+    <div class="notices alert alert-info">Reloading...</div>
+  {/}
+  {#if channel.status == :reconnecting}
+    <div class="notices alert alert-info">
+      Connection Lost... {channel.error}...
+      {#if channel.reconnect_interval}  Reconnecting in {(channel.reconnect_interval / 1000.0).round} sec{/}
+    </div>
+  {/}
+  {#if !flash.empty?}
+    <div class="notices alert alert-info" e-click="flash.clear">
+      {#each flash._notices as notice}
+        <p>{notice}</p>
+      {/}
+    </div>
+  {/}

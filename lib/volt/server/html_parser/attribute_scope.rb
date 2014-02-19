@@ -5,10 +5,27 @@ module AttributeScope
     new_attributes = attributes.dup
 
     attributes.each_pair do |name, value|
-      process_attribute(new_attributes, name, value)
+      if name[0..1] == 'e-'
+        process_event_binding(tag_name, new_attributes, name, value)
+      else
+        process_attribute(new_attributes, name, value)
+      end
     end
     
     return new_attributes
+  end
+  
+  def process_event_binding(tag_name, attributes, name, value)
+    id = add_id_to_attributes(attributes)
+    
+    event = name[2..-1]
+    
+    if tag_name == 'a'
+      # For links, we need to add blank href to make it clickable.
+      attributes['href'] ||= ''
+    end
+
+    save_binding(id, "lambda { |__p, __t, __c, __id| EventBinding.new(__p, __t, __c, __id, #{event.inspect}, Proc.new {|event| #{value} })}")
   end
   
   def process_attribute(attributes, attribute_name, value)

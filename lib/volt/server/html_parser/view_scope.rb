@@ -78,7 +78,7 @@ class ViewScope
     
     @handler.html << "<!-- $#{@binding_number} --><!-- $/#{@binding_number} -->"
     
-    data_hash = {}
+    data_hash = []
     attributes.each_pair do |name, value|
       parts = value.split(/(\{[^\}]+\})/).reject(&:blank?)
       binding_count = parts.count {|p| p[0] == '{' && p[-1] == '}'}
@@ -89,16 +89,15 @@ class ViewScope
           # Multiple bindings
         elsif parts.size == 1 && binding_count == 1
           # A single binding
-          data_hash[name] = "Proc.new { #{value} }"
+          data_hash << "#{name.inspect} => Proc.new { #{value[1..-2]} }"
         end
       else
         # String
-        data_hash[name] = value
+        data_hash << "#{name.inspect} => #{value.inspect}"
       end
     end
-    
-    arguments = "#{component_name.inspect}, #{data_hash.inspect}"
-    
+
+    arguments = "#{component_name.inspect}, { #{data_hash.join(',')} }"
     
     save_binding(@binding_number, "lambda { |__p, __t, __c, __id| ComponentBinding.new(__p, __t, __c, __id, #{@path.inspect}, Proc.new { [#{arguments}] }) }")
 

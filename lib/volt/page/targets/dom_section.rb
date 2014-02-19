@@ -112,6 +112,8 @@ class DomSection < BaseSection
           new_bindings[name] = binding
         end
       else
+        # puts "----- #{name.inspect} - #{new_name}"
+        # `console.log(temp_div);`
         # Change the comment ids
         start_comment = find_by_comment("$#{name}", temp_div)
         end_comment = find_by_comment("$/#{name}", temp_div)
