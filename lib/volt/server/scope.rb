@@ -22,22 +22,22 @@ class Scope
     @bindings[binding_name] ||= []
     @bindings[binding_name] << setup_code
   end
-  
+
   def start_if_binding(binding_name, if_binding_setup)
     @last_if_binding = [binding_name, if_binding_setup]
   end
-  
+
   def current_if_binding
     @last_if_binding
   end
-  
+
   def close_if_binding!
     if @last_if_binding
       binding_name, if_binding_setup = @last_if_binding
       @last_if_binding = nil
-      
+
       add_binding(binding_name, if_binding_setup.to_setup_code)
     end
   end
-  
+
 end

@@ -21,7 +21,7 @@ require 'volt'
 
 # Capybara.default_driver = :sauce
 # Capybara.server_port = 2020
-# 
+#
 # Sauce.config do |conf|
 #   conf[:start_tunnel] = true
 #   conf[:browsers] = [
@@ -43,7 +43,7 @@ if ENV['IN_BROWSER']
 
   kitchen_sink_path = File.expand_path(File.join(File.dirname(__FILE__), "apps/kitchen_sink"))
   Capybara.app = Server.new(kitchen_sink_path).app
-  
+
   Capybara.default_driver = :poltergeist
 end
 

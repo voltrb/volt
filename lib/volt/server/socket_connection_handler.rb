@@ -3,15 +3,15 @@ require 'sockjs/session'
 
 class SocketConnectionHandler < SockJS::Session
   # Create one instance of the dispatcher
-  
+
   def self.dispatcher=(val)
     @@dispatcher = val
   end
-  
+
   def self.dispatcher
     @@dispatcher
   end
-  
+
   # Sends a message to all, optionally skipping a users channel
   def self.send_message_all(skip_channel=nil, *args)
     @@channels.each do |channel|
@@ -20,32 +20,32 @@ class SocketConnectionHandler < SockJS::Session
       end
       channel.send_message(*args)
     end
-    
+
   end
-  
+
   def initialize(session, *args)
     @session = session
 
     @@channels ||= []
     @@channels << self
-    
+
     super
   end
-  
+
   def process_message(message)
     # self.class.message_all(message)
     # Messages are json and wrapped in an array
     message = JSON.parse(message).first
-    
+
     @@dispatcher.dispatch(self, message)
   end
-  
+
   def send_message(*args)
     str = JSON.dump([*args])
-    
+
     send(str)
   end
-  
+
   def closed
     puts "CHANNEL CLOSED: #{self.inspect}"
     # Remove ourself from the available channels
@@ -53,7 +53,7 @@ class SocketConnectionHandler < SockJS::Session
 
     QueryTasks.new(self).close!
   end
-  
+
   def inspect
     "<#{self.class.to_s}:#{object_id}>"
   end

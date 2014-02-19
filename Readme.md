@@ -2,15 +2,17 @@
 [![Code Climate](https://codeclimate.com/github/voltrb/volt.png)](https://codeclimate.com/github/voltrb/volt)
 [![Build Status](https://travis-ci.org/voltrb/volt.png?branch=master)](https://travis-ci.org/voltrb/volt)
 
-# Volt
+---
+> NOTE: VOLT IS STILL IN DEVELOPMENT, DON'T USE IT FOR ANYTHING SERIOUS YET
+---
 
-NOTE: VOLT IS STILL IN DEVELOPMENT, DON'T USE IT FOR ANYTHING SERIOUS YET
+# Volt
 
 Volt is a ruby web framework where your ruby code runs on both the server and the client (via [opal](https://github.com/opal/opal).)  The dom automatically update as the user interacts with the page.  Page state can be stored in the url, if the user hits a url directly, the HTML will first be rendered on the server for faster load times and easier indexing by search engines.
 
 Instead of syncing data between the client and server via HTTP, volt uses a persistent connection between the client and server.  When data updated on one client, it is updated in the database and any other listening clients.  (With almost no setup code needed)
 
-Pages HTML is written in a handlebars like template language.  Volt uses data flow/reactive programming to automatically and intellegently propigate changes to the dom (or anything other code wanting to know when a value updates)  When something in the dom changes, Volt intellegent updates only the nodes that need to be changed.
+Pages HTML is written in a handlebars like template language.  Volt uses data flow/reactive programming to automatically and intellegently propigate changes to the DOM (or anything other code wanting to know when a value updates)  When something in the DOM changes, Volt intelligently updates only the nodes that need to be changed.
 
 See a quick demo video here: [http://www.youtube.com/watch?v=j0vFIRMzarI](http://www.youtube.com/watch?v=j0vFIRMzarI)
 
@@ -166,7 +168,7 @@ These events propigate to any reactive value's created off of a reactive value.
 
 This event flow lets us know when an object has changed, so we can update everything that depended on that object.
 
-Lastly, we can also pass in other reactive value's as arguments to methods on a reactive value.  The dependencies will be tracked for both and events will propigate down from both.  (Also, note that doing .cur = to update the current value triggers a "changed" event.)
+Lastly, we can also pass in other reactive value's as arguments to methods on a reactive value.  The dependencies will be tracked for both and events will propigate down from both.  (Also, note that doing `.cur =` to update the current value triggers a "changed" event.)
 
 ```ruby
     a = ReactiveValue.new(1)

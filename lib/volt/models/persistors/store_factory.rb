@@ -3,7 +3,7 @@ module Persistors
     def initialize(tasks)
       @tasks = tasks
     end
-    
+
     def new(model)
       if model.is_a?(ArrayModel)
         ArrayStore.new(model, @tasks)

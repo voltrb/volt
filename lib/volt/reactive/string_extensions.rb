@@ -1,6 +1,6 @@
 class String
   include ReactiveTags
-  
+
   alias :__old_plus :+
   if RUBY_PLATFORM != 'opal'
     alias :__old_concat :<<
@@ -14,7 +14,7 @@ class String
     if val.reactive? && !result.reactive?
       result = ReactiveValue.new(result)
     end
-  
+
     return result
   end
 
@@ -24,7 +24,7 @@ class String
         raise "Cannot append a reactive string to non-reactive string.  Use + instead"
       end
       result = __old_concat(val)
-  
+
       return result
     end
   end

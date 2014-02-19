@@ -3,11 +3,11 @@ class Volt
     def initialize
       @env = ENV['VOLT_ENV'] || 'development'
     end
-    
+
     def ==(val)
       @env == val
     end
-    
+
     def production?
       self.==('production')
     end
@@ -19,7 +19,7 @@ class Volt
     def development?
       self.==('development')
     end
-    
+
     def inspect
       @env.inspect
     end

@@ -5,15 +5,15 @@ class DomSection < BaseSection
     @start_node = find_by_comment("$#{binding_name}")
     @end_node = find_by_comment("$/#{binding_name}")
   end
-  
-	def find_by_comment(text, in_node=`document`)
-		node = nil
 
-		%x{
-			node = document.evaluate("//comment()[. = ' " + text + " ']", in_node, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null).iterateNext();
-		}
-		return node
-	end
+  def find_by_comment(text, in_node=`document`)
+    node = nil
+
+    %x{
+      node = document.evaluate("//comment()[. = ' " + text + " ']", in_node, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null).iterateNext();
+    }
+    return node
+  end
 
   def text=(value)
     %x{
@@ -21,7 +21,7 @@ class DomSection < BaseSection
       this.$range().insertNode(document.createTextNode(#{value}));
     }
   end
-  
+
   def html=(value)
     set_content_and_rezero_bindings(value, {})
   end
@@ -33,8 +33,8 @@ class DomSection < BaseSection
       range.deleteContents();
     }
   end
-  
-  def remove_anchors    
+
+  def remove_anchors
     %x{
       this.start_node.parentNode.removeChild(this.start_node);
       this.end_node.parentNode.removeChild(this.end_node);
@@ -42,16 +42,16 @@ class DomSection < BaseSection
     @start_node = nil
     @end_node = nil
   end
-  
+
   def insert_anchor_before_end(binding_name)
     Element.find(@end_node).before("<!-- $#{binding_name} --><!-- $/#{binding_name} -->")
   end
-  
+
   def insert_anchor_before(binding_name, insert_after_binding)
     node = find_by_comment("$#{insert_after_binding}")
     Element.find(node).before("<!-- $#{binding_name} --><!-- $/#{binding_name} -->")
   end
-  
+
   # Takes in an array of dom nodes and replaces the current content
   # with the new nodes
   def nodes=(nodes)
@@ -68,23 +68,23 @@ class DomSection < BaseSection
       }
     }
   end
-  
+
   # Returns the nearest DOM node that contains all of the section.
   def container_node
     range = self.range()
     return `range.commonAncestorContainer`
   end
-  
-	# Takes in our html and bindings, and rezero's the comment names, and the
-	# bindings.  Returns an updated bindings hash
-	def set_content_and_rezero_bindings(html, bindings)
-		sub_nodes = nil
+
+  # Takes in our html and bindings, and rezero's the comment names, and the
+  # bindings.  Returns an updated bindings hash
+  def set_content_and_rezero_bindings(html, bindings)
+    sub_nodes = nil
     temp_div = nil
 
     %x{
       temp_div = document.createElement('div');
       var doc = jQuery.parseHTML(html);
-      
+
       if (doc) {
         for (var i=0;i < doc.length;i++) {
           temp_div.appendChild(doc[i]);
@@ -104,7 +104,7 @@ class DomSection < BaseSection
             var node = temp_div.querySelector('#' + name);
             node.setAttribute('id', 'id' +new_name);
           }
-          
+
           new_bindings["id#{new_name}"] = binding
         else
           # Assume a fixed id
@@ -132,33 +132,33 @@ class DomSection < BaseSection
 
 
     children = nil
-		%x{
-		  children = temp_div.childNodes;
-		}
-    
+    %x{
+      children = temp_div.childNodes;
+    }
+
     # Update the nodes
     self.nodes = children
-    
+
     %x{
       temp_div = null;
     }
 
-		return new_bindings
-	end
-  
+    return new_bindings
+  end
+
   def range
     return @range if @range
 
-		range = nil
-		%x{
-		  range = document.createRange();
-		  range.setStartAfter(this.start_node);
-		  range.setEndBefore(this.end_node);
-		}
+    range = nil
+    %x{
+      range = document.createRange();
+      range.setStartAfter(this.start_node);
+      range.setEndBefore(this.end_node);
+    }
 
     @range = range
 
-		return range
+    return range
   end
 
 end

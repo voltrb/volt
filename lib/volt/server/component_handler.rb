@@ -9,7 +9,7 @@ class ComponentHandler
   def initialize(component_paths)
     @component_paths = component_paths
   end
-  
+
   def call(env)
     req = Rack::Request.new(env)
 
@@ -17,13 +17,13 @@ class ComponentHandler
     component_name = req.path.strip.gsub(/^\/components\//, '').gsub(/[.]js$/, '')
 
     code = ''
-  
+
     asset_files = AssetFiles.new(component_name, @component_paths)
     asset_files.component_paths.each do |component_path, component_name|
       code << ComponentTemplates.new(component_path, component_name).code
       code << "\n\n"
     end
-  
+
     javascript_code = Opal.compile(code)
 
     # puts "ENV: #{env.inspect}"
