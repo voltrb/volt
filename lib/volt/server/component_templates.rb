@@ -20,7 +20,6 @@ class ComponentTemplates
       template_path = view_path[views_path.size..((-1 * ('.html'.size + 1)))]
       template_path = "#{@component_name}/#{template_path}"
 
-      # all_templates = TemplateParser.new(File.read(view_path), template_path)
       all_templates = ViewParser.new(File.read(view_path), template_path)
 
       binding_initializers = []
@@ -38,8 +37,6 @@ class ComponentTemplates
         code << "$page.add_template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})\n"
       end
     end
-    # puts "--------------"
-    # puts "CODE: #{code}"
 
     return code
   end
