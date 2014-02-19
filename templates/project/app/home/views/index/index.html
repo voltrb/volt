@@ -1,8 +1,7 @@
-<:title>
+<:Title>
   {#template params._view.or('home'), "title"}
-</:title>
 
-<:body>
+<:Body>
   <div class="container">
     <div class="header">
       <ul class="nav nav-pills pull-right">
@@ -11,20 +10,20 @@
       </ul>
       <h3 class="text-muted">Project name</h3>
     </div>
-    
+
     <:volt:notices />
-    
+
     {#template params._view.or('home')}
-    
+
     <div class="footer">
       <p>&copy; Company 2014</p>
     </div>
 
   </div>
-</:body>
 
-<:nav>
+
+<:Nav>
   <li class="{#if params._view.or('') == view}active{/}">
     <a href="/{view}">{text}</a>
   </li>
-</:nav>
+
