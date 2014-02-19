@@ -5,7 +5,7 @@ class ModelController
   
   # Sets the current model on this controller
   def model(val)
-    if val.is_a?(Symbol) || val.is_a?(String)
+    if Symbol === val || String === val
       collections = [:page, :store, :params]
       if collections.include?(val.to_sym)
         @model = self.send(val)
