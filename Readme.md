@@ -249,9 +249,11 @@ Views in Volt are use a templating language similar to handlebars.  They can be 
 
 Section headers should start with a capital letter so as not to be confused with [controls](#controls).  Section headers do not use close tags.  If section headers are not provided, the body section is assumed.
 
+Section's help you split up different parts of the same content (title and body usually), but within the same file.
+
 ## Bindings
 
-Now that you understand the basics of ReactiveValue's, we can discuss bindings.  In Volt, you code your views in a handlebar's like template language.  Volt provides severial bindings, which handle rendering of something for you.  Content bindings are anything inbetween { and }
+One you understand the basics of ReactiveValue's, we can discuss bindings.  In Volt, you code your views in a handlebar's like template language.  Volt provides severial bindings, which handle rendering of something for you.  Content bindings are anything inbetween { and }
 
 ### Content binding
 
@@ -328,6 +330,14 @@ If the value of a checked attribute is true, the checkbox will be shown checked.
 -- TODO: select boxes
 
 If you have a controller at app/home/controller/index_controller.rb, and a view at app/home/views/index/index.html, all methods called are called on the controller.
+
+## Escaping Bindings
+
+When you need to use { and } outside of bindings.  Anything in a triple mustache will be escaped:
+
+```handlebars
+{{{ bindings look like: {this}  }}}
+```
 
 # Models
 
