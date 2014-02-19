@@ -4,39 +4,39 @@ require 'volt/models/persistors/query/query_listener_pool'
 module Persistors
   class ArrayStore < Store
     @@query_pool = QueryListenerPool.new
-    
+
     attr_reader :model
     attr_accessor :state
-    
+
     def self.query_pool
       @@query_pool
     end
-    
+
     def initialize(model, tasks=nil)
       super
-      
+
       @query = ReactiveValue.from_hash(@model.options[:query] || {})
-      
+
     end
-    
+
     # Called when a collection loads
     def loaded
       change_state_to :not_loaded
     end
-    
+
     def event_added(event, scope_provider, first)
       puts "ADD EV: #{event} - #{first}"
       # First event, we load the data.
       load_data if first
     end
-    
+
     def event_removed(event, no_more_events)
       # Remove listener where there are no more events on this model
       if no_more_events && @query_listener && @model.listeners.size == 0
         stop_listening
       end
     end
-    
+
     # Called when an event is removed and we no longer want to keep in
     # sync with the database.
     def stop_listening
@@ -49,7 +49,7 @@ module Persistors
     # Called from the QueryListener when the data is loaded
     def change_state_to(new_state)
       @state = new_state
-      
+
       # Trigger changed on the 'state' method
       @model.trigger_for_methods!('changed', :state, :loaded?)
     end
@@ -60,13 +60,13 @@ module Persistors
       if @state == :not_loaded || @state == :dirty
         puts "Load Data"
         change_state_to :loading
-        
+
         @query_changed_listener.remove if @query_changed_listener
         if @query.reactive?
           # Query might change, change the query when it does
           @query_changed_listener = @query.on('changed') do
             stop_listening
-            
+
             load_data
           end
         end
@@ -74,21 +74,21 @@ module Persistors
         run_query(@model, @query.deep_cur)
       end
     end
-    
+
     # Clear out the models data, since we're not listening anymore.
     def unload_data
       change_state_to :not_loaded
       @model.clear
     end
-    
+
     def run_query(model, query={})
       collection = model.path.last
       # Scope to the parent
       if model.path.size > 1
         parent = model.parent
-      
+
         parent.persistor.ensure_setup if parent.persistor
-      
+
         if parent && (attrs = parent.attributes) && attrs[:_id].true?
           query[:"#{model.path[-3].singularize}_id"] = attrs[:_id]
         end
@@ -100,32 +100,32 @@ module Persistors
       end
       @query_listener.add_store(model.persistor)
     end
-    
+
     def find(query={})
       model = ArrayModel.new([], @model.options.merge(:query => query))
-      
+
       return ReactiveValue.new(model)
     end
-    
+
     # Called from backend
     def add(index, data)
       $loading_models = true
-      
+
       new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
-      
+
       # Find the existing model, or create one
       new_model = @@identity_map.find(data['_id']) { Model.new(data.symbolize_keys, new_options) }
-      
+
       @model.insert(index, new_model)
-      
-      $loading_models = false      
+
+      $loading_models = false
     end
-    
+
     def remove(ids)
       $loading_models = true
       ids.each do |id|
         puts "delete at: #{id} on #{@model.inspect}"
-        
+
         # TODO: optimize this delete so we don't need to loop
         @model.each_with_index do |model, index|
           puts "#{model._id.inspect} vs #{id.inspect} - #{index}"
@@ -136,34 +136,34 @@ module Persistors
           end
         end
       end
-      
+
       $loading_models = false
     end
-    
+
     def channel_name
       @model.path[-1]
     end
-    
-    
+
+
     # When a model is added to this collection, we call its "changed"
     # method.  This should trigger a save.
     def added(model, index)
       unless defined?($loading_models) && $loading_models
         model.persistor.changed
       end
-      
+
       if model.persistor
         # Tell the persistor it was added
         model.persistor.add_to_collection
       end
     end
-    
-    def removed(model)      
+
+    def removed(model)
       if model.persistor
         # Tell the persistor it was removed
         model.persistor.remove_from_collection
       end
-      
+
       if $loading_models
         return
       else
@@ -171,6 +171,6 @@ module Persistors
         @tasks.call('StoreTasks', 'delete', channel_name, model.attributes[:_id])
       end
     end
-    
+
   end
 end

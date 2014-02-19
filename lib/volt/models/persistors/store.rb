@@ -3,16 +3,16 @@ require 'volt/models/persistors/model_identity_map'
 
 module Persistors
   class Store < Base
-  
+
     @@identity_map = ModelIdentityMap.new
-    
-    def initialize(model, tasks=nil)      
+
+    def initialize(model, tasks=nil)
       @tasks = tasks
       @model = model
-      
+
       @saved = false
     end
-    
+
     def saved?
       @saved
     end
@@ -28,14 +28,14 @@ module Persistors
       else
         model = @model.new_model(nil, options)
       end
-      
+
       @model.attributes ||= {}
       @model.attributes[method_name] = model
 
       # if model.is_a?(StoreArray)# && model.state == :not_loaded
       #   model.load!
       # end
-    
+
       return model
     end
   end

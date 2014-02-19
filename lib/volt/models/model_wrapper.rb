@@ -7,10 +7,10 @@ module ModelWrapper
     elsif value.cur.is_a?(Hash)
       value = new_model(value, @options.merge(parent: self, path: path + lookup))
     end
-    
+
     return value
   end
-  
+
   def wrap_values(values, lookup=[])
     if values.cur.is_a?(Array)
       # Coming from an array
@@ -18,13 +18,13 @@ module ModelWrapper
     elsif values.cur.is_a?(Hash)
       pairs = values.map do |k,v|
         path = lookup + [k]
-            
+
         [k, wrap_value(v,path)]
       end
-      
+
       values = Hash[pairs]
     end
-    
+
     return values
   end
 end

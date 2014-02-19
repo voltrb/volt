@@ -6,7 +6,7 @@ class Object
   def true?
     true
   end
-  
+
   def false?
     false
   end
@@ -16,7 +16,7 @@ class FalseClass
   def true?
     false
   end
-  
+
   def false?
     true
   end
@@ -26,7 +26,7 @@ class NilClass
   def true?
     false
   end
-  
+
   def false?
     true
   end
@@ -37,8 +37,8 @@ class Boolean
   def true?
     self
   end
-  
+
   def false?
     self
-  end  
+  end
 end

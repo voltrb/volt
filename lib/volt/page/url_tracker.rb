@@ -4,14 +4,14 @@
 class UrlTracker
   def initialize(page)
     @page = page
-    
+
     if Volt.client?
       page.params.on('child_changed') do
         @page.url.update!
       end
 
       that = self
-      
+
       # Setup popstate on the dom ready event.  Prevents an extra
       # popstate trigger
       %x{
@@ -20,15 +20,15 @@ class UrlTracker
           if (first === false) {
             that.$url_updated();
           }
-          
+
           first = false;
-        
+
           return true;
         });
       }
     end
   end
-  
+
   def url_updated(first_call=false)
     @page.url.parse(`document.location.href`)
     @page.url.update! unless first_call

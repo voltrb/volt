@@ -32,7 +32,7 @@ class TemplateRenderer < BaseBinding
 
     # Remove all of the sub-bindings
     # @sub_bindings.each(&:remove)
-    
+
     @sub_bindings.each do |binding|
       # puts "REMOVE: #{binding.inspect}"
       binding.remove
@@ -40,10 +40,10 @@ class TemplateRenderer < BaseBinding
     end
 
     @sub_bindings = []
-    
+
     super
   end
-  
+
   def remove_anchors
     section.remove_anchors
   end

@@ -7,7 +7,7 @@ DEBUG = false
 # used to clear the event listener.
 class Listener
   attr_reader :scope_provider, :klass
-  
+
   def initialize(klass, event, scope_provider, callback)
     @klass = klass
     @event = event
@@ -18,41 +18,41 @@ class Listener
       # puts "e: #{event} on #{klass.inspect}"
       @@all_events ||= []
       @@all_events << self
-      
+
       # counts = {}
       # @@all_events.each do |ev|
       #   scope = (ev.scope_provider && ev.scope_provider.scope) || nil
-      #   
+      #
       #   # puts `typeof(scope)`
       #   if `typeof(scope) !== 'undefined'`
       #     counts[scope] ||= 0
       #     counts[scope] += 1
       #   end
       # end
-      # 
+      #
       # puts counts.inspect
-      
+
       `window.total_listeners = window.total_listeners || 0;`
       `window.total_listeners += 1;`
       `console.log(window.total_listeners);`
     end
   end
-  
+
   def internal?
     @internal
   end
-  
+
   def scope
     @scope_provider && scope_provider.respond_to?(:scope) && @scope_provider.scope
   end
-  
+
   def call(*args)
     # raise "Triggered on removed: #{@event} on #{@klass2.inspect}" if @removed
     if @removed
       puts "Triggered on a removed event: #{@event}"
       return
     end
-    
+
     # Queue a live value update
     if @klass.reactive?
       # We are working with a reactive value.  Its receiving an event meaning
@@ -60,7 +60,7 @@ class Listener
       @klass.object_tracker.queue_update
       # puts "Queued: #{ObjectTracker.queue.inspect}"
     end
-    
+
     @callback.call(*args)
   end
 
@@ -68,16 +68,16 @@ class Listener
   def remove
     # puts "FAIL:" if @removed
     raise "event #{@event} already removed" if @removed
-    
+
     # puts "e rem: #{@event} on #{@klass.inspect}"
     if DEBUG && RUBY_PLATFORM == 'opal'
       @@all_events.delete(self) if @@all_events
-      
+
       `window.total_listeners -= 1;`
       `console.log("Rem", window.total_listeners);`
     end
-    
-    
+
+
     @removed = true
     @klass.remove_listener(@event, self)
 
@@ -91,7 +91,7 @@ class Listener
     # @event = nil
 
   end
-  
+
   def inspect
     "<Listener:#{object_id} event=#{@event} scope=#{scope.inspect}#{' internal' if internal?}>"
   end
@@ -99,26 +99,26 @@ end
 
 module Events
   # Add a listener for an event
-  def on(event, scope_provider=nil, &block) 
+  def on(event, scope_provider=nil, &block)
 
-    
+
     # if reactive? && [:added, :removed].include?(event)
     #   self.object_tracker.queue_update
     #   ObjectTracker.process_queue
     # end
 
 
-    # puts "Register: #{event} on #{self.inspect}"   
+    # puts "Register: #{event} on #{self.inspect}"
     event = event.to_sym
-    
+
     new_listener = Listener.new(self, event, scope_provider, block)
-    
+
     @listeners ||= {}
     @listeners[event] ||= []
     @listeners[event] << new_listener
 
     first = @listeners[event].size == 1
-    
+
     # When events get added, we need to notify event chains so they
     # can update and chain any new events.
     event_chain.add_event(event) if first
@@ -132,7 +132,7 @@ module Events
 
     return new_listener
   end
-  
+
   def event_chain
     @event_chain ||= EventChain.new(self)
   end
@@ -146,9 +146,9 @@ module Events
   # a listener
   def remove_listener(event, listener)
     event = event.to_sym
-    
+
     raise "Unable to delete #{event} from #{self.inspect}" unless @listeners && @listeners[event]
-    
+
     # if @listeners && @listeners[event]
       @listeners[event].delete(listener)
 
@@ -169,14 +169,14 @@ module Events
       end
     # end
   end
-    
+
   def trigger!(event, filter=nil, *args)
     are_reactive = reactive?
     # puts "TRIGGER FOR: #{event} on #{self.inspect}" if !reactive?
     ObjectTracker.process_queue if !are_reactive# && !respond_to?(:skip_current_queue_flush)
-    
+
     event = event.to_sym
-    
+
     if @listeners && @listeners[event]
       # puts "LISTENERS FOR #{event} on #{self.inspect} - #{@listeners[event].inspect}"
       # TODO: We have to dup here because one trigger might remove another
@@ -187,7 +187,7 @@ module Events
         # if we aren't reactive, we should pass to all of our reactive listeners, since they
         # just proxy us.
         # If the filter exists, check it
-        # puts "CHECK #{listener.inspect} : #{self.inspect} -- #{listener.klass.inspect}"   
+        # puts "CHECK #{listener.inspect} : #{self.inspect} -- #{listener.klass.inspect}"
         if (!filter || (!are_reactive && listener.scope_provider.reactive?) || filter.call(listener.scope))
           listener.call(filter, *args)
         end
@@ -196,19 +196,19 @@ module Events
 
     nil
   end
-  
-  # Takes a block, which passes in 
+
+  # Takes a block, which passes in
   def trigger_by_scope!(event, *args, &block)
     trigger!(event, block, *args)
   end
-  
+
   # Takes an event and a list of method names, and triggers the event for each listener
   # coming off of those methods.
   def trigger_for_methods!(event, *method_names)
     trigger_by_scope!(event, [], nil) do |scope|
       if scope
         method_name = scope.first
-      
+
         method_names.include?(method_name)
       else
         false

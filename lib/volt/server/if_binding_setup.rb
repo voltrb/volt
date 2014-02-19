@@ -7,11 +7,11 @@ class IfBindingSetup < BindingSetup
   def initialize
     @branches = []
   end
-  
+
   def add_branch(content, template_name)
     @branches << [content, template_name]
   end
-  
+
   def to_setup_code
     branches = @branches.map do |branch|
       content = branch[0]
@@ -20,10 +20,10 @@ class IfBindingSetup < BindingSetup
       else
         content = "Proc.new { #{branch[0]} }"
       end
-      
+
       "[#{content}, #{branch[1].inspect}]"
     end.join(', ')
-    
+
     # variables are captured for branches, so we must prefix them so they don't conflict.
     # page, target, context, id
     "lambda { |__p, __t, __c, __id| IfBinding.new(__p, __t, __c, __id, [#{branches}]) }"
