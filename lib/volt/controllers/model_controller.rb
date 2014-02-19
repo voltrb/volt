@@ -12,10 +12,10 @@ class ModelController
       else
         raise "#{val} is not the name of a valid model, choose from: #{collections.join(', ')}"
       end
-    elsif model
-      @model = model
+    elsif val
+      @model = val
     else
-      raise "model can not be #{model.inspect}"
+      raise "model can not be #{val.inspect}"
     end
   end
   
