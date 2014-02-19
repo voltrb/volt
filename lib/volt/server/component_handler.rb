@@ -3,6 +3,7 @@ require 'volt'
 require 'volt/server/html_parser/view_parser'
 require 'volt/server/component_templates'
 require 'volt/server/rack/asset_files'
+require 'volt/server/rack/component_code'
 
 class ComponentHandler
   def initialize(component_paths)
@@ -15,14 +16,7 @@ class ComponentHandler
     # TODO: Sanatize template path
     component_name = req.path.strip.gsub(/^\/components\//, '').gsub(/[.]js$/, '')
 
-    code = ''
-
-    asset_files = AssetFiles.new(component_name, @component_paths)
-    asset_files.component_paths.each do |component_path, component_name|
-      puts "COMP PATH: #{component_path}"
-      code << ComponentTemplates.new(component_path, component_name).code
-      code << "\n\n"
-    end
+    code = ComponentCode.new(component_name, @component_paths).code
 
     javascript_code = Opal.compile(code)
 
