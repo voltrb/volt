@@ -74,6 +74,7 @@ You can access the volt console with:
     2. [If Binding](#if-binding)
     3. [Each Binding](#each-binding)
     4. [Attribute Bindings](#attribute-bindings)
+    5. [Escaping](#escaping)
 4. [Models](#models)
   1. [Provided Collections](#provided-collections)
   2. [Reactive Models](#reactive-models)
@@ -331,7 +332,7 @@ If the value of a checked attribute is true, the checkbox will be shown checked.
 
 If you have a controller at app/home/controller/index_controller.rb, and a view at app/home/views/index/index.html, all methods called are called on the controller.
 
-## Escaping Bindings
+## Escaping
 
 When you need to use { and } outside of bindings.  Anything in a triple mustache will be escaped and not processed as a binding:
 
