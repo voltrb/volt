@@ -19,6 +19,7 @@ class ComponentHandler
 
     asset_files = AssetFiles.new(component_name, @component_paths)
     asset_files.component_paths.each do |component_path, component_name|
+      puts "COMP PATH: #{component_path}"
       code << ComponentTemplates.new(component_path, component_name).code
       code << "\n\n"
     end

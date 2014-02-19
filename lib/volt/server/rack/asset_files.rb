@@ -1,4 +1,5 @@
-# Used to get a list of the assets from the dependencies files.
+# Used to get a list of the assets and other included components
+# from the dependencies.rb files.
 class AssetFiles
   def initialize(component_name, component_paths)
     @component_paths = component_paths
