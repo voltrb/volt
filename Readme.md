@@ -68,25 +68,26 @@ You can access the volt console with:
 2. [Rendering](#rendering)
   1. [Reactive Values](#reactive-values)
     1. [ReactiveValue Gotchyas](#reactivevalue-gotchyas)
-  2. [Bindings](#bindings)
+3. [Views](#views)
+  1. [Bindings](#bindings)
     1. [Content Binding](#content-binding)
     2. [If Binding](#if-binding)
     3. [Each Binding](#each-binding)
     4. [Attribute Bindings](#attribute-bindings)
-3. [Models](#models)
+4. [Models](#models)
   1. [Provided Collections](#provided-collections)
   2. [Reactive Models](#reactive-models)
   3. [Model Events](#model-events)
   4. [Automatic Model Conversion](#automatic-model-conversion)
-4. [Controllers](#controllers)
-5. [Components](#components)
+5. [Controllers](#controllers)
+6. [Components](#components)
   1. [Assets](#assets)
   2. [Component Generator](#component-generator)
   3. [Provided Components](#provided-components)
     1. [Notices](#notices)
     2. [Flash](#flash)
-6. [Controls](#controls)
-7. [Routes](#routes)
+7. [Controls](#controls)
+8. [Routes](#routes)
   1. [Routes file](#routes-file)
 
 
@@ -237,6 +238,16 @@ You can call .with on any ReactiveValue.  .with will return a new ReactiveValue 
     b.cur
     # => 15
 ```
+
+# Views
+
+Views in Volt are use a templating language similar to handlebars.  They can be broken up into sections, a section header looks like the following:
+
+```html
+<:Body>
+```
+
+Section headers should start with a capital letter so as not to be confused with [controls](#controls).  Section headers do not use close tags.  If section headers are not provided, the body section is assumed.
 
 ## Bindings
 
