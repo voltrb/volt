@@ -138,7 +138,6 @@ class ViewScope
     @handler.templates[scope.path] = template
   end
 
-
   def save_binding(binding_number, code)
     @bindings[binding_number] ||= []
     @bindings[binding_number] << code

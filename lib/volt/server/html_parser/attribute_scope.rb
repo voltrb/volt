@@ -103,4 +103,14 @@ module AttributeScope
 
     return id.to_s
   end
+
+  def attribute_string(attributes)
+    attr_str = attributes.map {|v| "#{v[0]}=\"#{v[1]}\"" }.join(' ')
+    if attr_str.size > 0
+      # extra space
+      attr_str = " " + attr_str
+    end
+
+    return attr_str
+  end
 end

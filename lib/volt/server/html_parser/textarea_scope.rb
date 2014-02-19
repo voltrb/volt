@@ -1,7 +1,6 @@
 class TextareaScope < ViewScope
   def initialize(handler, path, attributes)
     super(handler, path)
-    puts "TEXTAREA SCOPE"
 
     @attributes = attributes
   end
@@ -11,27 +10,22 @@ class TextareaScope < ViewScope
   end
 
   def close_scope(pop=true)
-    html = @html
-    @html = ''
-    puts "HTML: #{html.inspect}"
-
     # Remove from the scope
-    super
+    @handler.scope.pop
 
     attributes = @attributes
-    attributes['value'] = html
 
-    puts "ATTRS: #{attributes.inspect}"
+    if @html[/\{[^\}]+\}/]
+      # If the html inside the textarea has a binding, process it as
+      # a value attribute.
+      attributes['value'] = @html
+      @html = ''
+    end
 
     # Normal tag
     attributes = @handler.last.process_attributes('textarea', attributes)
 
-    attr_str = attributes.map {|v| "#{v[0]}=\"#{v[1]}\"" }.join(' ')
-    if attr_str.size > 0
-      # extra space
-      attr_str = " " + attr_str
-    end
-    @handler.last.html << "<textarea#{attr_str}></textarea>"
+    @handler.last.html << "<textarea#{attribute_string(attributes)}>#{@html}</textarea>"
 
   end
 end

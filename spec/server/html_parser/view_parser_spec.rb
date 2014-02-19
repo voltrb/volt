@@ -250,6 +250,20 @@ describe ViewParser do
 
   end
 
+  it "should keep the html inside of a textarea if there are no bindings" do
+    html = <<-END
+    <textarea name="cool">some text in a textarea</textarea>
+    END
+
+    view = ViewParser.new(html, "home/index/index")
+
+    expect(view.templates).to eq({
+      "home/index/index/body" => {
+        "html" => "    <textarea name=\"cool\">some text in a textarea</textarea>\n"
+      }
+    })
+  end
+
   it "should setup bindings for textarea values" do
     html = <<-END
     <textarea name="cool">{awesome}</textarea>
@@ -257,7 +271,16 @@ describe ViewParser do
 
     view = ViewParser.new(html, "home/index/index")
 
-    puts view.templates.inspect
+    expect(view.templates).to eq({
+      "home/index/index/body" => {
+        "html" => "    <textarea name=\"cool\" id=\"id1\"></textarea>\n",
+        "bindings" => {
+          "id1" => [
+            "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, \"value\", Proc.new { awesome }) }"
+          ]
+        }
+      }
+    })
   end
 
 end
