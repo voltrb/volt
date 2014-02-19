@@ -335,7 +335,7 @@ If you have a controller at app/home/controller/index_controller.rb, and a view 
 
 When you need to use { and } outside of bindings.  Anything in a triple mustache will be escaped:
 
-```handlebars
+```html
 {{{ bindings look like: {this}  }}}
 ```
 
