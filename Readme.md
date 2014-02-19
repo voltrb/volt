@@ -53,7 +53,7 @@ To get started, install volt:
 Then create a new project:
 
     volt new project_name
-    
+
 This will setup a basic project.  Now lets run the server.
 
     volt server
@@ -128,17 +128,17 @@ When you call a method on a ReactiveValue, you get back a new reactive value tha
     a = ReactiveValue.new(1)
     a.reactive?
     # => true
-    
+
     a.cur
     # => 1
-    
+
     b = a + 5
     b.reactive?
     # => true
-    
+
     b.cur
     # => 6
-    
+
     a.cur = 2
     b.cur
     # => 7
@@ -161,7 +161,7 @@ These events propigate to any reactive value's created off of a reactive value.
     a = ReactiveValue.new(1)
     b = a + 5
     b.on('changed') { puts "B changed" }
-    
+
     a.trigger!('changed')
     # => B changed
 ```
@@ -178,11 +178,11 @@ Lastly, we can also pass in other reactive value's as arguments to methods on a 
     a.on('changed') { puts "A changed" }
     b.on('changed') { puts "B changed" }
     c.on('changed') { puts "C changed" }
-    
+
     a.cur = 3
     # => A changed
     # => C changed
-    
+
     b.cur = 5
     # => B changed
     # => C changed
@@ -210,14 +210,14 @@ Because a method on a reactive value always returns another reactive value, and 
 
 One common place we use a truthy check is in setting up default values with || (logical or)  Volt provides a convience method that does the same thing .or, but works with ReactiveValue's.
 
-Instead of 
+Instead of
 
 ```ruby
     a || b
 ```
 
 Simply use:
-    
+
 ```ruby
     a.or(b)
 ```
@@ -257,7 +257,7 @@ An if binding lets you provide basic flow control.
     {#if _some_check?}
       <p>render this</p>
     {/}
-    
+
 Blocks are closed with a {/}
 
 When the #if binding is rendered, it will run the ruby code after #if.  If the code is true it will render the code below.  Again, if the returned value is reactive, it will update as that value changes.
@@ -307,7 +307,7 @@ Bindings can also be placed inside of attributes.
 There are some special features provided to make for elements work as "two way bindings"
 
     <input type="text" value="{_name}" />
-    
+
 In the example above, if _name changes, the field will update and if the field is updated, _name will be changed.
 
     <input type="checkbox" checked="{_checked}" />
@@ -329,7 +329,7 @@ Volt comes with many built-in models, one is called 'page'.  If you call #page o
     page._name
     # => @'Ryan'
 ```
-    
+
 Models act like a hash that you can access with getters and setters that start with an _  Prefixing with an underscore makes sure we don't accidentally try to call a method that doesn't exist and get back nil.  There is no need to define which fields a model has, they act similar to a hash, but with a shorter access and assign syntax.
 
 Models also let you nest data:
@@ -338,11 +338,11 @@ Models also let you nest data:
     page._settings._color = 'blue'
     page._settings._color
     # => @'blue'
-    
+
     page._settings
     # => @#<Model:_settings {:_color=>"blue"}>
 ```
-    
+
 Nested data is automatically setup when assigned.  In this case, page._settings is a model that is part of the page model.
 
 You can also append to a model if its not defined yet.
@@ -351,7 +351,7 @@ You can also append to a model if its not defined yet.
     page._items << 'item 1'
     page._items
     # => @#<ArrayModel ["item 1", "item 2"]>
-    
+
     page._items[0]
     # => @"item 1"
 ```
@@ -383,11 +383,11 @@ Models trigger events when their data is updated.  Currently models emit three e
 
 ```ruby
     model = Model.new
-    
+
     model._name.on('changed') { puts 'name changed' }
     model._name = 'Ryan'
     # => name changed
-    
+
     model._items.on('added') { puts 'item added' }
     model._items << 1
     # => item added
@@ -410,15 +410,15 @@ For convience, when placing a hash inside of another model, it is automatically 
       twitter: 'http://www.twitter.com/ryanstout',
       dribbble: 'http://dribbble.com/ryanstout'
     }
-    
+
     user._name
     # => "Ryan"
     user._profiles._twitter
     # => "http://www.twitter.com/ryanstout"
     user._profiles.class
     # => Model
-```  
-    
+```
+
 Models are accessed differently from hashes.  Instead of using model[:symbol] to access, you call a method model.method_name.  This provides a dynamic unified store where setters and getters can be added without changing any access code.
 
 You can get a ruby hash back out by calling .to_h on a Model.
@@ -432,11 +432,11 @@ Arrays inside of models are automatically converted to an instance of ArrayModel
     model._items << {_name: 'item 1'}
     model._items.class
     # => ArrayModel
-    
+
     model._items[0].class
     # => Model
     model._items[0]
-```    
+```
 
 
 To convert a Model or an ArrayModel back to a normal hash, call .to_h or .to_a respectively.  To convert them to a JavaScript Object (for passing to some JavaScript code), call .to_n (to native).
@@ -448,10 +448,10 @@ To convert a Model or an ArrayModel back to a normal hash, call .to_h or .to_a r
       twitter: 'http://www.twitter.com/ryanstout',
       dribbble: 'http://dribbble.com/ryanstout'
     }
-    
+
     user._profiles.to_h
     # => {twitter: 'http://www.twitter.com/ryanstout', dribbble: 'http://dribbble.com/ryanstout'}
-    
+
     items = ArrayModel.new([1,2,3,4])
     items
 ```
@@ -467,13 +467,13 @@ A controller can be any class in Volt, however it is common to have that class i
 ```ruby
     class TodosController < ModelController
       model :page
-  
+
       # ...
     end
 ```
 
 This can also be done at anytime on the controller instance:
-    
+
 ```ruby
     class TodosController < ModelController
       def initialize
@@ -481,7 +481,7 @@ This can also be done at anytime on the controller instance:
       end
     end
 ```
-    
+
 See the [provided collections](#provided-collections) section for a list of the available collection models.
 
 You can also provide your own object to model.
@@ -520,7 +520,7 @@ Sometimes you may need to include an externally hosted JS file from a component.
     javascript_file 'http://code.jquery.com/jquery-2.0.3.min.js'
     css_file '//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css'
 ```
-    
+
 Note above though that jquery and bootstrap are currently included by default.  Using javascript_file and css_file will be mixed in with your component assets at the correct locations according to the order they occur in the dependencies.rb files.
 
 ## Assets
@@ -563,13 +563,13 @@ Volt automatically places ```<:volt:notices />``` into views.  This shows notice
 
 As part of the notices component explained above, you can append messages to any collection on the flash model.
 
-Each collection represents a different type of "flash".  Common examples are ```_notices, _warnings, and _errors```  Using different collections allows you to change how you want the flash displayed.  For example, you might want ```_notices``` and ```_errors``` to show with different colors. 
+Each collection represents a different type of "flash".  Common examples are ```_notices, _warnings, and _errors```  Using different collections allows you to change how you want the flash displayed.  For example, you might want ```_notices``` and ```_errors``` to show with different colors.
 
 ```ruby
     flash._notices << "message to flash"
 ```
 
-These messages will show for 5 seconds, then disappear (both from the screen and the collection). 
+These messages will show for 5 seconds, then disappear (both from the screen and the collection).
 
 # Controls
 
@@ -580,7 +580,7 @@ To render a control, simply use a tag like so:
 ```html
     <:control-name />
 ```
-    
+
 or
 
 ```html
@@ -604,7 +604,7 @@ To find the control's views and optional controller, Volt will search the follow
 Each part is explained below:
 
 1. section
-Views are composed of sections.  Sections start with a ```<:SectionName>``` tag and end with ```</:SectionName>```  Volt will look first for a section in the same view.
+Views are composed of sections.  Sections start with a ```<:SectionName>``` and are not closed.  Volt will look first for a section in the same view.
 
 2. views
 Next Volt will look for a view file that with the control name.  If found, it will render the body section of that view.
@@ -623,7 +623,7 @@ When you create a control, you can also specify multiple parts of the search pat
 ```html
     <:blog:comments />
 ```
-    
+
 The above would search the following:
 
 | Component   | View Folder    | View File    | Section   |
@@ -661,7 +661,7 @@ Route path's can also contain variables similar to bindings.
 ```ruby
     get "/todos/{_index}", _view: 'todos'
 ```
-    
+
 In the case above, if any url matches /todos/*, (where * is anything but a slash), it will be the active route. ```params._view``` would be set to 'todos', and ```params._index``` would be set to the value in the path.
 
 If ```params._view``` is 'todos' and ```params._index``` is not nil, the route would be matched.
@@ -673,7 +673,7 @@ Routes are matched top to bottom in a routes file.
 An in browser irb is in the works.  We also have source maps support, but they are currently disabled due by default.  To enable them run:
 
     MAPS=true volt s
-    
+
 They are disabled by default because they slow down page rendering because so many files are rendered.  We're working with the opal and sprockets teams to make it so everything is still served in one big source maps file (which would show the files as they originated on disk)
 
 
