@@ -121,7 +121,7 @@ class SandlebarsParser
       elsif match == "\n" || @html.eos?
         # Starting new tag, should be closed before this
         # or end of doc before closed binding
-        raise_parse_error("unclosed binding: {#{binding.strip} - #{@html.post_match.inspect} -- #{@html.pre_match.inspect} -- #{match.inspect}")
+        raise_parse_error("unclosed binding: {#{binding.strip}")
       else
         raise "should not reach here"
       end

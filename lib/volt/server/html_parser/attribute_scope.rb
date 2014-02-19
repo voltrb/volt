@@ -19,7 +19,6 @@ module AttributeScope
     if binding_count > 0
       # Setup an id
       id = add_id_to_attributes(attributes)
-      puts "SETUP ID: #{id.inspect}"
     
       if parts.size > 1
         # Multiple bindings
@@ -53,13 +52,12 @@ module AttributeScope
     
     reactive_template_path = add_reactive_template(content)
     
-    puts "SAVE ATTR BINDING ON #{id.inspect}"
     save_binding(id, "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, #{attribute_name.inspect}, Proc.new { ReactiveTemplate.new(__p, __c, #{reactive_template_path.inspect}) }) }")
   end
   
   def add_reactive_template(content)
     path = @path + "/_rv#{@binding_number}"
-    new_handler = ViewHandler.new(path)
+    new_handler = ViewHandler.new(path, false)
     @binding_number += 1
     
     SandlebarsParser.new(content, new_handler)

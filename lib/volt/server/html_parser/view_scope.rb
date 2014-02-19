@@ -53,7 +53,8 @@ class ViewScope
   end
   
   def add_if(content)
-    @handler.scope << IfViewScope.new(@handler, @path + "/__#{@binding_number}", content)
+    # Add with path for if group.
+    @handler.scope << IfViewScope.new(@handler, @path + "/__ifg#{@binding_number}", content)
     @binding_number += 1
   end
   
@@ -116,10 +117,17 @@ class ViewScope
     
     raise "template path already exists: #{scope.path}" if @handler.templates[scope.path]
     
-    @handler.templates[scope.path] = {
+    template = {
       'html' => scope.html,
-      'bindings' => scope.bindings
     }
+    
+    if scope.bindings.size > 0
+      # Add the bindings if there are any
+      template['bindings'] = scope.bindings
+    end
+    
+    
+    @handler.templates[scope.path] = template
   end
   
 

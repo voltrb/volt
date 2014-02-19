@@ -7,7 +7,7 @@ class EachScope < ViewScope
   def close_scope
     binding_number = @handler.scope[-2].binding_number
     @handler.scope[-2].binding_number += 1
-    @path += "/_template/#{binding_number}"
+    @path += "/__template/#{binding_number}"
     
     super
     

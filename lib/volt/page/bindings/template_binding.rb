@@ -32,9 +32,7 @@ class TemplateBinding < BaseBinding
   end
   
   def setup_path(binding_in_path)
-    puts "BINDING IN PATH: #{binding_in_path.inspect}"
     path_parts = binding_in_path.split('/')
-    puts "AFTER"
     @collection_name = path_parts[0]
     @controller_name = path_parts[1]
     @page_name = path_parts[2]

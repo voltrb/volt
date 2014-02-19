@@ -9,7 +9,10 @@ class ViewHandler
     @scope.last
   end
 
-  def initialize(initial_path)
+  def initialize(initial_path, allow_sections=true)
+    @original_path = initial_path
+    
+    initial_path += '/body' if allow_sections
     @scope = [ViewScope.new(self, initial_path)]
     @templates = {}
   end
@@ -53,18 +56,19 @@ class ViewHandler
   def start_section(tag_name, attributes, unary)
     path = last.path
     # Start of section
-    if @original_path
+    if @in_section
       # Close any previous sections
       last.close_scope
     else
       # This is the first time we've hit a section header, everything
       # outside of the headers should be removed
       @templates = {}
-      @original_path = path
     end
     
+    @in_section = tag_name[1..-1]
+    
     # Set the new path to include the section
-    new_path = @original_path + '/' + tag_name[1..-1]
+    new_path = @original_path + '/' + @in_section
     @scope = [ViewScope.new(self, new_path)]
   end
   

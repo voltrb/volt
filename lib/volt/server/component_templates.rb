@@ -27,8 +27,10 @@ class ComponentTemplates
       all_templates.templates.each_pair do |name, template|
         binding_code = []
 
-        template['bindings'].each_pair do |key,value|
-          binding_code << "#{key.inspect} => [#{value.join(', ')}]"
+        if template['bindings']
+          template['bindings'].each_pair do |key,value|
+            binding_code << "#{key.inspect} => [#{value.join(', ')}]"
+          end
         end
 
         binding_code = "{#{binding_code.join(', ')}}"
