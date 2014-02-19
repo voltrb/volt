@@ -108,20 +108,22 @@ class SandlebarsParser
 
     # scan until we reach a { or }
     loop do
-      binding << @html.scan_until(/([\{\}\n]|$)/)
+      binding << @html.scan_until(/([\{\}\n]|\Z)/)
       
       match = @html[1]
-      if match == "\n" || @html.eos?
-        # Starting new tag, should be closed before this
-        # or end of doc before closed binding
-        raise_parse_error("unclosed binding: {#{binding.strip}")
-      elsif match == '{'
-        # open more
-        open_count += 1
-      else
+      if match == '}'
         # close
         open_count -= 1
         break if open_count == 0
+      elsif match == '{'
+        # open more
+        open_count += 1
+      elsif match == "\n" || @html.eos?
+        # Starting new tag, should be closed before this
+        # or end of doc before closed binding
+        raise_parse_error("unclosed binding: {#{binding.strip} - #{@html.post_match.inspect} -- #{@html.pre_match.inspect} -- #{match.inspect}")
+      else
+        raise "should not reach here"
       end
     end
     

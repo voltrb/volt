@@ -17,7 +17,7 @@ class IfViewScope < ViewScope
   end
   
   def new_path
-    @path = @original_path + "/__template/#{@path_number}"
+    @path = @original_path + "/__if/#{@path_number}"
     @path_number += 1
   end
 

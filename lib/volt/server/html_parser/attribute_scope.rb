@@ -19,8 +19,9 @@ module AttributeScope
     if binding_count > 0
       # Setup an id
       id = add_id_to_attributes(attributes)
+      puts "SETUP ID: #{id.inspect}"
     
-      if binding_count > 1
+      if parts.size > 1
         # Multiple bindings
         add_multiple_attribute(id, attribute_name, value)
       elsif parts.size == 1 && binding_count == 1
@@ -52,6 +53,7 @@ module AttributeScope
     
     reactive_template_path = add_reactive_template(content)
     
+    puts "SAVE ATTR BINDING ON #{id.inspect}"
     save_binding(id, "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, #{attribute_name.inspect}, Proc.new { ReactiveTemplate.new(__p, __c, #{reactive_template_path.inspect}) }) }")
   end
   
@@ -74,7 +76,7 @@ module AttributeScope
   end
   
   def add_id_to_attributes(attributes)
-    id = attributes['id'] ||= @binding_number
+    id = attributes['id'] ||= "id#{@binding_number}"
     @binding_number += 1
     
     return id.to_s

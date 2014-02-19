@@ -53,7 +53,8 @@ class ViewScope
   end
   
   def add_if(content)
-    @handler.scope << IfViewScope.new(@handler, @path, content)
+    @handler.scope << IfViewScope.new(@handler, @path + "/__#{@binding_number}", content)
+    @binding_number += 1
   end
   
   def add_else(content)
@@ -66,7 +67,7 @@ class ViewScope
   
   def add_template(content)
     @handler.html << "<!-- $#{@binding_number} --><!-- $/#{@binding_number} -->"
-    save_binding(@binding_number, "lambda { |__p, __t, __c, __id| TemplateBinding.new(__p, __t, __c, __id, Proc.new { [#{content}] }) }")
+    save_binding(@binding_number, "lambda { |__p, __t, __c, __id| TemplateBinding.new(__p, __t, __c, __id, #{@path.inspect}, Proc.new { [#{content}] }) }")
 
     @binding_number += 1
   end
@@ -77,11 +78,30 @@ class ViewScope
     @handler.html << "<!-- $#{@binding_number} --><!-- $/#{@binding_number} -->"
     
     data_hash = {}
+    puts "PROCESS: #{attributes.inspect}"
+    attributes.each_pair do |name, value|
+      parts = value.split(/(\{[^\}]+\})/).reject(&:blank?)
+      binding_count = parts.count {|p| p[0] == '{' && p[-1] == '}'}
+
+      # if this attribute has bindings
+      if binding_count > 0
+        if binding_count > 1
+          # Multiple bindings
+        elsif parts.size == 1 && binding_count == 1
+          # A single binding
+          data_hash[name] = "Proc.new { #{value} }"
+        end
+      else
+        # String
+        data_hash[name] = value
+      end
+    end
     
+    puts "DH: #{data_hash.inspect}"
     arguments = "#{component_name.inspect}, #{data_hash.inspect}"
     
     
-    save_binding(@binding_number, "lambda { |__p, __t, __c, __id| ComponentBinding.new(__p, __t, __c, __id, Proc.new { [#{arguments}] }) }")
+    save_binding(@binding_number, "lambda { |__p, __t, __c, __id| ComponentBinding.new(__p, __t, __c, __id, #{@path.inspect}, Proc.new { [#{arguments}] }) }")
 
     @binding_number += 1
   end
