@@ -5,9 +5,9 @@ module Persistors
     def initialize(model)
       @model = model
     end
-    
+
     def added(model, index)
-      if Volt.client?        
+      if Volt.client?
         # Setup a new timer for clearing the flash.
         %x{
           setTimeout(function() {
@@ -16,10 +16,10 @@ module Persistors
         }
       end
     end
-    
+
     def clear_model(model)
       @model.delete(model)
-      
+
       # Clear out the parent collection (usually the main flash)
       # Makes it so flash.empty? reflects if there is any outstanding
       # flashes.

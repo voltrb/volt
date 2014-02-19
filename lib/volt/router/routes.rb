@@ -5,18 +5,18 @@ class Routes
 
   def initialize
     @routes = []
-    
+
     if Volt.server?
       @path_matchers = []
     end
   end
-  
+
   def define(&block)
     instance_eval(&block)
-    
+
     return self
   end
-  
+
   def get(path, options={})
     if path.index('{') && path.index('}')
       # The path contains bindings.
@@ -24,10 +24,10 @@ class Routes
     else
       add_path_matcher([path]) if Volt.server?
     end
-    
+
     @routes << [path, options]
   end
-  
+
   # Takes the path and splits it up into sections around any
   # bindings in the path.  Those are then used to create a proc
   # that will return the path with the current params in it.
@@ -35,15 +35,15 @@ class Routes
   def build_path_matcher(path, options)
     sections = path.split(/(\{[^\}]+\})/)
     sections = sections.reject {|v| v == '' }
-    
+
     sections.each do |section|
       if section[0] == '{' && section[-1] == '}'
         options[section[1..-2]] = nil
       end
     end
-    
+
     add_path_matcher(sections) if Volt.server?
-    
+
     # Create a path that takes in the params and returns the main
     # part of the url with the params filled in.
     path = Proc.new do |params|
@@ -55,7 +55,7 @@ class Routes
         end
       end.join('')
     end
-    
+
     return path
   end
 
@@ -69,19 +69,19 @@ class Routes
         match_path = match_path + section
       end
     end
-    
+
     @path_matchers << (/^#{match_path}$/)
   end
-  
+
   # Takes in params and generates a path and the remaining params
   # that should be shown in the url.
-  def url_for_params(params)    
+  def url_for_params(params)
     routes.each do |route|
       if params_match_options?(params, route[1])
         return path_and_params(params, route[0], route[1])
       end
     end
-    
+
     return '/', params
   end
 
@@ -92,30 +92,30 @@ class Routes
       # TODO: Finish nested routes
       if false && route[0].class == Proc
         # puts route[0].call(params).inspect
-        
+
         return false
       elsif route[0] == path
         # Found the matching route
         return route[1]
       end
     end
-    
+
     return {}
   end
-  
+
   private
     def path_and_params(params, path, options)
       params = params.attributes.dup
       puts params.inspect if path.class == Proc
       path = path.call(params) if path.class == Proc
-    
+
       options.keys.each do |key|
         params.delete(key)
       end
-      
+
       return path, params
     end
-  
+
     # Match one route against the current params.
     def params_match_options?(params, options)
       options.each_pair do |key, value|
@@ -136,7 +136,7 @@ class Routes
           return false
         end
       end
-    
+
       return true
     end
 end

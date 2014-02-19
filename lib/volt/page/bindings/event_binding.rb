@@ -6,7 +6,7 @@ class JSEvent
   def initialize(js_event)
     @js_event = js_event
   end
-  
+
   def key_code
     `this.js_event.keyCode`
   end
@@ -16,7 +16,7 @@ class JSEvent
     # `this.js_event.stopPropagation();`
     `this.js_event.preventDefault();`
   end
-  
+
   def target
     `this.js_event.toElement`
   end
@@ -28,7 +28,7 @@ class EventBinding < BaseBinding
   def initialize(page, target, context, binding_name, event_name, call_proc)
     super(page, target, context, binding_name)
     @event_name = event_name
-    
+
     handler = Proc.new do |js_event|
       event = JSEvent.new(js_event)
       event.stop if event_name == 'submit'

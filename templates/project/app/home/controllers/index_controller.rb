@@ -3,7 +3,7 @@ class IndexController < ModelController
 
   def initialize
     super
-    
+
     # Add controller setup code here
   end
 end

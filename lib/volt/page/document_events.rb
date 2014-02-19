@@ -33,7 +33,7 @@ class DocumentEvents
 
     loop do
       # Lookup the handler, make sure to not assume the group
-      # exists.  
+      # exists.
       # TODO: Sometimes the event doesn't exist, but we still get
       # an event.
       handlers = @events[event_name]
@@ -52,7 +52,7 @@ class DocumentEvents
         element = element.parent
       end
     end
-    
+
     nil
   end
 
@@ -70,7 +70,7 @@ class DocumentEvents
     # from the document
     if @events[event].size == 0
       @events.delete(event)
-      
+
       # Remove the event from the body
       %x{
         $('body').unbind(event);

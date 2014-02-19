@@ -18,10 +18,10 @@ class ContentBinding < BaseBinding
 
   def update
     value = @value.cur.or('')
-    
+
     # Exception values display the exception as a string
     value = value.to_s
-    
+
     # Update the html in this section
     # TODO: Move the formatter into another class.
     section.html = value.gsub("\n", "<br />\n")

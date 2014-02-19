@@ -4,7 +4,7 @@ if ENV['IN_BROWSER']
   describe "integration test", :type => :feature do
     it "should load the page" do
       visit '/'
-    
+
       expect(page).to have_content('Home')
     end
   end

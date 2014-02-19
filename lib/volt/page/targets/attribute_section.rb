@@ -9,27 +9,27 @@ class AttributeSection
     @binding_name = binding_name
     # puts "init attr section on #{binding_name}"
   end
-  
+
   def text=(text)
     set_content_and_rezero_bindings(text, {})
   end
-  
+
   def html=(value)
     set_content_and_rezero_bindings(value, {})
   end
-  
-	# Takes in our html and bindings, and rezero's the comment names, and the
-	# bindings.  Returns an updated bindings hash
-	def set_content_and_rezero_bindings(html, bindings)
+
+  # Takes in our html and bindings, and rezero's the comment names, and the
+  # bindings.  Returns an updated bindings hash
+  def set_content_and_rezero_bindings(html, bindings)
     if @binding_name == 'main'
       @target.html = html
     else
       @target.find_by_binding_id(@binding_name).html = html
     end
-    
+
     return bindings
   end
-  
+
   def remove
     node = @target.find_by_binding_id(@binding_name)
     node.remove

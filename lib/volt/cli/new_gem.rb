@@ -4,7 +4,7 @@ require 'fileutils'
 
 # Creates a new "volt" gem, which can be used to easily repackage
 # components.
-class NewGem  
+class NewGem
   def initialize(thor, name, options)
     @thor = thor
     @component_name = name.chomp("/")
@@ -16,16 +16,16 @@ class NewGem
       @thor.say("There is already a gem named #{@name}.  Please choose a different name.", :red)
       return
     end
-    
+
     @options = options
     @namespaced_path = @name.tr('-', '/')
     @opts = gem_options
     @target = File.join(Dir.pwd, @name)
-    
+
     copy_files
     copy_options
   end
-  
+
   # Check with the rubygems api to see if this gem name is available.
   def gem_is_available?
     @thor.say("Check if #{@name} is available as a gem name.", :yellow)
@@ -33,7 +33,7 @@ class NewGem
 
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
-  
+
     request = Net::HTTP::Get.new(uri.request_uri)
     response = http.request(request)
 
@@ -42,7 +42,7 @@ class NewGem
     # rubygems is down, skip check
     return true
   end
-  
+
   def copy_files
     @thor.directory("newgem/app/newgem", File.join("#{@target}", "app/#{@component_name}"), @opts)
     copy("newgem/Gemfile.tt", "Gemfile")
@@ -54,7 +54,7 @@ class NewGem
     copy("newgem/VERSION", "VERSION")
     FileUtils.mkdir_p(File.join(@target, "lib/#{@namespaced_path}"))
   end
-    
+
   def copy_options
     if @options[:bin]
       copy("newgem/bin/newgem.tt", "bin/#{@name}")
@@ -75,18 +75,18 @@ class NewGem
       run("#{@options["edit"]} \"#{gemspec_dest}\"")  # Open gemspec in editor
     end
   end
-  
+
   private
     def copy(from, to)
       @thor.template(File.join(from), File.join(@target, to), @opts)
     end
-  
+
     def gem_options
       constant_name = get_constant_name
       constant_array = constant_name.split('::')
       git_user_name = `git config user.name`.chomp
       git_user_email = `git config user.email`.chomp
-  
+
       opts = {
         :name            => @name,
         :namespaced_path => @namespaced_path,
@@ -97,20 +97,20 @@ class NewGem
         :test            => @options[:test],
         :volt_version_base => volt_version_base
       }
-    
+
       return opts
     end
-    
+
     def volt_version_base
       version_path = File.join(File.dirname(__FILE__), '../../../VERSION')
       File.read(version_path).split('.').tap {|v| v[v.size-1] = 0 }.join('.')
     end
-    
+
     def get_constant_name
       constant_name = @name.split('_').map{|p| p[0..0].upcase + p[1..-1] }.join
       constant_name = constant_name.split('-').map{|q| q[0..0].upcase + q[1..-1] }.join('::') if constant_name =~ /-/
-      
+
       return constant_name
     end
-  
+
 end

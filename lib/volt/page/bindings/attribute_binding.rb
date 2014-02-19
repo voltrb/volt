@@ -8,12 +8,12 @@ class AttributeBinding < BaseBinding
 
     @attribute_name = attribute_name
     @getter = getter
-    
+
     setup
   end
-  
+
   def setup
-    
+
     # Find the source for the content binding
     @value = value_from_getter(@getter)
 
@@ -47,7 +47,7 @@ class AttributeBinding < BaseBinding
     Element.find('#' + binding_name)
   end
 
-  def update  
+  def update
     if @attribute_target
       value = @attribute_target.to_html
     else
@@ -58,14 +58,14 @@ class AttributeBinding < BaseBinding
       update_checked
       return
     end
-    
+
     if value.is_a?(NilMethodCall) || value.nil?
       value = ''
     end
 
     self.value = value
   end
-  
+
   def value=(val)
     case @attribute_name
     when 'value'
@@ -78,18 +78,18 @@ class AttributeBinding < BaseBinding
       element[@attribute_name] = val
     end
   end
-  
+
   def update_checked
     value = @value.cur
-    
+
     if value.is_a?(NilMethodCall) || value.nil?
       value = false
     end
-    
+
     element.prop('checked', value)
-    
+
   end
-  
+
   def remove
     # Unbind events, leave the element there since attribute bindings
     # aren't responsible for it being there.
@@ -99,12 +99,12 @@ class AttributeBinding < BaseBinding
     when 'checked'
       element.off('change.attrbind', nil)
     end
-    
+
     if @update_listener
       @update_listener.remove
       @update_listener = nil
     end
-    
+
     # Clear any references
     @target = nil
     @context = nil

@@ -6,7 +6,7 @@ class SocketConnectionHandlerStub
   def self.dispatcher
     @@dispatcher
   end
-  
+
   def initialize(channel_stub)
     @channel_stub = channel_stub
   end

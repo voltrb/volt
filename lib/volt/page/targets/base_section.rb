@@ -7,7 +7,7 @@ class BaseSection
   def remove_anchors
     raise "not implemented"
   end
-  
+
   def insert_anchor_before_end
     raise "not implemented"
   end

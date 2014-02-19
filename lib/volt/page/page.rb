@@ -38,19 +38,19 @@ class Page
     # debugger
     puts "------ Page Loaded -------"
     @model_classes = {}
-    
+
     # Run the code to setup the page
     @page = ReactiveValue.new(Model.new)
     @flash = ReactiveValue.new(Model.new({}, persistor: Persistors::Flash))
     @store = ReactiveValue.new(Model.new({}, persistor: Persistors::StoreFactory.new(tasks)))
-    
+
     @url = ReactiveValue.new(URL.new)
     @params = @url.params
     @url_tracker = UrlTracker.new(self)
 
     @events = DocumentEvents.new
     @draw_cycle = DrawCycle.new
-    
+
     if RUBY_PLATFORM == 'opal'
       # Setup escape binding for console
       %x{
@@ -59,18 +59,18 @@ class Page
             Opal.gvars.page.$launch_console();
           }
         });
-      
+
         $(document).on('click', 'a', function(event) {
           return Opal.gvars.page.$link_clicked($(this).attr('href'), event);
         });
       }
     end
   end
-  
+
   def tasks
     @tasks ||= Tasks.new(self)
   end
-  
+
   def link_clicked(url='', event=nil)
     # Skip when href == ''
     return if url.blank?
@@ -85,21 +85,21 @@ class Page
 
       # Clear the flash
       flash.clear
-      
+
       # return false to stop the event propigation
       return false
     end
     # end
-    
+
     # Not stopping, process link normally
     return true
   end
-  
+
   # We provide a binding_name, so we can bind events on the document
   def binding_name
     'page'
   end
-  
+
   def launch_console
     puts "Launch Console"
   end
@@ -117,10 +117,10 @@ class Page
   def events
     @events
   end
-  
+
   def add_model(model_name)
     # puts "ADD MODEL: #{model_name.inspect} - #{model_name.camelize.inspect}"
-    
+
     @model_classes[["*", "_#{model_name}"]] = Object.const_get(model_name.camelize)
   end
 
@@ -130,7 +130,7 @@ class Page
     @templates[name] = {'html' => template, 'bindings' => bindings}
     # puts "Add Template: #{name}"
   end
-  
+
   def add_routes(&block)
     @routes = Routes.new.define(&block)
     @url.cur.router = @routes
@@ -157,18 +157,18 @@ class Page
       `document.title = title;`
     end
     TemplateRenderer.new(self, title_target, main_controller, "main", "home/index/index/title")
-    
+
     # TODO: this dom ready should really happen in the template renderer
     main_controller.dom_ready if main_controller.respond_to?(:dom_ready)
   end
-  
+
   # When the page is reloaded from the backend, we store the $page.page, so we
   # can reload the page in the exact same state.  Speeds up development.
   def load_stored_page
     if Volt.client?
       if `sessionStorage`
         page_obj_str = nil
-        
+
         `page_obj_str = sessionStorage.getItem('___page');`
         `if (page_obj_str) {`
           `sessionStorage.removeItem('___page');`
@@ -188,7 +188,7 @@ if Volt.client?
   $page = Page.new
 
   # Call start once the page is loaded
-  Document.ready? do    
+  Document.ready? do
     $page.start
   end
 end

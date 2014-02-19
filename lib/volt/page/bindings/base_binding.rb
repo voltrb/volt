@@ -7,7 +7,7 @@
 # 2. target -  an DomTarget or AttributeTarget
 # 3. context - the context object the binding will be evaluated in
 # 4. binding_name - the id for the comment (or id for attributes) where the
-#                   binding will be inserted.  
+#                   binding will be inserted.
 class BaseBinding
   attr_accessor :target, :context, :binding_name
 
@@ -24,29 +24,29 @@ class BaseBinding
   def section
     @section ||= target.section(@binding_name)
   end
-  
-  def remove    
+
+  def remove
     section.remove
-    
+
     # Clear any references
     @target = nil
     @context = nil
     @section = nil
   end
-  
+
   def remove_anchors
     section.remove_anchors
   end
-  
+
   def queue_update
     if Volt.server?
       # Run right away
       update
     else
-      
+
     end
   end
-  
+
   def value_from_getter(getter)
     # Evaluate the getter proc in the context
     return @context.instance_eval(&getter)
