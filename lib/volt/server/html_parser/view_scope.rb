@@ -79,7 +79,6 @@ class ViewScope
     @handler.html << "<!-- $#{@binding_number} --><!-- $/#{@binding_number} -->"
     
     data_hash = {}
-    puts "PROCESS: #{attributes.inspect}"
     attributes.each_pair do |name, value|
       parts = value.split(/(\{[^\}]+\})/).reject(&:blank?)
       binding_count = parts.count {|p| p[0] == '{' && p[-1] == '}'}
@@ -98,7 +97,6 @@ class ViewScope
       end
     end
     
-    puts "DH: #{data_hash.inspect}"
     arguments = "#{component_name.inspect}, #{data_hash.inspect}"
     
     

@@ -3,7 +3,7 @@ require 'volt/page/template_renderer'
 
 class TemplateBinding < BaseBinding
   def initialize(page, target, context, binding_name, binding_in_path, getter)
-    puts "New template binding: #{context.inspect} - #{binding_name.inspect}"
+    # puts "New template binding: #{context.inspect} - #{binding_name.inspect}"
     super(page, target, context, binding_name)
     
     # Binding in path is the path for the template this binding is in

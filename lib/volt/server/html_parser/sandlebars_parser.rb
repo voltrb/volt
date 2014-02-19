@@ -141,6 +141,8 @@ class SandlebarsParser
   end
   
   def start_tag(tag, tag_name, rest, unary)
+    section_tag = tag_name[0] == ':' && tag_name[1] =~ /[A-Z]/
+    
     tag_name = tag_name.downcase
 
     # handle doctype so we get it output exactly the same way
@@ -165,7 +167,7 @@ class SandlebarsParser
     unary = EMPTY[tag_name] || !unary.blank?
     
     # Section tag's are also unary
-    unless unary || tag_name[0] == '!'
+    unless unary || section_tag
       @stack.push(tag_name)
     end
     
@@ -182,7 +184,11 @@ class SandlebarsParser
         attributes[name] = value
       end
       
-      @handler.start_tag(tag_name, attributes, unary)
+      if section_tag
+        @handler.start_section(tag_name, attributes, unary)
+      else
+        @handler.start_tag(tag_name, attributes, unary)
+      end
     end
   end
   

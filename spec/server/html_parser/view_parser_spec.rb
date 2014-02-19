@@ -212,16 +212,25 @@ describe ViewParser do
     
   end
   
-  # it "should parse sections" do
-  #   html = <<-END
-  #   <!title>
-  #     This text goes in the title
-  #   
-  #   <!body>
-  #     <p>This text goes in the body</p> 
-  #   END
-  #   
-  #   view = ViewParser.new(html, "home/index/index")
-  # end
+  it "should parse sections" do
+    html = <<-END
+    <:Title>
+      This text goes in the title
+    
+    <:Body>
+      <p>This text goes in the body</p> 
+    END
+    
+    view = ViewParser.new(html, "home/index/index")
+    
+    expect(view.templates).to eq({
+      "home/index/index/title" => {
+        "html" => "\n      This text goes in the title\n    \n    "
+      },
+      "home/index/index/body" => {
+        "html" => "\n      <p>This text goes in the body</p> \n"
+      }
+    })
+  end
   
 end

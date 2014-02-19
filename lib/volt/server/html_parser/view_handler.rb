@@ -31,8 +31,6 @@ class ViewHandler
 
   def start_tag(tag_name, attributes, unary)
     case tag_name[0]
-    when '!'
-      start_section(tag_name, attributes, unary)
     when ':'
       # Component
       last.add_component(tag_name, attributes, unary)
