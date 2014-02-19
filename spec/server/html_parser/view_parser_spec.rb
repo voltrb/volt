@@ -134,4 +134,90 @@ describe ViewParser do
     })
   end
   
+  it "should parse a single attribute binding" do
+    html = <<-END
+      <div class="{main_class}">
+      </div>
+    END
+    
+    view = ViewParser.new(html, "home/index/index/body")
+    
+    expect(view.templates).to eq({
+      "home/index/index/body" => {
+        "html" => "      <div id=\"0\">\n      </div>\n",
+        "bindings" => {
+          "0" => [
+            "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, \"class\", Proc.new { main_class }) }"
+          ]
+        }
+      }
+    })
+  end
+  
+  it "should parse multiple attribute bindings in a single attribute" do
+    html = <<-END
+      <div class="start {main_class} {awesome_class} string">
+      </div>
+    END
+    
+    view = ViewParser.new(html, "home/index/index/body")
+    
+    expect(view.templates).to eq({
+      "home/index/index/body/_rv1" => {
+        "html" => "start <!-- $0 --><!-- $/0 --> <!-- $1 --><!-- $/1 --> string",
+        "bindings" => {
+          0 => [
+            "lambda { |__p, __t, __c, __id| ContentBinding.new(__p, __t, __c, __id, Proc.new { main_class }) }"
+          ],
+          1 => [
+            "lambda { |__p, __t, __c, __id| ContentBinding.new(__p, __t, __c, __id, Proc.new { awesome_class }) }"
+          ]
+        }
+      },
+      "home/index/index/body" => {
+        "html" => "      <div id=\"0\">\n      </div>\n",
+        "bindings" => {
+          "0" => [
+            "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, \"class\", Proc.new { ReactiveTemplate.new(__p, __c, \"home/index/index/body/_rv1\") }) }"
+          ]
+        }
+      }
+    })
+  end
+  
+  it "should parse a template" do
+    html = <<-END
+    {#template "/home/temp/path"}
+    END
+    
+    view = ViewParser.new(html, "home/index/index/body")
+    
+    expect(view.templates).to eq({
+      "home/index/index/body" => {
+        "html" => "    <!-- $0 --><!-- $/0 -->\n",
+        "bindings" => {
+          0 => [
+            "lambda { |__p, __t, __c, __id| TemplateBinding.new(__p, __t, __c, __id, Proc.new { [\"/home/temp/path\"] }) }"
+          ]
+        }
+      }
+    })
+  end
+  
+  it "should parse components" do
+    
+  end
+  
+  it "should parse sections" do
+    html = <<-END
+    <!title>
+      This text goes in the title
+    
+    <!body>
+      <p>This text goes in the body</p> 
+    END
+    
+    view = ViewParser.new(html, "home/index/index")
+  end
+  
 end

@@ -1,5 +1,6 @@
 require 'stringio'
 require 'volt'
+require 'volt/server/html_parser/view_parser'
 require 'volt/server/template_parser'
 require 'volt/server/component_templates'
 require 'volt/server/rack/asset_files'

@@ -68,7 +68,7 @@ class SandlebarsParser
         tag_name = @html[1]
         rest = @html[2]
         unary = @html[3]
-        
+      
         start_tag(tag, tag_name, rest, unary)
       elsif @html.scan(END_TAG)
         tag_name = @html[1]
@@ -162,12 +162,13 @@ class SandlebarsParser
     
     unary = EMPTY[tag_name] || !unary.blank?
     
-    unless unary
+    # Section tag's are also unary
+    unless unary || tag_name[0] == '!'
       @stack.push(tag_name)
     end
     
     if @handler.respond_to?(:start_tag)
-      attributes = []
+      attributes = {}
       
       # Take the rest string and extract the attributes, filling in any
       # "fill in" attribute values if not provided.
@@ -176,7 +177,7 @@ class SandlebarsParser
         
         value = match[1] || match[2] || match[3] || FILL_IN_ATTRIBUTES[name] || ''
         
-        attributes << [name, value]
+        attributes[name] = value
       end
       
       @handler.start_tag(tag_name, attributes, unary)

@@ -1,7 +1,10 @@
+require 'volt/server/html_parser/attribute_scope'
 
 class ViewScope
-  attr_reader :path, :html, :bindings
-  attr_accessor :binding_number
+  include AttributeScope
+  
+  attr_reader :html, :bindings
+  attr_accessor :path, :binding_number
   
   def initialize(handler, path)
     @handler = handler
@@ -68,9 +71,28 @@ class ViewScope
     @binding_number += 1
   end
   
+  def add_component(tag_name, attributes, unary)
+    component_name = tag_name[1..-1].gsub(':', '/')
+    
+    @handler.html << "<!-- $#{@binding_number} --><!-- $/#{@binding_number} -->"
+    
+    data_hash = {}
+    
+    arguments = "#{component_name.inspect}, #{data_hash.inspect}"
+    
+    
+    save_binding(@binding_number, "lambda { |__p, __t, __c, __id| ComponentBinding.new(__p, __t, __c, __id, Proc.new { [#{arguments}] }) }")
+
+    @binding_number += 1
+  end
+  
   # Called when this scope should be closed out
-  def close_scope
-    scope = @handler.scope.pop
+  def close_scope(pop=true)
+    if pop
+      scope = @handler.scope.pop
+    else
+      scope = @handler.last
+    end
     
     raise "template path already exists: #{scope.path}" if @handler.templates[scope.path]
     
@@ -80,6 +102,7 @@ class ViewScope
     }
   end
   
+
   def save_binding(binding_number, code)
     @bindings[binding_number] ||= []
     @bindings[binding_number] << code
