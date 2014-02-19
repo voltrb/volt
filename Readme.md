@@ -333,7 +333,7 @@ If you have a controller at app/home/controller/index_controller.rb, and a view 
 
 ## Escaping Bindings
 
-When you need to use { and } outside of bindings.  Anything in a triple mustache will be escaped:
+When you need to use { and } outside of bindings.  Anything in a triple mustache will be escaped and not processed as a binding:
 
 ```html
 {{{ bindings look like: {this}  }}}
