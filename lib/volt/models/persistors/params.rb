@@ -5,7 +5,7 @@ module Persistors
     def initialize(model)
       @model = model
     end
-    
+
     def changed(attribute_name)
       if RUBY_PLATFORM == 'opal'
         %x{
@@ -18,7 +18,7 @@ module Persistors
         }
       end
     end
-    
+
     def run_update
       $page.params.trigger!('child_changed') if Volt.client?
     end

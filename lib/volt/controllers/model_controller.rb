@@ -1,8 +1,8 @@
-class ModelController  
+class ModelController
   def self.model(val)
     @@default_model = val
   end
-  
+
   # Sets the current model on this controller
   def model(val)
     if Symbol === val || String === val
@@ -18,22 +18,22 @@ class ModelController
       raise "model can not be #{val.inspect}"
     end
   end
-  
+
   def self.new(*args, &block)
     inst = self.allocate
     if @@default_model
       inst.model(@@default_model || :page)
     end
-    
+
     inst.initialize(*args, &block)
-    
+
     return inst
   end
-  
+
   def page
     $page.page
   end
-  
+
   def paged
     $page.page
   end
@@ -47,26 +47,26 @@ class ModelController
   end
 
   def params
-    $page.params 
+    $page.params
   end
 
   def url
-    $page.url 
+    $page.url
   end
-  
+
   def channel
     $page.channel
   end
-  
+
   def tasks
     $page.tasks
   end
-  
+
   def controller
     @controller ||= ReactiveValue.new(Model.new)
   end
 
   def method_missing(method_name, *args, &block)
-    return @model.send(method_name, *args, &block)      
+    return @model.send(method_name, *args, &block)
   end
 end

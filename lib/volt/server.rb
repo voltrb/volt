@@ -23,20 +23,20 @@ require 'volt/tasks/dispatcher'
 
 module Rack
   # TODO: For some reason in Rack (or maybe thin), 304 headers close
-  # the http connection.  We might need to make this check if keep 
+  # the http connection.  We might need to make this check if keep
   # alive was in the request.
   class KeepAlive
     def initialize(app)
       @app = app
     end
- 
+
     def call(env)
       status, headers, body = @app.call(env)
 
       if status == 304 && env['HTTP_CONNECTION'].downcase == 'keep-alive'
         headers['Connection'] = 'keep-alive'
       end
-      
+
       [status, headers, body]
     end
   end
@@ -48,18 +48,18 @@ class Server
     Volt.root = root_path
 
     @app_path = File.expand_path(File.join(root_path, "app"))
-    
+
     @component_paths = ComponentPaths.new(root_path)
-    
+
     setup_change_listener
-    
+
     display_welcome
   end
-  
+
   def display_welcome
-    puts File.read(File.join(File.dirname(__FILE__), "server/banner.txt"))      
+    puts File.read(File.join(File.dirname(__FILE__), "server/banner.txt"))
   end
-  
+
   def setup_change_listener
     # Setup the listeners for file changes
     listener = Listen.to("#{@app_path}/") do |modified, added, removed|
@@ -67,10 +67,10 @@ class Server
     end
     listener.start
   end
-  
+
   def app
     @app = Rack::Builder.new
-    
+
     # Should only be used in production
     # @app.use Rack::Deflater
 
@@ -80,7 +80,7 @@ class Server
     @app.use Rack::KeepAlive
     @app.use Rack::ConditionalGet
     @app.use Rack::ETag
-    
+
     @app.use Rack::CommonLogger
     @app.use Rack::ShowExceptions
 
@@ -88,24 +88,24 @@ class Server
     @app.map '/components' do
       run ComponentHandler.new(component_paths)
     end
-    
+
     # Serve the opal files
     opal_files = OpalFiles.new(@app, @app_path, @component_paths)
 
     # Serve the main html files from public, also figure out
     # which JS/CSS files to serve.
     @app.use IndexFiles, @component_paths, opal_files
-    
+
     # Handle socks js connection
     if RUBY_PLATFORM != 'java'
       component_paths.require_in_components
       SocketConnectionHandler.dispatcher = Dispatcher.new
-      
+
       @app.map "/channel" do
         run Rack::SockJS.new(SocketConnectionHandler)#, :websocket => false
       end
     end
-    
+
     @app.use Rack::Static,
       :urls => ["/"],
       :root => "public",
@@ -115,7 +115,7 @@ class Server
       ]
 
     @app.run lambda{ |env| [ 404, { 'Content-Type'  => 'text/html' }, ['404 - page not found'] ] }
-    
+
     return @app
   end
 end

@@ -3,5 +3,5 @@
 # events
 
 class Document
-  
+
 end

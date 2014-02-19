@@ -5,12 +5,12 @@ class Tasks
     @page = page
     @callback_id = 0
     @callbacks = {}
-    
+
     page.channel.on('message') do |_, *args|
       received_message(*args)
     end
   end
-  
+
   def call(class_name, method_name, *args, &callback)
     if callback
       callback_id = @callback_id
@@ -22,11 +22,11 @@ class Tasks
     else
       callback_id = nil
     end
-    
+
     @page.channel.send_message([callback_id, class_name, method_name, *args])
   end
-  
-  
+
+
   def received_message(name, callback_id, *args)
     case name
     when 'added', 'removed', 'updated', 'changed'
@@ -37,12 +37,12 @@ class Tasks
       reload
     end
   end
-  
+
   # When a request is sent to the backend, it can attach a callback,
   # this is called from the backend to pass to the callback.
   def response(callback_id, result, error)
     callback = @callbacks.delete(callback_id)
-    
+
     if callback
       if error
         # TODO: full error handling
@@ -52,7 +52,7 @@ class Tasks
       end
     end
   end
-  
+
   # Called when the backend sends a notification to change the results of
   # a query.
   def notify_query(method_name, collection, query, *args)
@@ -60,18 +60,18 @@ class Tasks
     # puts "FOUND QUERY: #{collection.inspect} - #{query.inspect} - #{query_obj.inspect} - #{method_name} - #{query_obj.instance_variable_get('@stores').inspect}"
     query_obj.send(method_name, *args)
   end
-  
+
   def reload
     puts "RELOAD"
     # Stash the current page value
     value = JSON.dump($page.page.cur.to_h.reject {|k,v| v.reactive? })
-    
+
     # If this browser supports session storage, store the page, so it will
     # be in the same state when we reload.
     if `sessionStorage`
       `sessionStorage.setItem('___page', value);`
     end
-    
+
     $page.page._reloading = true
     `window.location.reload(false);`
   end

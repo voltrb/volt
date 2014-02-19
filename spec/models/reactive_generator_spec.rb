@@ -13,27 +13,27 @@ describe ReactiveGenerator do
       }
     }
   end
-  
-  it "should find all reactive values in any object" do    
+
+  it "should find all reactive values in any object" do
     values = ReactiveGenerator.find_reactives(@object)
-    
+
     expect(values.map(&:cur)).to eq(['bob', 'Bozeman', 'The Garage', 'Ale Works'])
   end
-  
+
   it "should return a reactive value that changes whenever a child reactive value changes" do
     values = ReactiveGenerator.from_hash(@object)
-    
+
     count = 0
     values.on('changed') { count += 1 }
     expect(count).to eq(0)
-    
+
     @object[:name].cur = 'jim'
-    
+
     expect(count).to eq(1)
-    
+
     @object[:location][:places].last.cur = 'Starkies'
     expect(count).to eq(2)
-    
+
     expect(values.to_h).to eq({
       name: 'jim',
       location: {
@@ -45,7 +45,7 @@ describe ReactiveGenerator do
       }
     })
   end
-  
+
   it "should optionally return a normal hash if there are no child reactive values" do
     values = ReactiveGenerator.from_hash({name: 'bob'})
     expect(values.reactive?).to eq(true)

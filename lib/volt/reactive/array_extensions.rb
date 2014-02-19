@@ -7,7 +7,7 @@ class Array
     if val.reactive? && !result.reactive?
       result = ReactiveValue.new(result)
     end
-  
+
     return result
   end
 end

@@ -5,11 +5,11 @@ class ComponentTemplates
     @component_path = component_path
     @component_name = component_name
   end
-  
+
   def code
     return generate_controller_code + generate_view_code + generate_model_code + generate_routes_code
   end
-  
+
   def generate_view_code
     code = ''
     views_path = "#{@component_path}/views/"
@@ -51,26 +51,26 @@ class ComponentTemplates
 
     return code
   end
-  
+
   def generate_model_code
     code = ''
     models_path = "#{@component_path}/models/"
 
     Dir["#{models_path}*.rb"].sort.each do |model_path|
       code << File.read(model_path) + "\n\n"
-      
+
       model_name = model_path.match(/([^\/]+)[.]rb$/)[1]
-      
+
       code << "$page.add_model(#{model_name.inspect})\n\n"
     end
 
     return code
   end
-  
+
   def generate_routes_code
     code = ''
     routes_path = "#{@component_path}/config/routes.rb"
-    
+
     if File.exists?(routes_path)
       code << "$page.add_routes do\n"
       code << "\n" + File.read(routes_path) + "\n"

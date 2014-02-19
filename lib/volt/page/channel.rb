@@ -5,9 +5,9 @@ require 'json'
 
 class Channel
   include ReactiveTags
-  
+
   attr_reader :status, :error, :reconnect_interval
-  
+
   def initialize
     @socket = nil
     @status = :opening
@@ -15,18 +15,18 @@ class Channel
     @error = nil
     @retry_count = 0
     @queue = []
-    
+
     connect!
   end
-  
+
   def connected?
     @connected
   end
-  
+
   def retry_count
     @retry_count
   end
-  
+
   def connect!
     %x{
       this.socket = new SockJS('/channel');
@@ -38,13 +38,13 @@ class Channel
       this.socket.onmessage = function(message) {
         self['$message_received'](message.data);
       };
-      
+
       this.socket.onclose = function(error) {
         self.$closed(error);
       };
     }
   end
-  
+
   def opened
     @status = :open
     @connected = true
@@ -53,7 +53,7 @@ class Channel
     @queue.each do |message|
       send_message(message)
     end
-    
+
     trigger!('open')
     trigger!('changed')
   end
@@ -62,36 +62,36 @@ class Channel
     @status = :closed
     @connected = false
     @error = `error.reason`
-    
+
     trigger!('closed')
     trigger!('changed')
-    
+
     reconnect!
   end
-  
+
   def reconnect!
     @status = :reconnecting
     @reconnect_interval ||= 0
     @reconnect_interval += (2000 + rand(5000))
     @retry_count += 1
-    
+
     # Trigger changed for reconnect interval
     trigger!('changed')
-    
+
     interval = @reconnect_interval
-    
+
     %x{
       setTimeout(function() {
         self['$connect!']();
       }, interval);
     }
   end
-  
+
   def message_received(message)
     message = JSON.parse(message)
     trigger!('message', nil, *message)
   end
-  
+
   tag_method(:send_message) do
     destructive!
   end
@@ -106,7 +106,7 @@ class Channel
       }
     end
   end
-  
+
   def close!
     @status = :closed
     %x{

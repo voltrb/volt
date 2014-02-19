@@ -21,7 +21,7 @@ class EachBinding < BaseBinding
     @changed_listener = @value.on('changed') { reload }
     @removed_listener = @value.on('removed') { |_, position| item_removed(position) }
   end
-  
+
   # When a change event comes through, its most likely upstream, so the whole
   # array might have changed.  In this case, just reload the whole thing
   # TODO: Track to make sure the changed event isn't being called too often (it is currently)
@@ -31,14 +31,14 @@ class EachBinding < BaseBinding
     if @templates
       @templates.each do |template|
         template.remove_anchors
-        
+
         # TODO: Make sure this is being removed since we already removed the anchors
         template.remove
       end
     end
-    
+
     @templates = []
-    
+
     # Run update again to rebuild
     update
 
@@ -50,7 +50,7 @@ class EachBinding < BaseBinding
     @templates[position].remove_anchors
     @templates[position].remove
     @templates.delete_at(position)
-    
+
     # Removed at the position, update context for every item after this position
     update_indexes_after(position)
   end
@@ -65,21 +65,21 @@ class EachBinding < BaseBinding
       # Setup new bindings in the spot we want to insert the item
       section.insert_anchor_before_end(binding_name)
     else
-      # Insert the item before an existing item 
+      # Insert the item before an existing item
       section.insert_anchor_before(binding_name, @templates[position].binding_name)
     end
 
     index = ReactiveValue.new(position)
     value = @value[index]
-    
+
     item_context = SubContext.new({@item_name => value, :index => index, :parent => @value}, @context)
 
     item_template = TemplateRenderer.new(@page, @target, item_context, binding_name, @template_name)
     @templates.insert(position, item_template)
-    
+
     update_indexes_after(position)
   end
-  
+
   # When items are added or removed in the middle of the list, we need
   # to update each templates index value.
   def update_indexes_after(start_index)
@@ -111,16 +111,16 @@ class EachBinding < BaseBinding
     # puts "Remove Each"
     @added_listener.remove
     @added_listener = nil
-    
+
     @changed_listener.remove
     @changed_listener = nil
-    
+
     @removed_listener.remove
     @removed_listener = nil
 
     @templates.each(&:remove)
     @templates = nil
-    
+
     super
   end
 
