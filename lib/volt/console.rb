@@ -7,7 +7,6 @@ class Console
 
     require 'volt'
     require 'volt/models'
-    require 'volt/server/template_parser'
     require 'volt'
     require 'volt/page/page'
     require 'volt/server/rack/component_paths'

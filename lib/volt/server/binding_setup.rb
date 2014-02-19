@@ -1,2 +1,0 @@
-class BindingSetup
-end
