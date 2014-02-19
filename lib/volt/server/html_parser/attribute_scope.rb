@@ -24,6 +24,9 @@ module AttributeScope
       # For links, we need to add blank href to make it clickable.
       attributes['href'] ||= ''
     end
+    
+    # Remove the e- attribute
+    attributes.delete(name)
 
     save_binding(id, "lambda { |__p, __t, __c, __id| EventBinding.new(__p, __t, __c, __id, #{event.inspect}, Proc.new {|event| #{value} })}")
   end

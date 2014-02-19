@@ -73,7 +73,7 @@ class Page
   
   def link_clicked(url='', event=nil)
     # Skip when href == ''
-    return if url.blank?
+    return false if url.blank?
 
     # Normalize url
     # Benchmark.bm(1) do
