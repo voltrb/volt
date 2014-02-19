@@ -4,9 +4,9 @@ require 'volt/server/html_parser/view_parser'
 describe ViewParser do
   it "should parse content bindings" do
     html = "<p>Some {content} binding, {name}</p>"
-    
+
     view = ViewParser.new(html, "home/index/index")
-    
+
     expect(view.templates).to eq({
       'home/index/index/body' => {
         'html' => '<p>Some <!-- $0 --><!-- $/0 --> binding, <!-- $1 --><!-- $/1 --></p>',
@@ -17,11 +17,11 @@ describe ViewParser do
       }
     })
   end
-  
+
   it "should parse if bindings" do
     html = <<-END
     <p>
-      Some 
+      Some
       {#if showing == :text}
         text
       {#elsif showing == :button}
@@ -31,21 +31,21 @@ describe ViewParser do
       {/}
     </p>
     END
-    
+
     view = ViewParser.new(html, "home/index/index")
-  
-    expect(view.templates).to eq({
+
+    expect(view.templates).to eq(    {
       "home/index/index/body/__ifg0/__if0" => {
-        "html"=>"\n        text\n      "
+        "html" => "\n        text\n      "
       },
       "home/index/index/body/__ifg0/__if1" => {
-        "html"=>"\n        <button>Button</button>\n      "
+        "html" => "\n        <button>Button</button>\n      "
       },
       "home/index/index/body/__ifg0/__if2" => {
-        "html"=>"\n        <a href=\"\">link</a>\n      "
+        "html" => "\n        <a href=\"\">link</a>\n      "
       },
       "home/index/index/body" => {
-        "html" => "    <p>\n      Some \n      <!-- $0 --><!-- $/0 -->\n    </p>\n",
+        "html" => "    <p>\n      Some\n      <!-- $0 --><!-- $/0 -->\n    </p>\n",
         "bindings" => {
           0 => [
             "lambda { |__p, __t, __c, __id| IfBinding.new(__p, __t, __c, __id, [[Proc.new { showing == :text }, \"home/index/index/body/__ifg0/__if0\"], [Proc.new { showing == :button }, \"home/index/index/body/__ifg0/__if1\"], [nil, \"home/index/index/body/__ifg0/__if2\"]]) }"
@@ -53,12 +53,14 @@ describe ViewParser do
         }
       }
     })
+
+
   end
-  
+
   it "should handle nested if's" do
     html = <<-END
     <p>
-      Some 
+      Some
       {#if showing == :text}
         {#if sub_item}
           sub item text
@@ -68,25 +70,36 @@ describe ViewParser do
       {/}
     </p>
     END
-  
+
     view = ViewParser.new(html, "home/index/index")
-  
-    expect(view.templates).to eq({
+
+    expect(view.templates).to eq(    {
       "home/index/index/body/__ifg0/__if0/__ifg0/__if0" => {
-        "html" => "\n          sub item text\n        "
-      }, 
+        "html"=>"\n          sub item text\n        "
+      },
       "home/index/index/body/__ifg0/__if0" => {
         "html" => "\n        <!-- $0 --><!-- $/0 -->\n      ",
         "bindings" => {
           0 => [
-            "lambda { |__p, __t, __c, __id| IfBinding.new(__p, __t, __c, __id, [[Proc.new { sub_item }, \"home/index/index/body/__ifg0/__if0/__ifg0/__if0\"]]) }"]}}, "home/index/index/body/__ifg0/__if1" => {"html" => "\n        other\n      "}, "home/index/index/body" => {"html" => "    <p>\n      Some \n      <!-- $0 --><!-- $/0 -->\n    </p>\n", "bindings" => {0 => ["lambda { |__p, __t, __c, __id| IfBinding.new(__p, __t, __c, __id, [[Proc.new { showing == :text }, \"home/index/index/body/__ifg0/__if0\"], [nil, \"home/index/index/body/__ifg0/__if1\"]]) }"
+            "lambda { |__p, __t, __c, __id| IfBinding.new(__p, __t, __c, __id, [[Proc.new { sub_item }, \"home/index/index/body/__ifg0/__if0/__ifg0/__if0\"]]) }"
+          ]
+        }
+      },
+      "home/index/index/body/__ifg0/__if1" => {
+        "html" => "\n        other\n      "
+      },
+      "home/index/index/body" => {
+        "html" => "    <p>\n      Some\n      <!-- $0 --><!-- $/0 -->\n    </p>\n",
+        "bindings" => {
+          0 => [
+            "lambda { |__p, __t, __c, __id| IfBinding.new(__p, __t, __c, __id, [[Proc.new { showing == :text }, \"home/index/index/body/__ifg0/__if0\"], [nil, \"home/index/index/body/__ifg0/__if1\"]]) }"
           ]
         }
       }
     })
   end
-  
-  
+
+
   it "should parse each bindings" do
     html = <<-END
       <div class="main">
@@ -95,9 +108,9 @@ describe ViewParser do
         {/}
       </div>
     END
-    
+
     view = ViewParser.new(html, "home/index/index")
-  
+
     expect(view.templates).to eq({
       "home/index/index/body/__template/0" => {
         "html" => "\n          <p><!-- $0 --><!-- $/0 --></p>\n        ",
@@ -116,18 +129,18 @@ describe ViewParser do
         }
       }
     })
-    
+
 
   end
-  
+
   it "should parse a single attribute binding" do
     html = <<-END
       <div class="{main_class}">
       </div>
     END
-    
+
     view = ViewParser.new(html, "home/index/index")
-    
+
     expect(view.templates).to eq({
       "home/index/index/body" => {
         "html" => "      <div id=\"id0\">\n      </div>\n",
@@ -139,15 +152,15 @@ describe ViewParser do
       }
     })
   end
-  
+
   it "should parse multiple attribute bindings in a single attribute" do
     html = <<-END
       <div class="start {main_class} {awesome_class} string">
       </div>
     END
-    
+
     view = ViewParser.new(html, "home/index/index")
-    
+
     expect(view.templates).to eq({
       "home/index/index/body/_rv1" => {
         "html" => "start <!-- $0 --><!-- $/0 --> <!-- $1 --><!-- $/1 --> string",
@@ -170,14 +183,14 @@ describe ViewParser do
       }
     })
   end
-  
+
   it "should parse a template" do
     html = <<-END
     {#template "/home/temp/path"}
     END
-    
+
     view = ViewParser.new(html, "home/index/index")
-    
+
     expect(view.templates).to eq({
       "home/index/index/body" => {
         "html" => "    <!-- $0 --><!-- $/0 -->\n",
@@ -189,60 +202,62 @@ describe ViewParser do
       }
     })
   end
-   
-  
+
+
   it "should setup a href multiple attribute binding correctly" do
     html = <<-END
     <a href="/{link_name}">Link</a>
     END
-    
+
     view = ViewParser.new(html, "home/index/index/body")
-    
+
     # puts view.templates.inspect
   end
   it "should setup a href single attribute binding correctly" do
     html = <<-END
     <a href="{link_name}">Link</a>
     END
-    
+
     view = ViewParser.new(html, "home/index/index/body")
-    
+
     # puts view.templates.inspect
   end
-  
+
   it "should parse components" do
-    
+
   end
-  
+
   it "should parse sections" do
     html = <<-END
     <:Title>
       This text goes in the title
-    
+
     <:Body>
-      <p>This text goes in the body</p> 
+      <p>This text goes in the body</p>
     END
-    
+
     view = ViewParser.new(html, "home/index/index")
-    
-    expect(view.templates).to eq({
+
+    expect(view.templates).to eq(    {
       "home/index/index/title" => {
-        "html" => "\n      This text goes in the title\n    \n    "
+        "html" => "\n      This text goes in the title\n\n    "
       },
       "home/index/index/body" => {
-        "html" => "\n      <p>This text goes in the body</p> \n"
+        "html" => "\n      <p>This text goes in the body</p>\n"
       }
     })
+
+
   end
-  
+
   it "should setup bindings for textarea values" do
     html = <<-END
-    <textarea name="cool">  - {awesome} - </textarea>
+    <textarea name="cool">{awesome}</textarea>
     END
-    
+
     view = ViewParser.new(html, "home/index/index")
-    
+
     puts view.templates.inspect
   end
-  
+
 end

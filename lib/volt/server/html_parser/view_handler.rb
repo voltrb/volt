@@ -1,30 +1,30 @@
 class ViewHandler
   attr_reader :templates, :scope
-  
+
   def html
     last.html
   end
-  
+
   def last
     @scope.last
   end
 
   def initialize(initial_path, allow_sections=true)
     @original_path = initial_path
-    
+
     # Default to the body section
     initial_path += '/body' if allow_sections
-    
+
     @scope = [ViewScope.new(self, initial_path)]
     @templates = {}
   end
 
   def comment(comment)
-    html << "<!--#{comment}-->"
+    last << "<!--#{comment}-->"
   end
 
   def text(text)
-    html << text
+    last << text
   end
 
   def binding(binding)
@@ -41,16 +41,16 @@ class ViewHandler
         @in_textarea = true
         last.add_textarea(tag_name, attributes, unary)
       else
-        
+
         # Normal tag
         attributes = last.process_attributes(tag_name, attributes)
-    
+
         attr_str = attributes.map {|v| "#{v[0]}=\"#{v[1]}\"" }.join(' ')
         if attr_str.size > 0
           # extra space
           attr_str = " " + attr_str
         end
-        html << "<#{tag_name}#{attr_str}#{unary ? ' /' : ''}>"
+        last << "<#{tag_name}#{attr_str}#{unary ? ' /' : ''}>"
       end
     end
   end
@@ -60,10 +60,10 @@ class ViewHandler
       last.close_scope
       @in_textarea = nil
     else
-      html << "</#{tag_name}>"
+      last << "</#{tag_name}>"
     end
   end
-  
+
   def start_section(tag_name, attributes, unary)
     path = last.path
     # Start of section
@@ -75,12 +75,12 @@ class ViewHandler
       # outside of the headers should be removed
       @templates = {}
     end
-    
+
     @in_section = tag_name[1..-1]
-    
+
     # Set the new path to include the section
     new_path = @original_path + '/' + @in_section
     @scope = [ViewScope.new(self, new_path)]
   end
-  
+
 end
