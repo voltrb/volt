@@ -32,7 +32,7 @@ require 'volt/page/draw_cycle'
 require 'volt/page/tasks'
 
 class Page
-  attr_reader :url, :params, :page, :store, :flash, :templates, :routes, :draw_cycle, :events
+  attr_reader :url, :params, :page, :templates, :routes, :draw_cycle, :events
 
   def initialize
     # debugger
@@ -41,8 +41,6 @@ class Page
 
     # Run the code to setup the page
     @page = ReactiveValue.new(Model.new)
-    @flash = ReactiveValue.new(Model.new({}, persistor: Persistors::Flash))
-    @store = ReactiveValue.new(Model.new({}, persistor: Persistors::StoreFactory.new(tasks)))
 
     @url = ReactiveValue.new(URL.new)
     @params = @url.params
@@ -65,6 +63,18 @@ class Page
         });
       }
     end
+  end
+
+  def flash
+    @flash ||= ReactiveValue.new(Model.new({}, persistor: Persistors::Flash))
+  end
+
+  def store
+    @store ||= ReactiveValue.new(Model.new({}, persistor: Persistors::StoreFactory.new(tasks)))
+  end
+
+  def local_store
+    @local_store ||= ReactiveValue.new(Model.new({}, persistor: Persistors::LocalStore))
   end
 
   def tasks
