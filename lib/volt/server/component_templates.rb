@@ -3,13 +3,28 @@ require 'volt/server/html_parser/view_parser'
 # Initialize with the path to a component and returns all the front-end
 # setup code (for controllers, models, views, and routes)
 class ComponentTemplates
-  def initialize(component_path, component_name)
+  def initialize(component_path, component_name, client=true)
     @component_path = component_path
     @component_name = component_name
+    @client = true
   end
 
   def code
-    return generate_controller_code + generate_view_code + generate_model_code + generate_routes_code
+    code = generate_view_code
+    if @client
+      # On the backend, we just need the views
+      code << generate_controller_code + generate_model_code + generate_routes_code
+    end
+
+    return code
+  end
+
+  def page_reference
+    if @client
+      '$page'
+    else
+      'page'
+    end
   end
 
   def generate_view_code
@@ -36,7 +51,7 @@ class ComponentTemplates
 
         binding_code = "{#{binding_code.join(', ')}}"
 
-        code << "$page.add_template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})\n"
+        code << "#{page_reference}.add_template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})\n"
       end
     end
 
@@ -63,7 +78,7 @@ class ComponentTemplates
 
       model_name = model_path.match(/([^\/]+)[.]rb$/)[1]
 
-      code << "$page.add_model(#{model_name.inspect})\n\n"
+      code << "#{page_reference}.add_model(#{model_name.inspect})\n\n"
     end
 
     return code
@@ -74,7 +89,7 @@ class ComponentTemplates
     routes_path = "#{@component_path}/config/routes.rb"
 
     if File.exists?(routes_path)
-      code << "$page.add_routes do\n"
+      code << "#{page_reference}.add_routes do\n"
       code << "\n" + File.read(routes_path) + "\n"
       code << "end\n\n"
     end
