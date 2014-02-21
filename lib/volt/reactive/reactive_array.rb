@@ -234,10 +234,9 @@ class ReactiveArray# < Array
     "#<#{self.class.to_s} #{@array.inspect}>"
   end
 
-
-  tag_method(:count) do
-    destructive!
-  end
+  # tag_method(:count) do
+  #   destructive!
+  # end
   def count(&block)
     return ReactiveCount.new(self, block)
   end

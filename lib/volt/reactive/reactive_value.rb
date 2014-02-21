@@ -277,7 +277,7 @@ class ReactiveManager
 
 
   # Fetch the current value
-  def cur
+  def cur(shallow=false)
     # @@cur_count ||= 0
     # @@cur_count += 1
     # puts "Cur: #{@@cur_count}"# if @@cur_count % 100 == 0
@@ -297,7 +297,7 @@ class ReactiveManager
       result = @getter
     end
 
-    if result.reactive?
+    if !shallow && result.reactive?
       # Unwrap any stored reactive values
       result = result.cur
     end

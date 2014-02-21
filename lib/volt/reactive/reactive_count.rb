@@ -36,6 +36,7 @@ class ReactiveCount
   end
 
   def setup_listeners
+    puts "SETUP LISTENERS"
     @cell_trackers = []
     @added_tracker = @source.on('added') do |_, index|
       change_cell_count(@source.size.cur)
@@ -64,6 +65,7 @@ class ReactiveCount
         val = @source[index]
 
         result = @block.call(val)
+        # puts "TRACK AT #{index} on #{result.inspect}"
 
         @cell_trackers << result.on('changed') do
           trigger!('changed')
@@ -71,6 +73,7 @@ class ReactiveCount
       end
     elsif current_size > size
       (current_size-1).downto(size) do |index|
+        # puts "Remove at: #{index}"
         @cell_trackers[index].remove
         @cell_trackers.delete_at(index)
       end
@@ -88,6 +91,7 @@ class ReactiveCount
     change_cell_count(0)
 
     @cell_trackers = nil
+    puts "TEARDOWN"
   end
 
   def event_added(event, scope_provider, first)

@@ -75,9 +75,7 @@ class ObjectTracker
 
   def update_followers
     if @enabled
-      current_obj = @main_object.cur#(true)
-
-      # puts "UPDATE ON #{current_obj.inspect}"
+      current_obj = @main_object.cur(true)
 
       if !@cached_current_obj || current_obj.object_id != @cached_current_obj.object_id
         remove_followers
