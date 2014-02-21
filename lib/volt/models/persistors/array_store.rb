@@ -25,7 +25,6 @@ module Persistors
     end
 
     def event_added(event, scope_provider, first)
-      puts "ADD EV: #{event} - #{first}"
       # First event, we load the data.
       load_data if first
     end
@@ -164,7 +163,7 @@ module Persistors
         model.persistor.remove_from_collection
       end
 
-      if $loading_models
+      if defined?($loading_models) && $loading_models
         return
       else
         puts "delete #{channel_name} - #{model.attributes[:_id]}"

@@ -1,4 +1,5 @@
 require 'volt/reactive/object_tracking'
+require 'volt/reactive/reactive_count'
 
 class ReactiveArray# < Array
   include ReactiveTags
@@ -231,6 +232,14 @@ class ReactiveArray# < Array
 
   def inspect
     "#<#{self.class.to_s} #{@array.inspect}>"
+  end
+
+
+  tag_method(:count) do
+    destructive!
+  end
+  def count(&block)
+    return ReactiveCount.new(self, block)
   end
 
   private

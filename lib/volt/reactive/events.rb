@@ -57,7 +57,7 @@ class Listener
     if @klass.reactive?
       # We are working with a reactive value.  Its receiving an event meaning
       # something changed.  Queue an update of the value it tracks.
-      @klass.object_tracker.queue_update
+      @klass.object_tracker.queue_update if @klass.respond_to?(:object_tracker)
       # puts "Queued: #{ObjectTracker.queue.inspect}"
     end
 
