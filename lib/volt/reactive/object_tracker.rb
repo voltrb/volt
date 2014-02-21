@@ -78,6 +78,7 @@ class ObjectTracker
       current_obj = @main_object.cur(true)
 
       if !@cached_current_obj || current_obj.object_id != @cached_current_obj.object_id
+        puts "CHANGED FROM: #{@cached_current_obj.inspect} to #{current_obj.inspect}"
         remove_followers
 
         # Add to current
