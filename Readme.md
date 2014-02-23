@@ -735,9 +735,6 @@ store._things
 | loaded      | yes          | data is loaded and there is an event bound                   |
 | dirty       | no           | data was either accessed without binding an event, or an event was bound, but later unbound. |
 
+# Contributing
 
-# Why Volt is Awesome
-
-- only the relevant DOM is updated.  There is no match and patch algorithm to update from strings like other frameworks, all associations are tracked through our reactive values, so we know exactly what needs to be updated without the need to generate any extra HTML.  This has a few advantages, namely that things like input fields are retained, so any properties (focus, tab position, etc...) are also retained.
-
-
+You want to contribute?  Great!  Thanks for being awesome!  At the moment, we have a big internal todo list, hop on #voltrb on freenode (irc) so we don't duplicate work.  Pull requests are always welcome, but asking about helping on IRC should save some duplication.
