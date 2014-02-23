@@ -9,12 +9,15 @@ ENV['SAUCE_USERNAME'] = 'ryanstout'
 ENV['SAUCE_ACCESS_KEY'] = 'a537b01d-33ed-4028-9e80-eeb602748a5f'
 
 if ENV['IN_BROWSER']
-  require 'capybara/rspec'
-  # Needed at the moment to get chrome tests working
-  require 'chromedriver2/helper'
-  require 'capybara/poltergeist'
-  # require "sauce/capybara"
-  # require 'sauce/connect'
+  if RUBY_PLATFORM == 'opal'
+  else
+    require 'capybara/rspec'
+    # Needed at the moment to get chrome tests working
+    require 'chromedriver2/helper'
+    require 'capybara/poltergeist'
+    # require "sauce/capybara"
+    # require 'sauce/connect'
+  end
 end
 
 require 'volt'
@@ -38,13 +41,16 @@ require 'volt'
 
 # Capybara.default_driver = :selenium
 if ENV['IN_BROWSER']
-  require 'volt/server'
+  if RUBY_PLATFORM == 'opal'
+  else
+    require 'volt/server'
 
 
-  kitchen_sink_path = File.expand_path(File.join(File.dirname(__FILE__), "apps/kitchen_sink"))
-  Capybara.app = Server.new(kitchen_sink_path).app
+    kitchen_sink_path = File.expand_path(File.join(File.dirname(__FILE__), "apps/kitchen_sink"))
+    Capybara.app = Server.new(kitchen_sink_path).app
 
-  Capybara.default_driver = :poltergeist
+    Capybara.default_driver = :poltergeist
+  end
 end
 
 
