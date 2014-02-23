@@ -1,5 +1,4 @@
 if RUBY_PLATFORM == 'opal'
-  return
 else
 require 'benchmark'
 require 'volt/server/html_parser/sandlebars_parser'
