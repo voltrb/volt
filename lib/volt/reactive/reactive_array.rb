@@ -238,8 +238,12 @@ class ReactiveArray# < Array
   #   destructive!
   # end
   def count(&block)
-    puts "Fetch new count"
-    return ReactiveCount.new(self, block)
+    if block
+      puts "Fetch new count"
+      return ReactiveCount.new(self, block)
+    else
+      @array.count
+    end
   end
 
   private
