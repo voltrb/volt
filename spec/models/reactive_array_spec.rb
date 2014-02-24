@@ -252,7 +252,6 @@ describe ReactiveArray do
       model._current.on('changed') { count += 1 }
       expect(count).to eq(0)
 
-      ObjectTracker.process_queue
       model._items.delete_at(0)
 
       expect(count).to eq(1)

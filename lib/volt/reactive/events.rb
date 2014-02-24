@@ -57,8 +57,11 @@ class Listener
     if @klass.reactive?
       # We are working with a reactive value.  Its receiving an event meaning
       # something changed.  Queue an update of the value it tracks.
-      @klass.object_tracker.queue_update if @klass.respond_to?(:object_tracker)
-      # puts "Queued: #{ObjectTracker.queue.inspect}"
+      # @klass.object_tracker.queue_update if @klass.respond_to?(:object_tracker)
+
+      # Clear its cur cache
+      # @klass.instance_variable_set(:@cur_cache, nil)
+      @klass.update_followers if @klass.respond_to?(:update_followers)
     end
 
     @callback.call(*args)
@@ -101,13 +104,6 @@ module Events
   # Add a listener for an event
   def on(event, scope_provider=nil, &block)
 
-
-    # if reactive? && [:added, :removed].include?(event)
-    #   self.object_tracker.queue_update
-    #   ObjectTracker.process_queue
-    # end
-
-
     # puts "Register: #{event} on #{self.inspect}"
     event = event.to_sym
 
@@ -131,6 +127,8 @@ module Events
       self.event_added(event, scope_provider, first, first_for_event)
     end
 
+    @has_listeners = true
+
     return new_listener
   end
 
@@ -140,6 +138,10 @@ module Events
 
   def listeners
     @listeners || {}
+  end
+
+  def has_listeners?
+    @has_listeners
   end
 
   # Typically you would call .remove on the listener returned from the .on
@@ -170,13 +172,16 @@ module Events
         # Pass in the event and a boolean indicating if it is the last event
         self.event_removed(event, last, last_for_event)
       end
+
+      if last
+        @has_listeners = nil
+      end
     # end
   end
 
   def trigger!(event, filter=nil, *args)
     are_reactive = reactive?
-    # puts "TRIGGER FOR: #{event} on #{self.inspect}" if !reactive?
-    ObjectTracker.process_queue if !are_reactive# && !respond_to?(:skip_current_queue_flush)
+    # ObjectTracker.process_queue if !are_reactive
 
     event = event.to_sym
 

@@ -414,11 +414,11 @@ describe Model do
     c.on('changed') { count2 += 1 }
     expect(count1).to eq(0)
 
-    b._complete = true
+    a._complete = true
     expect(count1).to eq(1)
     expect(count2).to eq(1)
 
-    b._complete = false
+    a._complete = false
     expect(count1).to eq(2)
     expect(count2).to eq(2)
 

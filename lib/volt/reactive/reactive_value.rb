@@ -263,28 +263,27 @@ class ReactiveManager
   def event_added(event, scope, first, first_for_event)
     # When the first event is registered, we need to start listening on our current object
     # for it to publish events.
-    object_tracker.enable! if first
+
+    if first
+      update_followers
+    end
   end
 
   def event_removed(event, last, last_for_event)
     # If no one is listening on the reactive value, then we don't need to listen on our
     # current object for events, because no one cares.
-    object_tracker.disable! if last
-  end
 
-  def object_tracker
-    @object_tracker ||= ::ObjectTracker.new(self)
+    if last
+      remove_followers
+    end
   end
 
 
   # Fetch the current value
-  def cur(shallow=false)
-    # @@cur_count ||= 0
-    # @@cur_count += 1
-    # puts "Cur: #{@@cur_count}"# if @@cur_count % 100 == 0
-    # if ObjectTracker.cache_version == @cached_version
-    #   return @cached_obj
-    # end
+  def cur(shallow=false, ignore_cache=false)
+
+    # Return from cache if it is cached
+    return @cur_cache if @cur_cache && !ignore_cache
 
     if @getter.class == ::Proc
       # Get the current value, capture any errors
@@ -303,26 +302,56 @@ class ReactiveManager
       result = result.cur
     end
 
-    # if ObjectTracker.cache_enabled
-    #   @cached_obj = result
-    #   @cached_version = ObjectTracker.cache_version
-    # end
-
     return result
   end
 
+
+  def update_followers
+    puts "UPDATE FOLLOWERS"
+    current_obj = cur(false, true)
+
+    if !@cur_cache || current_obj.object_id != @cur_cache.object_id
+      puts "CHANGED FROM: #{@cur_cache.inspect} to #{current_obj.inspect}"
+      remove_followers
+
+      # Add to current
+      should_attach = current_obj.respond_to?(:on)
+      if should_attach
+        @cur_cache = current_obj
+        puts "SET TO: #{current_obj.inspect} on #{self.inspect}"
+        # puts "ATTACH: #{@cached_current_obj}"
+        @cur_cache_chain_listener = self.event_chain.add_object(@cur_cache)
+      end
+    end
+  end
+
+  def remove_followers
+    puts "REMOVE FOLLOWERS"
+    # Remove from previous
+    if @cur_cache
+      @cur_cache_chain_listener.remove
+      @cur_cache_chain_listener = nil
+
+      @cur_cache = nil
+    end
+  end
+
   def cur=(val)
+    @cur_cache = nil
+
     if @setter
       @setter.call(val)
+      update_followers
     elsif @scope == nil
       @getter = val
       @setter = nil
 
-      puts "TRIG CH"
+      update_followers
       trigger!('changed')
     else
       raise "Value can not be updated"
     end
+
   end
 
   # Returns a copy of the object with where all ReactiveValue's are replaced
