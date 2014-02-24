@@ -47,20 +47,16 @@ class Listener
   end
 
   def call(*args)
+    puts "TRIGGER: #{@event} on #{@klass.inspect}"
     # raise "Triggered on removed: #{@event} on #{@klass2.inspect}" if @removed
     if @removed
       puts "Triggered on a removed event: #{@event}"
       return
     end
 
-    # Queue a live value update
-    if @klass.reactive?
-      # We are working with a reactive value.  Its receiving an event meaning
-      # something changed.  Queue an update of the value it tracks.
-      # @klass.object_tracker.queue_update if @klass.respond_to?(:object_tracker)
-
-      # Clear its cur cache
-      # @klass.instance_variable_set(:@cur_cache, nil)
+    if @event == :changed && @klass.reactive?
+      # Update the reactive value's current value to let it know it is being
+      # followed.
       @klass.update_followers if @klass.respond_to?(:update_followers)
     end
 
@@ -118,7 +114,7 @@ module Events
 
     # When events get added, we need to notify event chains so they
     # can update and chain any new events.
-    event_chain.add_event(event) if first
+    event_chain.add_event(event) if first_for_event
 
     # Let the included class know that an event was registered. (if it cares)
     if self.respond_to?(:event_added)

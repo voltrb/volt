@@ -80,15 +80,20 @@ describe Model do
   it "should not call changed on other attributes" do
     a = ReactiveValue.new(Model.new)
 
-    count = 0
-    a._blue.on('changed') { count += 1 }
-    expect(count).to eq(0)
+    blue_count = 0
+    green_count = 0
+    a._blue.on('changed') { blue_count += 1 }
+    a._green.on('changed') { green_count += 1}
+    expect(blue_count).to eq(0)
+    expect(green_count).to eq(0)
 
     a._green = 'one'
-    expect(count).to eq(0)
+    expect(blue_count).to eq(0)
+    expect(green_count).to eq(1)
 
     a._blue = 'two'
-    expect(count).to eq(1)
+    expect(blue_count).to eq(1)
+    expect(green_count).to eq(1)
 
   end
 

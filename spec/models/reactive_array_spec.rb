@@ -300,5 +300,18 @@ describe ReactiveArray do
 
 
     end
+
+    it "should trigger changed with a negative index assignment"
+
+    it "should not trigger on other indicies" do
+      a = ReactiveValue.new(ReactiveArray.new([1,2,3]))
+
+      count = 0
+      a[0].on('changed') { count += 1 }
+      expect(count).to eq(0)
+
+      a[1] = 5
+      expect(count).to eq(0)
+    end
   end
 end

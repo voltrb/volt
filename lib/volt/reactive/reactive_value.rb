@@ -307,26 +307,24 @@ class ReactiveManager
 
 
   def update_followers
-    puts "UPDATE FOLLOWERS"
+    # puts "UPDATE FOLLOWERS on #{self.inspect}"
     current_obj = cur(false, true)
 
     if !@cur_cache || current_obj.object_id != @cur_cache.object_id
-      puts "CHANGED FROM: #{@cur_cache.inspect} to #{current_obj.inspect}"
+      # puts "CHANGED FROM: #{@cur_cache.inspect} to #{current_obj.inspect}"
       remove_followers
 
       # Add to current
       should_attach = current_obj.respond_to?(:on)
       if should_attach
         @cur_cache = current_obj
-        puts "SET TO: #{current_obj.inspect} on #{self.inspect}"
-        # puts "ATTACH: #{@cached_current_obj}"
+        # puts "SET TO: #{current_obj.inspect} on #{self.inspect}"
         @cur_cache_chain_listener = self.event_chain.add_object(@cur_cache)
       end
     end
   end
 
   def remove_followers
-    puts "REMOVE FOLLOWERS"
     # Remove from previous
     if @cur_cache
       @cur_cache_chain_listener.remove

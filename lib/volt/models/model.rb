@@ -111,7 +111,12 @@ class Model
       # Method has the key, look it up directly
       return attributes[method_name]
     else
-      return read_new_model(method_name)
+      # TODO: TEMP: Assign and store
+      new_model = read_new_model(method_name)
+      self.attributes ||= {}
+      attributes[method_name] = new_model
+
+      return new_model
     end
   end
 
@@ -195,6 +200,9 @@ class Model
 
     # Add the new item
     result << value
+
+    trigger!('added', nil, 0)
+    trigger!('changed')
 
     return nil
   end
