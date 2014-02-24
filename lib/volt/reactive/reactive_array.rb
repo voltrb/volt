@@ -154,6 +154,7 @@ class ReactiveArray# < Array
 
   def trigger_on_direct_listeners!(event, *args)
     trigger_by_scope!(event, *args) do |scope|
+      puts "TDL: #{scope.inspect}"
       # Only if it is bound directly to us.  Don't pass
       # down the chain
       !scope || scope[0] == nil

@@ -283,7 +283,7 @@ class ReactiveManager
   def cur(shallow=false, ignore_cache=false)
 
     # Return from cache if it is cached
-    return @cur_cache if @cur_cache && !ignore_cache
+    return @cur_cache if @cur_cache && !shallow && !ignore_cache
 
     if @getter.class == ::Proc
       # Get the current value, capture any errors
