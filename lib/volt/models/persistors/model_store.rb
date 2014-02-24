@@ -65,8 +65,8 @@ module Persistors
       end
     end
 
-    def event_added(event, scope_provider, first)
-      if first && event == :changed
+    def event_added(event, scope_provider, first, first_for_event)
+      if first_for_event && event == :changed
         ensure_setup
       end
     end

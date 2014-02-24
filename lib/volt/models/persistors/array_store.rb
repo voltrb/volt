@@ -24,14 +24,14 @@ module Persistors
       change_state_to :not_loaded
     end
 
-    def event_added(event, scope_provider, first)
+    def event_added(event, scope_provider, first, first_for_event)
       # First event, we load the data.
       load_data if first
     end
 
-    def event_removed(event, no_more_events)
+    def event_removed(event, last, last_for_event)
       # Remove listener where there are no more events on this model
-      if no_more_events && @query_listener && @model.listeners.size == 0
+      if last && @query_listener
         stop_listening
       end
     end

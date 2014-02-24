@@ -117,7 +117,8 @@ module Events
     @listeners[event] ||= []
     @listeners[event] << new_listener
 
-    first = @listeners[event].size == 1
+    first_for_event = @listeners[event].size == 1
+    first = first_for_event && @listeners.size == 1
 
     # When events get added, we need to notify event chains so they
     # can update and chain any new events.
@@ -127,7 +128,7 @@ module Events
     if self.respond_to?(:event_added)
       # call event added passing the event, the scope, and a boolean if it
       # is the first time this event has been added.
-      self.event_added(event, scope_provider, first)
+      self.event_added(event, scope_provider, first, first_for_event)
     end
 
     return new_listener
@@ -152,8 +153,10 @@ module Events
     # if @listeners && @listeners[event]
       @listeners[event].delete(listener)
 
-      no_more_events = @listeners[event].size == 0
-      if no_more_events
+      last_for_event = @listeners[event].size == 0
+      last = last_for_event && @listeners.size == 0
+
+      if last_for_event
         # When events are removed, we need to notify any relevent chains so they
         # can remove any chained events.
         event_chain.remove_event(event)
@@ -165,7 +168,7 @@ module Events
       # Let the class we're included on know that we removed a listener (if it cares)
       if self.respond_to?(:event_removed)
         # Pass in the event and a boolean indicating if it is the last event
-        self.event_removed(event, no_more_events)
+        self.event_removed(event, last, last_for_event)
       end
     # end
   end

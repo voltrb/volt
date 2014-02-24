@@ -260,16 +260,16 @@ class ReactiveManager
   end
 
 
-  def event_added(event, scope, first)
+  def event_added(event, scope, first, first_for_event)
     # When the first event is registered, we need to start listening on our current object
     # for it to publish events.
     object_tracker.enable! if first
   end
 
-  def event_removed(event, last)
+  def event_removed(event, last, last_for_event)
     # If no one is listening on the reactive value, then we don't need to listen on our
     # current object for events, because no one cares.
-    object_tracker.disable! if @listeners.size == 0
+    object_tracker.disable! if last
   end
 
   def object_tracker
@@ -318,6 +318,7 @@ class ReactiveManager
       @getter = val
       @setter = nil
 
+      puts "TRIG CH"
       trigger!('changed')
     else
       raise "Value can not be updated"

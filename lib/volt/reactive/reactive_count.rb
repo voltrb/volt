@@ -94,20 +94,12 @@ class ReactiveCount
     puts "TEARDOWN"
   end
 
-  def event_added(event, scope_provider, first)
-    if first && !@has_listeners
-      # First event added
-      @has_listeners = true
-      setup_listeners
-    end
+  def event_added(event, scope_provider, first, first_for_event)
+    setup_listeners if first
   end
 
-  def event_removed(event, no_more_events)
-    if no_more_events && listeners.size == 0 && @has_listeners
-      # No more events
-      teardown_listeners
-      @has_listeners = false
-    end
+  def event_removed(event, last, last_for_event)
+    teardown_listeners if last
   end
 
   def inspect

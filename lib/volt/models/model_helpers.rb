@@ -12,13 +12,13 @@ module ModelHelpers
   end
 
   # Pass to the persisotr
-  def event_added(event, scope_provider, first)
-    @persistor.event_added(event, scope_provider, first) if @persistor
+  def event_added(event, scope_provider, first, first_for_event)
+    @persistor.event_added(event, scope_provider, first, first_for_event) if @persistor
   end
 
   # Pass to the persistor
-  def event_removed(event, no_more_events)
-    @persistor.event_removed(event, no_more_events) if @persistor
+  def event_removed(event, last, last_for_event)
+    @persistor.event_removed(event, last, last_for_event) if @persistor
   end
 
   # Gets the class for a model at the specified path.
