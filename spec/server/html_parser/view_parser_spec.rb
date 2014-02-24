@@ -1,3 +1,5 @@
+if RUBY_PLATFORM == 'opal'
+else
 require 'benchmark'
 require 'volt/server/html_parser/view_parser'
 
@@ -283,4 +285,5 @@ describe ViewParser do
     })
   end
 
+end
 end

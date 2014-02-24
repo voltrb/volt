@@ -8,11 +8,11 @@
 
 # Volt
 
-Volt is a ruby web framework where your ruby code runs on both the server and the client (via [opal](https://github.com/opal/opal).)  The dom automatically update as the user interacts with the page.  Page state can be stored in the url, if the user hits a url directly, the HTML will first be rendered on the server for faster load times and easier indexing by search engines.
+Volt is a ruby web framework where your ruby code runs on both the server and the client (via [opal](https://github.com/opal/opal).)  The DOM automatically update as the user interacts with the page.  Page state can be stored in the URL, if the user hits a URL directly, the HTML will first be rendered on the server for faster load times and easier indexing by search engines.
 
 Instead of syncing data between the client and server via HTTP, volt uses a persistent connection between the client and server.  When data updated on one client, it is updated in the database and any other listening clients.  (With almost no setup code needed)
 
-Pages HTML is written in a handlebars like template language.  Volt uses data flow/reactive programming to automatically and intellegently propigate changes to the DOM (or anything other code wanting to know when a value updates)  When something in the DOM changes, Volt intelligently updates only the nodes that need to be changed.
+Pages HTML is written in a handlebars like template language.  Volt uses data flow/reactive programming to automatically and intelligently propagate changes to the DOM (or anything other code wanting to know when a value updates)  When something in the DOM changes, Volt intelligently updates only the nodes that need to be changed.
 
 See a quick demo video here: [http://www.youtube.com/watch?v=j0vFIRMzarI](http://www.youtube.com/watch?v=j0vFIRMzarI)
 
@@ -20,16 +20,16 @@ See a quick demo video here: [http://www.youtube.com/watch?v=j0vFIRMzarI](http:/
 
 Volt has the following goals:
 
-1. Developer happieness
+1. Developer happiness
 2. Write once on the client and the server
 3. Automatic data syncing between client and server
 4. Apps are built as nested components.  Components can be shared (via gems)
 5. Concurrent.  Volt provides tools to simplify concurrency.  Component rendering is done in parallel on the server.
-6. Intellegent asset management
+6. Intelligent asset management
 7. Secure (shouldn't need to be said, but it does)
 8. Be fast/light
 9. Understandable code base
-10. Control Upgradeability
+10. Control upgradeability
 
 # Road Map
 
@@ -67,7 +67,7 @@ You can access the volt console with:
 1. [Getting Help](#getting-help)
 2. [Rendering](#rendering)
   1. [Reactive Values](#reactive-values)
-    1. [ReactiveValue Gotchyas](#reactivevalue-gotchyas)
+    1. [ReactiveValue Gotchas](#reactivevalue-gotchas)
 3. [Views](#views)
   1. [Bindings](#bindings)
     1. [Content Binding](#content-binding)
@@ -94,7 +94,7 @@ You can access the volt console with:
 
 # Getting Help
 
-Volt is still a work in progress, but early feedback is appericiated.  Use the following to communicate with the developers, someone will get back to you very quickly:
+Volt is still a work in progress, but early feedback is appreciated.  Use the following to communicate with the developers, someone will get back to you very quickly:
 
 - **If you need help**: post on [stackoverflow.com](http://www.stackoverflow.com), be sure to tag your question with voltrb
 - **If you found a bug**: post on [github issues](https://github.com/voltrb/volt/issues)
@@ -122,9 +122,9 @@ To build bindings, Volt provides the ReactiveValue class.  This wraps any object
     # => @"my object"
 ```
 
-When .inspect is called on a ReactiveValue (like in the console), an @ is placed infront of the value's inspect string, so you know its reactive.
+When .inspect is called on a ReactiveValue (like in the console), an @ is placed in front of the value's inspect string, so you know its reactive.
 
-When you call a method on a ReactiveValue, you get back a new reactive value that depends on the previous one.  It remebers how it was created and you can call .cur on it any time to get its current value, which will be computed based off of the first reactive value.  (Keep in mind below that + is a method call, the same as a.+(b) in ruby.)
+When you call a method on a ReactiveValue, you get back a new reactive value that depends on the previous one.  It remembers how it was created and you can call .cur on it any time to get its current value, which will be computed based off of the first reactive value.  (Keep in mind below that + is a method call, the same as a.+(b) in ruby.)
 
 ```ruby
     a = ReactiveValue.new(1)
@@ -146,7 +146,7 @@ When you call a method on a ReactiveValue, you get back a new reactive value tha
     # => 7
 ```
 
-This provides the backbone for reactive programming.  We setup computation/flow graphs instead of doing an actual calcuation.  Calling .cur (or .inspect, .to_s, etc..) runs the computation and returns the current value at that time, based on all of its dependencies.
+This provides the backbone for reactive programming.  We setup computation/flow graphs instead of doing an actual calculation.  Calling .cur (or .inspect, .to_s, etc..) runs the computation and returns the current value at that time, based on all of its dependencies.
 
 ReactiveValue's also let you setup listeners and trigger events:
 
@@ -157,7 +157,7 @@ ReactiveValue's also let you setup listeners and trigger events:
     # => A Changed
 ```
 
-These events propigate to any reactive value's created off of a reactive value.
+These events propagate to any reactive value's created off of a reactive value.
 
 ```ruby
     a = ReactiveValue.new(1)
@@ -170,7 +170,7 @@ These events propigate to any reactive value's created off of a reactive value.
 
 This event flow lets us know when an object has changed, so we can update everything that depended on that object.
 
-Lastly, we can also pass in other reactive value's as arguments to methods on a reactive value.  The dependencies will be tracked for both and events will propigate down from both.  (Also, note that doing `.cur =` to update the current value triggers a "changed" event.)
+Lastly, we can also pass in other reactive value's as arguments to methods on a reactive value.  The dependencies will be tracked for both and events will propagate down from both.  (Also, note that doing `.cur =` to update the current value triggers a "changed" event.)
 
 ```ruby
     a = ReactiveValue.new(1)
@@ -190,7 +190,7 @@ Lastly, we can also pass in other reactive value's as arguments to methods on a 
     # => C changed
 ```
 
-### ReactiveValue Gotchya's
+### ReactiveValue Gotcha's
 
 There are a few simple things to keep in mind with ReactiveValue's.  In order to make them mostly compatible with other ruby objects, a two methods do not return another ReactiveValue.
 
@@ -254,7 +254,7 @@ Section's help you split up different parts of the same content (title and body 
 
 ## Bindings
 
-One you understand the basics of ReactiveValue's, we can discuss bindings.  In Volt, you code your views in a handlebar's like template language.  Volt provides severial bindings, which handle rendering of something for you.  Content bindings are anything inbetween { and }
+One you understand the basics of ReactiveValue's, we can discuss bindings.  In Volt, you code your views in a handlebar's like template language.  Volt provides several bindings, which handle rendering of something for you.  Content bindings are anything inbetween { and }
 
 ### Content binding
 
@@ -310,7 +310,7 @@ For the array: ['one', 'two', 'three'] this would print:
 
 You can do {index + 1} to correct the numbers.
 
-When items are removed or added to the array, the #each binding automatically and intellegently add or removes the items from/to the dom.
+When items are removed or added to the array, the #each binding automatically and intelligently add or removes the items from/to the DOM.
 
 ## Attribute Bindings
 
@@ -382,14 +382,14 @@ An array model will automatically be setup to contain the items appended.
 
 ## Provided Collections
 
-Above I mentioned that Volt comes with many default collection models accessable from a controller.  Each stores in a different location.
+Above I mentioned that Volt comes with many default collection models accessible from a controller.  Each stores in a different location.
 
 | Name      | Storage Location                                                          |
 |-----------|---------------------------------------------------------------------------|
 | page      | page provides a temporary store that only lasts for the life of the page. |
 | store     | store syncs the data to the backend database and provides query methods.  |
 | session   | values will be stored in a session cookie.                                |
-| params    | values will be stored in the params and url.  Routes can be setup to change how params are shown in the url.  (See routes for more info) |
+| params    | values will be stored in the params and URL.  Routes can be setup to change how params are shown in the URL.  (See routes for more info) |
 | flash     | any strings assigned will be shown at the top of the page and cleared as the user navigates between pages. |
 | controller| a model for the current controller                                        |
 
@@ -423,7 +423,7 @@ Models trigger events when their data is updated.  Currently models emit three e
 
 ### Hash -> Model
 
-For convience, when placing a hash inside of another model, it is automatically converted into a model.  Models are similar to hashes, but provide support for things like persistance and triggering reactive events.
+For convenience, when placing a hash inside of another model, it is automatically converted into a model.  Models are similar to hashes, but provide support for things like persistence and triggering reactive events.
 
 ```ruby
     user = Model.new
@@ -524,7 +524,7 @@ Here "auth" would be the component name.
 
 # Components
 
-Apps are made up of Components.  Each folder under app/ is a component.  When you visit a route, it loads all of the files in the component on the front end, so new pages within the component can be rendered on the front end.  If a url is visited that routes to a different component, the request will be loaded as a normal page load and all of that components files will be loaded.  You can think of components as the "reload boundry" between sections of your app.
+Apps are made up of Components.  Each folder under app/ is a component.  When you visit a route, it loads all of the files in the component on the front end, so new pages within the component can be rendered on the front end.  If a URL is visited that routes to a different component, the request will be loaded as a normal page load and all of that components files will be loaded.  You can think of components as the "reload boundary" between sections of your app.
 
 You can also use controls (see below) from one component in another.  To do this, you must require the component from the component you wish to use them.  This can be done in the ```config/dependencies.rb``` file.  Just put
 
@@ -638,9 +638,9 @@ Failing above, Volt will look for a view folder with the control name, and an in
 Next, all folders under app/ are checked.  The view path looked for is {component}/index/index.html with a section of :body.
 
 5. gems
-Lastly the app folder of all gems that start with volt are checked.  They are checekd for a similar path to component.
+Lastly the app folder of all gems that start with volt are checked.  They are checked for a similar path to component.
 
-When you create a control, you can also specify multiple parts of the search path in the name.  The parts should be seperated by a :  Example:
+When you create a control, you can also specify multiple parts of the search path in the name.  The parts should be separated by a :  Example:
 
 ```html
     <:blog:comments />
@@ -662,21 +662,21 @@ Controls that render without a provided controller can access the context they w
 
 # Routes
 
-Routes in Volt are very different from traditional backend frameworks.  Since data is synchronized using websockets, routes are mainly used to serialize the state of the application in a pretty way.  When a page is first loaded, the url is parsed with the routes and the params model's values are set from the url.  Later if the params model is updated, the url is updated based on the routes.
+Routes in Volt are very different from traditional backend frameworks.  Since data is synchronized using websockets, routes are mainly used to serialize the state of the application in a pretty way.  When a page is first loaded, the URL is parsed with the routes and the params model's values are set from the URL.  Later if the params model is updated, the URL is updated based on the routes.
 
-This means that routes in volt have to go both from url to params and params to url.  It should also be noted that if a link is clicked and the controller/view to render the new url is within the current component (or an included component), the page will not be reloaded, the url will be updated with the HTML5 history API, and the params hash will reflect the new url.  You can use the changes in params to render different views based on the url.
+This means that routes in volt have to go both from URL to params and params to URL.  It should also be noted that if a link is clicked and the controller/view to render the new URL is within the current component (or an included component), the page will not be reloaded, the URL will be updated with the HTML5 history API, and the params hash will reflect the new URL.  You can use the changes in params to render different views based on the URL.
 
 ## Routes file
 
-Routes are specified on a per-component basis in the config/routes.rb file.  Routes simply map from url to params.
+Routes are specified on a per-component basis in the config/routes.rb file.  Routes simply map from URL to params.
 
 ```ruby
     get "/todos", _view: 'todos'
 ```
 
-Routes take two arguments, a path, and a params hash.  When a new url is loaded and the path is matched on a route, the params will be set to the params provided for that route.
+Routes take two arguments, a path, and a params hash.  When a new URL is loaded and the path is matched on a route, the params will be set to the params provided for that route.
 
-When the params are changed, the url will be set to the path for the route that's params hash matches.
+When the params are changed, the URL will be set to the path for the route that's params hash matches.
 
 Route path's can also contain variables similar to bindings.
 
@@ -684,7 +684,7 @@ Route path's can also contain variables similar to bindings.
     get "/todos/{_index}", _view: 'todos'
 ```
 
-In the case above, if any url matches /todos/*, (where * is anything but a slash), it will be the active route. ```params._view``` would be set to 'todos', and ```params._index``` would be set to the value in the path.
+In the case above, if any URL matches /todos/*, (where * is anything but a slash), it will be the active route. ```params._view``` would be set to 'todos', and ```params._index``` would be set to the value in the path.
 
 If ```params._view``` is 'todos' and ```params._index``` is not nil, the route would be matched.
 
@@ -719,10 +719,9 @@ TODO
 
 # Data Store
 
-Volt provides a data store collection on the front-end and the back-end.  Unlike the other [collections](#provided-collections), all plural names are assumed to be collections (like an array), and all singluar are assumed to be a model (like a hash).
+Volt provides a data store collection on the front-end and the back-end.  Unlike the other [collections](#provided-collections), all plural names are assumed to be collections (like an array), and all singular are assumed to be a model (like a hash).
 
 ```ruby
-
 store._things
 ```
 
@@ -735,9 +734,6 @@ store._things
 | loaded      | yes          | data is loaded and there is an event bound                   |
 | dirty       | no           | data was either accessed without binding an event, or an event was bound, but later unbound. |
 
+# Contributing
 
-# Why Volt is Awesome
-
-- only the relevant dom is updated.  There is no match and patch algorithm to update from strings like other frameworks, all associations are tracked through our reactive values, so we know exactly what needs to be updated without the need to generate any extra html.  This has a few advantages, namely that things like input fields are retained, so any properties (focus, tab position, etc...) are also retained.
-
-
+You want to contribute?  Great!  Thanks for being awesome!  At the moment, we have a big internal todo list, hop on #voltrb on freenode (irc) so we don't duplicate work.  Pull requests are always welcome, but asking about helping on IRC should save some duplication.
