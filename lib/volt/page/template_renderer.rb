@@ -43,8 +43,4 @@ class TemplateRenderer < BaseBinding
 
     super
   end
-
-  def remove_anchors
-    section.remove_anchors
-  end
 end

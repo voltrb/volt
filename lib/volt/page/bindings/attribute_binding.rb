@@ -87,6 +87,7 @@ class AttributeBinding < BaseBinding
   end
 
   def remove
+    # puts "REMOVE #{self.inspect}"
     # Unbind events, leave the element there since attribute bindings
     # aren't responsible for it being there.
     case @attribute_name
@@ -96,6 +97,10 @@ class AttributeBinding < BaseBinding
       element.off('change.attrbind', nil)
     end
 
+    # Value is a reactive template, remove it
+    @value.remove if @value
+
+
     if @update_listener
       @update_listener.remove
       @update_listener = nil
@@ -104,7 +109,14 @@ class AttributeBinding < BaseBinding
     # Clear any references
     @target = nil
     @context = nil
-    @section = nil
+    @getter = nil
+    @value = nil
+
+    # puts self.instance_values.inspect
+  end
+
+  def remove_anchors
+    raise "attribute bindings do not have anchors, can not remove them"
   end
 
 

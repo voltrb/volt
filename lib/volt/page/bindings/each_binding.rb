@@ -22,27 +22,22 @@ class EachBinding < BaseBinding
     @removed_listener = @value.on('removed') { |_, position| item_removed(position) }
   end
 
-  # When a change event comes through, its most likely upstream, so the whole
-  # array might have changed.  In this case, just reload the whole thing
-  # TODO: Track to make sure the changed event isn't being called too often (it is currently)
+  # When a changed event happens, we update to the new size.
   def reload
-    # ObjectTracker.enable_cache
-    # Remove all of the current templates
-    if @templates
-      @templates.each do |template|
-        template.remove_anchors
+    # Adjust to the new size
+    values = current_values
+    templates_size = @templates.size
+    values_size = values.size
 
-        # TODO: Make sure this is being removed since we already removed the anchors
-        template.remove
+    if templates_size < values_size
+      (templates_size).upto(values_size-1) do |index|
+        item_added(index)
+      end
+    elsif templates_size > values_size
+      (templates_size-1).downto(values_size) do |index|
+        item_removed(index)
       end
     end
-
-    @templates = []
-
-    # Run update again to rebuild
-    update
-
-    # ObjectTracker.disable_cache
   end
 
   def item_removed(position)
@@ -91,13 +86,19 @@ class EachBinding < BaseBinding
     end
   end
 
+  def current_values
+    values = @value.cur
+    return [] if values.is_a?(Model) || values.is_a?(Exception)
+    values = values.attributes
+
+    return values
+  end
+
   def update(item=nil)
     if item
       values = [item]
     else
-      values = @value.cur
-      return if values.is_a?(Model) || values.is_a?(Exception)
-      values = values.attributes
+      values = current_values
     end
 
     # TODO: Switch to #each?

@@ -26,7 +26,7 @@ class BaseBinding
   end
 
   def remove
-    section.remove
+    section.remove if @section
 
     # Clear any references
     @target = nil

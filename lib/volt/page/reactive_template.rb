@@ -30,4 +30,12 @@ class ReactiveTemplate
     trigger!('changed')
   end
 
+  def remove
+    @template.remove
+
+    @template = nil
+    @target = nil
+    @template_path = nil
+  end
+
 end

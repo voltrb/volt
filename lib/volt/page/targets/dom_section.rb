@@ -161,4 +161,8 @@ class DomSection < BaseSection
     return range
   end
 
+  def inspect
+    "<#{self.class.to_s}>"
+  end
+
 end

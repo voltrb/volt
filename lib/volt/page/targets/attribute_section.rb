@@ -31,7 +31,8 @@ class AttributeSection
   end
 
   def remove
+    # TODO: is this getting run for no reason?
     node = @target.find_by_binding_id(@binding_name)
-    node.remove
+    node.remove if node
   end
 end
