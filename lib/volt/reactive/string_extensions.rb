@@ -1,5 +1,5 @@
 class String
-  include ReactiveTags
+  # include ReactiveTags
 
   alias :__old_plus :+
   if RUBY_PLATFORM != 'opal'

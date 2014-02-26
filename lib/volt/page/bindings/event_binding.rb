@@ -12,7 +12,6 @@ class JSEvent
   end
 
   def stop
-    # puts "STOPPING"
     # `this.js_event.stopPropagation();`
     `this.js_event.preventDefault();`
   end

@@ -47,7 +47,7 @@ class Listener
   end
 
   def call(*args)
-    puts "TRIGGER: #{@event} on #{@klass.inspect}"
+    # puts "TRIGGER: #{@event} on #{@klass.inspect}"
     # raise "Triggered on removed: #{@event} on #{@klass2.inspect}" if @removed
     if @removed
       puts "Triggered on a removed event: #{@event}"
@@ -148,31 +148,30 @@ module Events
 
     raise "Unable to delete #{event} from #{self.inspect}" unless @listeners && @listeners[event]
 
-    # if @listeners && @listeners[event]
-      @listeners[event].delete(listener)
+    @listeners[event].delete(listener)
 
-      last_for_event = @listeners[event].size == 0
-      last = last_for_event && @listeners.size == 0
+    last_for_event = @listeners[event].size == 0
 
-      if last_for_event
-        # When events are removed, we need to notify any relevent chains so they
-        # can remove any chained events.
-        event_chain.remove_event(event)
+    if last_for_event
+      # When events are removed, we need to notify any relevent chains so they
+      # can remove any chained events.
+      event_chain.remove_event(event)
 
-        # No registered listeners now on this event
-        @listeners.delete(event)
-      end
+      # No registered listeners now on this event
+      @listeners.delete(event)
+    end
 
-      # Let the class we're included on know that we removed a listener (if it cares)
-      if self.respond_to?(:event_removed)
-        # Pass in the event and a boolean indicating if it is the last event
-        self.event_removed(event, last, last_for_event)
-      end
+    last = last_for_event && @listeners.size == 0
 
-      if last
-        @has_listeners = nil
-      end
-    # end
+    # Let the class we're included on know that we removed a listener (if it cares)
+    if self.respond_to?(:event_removed)
+      # Pass in the event and a boolean indicating if it is the last event
+      self.event_removed(event, last, last_for_event)
+    end
+
+    if last
+      @has_listeners = nil
+    end
   end
 
   def trigger!(event, filter=nil, *args)

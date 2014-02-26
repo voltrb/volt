@@ -1,5 +1,4 @@
 class Array
-  include ReactiveTags
   alias :__old_plus :+
 
   def +(val)

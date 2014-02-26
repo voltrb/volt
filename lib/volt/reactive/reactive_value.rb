@@ -81,6 +81,9 @@ class ReactiveValue < BasicObject
       method_name, *args = args
     end
 
+    result = @reactive_cache[[method_name, args]]
+    return result if result
+
     # For some methods, we pass directly to the current object.  This
     # helps ReactiveValue's be well behaved ruby citizens.
     # Also skip if this is a destructive method
@@ -109,6 +112,11 @@ class ReactiveValue < BasicObject
     manager.set_scope!([method_name, *args, block])
 
     # result = result.with(block_reactives) if block
+
+    # if args.size == 0 || method_name == :[]
+    #   puts "STORE: #{method_name} - #{args.inspect}"
+    #   @reactive_cache[[method_name, args]] = result
+    # end
 
     return result
   end
@@ -264,18 +272,14 @@ class ReactiveManager
     # When the first event is registered, we need to start listening on our current object
     # for it to publish events.
 
-    if first
-      update_followers
-    end
+    update_followers if first
   end
 
   def event_removed(event, last, last_for_event)
     # If no one is listening on the reactive value, then we don't need to listen on our
     # current object for events, because no one cares.
 
-    if last
-      remove_followers
-    end
+    remove_followers if last
   end
 
 
@@ -309,22 +313,26 @@ class ReactiveManager
   def update_followers
     # puts "UPDATE FOLLOWERS on #{self.inspect}"
     current_obj = cur(false, true)
+    should_attach = current_obj.respond_to?(:on)
+    # puts "SA #{should_attach} - #{current_obj.inspect}"
 
-    if !@cur_cache || current_obj.object_id != @cur_cache.object_id
-      # puts "CHANGED FROM: #{@cur_cache.inspect} to #{current_obj.inspect}"
-      remove_followers
+    if should_attach
+      if !@cur_cache || current_obj.object_id != @cur_cache.object_id
+        # puts "CHANGED FROM: #{@cur_cache.inspect} to #{current_obj.inspect} - #{current_obj.object_id} vs #{@cur_cache.object_id}"
+        remove_followers
 
-      # Add to current
-      should_attach = current_obj.respond_to?(:on)
-      if should_attach
+        # Add to current
         @cur_cache = current_obj
         # puts "SET TO: #{current_obj.inspect} on #{self.inspect}"
         @cur_cache_chain_listener = self.event_chain.add_object(@cur_cache)
       end
+    else
+      remove_followers
     end
   end
 
   def remove_followers
+    # puts "REMOVE FOLLOWERS: #{@cur_cache.inspect} on #{self.inspect}"
     # Remove from previous
     if @cur_cache
       @cur_cache_chain_listener.remove
@@ -335,8 +343,6 @@ class ReactiveManager
   end
 
   def cur=(val)
-    @cur_cache = nil
-
     if @setter
       @setter.call(val)
       update_followers

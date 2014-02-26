@@ -18,7 +18,7 @@ module Persistors
     def event_added(event, scope_provider, first, first_for_event)
     end
 
-    def event_removed(event, no_more_events)
+    def event_removed(event, last, last_for_event)
     end
   end
 end

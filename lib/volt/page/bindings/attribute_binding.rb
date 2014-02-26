@@ -48,11 +48,7 @@ class AttributeBinding < BaseBinding
   end
 
   def update
-    if @attribute_target
-      value = @attribute_target.to_html
-    else
-      value = @value.cur
-    end
+    value = @value.cur
 
     if @attribute_name == 'checked'
       update_checked

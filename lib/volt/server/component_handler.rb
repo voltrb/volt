@@ -15,6 +15,8 @@ class ComponentHandler
 
     code = ComponentCode.new(component_name, @component_paths).code
 
+    # puts "CODE: #{code}"
+
     javascript_code = Opal.compile(code)
 
     # puts "ENV: #{env.inspect}"

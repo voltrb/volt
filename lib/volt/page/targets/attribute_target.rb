@@ -7,10 +7,6 @@ require 'volt/page/targets/binding_document/html_node'
 # a string that can then be used to update a attribute binding.
 
 class AttributeTarget < ComponentNode
-  # TODO: improve
-  def skip_current_queue_flush
-    true
-  end
 
   def section(*args)
     return AttributeSection.new(self, *args)

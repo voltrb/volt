@@ -27,6 +27,7 @@ class ChainListener
 
     if RUBY_PLATFORM == 'opal' && CHAIN_DEBUG
       `window.chain_listeners -= 1;`
+      `console.log('del chain listeners: ', window.chain_listeners)`
     end
   end
 end

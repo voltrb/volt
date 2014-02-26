@@ -9,21 +9,19 @@ class ComponentNode < BaseNode
   include Events
 
   attr_accessor :parent, :binding_id, :nodes
-  def initialize(binding_id=nil, parent=nil)
+  def initialize(binding_id=nil, parent=nil, root=nil)
     @nodes = []
     @binding_id = binding_id
     @parent = parent
-
-    @change_listener = on('changed') do
-      if @parent
-        @parent.trigger!('changed')
-      end
-    end
+    @root = root
   end
 
-  # TODO: improve
-  def skip_current_queue_flush
-    true
+  def trigger!(*args, &block)
+    if @root
+      @root.trigger!(*args, &block)
+    else
+      super
+    end
   end
 
   def text=(text)
@@ -44,7 +42,7 @@ class ComponentNode < BaseNode
         # Open
         binding_id = part.match(/\<\!\-\- \$([0-9]+) \-\-\>/)[1].to_i
 
-        sub_node = ComponentNode.new(binding_id, current_node)
+        sub_node = ComponentNode.new(binding_id, current_node, @root || self)
         current_node << sub_node
         current_node = sub_node
       when /\<\!\-\- \$\/[0-9]+ \-\-\>/
@@ -93,6 +91,8 @@ class ComponentNode < BaseNode
     @nodes = []
 
     trigger!('changed')
+
+    # @binding_id = nil
   end
 
   def remove_anchors
@@ -100,10 +100,9 @@ class ComponentNode < BaseNode
 
     @parent.nodes.delete(self)
 
-    @change_listener.remove
-    @change_listener = nil
-
     trigger!('changed')
+    @parent = nil
+    @binding_id = nil
   end
 
   def inspect

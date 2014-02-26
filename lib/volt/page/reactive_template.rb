@@ -26,12 +26,6 @@ class ReactiveTemplate
     @target.to_html
   end
 
-  # TODO: improve
-  def skip_current_queue_flush
-    true
-  end
-
-
   def update
     trigger!('changed')
   end
