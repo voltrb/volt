@@ -225,6 +225,8 @@ class URL
     def nested_params_hash(params, path=[])
       results = {}
 
+      puts "PARAMS: " + params.inspect
+
       params.each_pair do |key,value|
         if value.respond_to?(:persistor) && value.persistor && value.persistor.is_a?(Persistors::Params)
           # TODO: Should be a param

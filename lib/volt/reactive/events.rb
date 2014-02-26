@@ -47,8 +47,6 @@ class Listener
   end
 
   def call(*args)
-    # puts "TRIGGER: #{@event} on #{@klass.inspect}"
-    # raise "Triggered on removed: #{@event} on #{@klass2.inspect}" if @removed
     if @removed
       # puts "Triggered on a removed event: #{@event}"
       return

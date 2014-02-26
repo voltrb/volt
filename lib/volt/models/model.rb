@@ -29,6 +29,8 @@ class Model
 
     self.attributes = wrap_values(attributes)
 
+    @cache = {}
+
     @persistor.loaded if @persistor
   end
 
@@ -81,6 +83,9 @@ class Model
 
   # Do the assignment to a model and trigger a changed event
   def assign_attribute(method_name, *args, &block)
+    # Free any cached value
+    free(method_name)
+
     self.expand!
     # Assign, without the =
     attribute_name = method_name[0..-2].to_sym
@@ -107,16 +112,25 @@ class Model
       # The method we are calling is on a nil model, return a wrapped
       # exception.
       return return_undefined_method(method_name)
-    elsif attributes && attributes.has_key?(method_name)
-      # Method has the key, look it up directly
-      return attributes[method_name]
     else
-      # TODO: TEMP: Assign and store
-      new_model = read_new_model(method_name)
-      self.attributes ||= {}
-      attributes[method_name] = new_model
+      # See if the value is in attributes
+      value = (attributes && attributes[method_name])
 
-      return new_model
+      # Also check @cache
+      value ||= (@cache && @cache[method_name])
+
+      if value
+        # key was in attributes or cache
+        return value
+      else
+        # Cache the value, will be removed when expanded or something
+        # is assigned over it.
+        # TODO: implement a timed out cache flusing
+        new_model = read_new_model(method_name)
+        @cache[method_name] = new_model
+
+        return new_model
+      end
     end
   end
 
@@ -164,6 +178,11 @@ class Model
     end
   end
 
+  # Removes an item from the cache
+  def free(name)
+    @cache.delete(name)
+  end
+
   # If this model is nil, it makes it into a hash model, then
   # sets it up to track from the parent.
   def expand!
@@ -172,7 +191,7 @@ class Model
       if @parent
         @parent.expand!
 
-        @parent.attributes[@path.last] = self
+        @parent.send(:"#{@path.last}=", self)
       end
     end
   end

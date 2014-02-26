@@ -72,7 +72,7 @@ class EachBinding < BaseBinding
     item_template = TemplateRenderer.new(@page, @target, item_context, binding_name, @template_name)
     @templates.insert(position, item_template)
 
-    update_indexes_after(position)
+    # update_indexes_after(position)
   end
 
   # When items are added or removed in the middle of the list, we need
@@ -80,7 +80,8 @@ class EachBinding < BaseBinding
   def update_indexes_after(start_index)
     size = @templates.size
     if size > 0
-      start_index.upto(@templates.size-1) do |index|
+      start_index.upto(size-1) do |index|
+        puts "UP INDEX: #{index}"
         @templates[index].context.locals[:index].cur = index
       end
     end
