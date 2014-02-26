@@ -29,7 +29,7 @@ class ReactiveValue < BasicObject
   # :methods- needs to return a straight up array to work with irb tab completion
   # :eql?   - needed for .uniq to work correctly
   # :to_ary - in some places ruby expects to get an array back from this method
-  SKIP_METHODS = [:hash, :methods, :eql?, :respond_to?, :respond_to_missing?, :to_ary, :to_int]#, :instance_of?, :kind_of?, :to_s, :to_str]
+  SKIP_METHODS = [:object_id, :hash, :methods, :eql?, :respond_to?, :respond_to_missing?, :to_ary, :to_int]#, :instance_of?, :kind_of?, :to_s, :to_str]
 
   def initialize(getter, setter=nil, scope=nil)
     @reactive_manager = ::ReactiveManager.new(getter, setter, scope)
@@ -81,8 +81,8 @@ class ReactiveValue < BasicObject
       method_name, *args = args
     end
 
-    result = @reactive_cache[[method_name, args]]
-    return result if result
+    # result = @reactive_cache[[method_name, args.map(&:object_id)]]
+    # return result if result
 
     # For some methods, we pass directly to the current object.  This
     # helps ReactiveValue's be well behaved ruby citizens.
@@ -114,8 +114,8 @@ class ReactiveValue < BasicObject
     # result = result.with(block_reactives) if block
 
     # if args.size == 0 || method_name == :[]
-    #   puts "STORE: #{method_name} - #{args.inspect}"
-    #   @reactive_cache[[method_name, args]] = result
+      # puts "STORE: #{method_name} - #{args.inspect}"
+      # @reactive_cache[[method_name, args.map(&:object_id)]] = result
     # end
 
     return result
