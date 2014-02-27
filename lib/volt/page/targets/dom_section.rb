@@ -18,7 +18,9 @@ class DomSection < BaseSection
   end
 
   def html=(value)
-    set_content_and_rezero_bindings(value, {})
+    new_nodes = build_from_html(value)
+
+    self.nodes = `new_nodes.childNodes`
   end
 
   def remove
@@ -70,64 +72,22 @@ class DomSection < BaseSection
     return `range.commonAncestorContainer`
   end
 
-  # Takes in our html and bindings, and rezero's the comment names, and the
-  # bindings.  Returns an updated bindings hash
-  def set_content_and_rezero_bindings(html, bindings, temp_div=nil)
-    sub_nodes = nil
-
-
-    new_bindings = {}
-    # Loop through the bindings, and rezero.
-    bindings.each_pair do |name,binding|
-      new_name = @@binding_number
-
-      if name.cur.is_a?(String)
-        if name[0..1] == 'id'
-        # Find by id
-          %x{
-            var node = temp_div.querySelector('#' + name);
-            node.setAttribute('id', 'id' +new_name);
-          }
-
-          new_bindings["id#{new_name}"] = binding
-        else
-          # Assume a fixed id
-          # TODO: We should raise an exception if this id is already on the page
-          new_bindings[name] = binding
-        end
-      else
-        # puts "----- #{name.inspect} - #{new_name}"
-        # `console.log(temp_div);`
-        # Change the comment ids
-        start_comment = find_by_comment("$#{name}", temp_div)
-        end_comment = find_by_comment("$/#{name}", temp_div)
-
-        %x{
-          start_comment.textContent = " $" + new_name + " ";
-          end_comment.textContent = " $/" + new_name + " ";
-        }
-
-        new_bindings[new_name] = binding
-      end
-
-
-      @@binding_number += 1
-    end
-
+  def set_template(dom_template)
+    dom_nodes, bindings = dom_template.make_new
 
     children = nil
     %x{
-      children = temp_div.childNodes;
+      children = dom_nodes.childNodes;
     }
 
     # Update the nodes
     self.nodes = children
 
     %x{
-      temp_div = null;
+      dom_nodes = null;
     }
 
-    return new_bindings
+    return bindings
   end
 
   def range

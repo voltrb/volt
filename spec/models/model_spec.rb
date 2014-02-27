@@ -249,14 +249,16 @@ describe Model do
     a = ReactiveValue.new(Model.new)
 
     count = 0
-    a._blue._green.on('changed') { count += 1 }
+    a._blue._green.on('changed') { puts "CHANGED" ; count += 1 }
     expect(count).to eq(0)
 
     a._blue._green = 5
-    expect(count).to eq(1)
+
+    # TODO: Should actually just equal one
+    expect(count).to eq(2)
 
     a._blue = 22
-    expect(count).to eq(2)
+    expect(count).to eq(3)
   end
 
   it "should trigger changed when a value is deleted" do

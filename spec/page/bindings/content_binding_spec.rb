@@ -1,6 +1,7 @@
 require 'spec_helper'
 require 'volt/page/bindings/content_binding'
 require 'volt/page/targets/attribute_target'
+require 'volt/page/targets/dom_section'
 require 'volt/page/template_renderer'
 
 

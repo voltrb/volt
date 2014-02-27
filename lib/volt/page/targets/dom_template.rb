@@ -21,32 +21,18 @@ class DomTemplate
 
     @nodes = build_from_html(html)
 
-    attach_bindings
+    track_binding_anchors
   end
 
   # Returns the dom nodes and bindings
   def make_new
     bindings = update_binding_anchors!
 
-    return `self.nodes.cloneNode(true)`
+    new_nodes = `self.nodes.cloneNode(true)`
+
+    return [new_nodes, bindings]
   end
 
-  # Returns an unattached div with the nodes from the passed
-  # in html.
-  def build_from_html(html)
-    temp_div = nil
-    %x{
-      temp_div = document.createElement('div');
-      var doc = jQuery.parseHTML(html);
-
-      if (doc) {
-        for (var i=0;i < doc.length;i++) {
-          temp_div.appendChild(doc[i]);
-        }
-      }
-    }
-    return temp_div
-  end
 
   # Finds each of the binding anchors in the temp dom, then stores a reference
   # to them so they can be quickly updated without using xpath to find them again.
@@ -54,21 +40,20 @@ class DomTemplate
     @binding_anchors = {}
 
     # Loop through the bindings, find in nodes.
-    bindings.each_pair do |name,binding|
+    @bindings.each_pair do |name,binding|
       if name.is_a?(String)
         # Find the dom node for an attribute anchor
         node = nil
         %x{
-          node = temp_div.querySelector('#' + name);
+          node = self.nodes.querySelector('#' + name);
         }
         @binding_anchors[name] = node
       else
         # Find the dom node for a comment anchor
-        start_comment = find_by_comment("$#{name}", temp_div)
-        end_comment = find_by_comment("$/#{name}", temp_div)
+        start_comment = find_by_comment("$#{name}", @nodes)
+        end_comment = find_by_comment("$/#{name}", @nodes)
 
-        @binding_anchors[new_name] = [start_comment, end_comment]
-      end
+        @binding_anchors[name] = [start_comment, end_comment]
       end
     end
   end
@@ -88,7 +73,7 @@ class DomTemplate
           # update the id
           `anchors.setAttribute('id', 'id' + new_name);`
 
-          new_bindings[new_name] = @bindings[name]
+          new_bindings["id#{new_name}"] = @bindings[name]
         else
           # Assume a fixed id, should not be updated
           # TODO: Might want to check the page to see if a node
