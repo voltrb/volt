@@ -33,7 +33,7 @@ class ReactiveValue < BasicObject
 
   def initialize(getter, setter=nil, scope=nil)
     @reactive_manager = ::ReactiveManager.new(getter, setter, scope)
-    @reactive_cache = {}
+    # @reactive_cache = {}
   end
 
   def reactive?

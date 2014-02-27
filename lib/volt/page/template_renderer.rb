@@ -7,18 +7,10 @@ class TemplateRenderer < BaseBinding
     super(page, target, context, binding_name)
 
     # puts "Template Name: #{template_name}"
-    @template = @page.templates[template_name]
+
     @sub_bindings = []
 
-    if @template
-      html = @template['html']
-      bindings = @template['bindings']
-    else
-      html = "<div>-- &lt; missing template #{template_name.inspect.gsub('<', '&lt;').gsub('>', '&gt;')} &gt; --</div>"
-      bindings = {}
-    end
-
-    bindings = self.section.set_content_and_rezero_bindings(html, bindings)
+    bindings = self.section.set_content_to_template(page, template_name)
 
     bindings.each_pair do |id,bindings_for_id|
       bindings_for_id.each do |binding|

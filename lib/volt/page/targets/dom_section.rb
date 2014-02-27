@@ -75,12 +75,10 @@ class DomSection < BaseSection
     return `range.commonAncestorContainer`
   end
 
-  # Takes in our html and bindings, and rezero's the comment names, and the
-  # bindings.  Returns an updated bindings hash
-  def set_content_and_rezero_bindings(html, bindings)
-    sub_nodes = nil
+  # Returns an unattached div with the nodes from the passed
+  # in html.
+  def build_from_html(html)
     temp_div = nil
-
     %x{
       temp_div = document.createElement('div');
       var doc = jQuery.parseHTML(html);
@@ -91,6 +89,19 @@ class DomSection < BaseSection
         }
       }
     }
+    return temp_div
+  end
+
+  # Takes in our html and bindings, and rezero's the comment names, and the
+  # bindings.  Returns an updated bindings hash
+  def set_content_and_rezero_bindings(html, bindings, temp_div=nil)
+    sub_nodes = nil
+
+    # `console.log('td', temp_div)`
+    `if (!(temp_div instanceof HTMLElement)) {`
+      # puts "REBUILD"
+      temp_div = build_from_html(html)
+    `}`
 
     new_bindings = {}
     # Loop through the bindings, and rezero.

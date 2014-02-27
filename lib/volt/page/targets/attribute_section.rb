@@ -3,7 +3,7 @@
 
 require 'volt/page/targets/base_section'
 
-class AttributeSection
+class AttributeSection < BaseSection
   def initialize(target, binding_name)
     @target = target
     @binding_name = binding_name
