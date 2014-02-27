@@ -1,19 +1,14 @@
 require 'volt/page/targets/base_section'
+require 'volt/page/targets/helpers/comment_searchers'
 
 class DomSection < BaseSection
+  include CommentSearchers
+
   def initialize(binding_name)
     @start_node = find_by_comment("$#{binding_name}")
     @end_node = find_by_comment("$/#{binding_name}")
   end
 
-  def find_by_comment(text, in_node=`document`)
-    node = nil
-
-    %x{
-      node = document.evaluate("//comment()[. = ' " + text + " ']", in_node, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null).iterateNext();
-    }
-    return node
-  end
 
   def text=(value)
     %x{
@@ -75,33 +70,11 @@ class DomSection < BaseSection
     return `range.commonAncestorContainer`
   end
 
-  # Returns an unattached div with the nodes from the passed
-  # in html.
-  def build_from_html(html)
-    temp_div = nil
-    %x{
-      temp_div = document.createElement('div');
-      var doc = jQuery.parseHTML(html);
-
-      if (doc) {
-        for (var i=0;i < doc.length;i++) {
-          temp_div.appendChild(doc[i]);
-        }
-      }
-    }
-    return temp_div
-  end
-
   # Takes in our html and bindings, and rezero's the comment names, and the
   # bindings.  Returns an updated bindings hash
   def set_content_and_rezero_bindings(html, bindings, temp_div=nil)
     sub_nodes = nil
 
-    # `console.log('td', temp_div)`
-    `if (!(temp_div instanceof HTMLElement)) {`
-      # puts "REBUILD"
-      temp_div = build_from_html(html)
-    `}`
 
     new_bindings = {}
     # Loop through the bindings, and rezero.
