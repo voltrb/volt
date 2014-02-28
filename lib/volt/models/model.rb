@@ -3,6 +3,7 @@ require 'volt/models/array_model'
 require 'volt/models/model_helpers'
 require 'volt/reactive/object_tracking'
 require 'volt/models/model_hash_behaviour'
+require 'volt/models/validations/validations'
 
 class NilMethodCall < NoMethodError
   def true?
@@ -20,6 +21,7 @@ class Model
   include ObjectTracking
   include ModelHelpers
   include ModelHashBehaviour
+  include Validations
 
   attr_accessor :attributes
   attr_reader :parent, :path, :persistor, :options

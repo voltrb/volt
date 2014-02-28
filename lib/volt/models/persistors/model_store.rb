@@ -60,7 +60,7 @@ module Persistors
           @model.attributes[:"#{@model.path[-4].singularize}_id"] = source._id
         end
 
-        # puts "Save: #{collection} - #{self_attributes.inspect} - #{@model.path.inspect}"
+        puts "Save: #{collection} - #{self_attributes.inspect} - #{@model.path.inspect}"
         @tasks.call('StoreTasks', 'save', collection, self_attributes)
       end
     end

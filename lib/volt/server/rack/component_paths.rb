@@ -8,7 +8,8 @@ class ComponentPaths
   def app_folders
     # Find all app folders
     @app_folders ||= begin
-      app_folders = ["#{@root}/app", "#{@root}/vendor/app"].map {|f| File.expand_path(f) }
+      volt_app = File.expand_path(File.join(File.dirname(__FILE__), "../../../../app"))
+      app_folders = [volt_app, "#{@root}/app", "#{@root}/vendor/app"].map {|f| File.expand_path(f) }
 
       # Gem folders with volt in them
       # TODO: we should probably qualify this a bit more
@@ -49,15 +50,14 @@ class ComponentPaths
 
   # Makes each components classes available on the load path, require classes.
   def require_in_components
-    # app_folders do |app_folder|
-    #   $LOAD_PATH.unshift(app_folder)
-    #
-    #   Dir["#{app_folder}/*/{controllers,model}/*.rb"].each do |ruby_file|
-    #     path = ruby_file.gsub(/^#{app_folder}\//, '')[0..-4]
-    #     puts "Path: #{path}"
-    #     # require(path)
-    #   end
-    # end
+    app_folders do |app_folder|
+      $LOAD_PATH.unshift(app_folder)
+
+      Dir["#{app_folder}/*/{controllers,models}/*.rb"].each do |ruby_file|
+        path = ruby_file.gsub(/^#{app_folder}\//, '')[0..-4]
+        require(path)
+      end
+    end
 
     # add each tasks folder directly
     components.each do |name,component_folders|

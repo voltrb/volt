@@ -22,7 +22,7 @@ class ComponentBinding < TemplateBinding
       @controller = current_context
     else
       # There is not a controller
-      current_context = SubContext.new(model_with_parent, $page)
+      current_context = SubContext.new(model_with_parent, @page)
       @controller = nil
     end
 

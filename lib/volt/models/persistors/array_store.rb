@@ -147,10 +147,6 @@ module Persistors
     # When a model is added to this collection, we call its "changed"
     # method.  This should trigger a save.
     def added(model, index)
-      unless defined?($loading_models) && $loading_models
-        model.persistor.changed
-      end
-
       if model.persistor
         # Tell the persistor it was added
         model.persistor.add_to_collection

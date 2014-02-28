@@ -11,8 +11,6 @@ class TemplateBinding < BaseBinding
 
     @current_template = nil
 
-    # puts "GETTER: #{value_from_getter(getter).inspect}"
-
     # Find the source for the getter binding
     @path, section = value_from_getter(getter)
 
