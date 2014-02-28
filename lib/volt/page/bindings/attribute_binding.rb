@@ -20,14 +20,16 @@ class AttributeBinding < BaseBinding
     # Run the initial update (render)
     update
 
-    @update_listener = @value.on('changed') { update }
+    if @value.reactive?
+      @update_listener = @value.on('changed') { update }
 
-    # Bind so when this value updates, we update
-    case @attribute_name
-    when 'value'
-      element.on('input.attrbind') { changed }
-    when 'checked'
-      element.on('change.attrbind') {|event| changed(event) }
+      # Bind so when this value updates, we update
+      case @attribute_name
+      when 'value'
+        element.on('input.attrbind') { changed }
+      when 'checked'
+        element.on('change.attrbind') {|event| changed(event) }
+      end
     end
   end
 
