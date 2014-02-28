@@ -33,6 +33,12 @@ class ReactiveArray# < Array
   # alias :__old_assign :[]=
   def []=(index, value)
     index_val = index.cur
+
+    if index_val < 0
+      # Handle a negative index
+      index_val = size + index_val
+    end
+
     # Clean old value
     __clear_element(index)
 

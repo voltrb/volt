@@ -117,7 +117,6 @@ describe Model do
   it "should store reactive values in arrays and trigger updates when those values change" do
     a = ReactiveValue.new(Model.new)
     b = ReactiveValue.new('blue')
-    a._items[0].on('changed') { puts "AC" }
     a._items <<  b
     b.cur = 'two'
 
@@ -249,7 +248,7 @@ describe Model do
     a = ReactiveValue.new(Model.new)
 
     count = 0
-    a._blue._green.on('changed') { puts "CHANGED" ; count += 1 }
+    a._blue._green.on('changed') { count += 1 }
     expect(count).to eq(0)
 
     a._blue._green = 5
