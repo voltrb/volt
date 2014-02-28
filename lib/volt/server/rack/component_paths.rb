@@ -50,12 +50,15 @@ class ComponentPaths
 
   # Makes each components classes available on the load path, require classes.
   def require_in_components
-    app_folders do |app_folder|
-      $LOAD_PATH.unshift(app_folder)
+    if RUBY_PLATFORM == 'opal'
+    else
+      app_folders do |app_folder|
+        $LOAD_PATH.unshift(app_folder)
 
-      Dir["#{app_folder}/*/{controllers,models}/*.rb"].each do |ruby_file|
-        path = ruby_file.gsub(/^#{app_folder}\//, '')[0..-4]
-        require(path)
+        Dir["#{app_folder}/*/{controllers,models}/*.rb"].each do |ruby_file|
+          path = ruby_file.gsub(/^#{app_folder}\//, '')[0..-4]
+          require(path)
+        end
       end
     end
 

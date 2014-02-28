@@ -5,6 +5,7 @@ require 'volt/reactive/array_extensions'
 require 'volt/reactive/reactive_array'
 require 'volt/reactive/object_tracker'
 require 'volt/reactive/destructive_methods'
+require 'volt/reactive/reactive_generator'
 
 class Object
   def cur
@@ -43,7 +44,7 @@ class ReactiveValue < BasicObject
   # Proxy methods to the ReactiveManager.  We want to have as few
   # as possible methods on reactive values, so all other methods
   # are forwarded to the object the reactive value points to.
-  [:cur, :cur=, :deep_cur, :on, :trigger!, :trigger_by_scope!].each do |method_name|
+  [:cur, :cur=, :deep_cur, :on, :trigger!, :trigger_by_scope!, :with].each do |method_name|
     define_method(method_name) do |*args, &block|
       @reactive_manager.send(method_name, *args, &block)
     end
@@ -147,10 +148,6 @@ class ReactiveValue < BasicObject
     cur.respond_to?(name)
   end
 
-  def with(*args, &block)
-    return @reactive_manager.with(*args, &block)
-  end
-
   def inspect
     "@#{cur.inspect}"
   end
@@ -193,51 +190,6 @@ class ReactiveValue < BasicObject
   #    that there are no child reactive values.
   def self.from_hash(hash, skip_if_no_reactives=false)
     ::ReactiveGenerator.from_hash(hash)
-  end
-end
-
-class ReactiveGenerator
-  # Takes a hash and returns a ReactiveValue that depends on
-  # any ReactiveValue's inside of the hash (or children).
-  def self.from_hash(hash, skip_if_no_reactives=false)
-    reactives = find_reactives(hash)
-
-    if skip_if_no_reactives && reactives.size == 0
-      # There weren't any reactives, we can just use the hash
-      return hash
-    else
-      # Create a new reactive value that listens on all of its
-      # child reactive values.
-      value = ReactiveValue.new(hash)
-
-      reactives.each do |child|
-        value.reactive_manager.add_parent!(child)
-      end
-
-      return value
-    end
-  end
-
-  # Recursively loop through the data, returning a list of all
-  # reactive values in the hash, array, etc..
-  def self.find_reactives(object)
-    found = []
-    if object.reactive?
-      found << object
-
-      found += find_reactives(object.cur)
-    elsif object.is_a?(Array)
-      object.each do |item|
-        found += find_reactives(item)
-      end
-    elsif object.is_a?(Hash)
-      object.each_pair do |key, value|
-        found += find_reactives(key)
-        found += find_reactives(value)
-      end
-    end
-
-    return found.flatten
   end
 end
 
