@@ -144,6 +144,7 @@ class ReactiveValue < BasicObject
   # end
 
   def respond_to_missing?(name, include_private=false)
+    puts "RT"
     cur.respond_to?(name)
   end
 
@@ -242,7 +243,10 @@ class ReactiveManager
   # Fetch the current value
   def cur(shallow=false, ignore_cache=false)
     # Return from cache if it is cached
-    return @cur_cache if @cur_cache && !shallow && !ignore_cache
+    if @cur_cache && !shallow && !ignore_cache
+      # puts "From Cache: #{@cur_cache.inspect}"
+      return @cur_cache
+    end
 
     if @getter.class == ::Proc
       # Get the current value, capture any errors
@@ -268,7 +272,6 @@ class ReactiveManager
 
 
   def update_followers
-    # puts "UPDATE FOLLOWERS"
 
     current_obj = cur(false, true)
     should_attach = current_obj.respond_to?(:on)
@@ -279,13 +282,16 @@ class ReactiveManager
         # puts "CHANGED FROM: #{@cur_cache.inspect} to #{current_obj.inspect} - #{current_obj.object_id} vs #{@cur_cache.object_id}"
         remove_followers
 
-        # Add to current
-        @cur_cache = current_obj
         # puts "SET TO: #{current_obj.inspect} on #{self.inspect}"
-        @cur_cache_chain_listener = self.event_chain.add_object(@cur_cache)
+        @cur_cache_chain_listener = self.event_chain.add_object(current_obj)
       end
     else
       remove_followers
+    end
+
+    if has_listeners?
+      # Store current if we have listeners
+      @cur_cache = current_obj
     end
   end
 
@@ -293,22 +299,24 @@ class ReactiveManager
     # puts "REMOVE FOLLOWERS: #{@cur_cache.inspect} on #{self.inspect}"
     # Remove from previous
     if @cur_cache
+      @cur_cache = nil
+    end
+
+    if @cur_cache_chain_listener
       @cur_cache_chain_listener.remove
       @cur_cache_chain_listener = nil
-
-      @cur_cache = nil
     end
   end
 
   def cur=(val)
     if @setter
       @setter.call(val)
-      update_followers
+      # update_followers
     elsif @scope == nil
       @getter = val
       @setter = nil
 
-      update_followers
+      # update_followers
       trigger!('changed')
     else
       raise "Value can not be updated"

@@ -20,7 +20,7 @@ class AttributeBinding < BaseBinding
     # Run the initial update (render)
     update
 
-    if @value.reactive? || @value.is_a?(ReactiveTemplate)
+    if @value.reactive?
       @update_listener = @value.on('changed') { update }
 
       # Bind so when this value updates, we update
@@ -42,7 +42,9 @@ class AttributeBinding < BaseBinding
       current_value = element.is(':checked')
     end
 
+    # puts "ASSIGN #{current_value}"
     @value.cur = current_value
+    # puts "ASSIGNED"
   end
 
   def element
@@ -50,7 +52,9 @@ class AttributeBinding < BaseBinding
   end
 
   def update
+    # puts "UPDATE GET VAL"
     value = @value.cur
+    # puts "UPDATE GOT"
     # puts "UPDATE1 to #{value.inspect}"
 
     if @attribute_name == 'checked'
@@ -101,7 +105,9 @@ class AttributeBinding < BaseBinding
     end
 
     # Value is a reactive template, remove it
-    @value.remove if @value
+    if @value && @value.reactive?
+      @value.remove
+    end
 
 
     if @update_listener
@@ -114,8 +120,6 @@ class AttributeBinding < BaseBinding
     @context = nil
     @getter = nil
     @value = nil
-
-    # puts self.instance_values.inspect
   end
 
   def remove_anchors

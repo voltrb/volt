@@ -350,4 +350,6 @@ describe ReactiveValue do
 
     expect(a.deep_cur).to eq({_names: ['bob', 'jim']})
   end
+
+
 end

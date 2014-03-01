@@ -9,6 +9,10 @@ class ReactiveTemplate
 
   end
 
+  def reactive?
+    true
+  end
+
   # def event_added(event, scope_provider, first, first_for_event)
   #   if first && !@template_listener
   #     @template_listener = @target.on('changed') { update }

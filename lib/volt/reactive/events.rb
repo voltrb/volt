@@ -51,7 +51,7 @@ class Listener
       return
     end
 
-    if @event == :changed && @klass.reactive?
+    if @klass.reactive?
       # Update the reactive value's current value to let it know it is being
       # followed.
       @klass.update_followers if @klass.respond_to?(:update_followers)
@@ -174,6 +174,9 @@ module Events
   def trigger!(event, filter=nil, *args)
     are_reactive = reactive?
     # ObjectTracker.process_queue if !are_reactive
+    # puts "DT"
+    # insp = self.inspect
+    # puts "TRIGGER #{event} on #{insp}"
 
     event = event.to_sym
 
