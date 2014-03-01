@@ -25,8 +25,11 @@ module Validations
     end
 
     if defined?(@@validations)
+      # Run through each validation
       @@validations.each_pair do |field_name, options|
         options.each_pair do |validation, args|
+          # Call the specific validator, then merge the results back
+          # into one large errors hash.
           case validation
           when :length
             merge.call(Length.validate(self, field_name, args))

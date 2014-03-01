@@ -33,7 +33,7 @@ class ReactiveValue < BasicObject
   SKIP_METHODS = [:object_id, :hash, :methods, :eql?, :respond_to?, :respond_to_missing?, :to_ary, :to_int]#, :instance_of?, :kind_of?, :to_s, :to_str]
 
   def initialize(getter, setter=nil, scope=nil)
-    @reactive_manager = ::ReactiveManager.new(getter, setter, scope)
+    @reactive_manager = ::ReactiveManager.new(self, getter, setter, scope)
     # @reactive_cache = {}
   end
 
@@ -199,12 +199,17 @@ class ReactiveManager
   attr_reader :scope, :parents
 
   # When created, ReactiveValue's get a getter (a proc)
-  def initialize(getter, setter=nil, scope=nil)
+  def initialize(reactive_value, getter, setter=nil, scope=nil)
+    @reactive_value = reactive_value
     @getter = getter
     @setter = setter
     @scope = scope
 
     @parents = []
+  end
+
+  def reactive_value
+    @reactive_value
   end
 
   def reactive?

@@ -185,6 +185,11 @@ describe SandlebarsParser do
     expect(time.total).to be < 0.1
   end
 
+  it "should parse nested components" do
+    html = "custom tag <:awesome:cool name=\"yes\" />"
+    test_html(html)
+  end
+
   # it "should warn you when you over close tags" do
   #   html = "<div><p>test</p></div></div>"
   #

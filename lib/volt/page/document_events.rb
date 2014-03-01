@@ -15,7 +15,7 @@ class DocumentEvents
 
       %x{
         $('body').on(event, function(e) {
-          that.$handle(event, e, e.originalEvent.target);
+          that.$handle(event, e, e.target || e.originalEvent.target);
         });
       }
 
@@ -37,6 +37,8 @@ class DocumentEvents
       # TODO: Sometimes the event doesn't exist, but we still get
       # an event.
       handlers = @events[event_name]
+      # puts "EVENT: #{event_name} - #{handlers.inspect} for #{element.id}"
+      # `console.log('target: ', target);`
       handlers = handlers[element.id] if handlers
 
       if handlers
