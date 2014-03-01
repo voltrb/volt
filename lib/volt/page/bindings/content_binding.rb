@@ -17,13 +17,11 @@ class ContentBinding < BaseBinding
   end
 
   def update
-    puts "LOOKUP"
     value = @value.cur.or('')
-    puts "AFTER"
 
     # Exception values display the exception as a string
     value = value.to_s
-    puts "UPDATE C: #{value.inspect} on #{self.inspect}"
+    # puts "UPDATE C: #{value.inspect} on #{self.inspect}"
 
     # Update the html in this section
     # TODO: Move the formatter into another class.

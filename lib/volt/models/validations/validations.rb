@@ -59,7 +59,7 @@ module Validations
       end
     end
 
-    puts "ERROR: #{errors.inspect}"
+    # puts "ERROR: #{errors.inspect}"
 
     return errors
   end

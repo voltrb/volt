@@ -261,14 +261,15 @@ class ReactiveManager
       result = result.cur
     end
 
-    puts "CUR FOR: #{result.inspect}"
+    # puts "CUR FOR: #{result.inspect}"
 
     return result
   end
 
 
   def update_followers
-    # puts "UPDATE FOLLOWERS on #{self.inspect}"
+    # puts "UPDATE FOLLOWERS"
+
     current_obj = cur(false, true)
     should_attach = current_obj.respond_to?(:on)
     # puts "SA #{should_attach} - #{current_obj.inspect}"
