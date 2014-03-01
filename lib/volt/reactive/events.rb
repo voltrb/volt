@@ -1,5 +1,4 @@
 require 'volt/reactive/event_chain'
-require 'volt/reactive/object_tracker'
 
 DEBUG = false
 

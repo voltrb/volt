@@ -14,6 +14,24 @@ module Validations
     base.send :extend, ClassMethods
   end
 
+  # Sometimes we want to skip checking a field until some event
+  # has happened (usually a field has been typed in or blurred)
+  def exclude_from_errors!(field_name)
+    @exclude_from_errors ||= {}
+    @exclude_from_errors[field_name] = true
+
+    trigger!('changed')
+  end
+
+  # Once a field is ready, we can use include_in_errors! to start
+  # showing its errors.
+  def include_in_errors!(field_name)
+    if @exclude_from_errors
+      @exclude_from_errors.delete(field_name)
+      trigger!('changed')
+    end
+  end
+
   def errors
     errors = {}
 
@@ -27,6 +45,9 @@ module Validations
     if defined?(@@validations)
       # Run through each validation
       @@validations.each_pair do |field_name, options|
+        # Sometimes we want to skip error checking for a field
+        next if @exclude_from_errors && @exclude_from_errors[field_name]
+
         options.each_pair do |validation, args|
           # Call the specific validator, then merge the results back
           # into one large errors hash.
@@ -37,6 +58,8 @@ module Validations
         end
       end
     end
+
+    puts "ERROR: #{errors.inspect}"
 
     return errors
   end

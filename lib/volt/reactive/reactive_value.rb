@@ -3,7 +3,6 @@ require 'volt/reactive/reactive_tags'
 require 'volt/reactive/string_extensions'
 require 'volt/reactive/array_extensions'
 require 'volt/reactive/reactive_array'
-require 'volt/reactive/object_tracker'
 require 'volt/reactive/destructive_methods'
 require 'volt/reactive/reactive_generator'
 
@@ -242,7 +241,6 @@ class ReactiveManager
 
   # Fetch the current value
   def cur(shallow=false, ignore_cache=false)
-
     # Return from cache if it is cached
     return @cur_cache if @cur_cache && !shallow && !ignore_cache
 
@@ -262,6 +260,8 @@ class ReactiveManager
       # Unwrap any stored reactive values
       result = result.cur
     end
+
+    puts "CUR FOR: #{result.inspect}"
 
     return result
   end

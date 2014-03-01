@@ -52,6 +52,8 @@ class AttributeBinding < BaseBinding
   def update
     value = @value.cur
 
+    puts "UPDATE TO: #{value.inspect}"
+
     if @attribute_name == 'checked'
       update_checked
       return
