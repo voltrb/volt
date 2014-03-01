@@ -6,6 +6,7 @@ class ReactiveTemplate
     @template_path = template_path
     @target = AttributeTarget.new(nil, nil, self)
     @template = TemplateRenderer.new(page, @target, context, "main", template_path)
+
   end
 
   # def event_added(event, scope_provider, first, first_for_event)

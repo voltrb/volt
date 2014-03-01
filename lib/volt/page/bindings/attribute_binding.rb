@@ -20,7 +20,7 @@ class AttributeBinding < BaseBinding
     # Run the initial update (render)
     update
 
-    if @value.reactive?
+    if @value.reactive? || @value.is_a?(ReactiveTemplate)
       @update_listener = @value.on('changed') { update }
 
       # Bind so when this value updates, we update
