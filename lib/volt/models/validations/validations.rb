@@ -5,8 +5,12 @@ require 'volt/models/validations/length'
 module Validations
   module ClassMethods
     def validate(field_name, options)
-      @@validations ||= {}
-      @@validations[field_name] = options
+      @validations ||= {}
+      @validations[field_name] = options
+    end
+
+    def validations
+      @validations
     end
   end
 
@@ -35,16 +39,18 @@ module Validations
   def errors
     errors = {}
 
-    # Merge into errors, combining any error arrays
-    merge = Proc.new do |new_errors|
-      errors.merge!(new_errors) do |key, new_val, old_val|
-        new_val + old_val
-      end
-    end
+    validations = self.class.validations
 
-    if defined?(@@validations)
+    if validations
+      # Merge into errors, combining any error arrays
+      merge = Proc.new do |new_errors|
+        errors.merge!(new_errors) do |key, new_val, old_val|
+          new_val + old_val
+        end
+      end
+
       # Run through each validation
-      @@validations.each_pair do |field_name, options|
+      validations.each_pair do |field_name, options|
         # Sometimes we want to skip error checking for a field
         next if @exclude_from_errors && @exclude_from_errors[field_name]
 
