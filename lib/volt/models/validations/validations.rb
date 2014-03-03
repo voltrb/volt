@@ -24,7 +24,7 @@ module Validations
     @exclude_from_errors ||= {}
     @exclude_from_errors[field_name] = true
 
-    trigger!('changed')
+    trigger_for_methods!('changed', :errors)
   end
 
   # Once a field is ready, we can use include_in_errors! to start
@@ -32,7 +32,7 @@ module Validations
   def include_in_errors!(field_name)
     if @exclude_from_errors
       @exclude_from_errors.delete(field_name)
-      trigger!('changed')
+      trigger_for_methods!('changed', :errors)
     end
   end
 

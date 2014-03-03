@@ -1,6 +1,6 @@
 class ModelController
   def self.model(val)
-    @@default_model = val
+    @default_model = val
   end
 
   # Sets the current model on this controller
@@ -8,6 +8,7 @@ class ModelController
     if Symbol === val || String === val
       collections = [:page, :store, :params]
       if collections.include?(val.to_sym)
+        # puts "ASSIGN: #{val.inspect}"
         @model = self.send(val)
       else
         raise "#{val} is not the name of a valid model, choose from: #{collections.join(', ')}"
@@ -21,8 +22,9 @@ class ModelController
 
   def self.new(*args, &block)
     inst = self.allocate
-    if @@default_model
-      inst.model(@@default_model || :page)
+
+    if @default_model
+      inst.model(@default_model || :page)
     end
 
     inst.initialize(*args, &block)

@@ -29,7 +29,7 @@ class Model
   def initialize(attributes={}, options={})
     self.options = options
 
-    self.attributes = wrap_values(attributes)
+    self.send(:attributes=, attributes, true)
 
     @cache = {}
 
@@ -45,6 +45,13 @@ class Model
     @persistor = setup_persistor(options[:persistor])
   end
 
+  # Assign multiple attributes as a hash, directly.
+  def attributes=(attrs, skip_changed=false)
+    @attributes = wrap_values(attrs)
+
+    puts "CHANGED AGAIN" unless skip_changed
+    trigger!('changed') unless skip_changed
+  end
 
   # Pass the comparison through
   def ==(val)
@@ -189,7 +196,7 @@ class Model
   # sets it up to track from the parent.
   def expand!
     if attributes.nil?
-      self.attributes = {}
+      @attributes = {}
       if @parent
         @parent.expand!
 
@@ -235,6 +242,40 @@ class Model
   def deep_cur
     attributes
   end
+
+
+  def save!
+    if errors.size == 0
+      save_to = options[:save_to]
+      if save_to
+        if save_to.is_a?(ArrayModel)
+          # Add to the collection
+          new_model = save_to.append(self.attributes)
+
+          options[:save_to] = new_model
+        else
+          # We have a saved model
+          save_to.attributes = self.attributes
+        end
+      end
+    else
+      # Some errors
+    end
+  end
+
+
+  # Returns a buffered version of the model
+  tag_method(:buffer) do
+    destructive!
+  end
+  def buffer
+    model_path = options[:path]
+    model_klass = class_at_path(model_path)
+
+    new_options = options.merge(path: model_path, save_to: self).reject {|k,_| k.to_sym == :persistor }
+    model_klass.new(attributes, new_options)
+  end
+
 
   private
     # Clear the previous value and assign a new one

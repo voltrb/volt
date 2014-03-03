@@ -1,4 +1,5 @@
 require 'mongo'
+require 'query_tasks'
 
 class StoreTasks
   def initialize(channel=nil, dispatcher=nil)
@@ -17,15 +18,19 @@ class StoreTasks
     model_name = collection[1..-1].singularize.camelize
 
     # TODO: Security check to make sure we have a valid model
-    model_class = Object.send(:const_get, model_name)
+    begin
+      model_class = Object.send(:const_get, model_name)
+    rescue NameError => e
+      model_class = nil
+    end
 
     if model_class
       errors = model_class.new(data).errors
 
-
-      # if errors.size > 0
-        puts "ERRORS: #{errors.inspect}"
-      # end
+      if errors.size > 0
+        puts "ERRORS: #{errors.inspect} - #{data.inspect}"
+        return false
+      end
     end
 
     return true
@@ -34,8 +39,9 @@ class StoreTasks
   def save(collection, data)
     puts "Insert: #{data.inspect} on #{collection.inspect}"
 
+    data = data.symbolize_keys
+
     if valid?(collection, data)
-      data = data.symbolize_keys
       id = data[:_id]
 
       # Try to create
@@ -54,6 +60,7 @@ class StoreTasks
         end
       end
 
+      puts "SAVE: #{@channel.inspect}"
       QueryTasks.live_query_pool.updated_collection(collection, @channel)
     end
   end

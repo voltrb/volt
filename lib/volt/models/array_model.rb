@@ -72,7 +72,10 @@ class ArrayModel < ReactiveArray
     super(model)
 
     @persistor.added(model, @array.size-1) if @persistor
+
+    return model
   end
+  alias_method :append, :<<
 
   # Make sure it gets wrapped
   def inject(*args)
@@ -112,6 +115,17 @@ class ArrayModel < ReactiveArray
 
     # Otherwise inspect normally
     super
+  end
+
+  tag_method(:buffer) do
+    destructive!
+  end
+  def buffer
+    model_path = options[:path] + [:[]]
+    model_klass = class_at_path(model_path)
+
+    new_options = options.merge(path: model_path, save_to: self).reject {|k,_| k.to_sym == :persistor }
+    model_klass.new({}, new_options)
   end
 
 
