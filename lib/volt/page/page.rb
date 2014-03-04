@@ -31,10 +31,6 @@ require 'volt/benchmark/benchmark'
 require 'volt/page/draw_cycle'
 require 'volt/page/tasks'
 
-# Zero sizzle cache for debugging
-if Volt.client?
-  `$.expr.cacheLength = 0;`
-end
 
 class Page
   attr_reader :url, :params, :page, :templates, :routes, :draw_cycle, :events

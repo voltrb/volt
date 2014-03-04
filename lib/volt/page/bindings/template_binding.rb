@@ -93,14 +93,13 @@ class TemplateBinding < BaseBinding
       path = full_path.join('/')
       if check_for_template?(path)
         controller = nil
-        if path_position > 1
+        if path_position >= 1
           # Lookup the controller
           controller = [full_path[0], full_path[1] + '_controller']
         end
         return path, controller
       end
     end
-
 
     return nil, nil
   end

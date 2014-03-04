@@ -10,6 +10,7 @@ class ComponentBinding < TemplateBinding
     # TODO: at the moment a :body section and a :title will both initialize different
     # controllers.  Maybe we should have a way to tie them together?
     controller_class = get_controller(controller_name)
+
     model_with_parent = {parent: @context}.merge(@model || {})
 
     if controller_class
