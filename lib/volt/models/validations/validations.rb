@@ -31,11 +31,13 @@ module Validations
 
   # Once a field is ready, we can use include_in_errors! to start
   # showing its errors.
-  def mark_field!(field_name)
+  def mark_field!(field_name, trigger_changed=true)
     @marked_fields ||= {}
     @marked_fields[field_name] = true
 
-    trigger_for_methods!('changed', :errors, :marked_errors)
+    if trigger_changed
+      trigger_for_methods!('changed', :errors, :marked_errors)
+    end
   end
 
   def marked_errors

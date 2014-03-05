@@ -39,8 +39,15 @@ module Persistors
     # Called when an event is removed and we no longer want to keep in
     # sync with the database.
     def stop_listening
-      @query_listener.remove_store(self)
-      @query_listener = nil
+      if @query_listener
+        @query_listener.remove_store(self)
+        @query_listener = nil
+      end
+
+      if @query_changed_listener
+        @query_changed_listener.remove
+        @query_changed_listener = nil
+      end
 
       change_state_to :dirty
     end

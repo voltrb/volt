@@ -246,6 +246,7 @@ class Model
 
   def save!
     if errors.size == 0
+      puts "SAVING: #{self.errors.inspect} - #{self.inspect}"
       save_to = options[:save_to]
       if save_to
         if save_to.is_a?(ArrayModel)
@@ -258,8 +259,17 @@ class Model
           save_to.attributes = self.attributes
         end
       end
+
+      return true
     else
-      # Some errors
+      puts "ERRORS"
+      # Some errors, mark all fields
+      self.class.validations.keys.each do |key|
+        mark_field!(key.to_sym)
+      end
+      trigger_for_methods!('changed', :errors, :marked_errors)
+
+      return false
     end
   end
 
@@ -273,7 +283,9 @@ class Model
     model_klass = class_at_path(model_path)
 
     new_options = options.merge(path: model_path, save_to: self).reject {|k,_| k.to_sym == :persistor }
-    model_klass.new(attributes, new_options)
+    model = model_klass.new(attributes, new_options)
+
+    return ReactiveValue.new(model)
   end
 
 

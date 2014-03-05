@@ -22,19 +22,18 @@ Gem::Specification.new do |spec|
   spec.add_dependency "thor", "~> 0.18.0"
   spec.add_dependency "pry", "~> 0.9.12.0"
   spec.add_dependency "rspec", "3.0.0.beta1"
-  spec.add_dependency "nokogiri", "~> 1.6.0"
   spec.add_dependency "rack", "~> 1.5.0"
   spec.add_dependency "sprockets-sass", "~> 1.0.0"
   spec.add_dependency "sass", "~> 3.2.5"
-  spec.add_dependency "mongo", "~> 1.9.0"
-  spec.add_dependency "bson_ext", "~> 1.9.0"
-  spec.add_dependency "thin", "~> 1.6.0"
-  spec.add_dependency "multi_json", "~> 1.8.2"
-  spec.add_dependency "oj", "~> 2.5.0"
+  spec.add_dependency "mongo", "~> 1.10.0.rc0"
+  # spec.add_dependency "bson_ext", "~> 1.9.0"
+  # spec.add_dependency "thin", "~> 1.6.0"
   spec.add_dependency "rake", "~> 10.0.4"
   spec.add_dependency "listen", "~> 2.4.0"
   spec.add_dependency "uglifier", "~> 2.4.0"
   spec.add_dependency "yui-compressor", "~> 0.12.0"
+  spec.add_dependency "promise.rb", "~> 0.6.1"
+
   # spec.add_dependency "rack-colorized_logger", "~> 1.0.4"
 
 
@@ -49,5 +48,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "poltergeist", "~> 1.5.0"
   spec.add_development_dependency "sauce", "~> 3.3.0"
   spec.add_development_dependency "sauce-connect", "~> 3.3.0"
-  
+
 end

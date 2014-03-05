@@ -23,7 +23,12 @@ class CLI < Thor
   desc "server", "run the server on the project in the current directory"
   method_option :port, :type => :string, :aliases => '-p', :banner => 'specify which port the server should run on'
   def server
-    require 'thin'
+    if RUBY_PLATFORM == 'java'
+      require 'volt/server'
+    else
+      require 'thin'
+    end
+
     require 'fileutils'
 
     # If we're in a Volt project, clear the temp directory
@@ -36,14 +41,20 @@ class CLI < Thor
       return
     end
 
-    ENV['SERVER'] = 'true'
-    args = ['start', '--threaded', '--max-persistent-conns', '300', "--max-conns", "400"]
+    if RUBY_PLATFORM == 'java'
+      server = Server.new.app
+      Rack::Handler::Jubilee.run(server)
+      Thread.stop
+    else
+      ENV['SERVER'] = 'true'
+      args = ['start', '--threaded', '--max-persistent-conns', '300', "--max-conns", "400"]
 
-    if options[:port]
-      args += ['-p', options[:port].to_s]
+      if options[:port]
+        args += ['-p', options[:port].to_s]
+      end
+
+      Thin::Runner.new(args).run!
     end
-
-    Thin::Runner.new(args).run!
 
     # require 'volt/server'
     #

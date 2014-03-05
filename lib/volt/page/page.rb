@@ -3,6 +3,7 @@ if RUBY_PLATFORM == 'opal'
 
   require 'opal-jquery'
 end
+require 'promise.rb'
 require 'volt/models'
 require 'volt/controllers/model_controller'
 require 'volt/page/bindings/attribute_binding'
@@ -30,7 +31,6 @@ require 'volt'
 require 'volt/benchmark/benchmark'
 require 'volt/page/draw_cycle'
 require 'volt/page/tasks'
-
 
 class Page
   attr_reader :url, :params, :page, :templates, :routes, :draw_cycle, :events

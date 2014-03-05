@@ -1,7 +1,12 @@
 ENV['SERVER'] = 'true'
 
 require 'opal'
-require 'thin'
+if RUBY_PLATFORM == 'java'
+  require 'jubilee'
+else
+  require 'thin'
+end
+
 require "rack"
 if RUBY_PLATFORM != 'java'
   require "rack/sockjs"
@@ -97,9 +102,10 @@ class Server
     # which JS/CSS files to serve.
     @app.use IndexFiles, @component_paths, opal_files
 
+    component_paths.require_in_components
+
     # Handle socks js connection
     if RUBY_PLATFORM != 'java'
-      component_paths.require_in_components
       SocketConnectionHandler.dispatcher = Dispatcher.new
 
       @app.map "/channel" do
