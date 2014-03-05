@@ -12,6 +12,16 @@ gem 'volt-bootstrap'
 gem 'volt-bootstrap-jumbotron-theme'
 
 
+# Server for MRI
+platform :mri do
+  gem 'thin', '~> 1.6.0'
+end
+
+# Server for jruby
+platform :jruby do
+  gem 'jubilee'
+end
+
 
 #---------------------
 # Needed at the moment
