@@ -58,6 +58,13 @@ module Persistors
 
       # Trigger changed on the 'state' method
       @model.trigger_for_methods!('changed', :state, :loaded?)
+
+      puts "Change to: #{@state}"
+      if @state == :loaded && @fetch_callbacks
+        # Trigger each waiting fetch
+        @fetch_callbacks.each {|fc| fc.call(@model) }
+        @fetch_callbacks = nil
+      end
     end
 
     # Called the first time data is requested from this collection
@@ -108,9 +115,20 @@ module Persistors
     end
 
     def find(query={})
-      model = ArrayModel.new([], @model.options.merge(:query => query))
+      model = Cursor.new([], @model.options.merge(:query => query))
 
       return ReactiveValue.new(model)
+    end
+
+    def fetch(&block)
+      if @state == :loaded
+        block.call(@model)
+      else
+        @fetch_callbacks ||= []
+        @fetch_callbacks << block
+
+        load_data
+      end
     end
 
     # Called from backend

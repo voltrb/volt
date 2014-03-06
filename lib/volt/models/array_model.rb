@@ -56,6 +56,18 @@ class ArrayModel < ReactiveArray
     end
   end
 
+  tag_method(:fetch) do
+    destructive!
+  end
+  def fetch(*args, &block)
+    if @persistor
+      return @persistor.fetch(*args, &block)
+    else
+      raise "this model's persistance layer does not support fetch, try using store"
+    end
+  end
+
+
   def attributes
     self
   end
