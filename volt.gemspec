@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "rack", "~> 1.5.0"
   spec.add_dependency "sprockets-sass", "~> 1.0.0"
   spec.add_dependency "sass", "~> 3.2.5"
-  spec.add_dependency "mongo", "~> 1.10.0.rc0"
+  spec.add_dependency "mongo", "~> 1.9.0"
   # spec.add_dependency "bson_ext", "~> 1.9.0"
   # spec.add_dependency "thin", "~> 1.6.0"
   spec.add_dependency "rake", "~> 10.0.4"
