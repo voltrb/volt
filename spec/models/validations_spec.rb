@@ -16,7 +16,11 @@ describe Model do
 
     model.mark_field!(:_name)
 
-    expect(model.marked_errors).to eq({:_name=>["must be at least 4 chars"]})
+    expect(model.marked_errors).to eq(
+      {
+        :_name => ["must be at least 4 chars"]
+      }
+    )
   end
 
   it "should show all fields in marked errors once saved" do
@@ -26,6 +30,10 @@ describe Model do
 
     model.save!
 
-    expect(model.marked_errors).to eq({:_name=>["must be at least 4 chars"]})
+    expect(model.marked_errors).to eq(
+      {
+        :_name => ["must be at least 4 chars"]
+      }
+    )
   end
 end

@@ -14,7 +14,7 @@ describe Routes do
     end
 
     direct_routes = @routes.instance_variable_get(:@direct_routes)
-    expect(direct_routes).to eq({"/"=>{:_view=>"index"}, "/page1"=>{:_view=>"first_page"}})
+    expect(direct_routes).to eq({"/" => {:_view => "index"}, "/page1" => {:_view => "first_page"}})
   end
 
   it "should setup indiect routes" do
@@ -29,9 +29,9 @@ describe Routes do
         "blog" => {
           "*" => {
             "edit" => {
-              nil => {:_view=>"blog/edit", :_id => 1}
+              nil => {:_view => "blog/edit", :_id => 1}
             },
-            nil => {:_view=>"blog/show", :_id => 1}
+            nil => {:_view => "blog/show", :_id => 1}
           }
         }
       }
@@ -48,19 +48,19 @@ describe Routes do
     end
 
     params = @routes.url_to_params('/blog')
-    expect(params).to eq({:_view=>"blog"})
+    expect(params).to eq({:_view => "blog"})
 
     params = @routes.url_to_params('/blog/55/edit')
-    expect(params).to eq({:_view=>"blog/edit", :_id=>"55"})
+    expect(params).to eq({:_view => "blog/edit", :_id => "55"})
 
     params = @routes.url_to_params('/blog/55')
-    expect(params).to eq({:_view=>"blog/show", :_id=>"55"})
+    expect(params).to eq({:_view => "blog/show", :_id => "55"})
 
     params = @routes.url_to_params('/blog/tags/good')
-    expect(params).to eq({:_view=>"blog/tag", :_tag=>"good"})
+    expect(params).to eq({:_view => "blog/tag", :_tag => "good"})
 
     params = @routes.url_to_params('/login/jim/user/10')
-    expect(params).to eq({:_view=>"login", :_action=>"user", :_name=>"jim", :_id=>"10"})
+    expect(params).to eq({:_view => "login", :_action => "user", :_name => "jim", :_id => "10"})
 
     params = @routes.url_to_params('/login/cool')
     expect(params).to eq(false)

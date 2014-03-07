@@ -23,7 +23,7 @@ require 'volt'
 # -- * represents any match
 # -- a number for a parameter means use the value in that number section
 #
-# @path_sections = params_to_url> {
+# @indirect_routes = {
 #     '*' => {
 #       'edit' => {
 #         nil => {_id: 1, _view: 'blog/edit', _action: 'edit'}
@@ -32,6 +32,11 @@ require 'volt'
 #     }
 #   }
 # }
+#
+# Match for params
+@param_matches = [
+  {_id: nil, _view: 'blog/edit', _action: 'edit'}
+]
 
 class Routes
   def initialize
@@ -40,6 +45,8 @@ class Routes
 
     # Paths with bindings
     @indirect_routes = {}
+
+    #
   end
 
   def define(&block)
@@ -124,6 +131,7 @@ class Routes
       if part == nil
         if node[part]
           # We found a match, replace the bindings and return
+          # TODO: Handle nested
           return setup_bindings_in_params(original_parts, node[part])
         else
           return false
