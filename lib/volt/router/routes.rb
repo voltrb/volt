@@ -34,9 +34,9 @@ require 'volt'
 # }
 #
 # Match for params
-@param_matches = [
-  {_id: nil, _view: 'blog/edit', _action: 'edit'}
-]
+# @param_matches = [
+#   {_id: nil, _view: 'blog/edit', _action: 'edit'} => Proc.new {|params| "/blog/#{params.id}/edit", params.reject {|k,v| k == :id }}
+# ]
 
 class Routes
   def initialize
@@ -46,7 +46,8 @@ class Routes
     # Paths with bindings
     @indirect_routes = {}
 
-    #
+    # Matcher for going from params to url
+    @param_matches = []
   end
 
   def define(&block)
@@ -63,35 +64,8 @@ class Routes
     else
       @direct_routes[path] = params
     end
-  end
 
-  # Check if a string has a binding in it
-  def has_binding?(string)
-    string.index('{') && string.index('}')
-  end
-
-  # Build up the @indirect_routes data structure.
-  # '*' means wildcard match anything
-  # nil means a terminal, who's value will be the params.
-  #
-  # In the params, an integer vaule means the index of the wildcard
-  def add_indirect_path(path, params)
-    node = @indirect_routes
-
-    parts = url_parts(path)
-
-    parts.each_with_index do |part, index|
-      if has_binding?(part)
-        params[part[1..-2].to_sym] = index
-
-        # Set the part to be '*' (anything matcher)
-        part = '*'
-      end
-
-      node = (node[part] ||= {})
-    end
-
-    node[nil] = params
+    add_param_matcher(path, params)
   end
 
   # Takes in params and generates a path and the remaining params
@@ -100,7 +74,9 @@ class Routes
   #
   # returns the url and new params
   def params_to_url(params)
+    @param_matches.each do |param_match|
 
+    end
 
     return '/', params
   end
@@ -158,7 +134,77 @@ class Routes
     end
 
 
+    # Build up the @indirect_routes data structure.
+    # '*' means wildcard match anything
+    # nil means a terminal, who's value will be the params.
+    #
+    # In the params, an integer vaule means the index of the wildcard
+    def add_indirect_path(path, params)
+      node = @indirect_routes
+
+      parts = url_parts(path)
+
+      parts.each_with_index do |part, index|
+        if has_binding?(part)
+          params[part[1..-2].to_sym] = index
+
+          # Set the part to be '*' (anything matcher)
+          part = '*'
+        end
+
+        node = (node[part] ||= {})
+      end
+
+      node[nil] = params
+    end
+
+
+    def add_param_matcher(path, params)
+      params = params.dup
+      parts = url_parts(path)
+
+      parts.each_with_index do |part, index|
+        if has_binding?(part)
+          # Setup a nil param that can match anything, but gets
+          # assigned into the url
+          params[part[1..-2].to_sym] = nil
+        end
+      end
+
+      path_transformer = create_path_transformer(parts)
+
+      @param_matches << [params, path_transformer]
+    end
+
+    # Takes in url parts and returns a proc that takes in params and returns
+    # a url with the bindings filled in, and params with the binding params
+    # removed.  (So the remaining can be added onto the end of the url ?params1=...)
+    def create_path_transformer(parts)
+      return Proc.new do |input_params|
+        input_params = input_params.dup
+
+        url = parts.map do |part|
+          if has_binding?(part)
+            # Get the
+            binding = part[1..-2].to_sym
+            input_params.delete(binding)
+          else
+            part
+          end
+        end.join('/')
+
+        return url, input_params
+      end
+    end
+
     def url_parts(path)
       return path.split('/').reject(&:blank?)
     end
+
+
+    # Check if a string has a binding in it
+    def has_binding?(string)
+      string.index('{') && string.index('}')
+    end
+
 end

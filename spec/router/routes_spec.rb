@@ -67,6 +67,40 @@ describe Routes do
 
   end
 
+  it "should setup param matchers" do
+    routes do
+      get "/blog", _view: 'blog'
+      get '/blog/{_id}', _view: 'blog/show'
+      get '/blog/{_id}/edit', _view: 'blog/edit'
+      get '/blog/tags/{_tag}', _view: 'blog/tag'
+      get '/login/{_name}/user/{_id}', _view: 'login', _action: 'user'
+    end
+
+    param_matches = @routes.instance_variable_get(:@param_matches)
+    expect(param_matches.map {|v| v[0] }).to eq([
+      {:_view => "blog"},
+      {:_view => "blog/show", :_id => nil},
+      {:_view => "blog/edit", :_id => nil},
+      {:_view => "blog/tag", :_tag => nil},
+      {:_view => "login", :_action => "user",:_name => nil, :_id => nil}
+    ])
+
+  end
+
+  it "should go from params to url" do
+    routes do
+      get "/blog", _view: 'blog'
+      get '/blog/{_id}', _view: 'blog/show'
+      get '/blog/{_id}/edit', _view: 'blog/edit'
+      get '/blog/tags/{_tag}', _view: 'blog/tag'
+      get '/login/{_name}/user/{_id}', _view: 'login', _action: 'user'
+    end
+
+    url, params = @routes.params_to_url({_view: 'blog/show', _id: '55'})
+    # expect(url).to eq('')
+    expect(params).to eq({_view: 'blog/show'})
+  end
+
   # it "should match routes" do
   #   params = Model.new({}, persistor: Persistors::Params)
   #   params._controller = 'blog'
