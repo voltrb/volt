@@ -25,6 +25,10 @@ class QueryTasks
     return live_query.initial_data
   end
 
+  def initial_data
+    return live_query.initial_data
+  end
+
   # Remove a listening channel, the LiveQuery will automatically remove
   # itsself from the pool when there are no channels.
   def remove_listener(collection, query)

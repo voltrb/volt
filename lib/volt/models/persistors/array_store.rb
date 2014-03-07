@@ -1,12 +1,14 @@
 require 'volt/models/persistors/store'
 require 'volt/models/persistors/query/query_listener_pool'
+require 'volt/models/persistors/store_state'
 
 module Persistors
   class ArrayStore < Store
+    include StoreState
+
     @@query_pool = QueryListenerPool.new
 
     attr_reader :model
-    attr_accessor :state
 
     def self.query_pool
       @@query_pool
@@ -16,12 +18,6 @@ module Persistors
       super
 
       @query = ReactiveValue.from_hash(@model.options[:query] || {})
-
-    end
-
-    # Called when a collection loads
-    def loaded
-      change_state_to :not_loaded
     end
 
     def event_added(event, scope_provider, first, first_for_event)
@@ -52,21 +48,6 @@ module Persistors
       change_state_to :dirty
     end
 
-    # Called from the QueryListener when the data is loaded
-    def change_state_to(new_state)
-      @state = new_state
-
-      # Trigger changed on the 'state' method
-      @model.trigger_for_methods!('changed', :state, :loaded?)
-
-      puts "Change to: #{@state}"
-      if @state == :loaded && @fetch_callbacks
-        # Trigger each waiting fetch
-        @fetch_callbacks.each {|fc| fc.call(@model) }
-        @fetch_callbacks = nil
-      end
-    end
-
     # Called the first time data is requested from this collection
     def load_data
       # Don't load data from any queried
@@ -76,6 +57,7 @@ module Persistors
 
         @query_changed_listener.remove if @query_changed_listener
         if @query.reactive?
+          # puts "SETUP REACTIVE QUERY LISTENER: #{@query.inspect}"
           # Query might change, change the query when it does
           @query_changed_listener = @query.on('changed') do
             stop_listening
@@ -84,6 +66,7 @@ module Persistors
           end
         end
 
+        # puts "RUN QUERY: #{@query.inspect}"
         run_query(@model, @query.deep_cur)
       end
     end
@@ -120,6 +103,8 @@ module Persistors
       return ReactiveValue.new(model)
     end
 
+    # Fetch does a one time load of the data on an unloaded model and returns
+    # the result.
     def fetch(&block)
       if @state == :loaded
         block.call(@model)
@@ -134,11 +119,12 @@ module Persistors
     # Called from backend
     def add(index, data)
       $loading_models = true
+      puts "INSERT111: #{data.inspect} into #{self.inspect}"
 
       new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
 
       # Find the existing model, or create one
-      new_model = @@identity_map.find(data['_id']) { Model.new(data.symbolize_keys, new_options) }
+      new_model = @@identity_map.find(data['_id']) { @model.new_model(data.symbolize_keys, new_options) }
 
       @model.insert(index, new_model)
 

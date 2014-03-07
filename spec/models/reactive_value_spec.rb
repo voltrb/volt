@@ -351,5 +351,22 @@ describe ReactiveValue do
     expect(a.deep_cur).to eq({_names: ['bob', 'jim']})
   end
 
+  it "should remove any event bindings bound through a reactive value when the value changes" do
+    a = ReactiveValue.new(Model.new)
+
+    a._info = {_name: 'Test'}
+    info = a._info.cur
+
+    expect(info.listeners.size).to eq(0)
+
+    listener = a._info.on('changed') { }
+
+    expect(info.listeners.size).to eq(1)
+
+    # Listener should be moved to the new object
+    a._info = {}
+
+    expect(info.listeners.size).to eq(0)
+  end
 
 end

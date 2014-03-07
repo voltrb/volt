@@ -4,6 +4,8 @@ require 'volt/models/model_helpers'
 require 'volt/reactive/object_tracking'
 require 'volt/models/model_hash_behaviour'
 require 'volt/models/validations/validations'
+require 'volt/models/model_state'
+
 
 class NilMethodCall < NoMethodError
   def true?
@@ -22,6 +24,7 @@ class Model
   include ModelHelpers
   include ModelHashBehaviour
   include Validations
+  include ModelState
 
   attr_accessor :attributes
   attr_reader :parent, :path, :persistor, :options
@@ -32,6 +35,10 @@ class Model
     self.send(:attributes=, attributes, true)
 
     @cache = {}
+
+    # Models stat in a loaded state since they are normally setup from an
+    # ArrayModel, which will have the data when they get added.
+    @state = :loaded
 
     @persistor.loaded if @persistor
   end
@@ -49,7 +56,6 @@ class Model
   def attributes=(attrs, skip_changed=false)
     @attributes = wrap_values(attrs)
 
-    puts "CHANGED AGAIN" unless skip_changed
     trigger!('changed') unless skip_changed
   end
 
@@ -283,7 +289,12 @@ class Model
     model_klass = class_at_path(model_path)
 
     new_options = options.merge(path: model_path, save_to: self).reject {|k,_| k.to_sym == :persistor }
-    model = model_klass.new(attributes, new_options)
+    model = model_klass.new({}, new_options)
+    model.change_state_to(:loading)
+
+    self.parent.fetch do
+      model.attributes = self.attributes
+    end
 
     return ReactiveValue.new(model)
   end

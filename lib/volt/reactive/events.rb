@@ -100,6 +100,8 @@ module Events
     # puts "Register: #{event} on #{self.inspect}"
     event = event.to_sym
 
+    @has_listeners = true
+
     new_listener = Listener.new(self, event, scope_provider, block)
 
     @listeners ||= {}
@@ -119,8 +121,6 @@ module Events
       # is the first time this event has been added.
       self.event_added(event, scope_provider, first, first_for_event)
     end
-
-    @has_listeners = true
 
     return new_listener
   end

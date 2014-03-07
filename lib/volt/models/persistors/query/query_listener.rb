@@ -65,7 +65,6 @@ class QueryListener
     @stores.each do |store|
       store.add(index, data)
     end
-    puts "Added: #{index} - #{data.inspect}"
   end
 
   def removed(ids)
@@ -76,7 +75,6 @@ class QueryListener
 
   def changed(model_id, data)
     $loading_models = true
-    puts "From Backend: UPDATE: #{model_id} with #{data.inspect}"
     Persistors::ModelStore.changed(model_id, data)
     $loading_models = false
   end

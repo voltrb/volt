@@ -1,9 +1,11 @@
 require 'volt/models/model_wrapper'
 require 'volt/models/model_helpers'
+require 'volt/models/model_state'
 
 class ArrayModel < ReactiveArray
   include ModelWrapper
   include ModelHelpers
+  include ModelState
 
   attr_reader :parent, :path, :persistor, :options
 
@@ -30,18 +32,6 @@ class ArrayModel < ReactiveArray
   def size
     load_data
     super
-  end
-
-  def state
-    if @persistor
-      @persistor.state
-    else
-      :loaded
-    end
-  end
-
-  def loaded?
-    state == :loaded
   end
 
   tag_method(:find) do
@@ -141,7 +131,6 @@ class ArrayModel < ReactiveArray
 
     return ReactiveValue.new(model)
   end
-
 
   private
     # Takes the persistor if there is one and
