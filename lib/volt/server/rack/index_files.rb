@@ -26,7 +26,7 @@ class IndexFiles
 
   def call(env)
     if route_match?(env['PATH_INFO'])
-      [200, { 'Content-Type' => 'text/html' }, [html]]
+      [200, { 'Content-Type' => 'text/html; charset=utf-8' }, [html]]
     else
       @app.call env
     end

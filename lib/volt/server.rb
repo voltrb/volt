@@ -121,7 +121,7 @@ class Server
         [:all, {'Cache-Control' => 'public, max-age=86400'}]
       ]
 
-    @app.run lambda{ |env| [ 404, { 'Content-Type'  => 'text/html' }, ['404 - page not found'] ] }
+    @app.run lambda{ |env| [ 404, { 'Content-Type'  => 'text/html; charset=utf-8' }, ['404 - page not found'] ] }
 
     return @app
   end
