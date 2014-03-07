@@ -1,7 +1,10 @@
 require 'volt'
 
 class Routes
-  attr_reader :routes, :path_matchers
+  attr_reader :routes
+
+  # Path matchers are used on the server to match routes
+  attr_reader :path_matchers
 
   def initialize
     @routes = []
@@ -17,6 +20,7 @@ class Routes
     return self
   end
 
+  # Add a route
   def get(path, options={})
     if path.index('{') && path.index('}')
       # The path contains bindings.
@@ -47,6 +51,7 @@ class Routes
     # Create a path that takes in the params and returns the main
     # part of the url with the params filled in.
     path = Proc.new do |params|
+      # puts "CHECK--: #{params.inspect} - #{sections.inspect}"
       sections.map do |section|
         if section[0] == '{' && section[-1] == '}'
           params[section[1..-2]]
@@ -89,14 +94,21 @@ class Routes
   # TODO: Slow, need dfa
   def params_for_path(path)
     routes.each do |route|
+      puts "PP: #{route[0].class.inspect}"
       # TODO: Finish nested routes
-      if false && route[0].class == Proc
-        # puts route[0].call(params).inspect
-
-        return false
-      elsif route[0] == path
-        # Found the matching route
-        return route[1]
+      if route[0].is_a?(Proc)
+        puts "Check: #{route[0]} vs #{path}"
+        if route[0].call(path)
+          puts "MATCH: #{route[0].inspect} - #{route[1].inspect} - #{path.inspect}"
+          # Found the matching route
+          return route[1]
+        end
+      else
+        puts "Check: #{route[0]} vs #{path}"
+        if route[0] == path
+          puts "Match: #{route[0]} - #{route[1]}"
+          return route[1]
+        end
       end
     end
 
@@ -104,6 +116,8 @@ class Routes
   end
 
   private
+    # Takes in the params and a path proc and returns the updated params and the
+    # path with the bindings filled in.
     def path_and_params(params, path, options)
       params = params.attributes.dup
       path = path.call(params) if path.class == Proc
