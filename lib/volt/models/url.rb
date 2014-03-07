@@ -60,7 +60,7 @@ class URL
       host_with_port = @host
     end
 
-    path, params = @router.url_for_params(@params)
+    path, params = @router.params_to_url(@params)
 
     new_url = "#{@scheme}://#{host_with_port}#{(path || @path).chomp('/')}"
 
@@ -127,7 +127,7 @@ class URL
       query_hash = self.query_hash
 
       # Get the params that are in the route
-      query_hash.merge!(@router.params_for_path(@path))
+      query_hash.merge!(@router.url_to_params(@path))
 
       # Loop through the .params we already have assigned.
       assign_from_old(@params, query_hash)

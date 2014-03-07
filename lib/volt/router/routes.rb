@@ -1,17 +1,45 @@
 require 'volt'
 
+# The Routes class takes a set of routes and sets up methods to go from
+# a url to params, and params to url.
+# routes do
+#   get "/about", _view: 'about'
+#   get "/blog/{_id}/edit", _view: 'blog/edit', _action: 'edit'
+#   get "/blog/{_id}", _view: 'blog/show', _action: 'show'
+#   get "/blog", _view: 'blog'
+#   get "/blog/new", _view: 'blog/new', _action: 'new'
+#   get "/cool/{_name}", _view: 'cool'
+# end
+#
+# Using the routes above, we would generate the following:
+#
+# @direct_routes = {
+#   '/about' => {_view: 'about'},
+#   '/blog' => {_view: 'blog'}
+#   '/blog/new' => {_view: 'blog/new', _action: 'new'}
+# }
+#
+# -- nil represents a terminal
+# -- * represents any match
+# -- a number for a parameter means use the value in that number section
+#
+# @path_sections = params_to_url> {
+#     '*' => {
+#       'edit' => {
+#         nil => {_id: 1, _view: 'blog/edit', _action: 'edit'}
+#       }
+#       nil => {_id: 1, _view: 'blog/show', _action: 'show'}
+#     }
+#   }
+# }
+
 class Routes
-  attr_reader :routes
-
-  # Path matchers are used on the server to match routes
-  attr_reader :path_matchers
-
   def initialize
-    @routes = []
+    # Paths where there are no bindings (an optimization)
+    @direct_routes = {}
 
-    if Volt.server?
-      @path_matchers = []
-    end
+    # Paths with bindings
+    @indirect_routes = {}
   end
 
   def define(&block)
@@ -21,135 +49,108 @@ class Routes
   end
 
   # Add a route
-  def get(path, options={})
-    if path.index('{') && path.index('}')
-      # The path contains bindings.
-      path = build_path_matcher(path, options)
+  def get(path, params={})
+    params = params.symbolize_keys
+    if has_binding?(path)
+      add_indirect_path(path, params)
     else
-      add_path_matcher([path]) if Volt.server?
+      @direct_routes[path] = params
     end
-
-    @routes << [path, options]
   end
 
-  # Takes the path and splits it up into sections around any
-  # bindings in the path.  Those are then used to create a proc
-  # that will return the path with the current params in it.
-  # If it matches it will be used.
-  def build_path_matcher(path, options)
-    sections = path.split(/(\{[^\}]+\})/)
-    sections = sections.reject {|v| v == '' }
-
-    sections.each do |section|
-      if section[0] == '{' && section[-1] == '}'
-        options[section[1..-2]] = nil
-      end
-    end
-
-    add_path_matcher(sections) if Volt.server?
-
-    # Create a path that takes in the params and returns the main
-    # part of the url with the params filled in.
-    path = Proc.new do |params|
-      # puts "CHECK--: #{params.inspect} - #{sections.inspect}"
-      sections.map do |section|
-        if section[0] == '{' && section[-1] == '}'
-          params[section[1..-2]]
-        else
-          section
-        end
-      end.join('')
-    end
-
-    return path
+  # Check if a string has a binding in it
+  def has_binding?(string)
+    string.index('{') && string.index('}')
   end
 
-  # TODO: This is slow, optimize with a DFA or NFA
-  def add_path_matcher(sections)
-    match_path = ''
-    sections.each do |section|
-      if section[0] == '{' && section[-1] == '}'
-        match_path = match_path + "[^\\/]+"
-      else
-        match_path = match_path + section
+  # Build up the @indirect_routes data structure.
+  # '*' means wildcard match anything
+  # nil means a terminal, who's value will be the params.
+  #
+  # In the params, an integer vaule means the index of the wildcard
+  def add_indirect_path(path, params)
+    node = @indirect_routes
+
+    parts = url_parts(path)
+
+    parts.each_with_index do |part, index|
+      if has_binding?(part)
+        params[part[1..-2].to_sym] = index
+
+        # Set the part to be '*' (anything matcher)
+        part = '*'
       end
+
+      node = (node[part] ||= {})
     end
 
-    @path_matchers << (/^#{match_path}$/)
+    node[nil] = params
   end
 
   # Takes in params and generates a path and the remaining params
-  # that should be shown in the url.
-  def url_for_params(params)
-    routes.each do |route|
-      if params_match_options?(params, route[1])
-        return path_and_params(params, route[0], route[1])
-      end
-    end
+  # that should be shown in the url.  The extra "unused" params
+  # will be tacked onto the end of the url ?param1=value1, etc...
+  #
+  # returns the url and new params
+  def params_to_url(params)
+
 
     return '/', params
   end
 
   # Takes in a path and returns the matching params.
-  # TODO: Slow, need dfa
-  def params_for_path(path)
-    routes.each do |route|
-      puts "PP: #{route[0].class.inspect}"
-      # TODO: Finish nested routes
-      if route[0].is_a?(Proc)
-        puts "Check: #{route[0]} vs #{path}"
-        if route[0].call(path)
-          puts "MATCH: #{route[0].inspect} - #{route[1].inspect} - #{path.inspect}"
-          # Found the matching route
-          return route[1]
-        end
-      else
-        puts "Check: #{route[0]} vs #{path}"
-        if route[0] == path
-          puts "Match: #{route[0]} - #{route[1]}"
-          return route[1]
-        end
-      end
-    end
+  # returns params as a hash
+  def url_to_params(path)
+    # First try a direct match
+    result = @direct_routes[path]
+    return result if result
 
-    return {}
+    # Next, split the url and walk the sections
+    parts = url_parts(path)
+
+    return match_path(parts, parts, @indirect_routes)
   end
 
   private
-    # Takes in the params and a path proc and returns the updated params and the
-    # path with the bindings filled in.
-    def path_and_params(params, path, options)
-      params = params.attributes.dup
-      path = path.call(params) if path.class == Proc
+    # Recursively walk the @indirect_routes hash, return the params for a route, return
+    # false for non-matches.
+    def match_path(original_parts, remaining_parts, node)
+      # Take off the top part and get the rest into a new array
+      # part will be nil if we are out of parts (fancy how that works out, now
+      # stand in wonder about how much someone thought this through, though
+      # really I just got lucky)
+      part, *parts = remaining_parts
 
-      options.keys.each do |key|
-        params.delete(key)
+      if part == nil
+        if node[part]
+          # We found a match, replace the bindings and return
+          return setup_bindings_in_params(original_parts, node[part])
+        else
+          return false
+        end
+      elsif (new_node = node[part])
+        # Direct match, continue
+        return match_path(original_parts, parts, new_node)
+      elsif (new_node = node['*'])
+        return match_path(original_parts, parts, new_node)
       end
-
-      return path, params
     end
 
-    # Match one route against the current params.
-    def params_match_options?(params, options)
-      options.each_pair do |key, value|
-        # If the value is a hash, we have a nested route.  Get the
-        # matching section in the parameter and loop down to check
-        # the values down.
-        if value.is_a?(Hash)
-          sub_params = params.send(key)
-
-          if sub_params
-            return params_match_options?(sub_params, value)
-          else
-            return false
-          end
-        elsif value != nil && value != params.send(key)
-          # A nil value means it can match anything, so we don't want to
-          # fail on nil.
-          return false
+    # The params out of match_path will have integers in the params that came from bindings
+    # in the url.  This replaces those with the values from the url.
+    def setup_bindings_in_params(original_parts, params)
+      params.each_pair do |key, value|
+        if value.is_a?(Fixnum)
+          # Lookup the param's value in the original url parts
+          params[key] = original_parts[value]
         end
       end
 
-      return true
+      return params
+    end
+
+
+    def url_parts(path)
+      return path.split('/').reject(&:blank?)
     end
 end
