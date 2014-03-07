@@ -252,17 +252,15 @@ class Model
 
   def save!
     if errors.size == 0
-      puts "SAVING: #{self.errors.inspect} - #{self.inspect} - #{options[:save_to].inspect} on #{self.inspect}"
+      # puts "SAVING: #{self.errors.inspect} - #{self.inspect} - #{options[:save_to].inspect} on #{self.inspect}"
       save_to = options[:save_to]
       if save_to
         if save_to.is_a?(ArrayModel)
-          puts "Append"
           # Add to the collection
           new_model = save_to.append(self.attributes)
 
           options[:save_to] = new_model
         else
-          puts "Set Attributes to #{self.attributes.inspect}"
           # We have a saved model
           save_to.attributes = self.attributes
         end
@@ -277,8 +275,6 @@ class Model
         mark_field!(key.to_sym)
       end
       trigger_for_methods!('changed', :errors, :marked_errors)
-
-      puts "ERRORS: no save for you"
 
       return false
     end
