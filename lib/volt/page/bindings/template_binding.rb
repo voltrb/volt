@@ -25,8 +25,8 @@ class TemplateBinding < BaseBinding
     # Run the initial render
     update
 
-    @path_changed_listener = @path.on('changed') { update } if @path.reactive?
-    @section_changed_listener = @section.on('changed') { update } if @section && @section.reactive?
+    @path_changed_listener = @path.on('changed') { queue_update } if @path.reactive?
+    @section_changed_listener = @section.on('changed') { queue_update } if @section && @section.reactive?
   end
 
   def setup_path(binding_in_path)

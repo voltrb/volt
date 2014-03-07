@@ -96,10 +96,7 @@ class Routes
     # Next, split the url and walk the sections
     parts = url_parts(path)
 
-    params = match_path(parts, parts, @indirect_routes)
-    puts "PARAMS: #{params.inspect}"
-
-    return params
+    return match_path(parts, parts, @indirect_routes)
   end
 
   private
