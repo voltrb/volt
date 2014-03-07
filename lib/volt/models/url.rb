@@ -60,7 +60,7 @@ class URL
       host_with_port = @host
     end
 
-    path, params = @router.params_to_url(@params)
+    path, params = @router.params_to_url(@params.deep_cur.to_h)
 
     new_url = "#{@scheme}://#{host_with_port}#{(path || @path).chomp('/')}"
 
@@ -224,8 +224,6 @@ class URL
 
     def nested_params_hash(params, path=[])
       results = {}
-
-      puts "PARAMS: " + params.inspect
 
       params.each_pair do |key,value|
         if value.respond_to?(:persistor) && value.persistor && value.persistor.is_a?(Persistors::Params)

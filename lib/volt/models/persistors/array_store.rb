@@ -119,7 +119,7 @@ module Persistors
     # Called from backend
     def add(index, data)
       $loading_models = true
-      puts "INSERT111: #{data.inspect} into #{self.inspect}"
+      puts "INSERT: #{data.inspect} into #{self.inspect}"
 
       new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
 

@@ -42,6 +42,7 @@ describe Routes do
     routes do
       get "/blog", _view: 'blog'
       get '/blog/{_id}', _view: 'blog/show'
+      get '/blog/{_id}/draft', _view: 'blog/draft', _action: 'draft'
       get '/blog/{_id}/edit', _view: 'blog/edit'
       get '/blog/tags/{_tag}', _view: 'blog/tag'
       get '/login/{_name}/user/{_id}', _view: 'login', _action: 'user'
@@ -58,6 +59,9 @@ describe Routes do
 
     params = @routes.url_to_params('/blog/tags/good')
     expect(params).to eq({:_view => "blog/tag", :_tag => "good"})
+
+    params = @routes.url_to_params('/blog/55/draft')
+    expect(params).to eq({:_view => "blog/draft", :_id => "55", :_action => "draft"})
 
     params = @routes.url_to_params('/login/jim/user/10')
     expect(params).to eq({:_view => "login", :_action => "user", :_name => "jim", :_id => "10"})

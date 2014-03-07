@@ -23,6 +23,7 @@ class QueryListener
           store.add(index, data)
         end
 
+        puts "CH TO LOADED"
         store.change_state_to(:loaded)
       end
     end

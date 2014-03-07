@@ -37,4 +37,8 @@ class Object
   def deep_cur
     self.cur
   end
+
+  def html_inspect
+    inspect.gsub('<', '&lt;').gsub('>', '&gt;')
+  end
 end
