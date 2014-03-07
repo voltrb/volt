@@ -15,6 +15,7 @@ class StoreTasks
   end
 
   def valid?(collection, data)
+    puts "CHECK VALID: #{data.inspect}"
     model_name = collection[1..-1].singularize.camelize
 
     # TODO: Security check to make sure we have a valid model

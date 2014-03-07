@@ -1,5 +1,6 @@
 # The draw cycle is responsible for queueing redraws until all of the events have
-# fired.  Once that is done, everything will be redrawn.
+# fired.  Once that is done, everything will be redrawn.  This prevents bindings
+# from being drawn multiple times before all events have propigated.
 class DrawCycle
   def initialize
     @queue = {}
