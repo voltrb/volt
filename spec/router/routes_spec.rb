@@ -97,8 +97,45 @@ describe Routes do
     end
 
     url, params = @routes.params_to_url({_view: 'blog/show', _id: '55'})
-    # expect(url).to eq('')
-    expect(params).to eq({_view: 'blog/show'})
+    expect(url).to eq('/blog/55')
+    expect(params).to eq({})
+
+
+    url, params = @routes.params_to_url({_view: 'blog/edit', _id: '100'})
+    expect(url).to eq('/blog/100/edit')
+    expect(params).to eq({})
+
+    url, params = @routes.params_to_url({_view: 'blog/edit', _id: '100', _other: 'should_pass'})
+    expect(url).to eq('/blog/100/edit')
+    expect(params).to eq({_other: 'should_pass'})
+  end
+
+  it "should test that params match a param matcher" do
+    routes = Routes.new
+    match, params = routes.send(:check_params_match, {_view: 'blog', _id: '55'}, {_view: 'blog', _id: nil})
+    expect(match).to eq(true)
+    expect(params).to eq({_id: '55'})
+
+    match, params = routes.send(:check_params_match, {_view: 'blog', _id: '55'}, {_view: 'blog', _id: '20'})
+    expect(match).to eq(false)
+
+    match, params = routes.send(:check_params_match, {_view: 'blog', _name: {_title: 'Mr', _name: 'Bob'}, _id: '55'}, {_view: 'blog', _id: nil, _name: {_title: 'Mr', _name: nil}})
+    expect(match).to eq(true)
+    expect(params).to eq({_id: '55'})
+
+    # Check with an extra value _name._name
+    match, params = routes.send(:check_params_match, {_view: 'blog', _name: {_title: 'Mr', _name: 'Bob'}, _id: '55'}, {_view: 'blog', _id: nil, _name: {_title: 'Mr'}})
+    expect(match).to eq(true)
+    expect(params).to eq({_id: '55'})
+
+    match, params = routes.send(:check_params_match, {_view: 'blog', _name: {_title: 'Mr', _name: 'Bob'}, _id: '55'}, {_view: 'blog', _id: nil, _name: {_title: 'Phd'}})
+    expect(match).to eq(false)
+
+    # Check to make sure extra values in the params pass it.
+    match, params = routes.send(:check_params_match, {_view: 'blog', _id: '55', _extra: 'some value'}, {_view: 'blog', _id: '55'})
+    expect(match).to eq(true)
+    expect(params).to eq({_extra: 'some value'})
+
   end
 
   # it "should match routes" do

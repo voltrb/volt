@@ -268,7 +268,6 @@ class Model
 
       return true
     else
-      puts "ERRORS"
       # Some errors, mark all fields
       self.class.validations.keys.each do |key|
         mark_field!(key.to_sym)

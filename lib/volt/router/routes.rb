@@ -72,13 +72,18 @@ class Routes
   # that should be shown in the url.  The extra "unused" params
   # will be tacked onto the end of the url ?param1=value1, etc...
   #
-  # returns the url and new params
-  def params_to_url(params)
-    @param_matches.each do |param_match|
+  # returns the url and new params, or nil, nil if no match is found.
+  def params_to_url(test_params)
+    @param_matches.each do |param_matcher|
+      # TODO: Maybe a deep dup?
+      result, new_params = check_params_match(test_params.dup, param_matcher[0])
 
+      if result
+        return param_matcher[1].call(new_params)
+      end
     end
 
-    return '/', params
+    return nil, nil
   end
 
   # Takes in a path and returns the matching params.
@@ -180,21 +185,60 @@ class Routes
     # a url with the bindings filled in, and params with the binding params
     # removed.  (So the remaining can be added onto the end of the url ?params1=...)
     def create_path_transformer(parts)
-      return Proc.new do |input_params|
+      return lambda do |input_params|
         input_params = input_params.dup
 
         url = parts.map do |part|
-          if has_binding?(part)
+          val = if has_binding?(part)
             # Get the
             binding = part[1..-2].to_sym
             input_params.delete(binding)
           else
             part
           end
+
+          val
         end.join('/')
 
-        return url, input_params
+        return '/' + url, input_params
       end
+    end
+
+    # Takes in a hash of params and checks to make sure keys in param_matcher
+    # are in test_params.  Checks for equal value unless value in param_matcher
+    # is nil.
+    #
+    # returns false or true, new_params - where the new params are a the params not
+    # used in the basic match.  Later some of these may be inserted into the url.
+    def check_params_match(test_params, param_matcher)
+      param_matcher.each_pair do |key, value|
+        if value.is_a?(Hash)
+          if test_params[key]
+            result = check_params_match(test_params[key], value)
+
+            if result == false
+              return false
+            else
+              test_params.delete(key)
+            end
+          else
+            # test_params did not have matching key
+            return false
+          end
+        elsif value == nil
+          unless test_params.has_key?(key)
+            return false
+          end
+        else
+          if test_params[key] == value
+            test_params.delete(key)
+          else
+            return false
+          end
+        end
+      end
+
+      return true, test_params
     end
 
     def url_parts(path)

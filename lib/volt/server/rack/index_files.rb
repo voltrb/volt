@@ -17,9 +17,9 @@ class IndexFiles
   end
 
   def route_match?(path)
-    @@router.path_matchers.each do |path_matcher|
-      return true if path =~ path_matcher
-    end
+    params = @@router.url_to_params(path)
+
+    return params if params
 
     return false
   end

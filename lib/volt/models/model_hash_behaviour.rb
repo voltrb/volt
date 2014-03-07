@@ -27,12 +27,15 @@ module ModelHashBehaviour
     attributes.true?
   end
 
-  def delete(*args)
-    __clear_element(args[0])
-    attributes.delete(*args)
-    trigger_by_attribute!('changed', args[0])
+  def delete(name)
+    name = name.to_sym
+    __clear_element(name)
+    value = attributes.delete(name)
+    trigger_by_attribute!('changed', name)
 
-    @persistor.removed(args[0]) if @persistor
+    @persistor.removed(name) if @persistor
+
+    return value
   end
 
 
