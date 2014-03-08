@@ -38,8 +38,6 @@ class StoreTasks
   end
 
   def save(collection, data)
-    puts "Insert: #{data.inspect} on #{collection.inspect}"
-
     data = data.symbolize_keys
 
     if valid?(collection, data)

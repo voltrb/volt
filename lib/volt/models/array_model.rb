@@ -7,7 +7,7 @@ class ArrayModel < ReactiveArray
   include ModelHelpers
   include ModelState
 
-  attr_reader :parent, :path, :persistor, :options
+  attr_reader :parent, :path, :persistor, :options, :array
 
   def initialize(array=[], options={})
     @options = options

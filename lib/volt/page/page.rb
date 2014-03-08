@@ -165,6 +165,7 @@ class Page
     title_target = AttributeTarget.new
     title_target.on('changed') do
       title = title_target.to_html
+      # puts "SET TITLE: #{title.inspect}: #{title_target.inspect}"
       `document.title = title;`
     end
     TemplateRenderer.new(self, title_target, main_controller, "main", "home/index/index/title")

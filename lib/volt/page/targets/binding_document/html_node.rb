@@ -8,4 +8,8 @@ class HtmlNode < BaseNode
   def to_html
     @html
   end
+
+  def inspect
+    "<HtmlNode #{@html.inspect}>"
+  end
 end

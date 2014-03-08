@@ -43,7 +43,11 @@ class SocketConnectionHandler < SockJS::Session
   def send_message(*args)
     str = JSON.dump([*args])
 
-    send(str)
+    begin
+      send(str)
+    rescue MetaState::WrongStateError => e
+      puts "Tried to send to closed connection: #{e.inspect}"
+    end
   end
 
   def closed

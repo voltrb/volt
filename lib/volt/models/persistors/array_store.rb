@@ -126,7 +126,10 @@ module Persistors
       # Find the existing model, or create one
       new_model = @@identity_map.find(data['_id']) { @model.new_model(data.symbolize_keys, new_options) }
 
-      @model.insert(index, new_model)
+      # Don't add if the model is already in the ArrayModel
+      if !@model.cur.array.find {|v| v['_id'] == data['_id'] }
+        @model.insert(index, new_model)
+      end
 
       $loading_models = false
     end

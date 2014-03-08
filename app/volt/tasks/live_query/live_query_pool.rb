@@ -15,7 +15,7 @@ class LiveQueryPool < GenericPool
 
   def updated_collection(collection, skip_channel)
     lookup_all(collection).each do |live_query|
-      # puts "RUN ON: #{live_query} with #{live_query.instance_variable_get('@channels').inspect}"
+      puts "RUN ON: #{live_query} with #{live_query.instance_variable_get('@channels').inspect}"
       live_query.run(skip_channel)
     end
   end

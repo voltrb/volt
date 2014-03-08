@@ -15,4 +15,16 @@ describe ComponentNode do
     expect(@component.find_by_binding_id(0).to_html).to eq('Before  Inside  After')
 
   end
+
+  it "should render if blocks" do
+    view = <<-END
+    {#if _show}show{/} title
+    END
+
+    page = Page.new
+
+    template = ViewParser.new(view, 'home/index/index/title')
+
+    page.add_template
+  end
 end
