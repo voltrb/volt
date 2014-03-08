@@ -63,7 +63,11 @@ class Listener
   # Removes the listener from where ever it was created.
   def remove
     # puts "FAIL:" if @removed
-    raise "event #{@event} already removed" if @removed
+    if @removed
+      # raise "event #{@event} already removed"
+      puts "event #{@event} already removed"
+      return
+    end
 
     # puts "e rem: #{@event} on #{@klass.inspect}"
     if DEBUG && RUBY_PLATFORM == 'opal'
