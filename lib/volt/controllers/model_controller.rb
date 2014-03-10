@@ -6,7 +6,7 @@ class ModelController
   # Sets the current model on this controller
   def model(val)
     if Symbol === val || String === val
-      collections = [:page, :store, :params]
+      collections = [:page, :store, :params, :controller]
       if collections.include?(val.to_sym)
         # puts "ASSIGN: #{val.inspect}"
         @model = self.send(val)
@@ -29,7 +29,22 @@ class ModelController
 
     inst.initialize(*args, &block)
 
+    # Call action if params._action is specified
+    action = inst.params._action.cur
+
+    if !action.nil?
+      # call action if it responds to it
+      if inst.respond_to?(action)
+        inst.send(action)
+      end
+    end
+
     return inst
+  end
+
+  # Change the url params, similar to redirecting to a new url
+  def go(url)
+    self.url.parse(url)
   end
 
   def page

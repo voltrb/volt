@@ -9,6 +9,20 @@ class ArrayModel < ReactiveArray
 
   attr_reader :parent, :path, :persistor, :options, :array
 
+
+  # For many methods, we want to call load data as soon as the model is interacted
+  # with, so we proxy the method, then call super.
+  def self.proxy_with_load_data(*method_names)
+    method_names.each do |method_name|
+      define_method(method_name) do |*args|
+        load_data
+        super(*args)
+      end
+    end
+  end
+
+  proxy_with_load_data :[], :size, :first, :last
+
   def initialize(array=[], options={})
     @options = options
     @parent = options[:parent]
@@ -20,18 +34,6 @@ class ArrayModel < ReactiveArray
     super(array)
 
     @persistor.loaded if @persistor
-  end
-
-  # For stored items, tell the collection to load the data when it
-  # is requested.
-  def [](index)
-    load_data
-    super
-  end
-
-  def size
-    load_data
-    super
   end
 
   tag_method(:find) do
@@ -56,7 +58,6 @@ class ArrayModel < ReactiveArray
       raise "this model's persistance layer does not support fetch, try using store"
     end
   end
-
 
   def attributes
     self
@@ -91,8 +92,8 @@ class ArrayModel < ReactiveArray
     super(*args)
   end
 
-  def new_model(attributes, options)
-    class_at_path(options[:path]).new(attributes, options)
+  def new_model(*args)
+    class_at_path(options[:path]).new(*args)
   end
 
   def new_array_model(*args)
@@ -146,6 +147,5 @@ class ArrayModel < ReactiveArray
         @persistor.load_data
       end
     end
-
 
 end

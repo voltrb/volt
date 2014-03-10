@@ -29,7 +29,7 @@ class Model
   attr_accessor :attributes
   attr_reader :parent, :path, :persistor, :options
 
-  def initialize(attributes={}, options={})
+  def initialize(attributes={}, options={}, initial_state=nil)
     self.options = options
 
     self.send(:attributes=, attributes, true)
@@ -40,7 +40,7 @@ class Model
     # ArrayModel, which will have the data when they get added.
     @state = :loaded
 
-    @persistor.loaded if @persistor
+    @persistor.loaded(initial_state) if @persistor
   end
 
   # Update the options
@@ -53,10 +53,15 @@ class Model
   end
 
   # Assign multiple attributes as a hash, directly.
-  def attributes=(attrs, skip_changed=false)
+  def attributes=(attrs, initial_setup=false)
     @attributes = wrap_values(attrs)
 
-    trigger!('changed') unless skip_changed
+    unless initial_setup
+      trigger!('changed')
+
+      # Let the persistor know something changed
+      @persistor.changed if @persistor
+    end
   end
 
   # Pass the comparison through
@@ -252,7 +257,7 @@ class Model
 
   def save!
     if errors.size == 0
-      # puts "SAVING: #{self.errors.inspect} - #{self.inspect} - #{options[:save_to].inspect} on #{self.inspect}"
+      puts "SAVING: #{self.errors.inspect} - #{self.inspect} - #{options[:save_to].inspect} on #{self.inspect}"
       save_to = options[:save_to]
       if save_to
         if save_to.is_a?(ArrayModel)
@@ -261,6 +266,7 @@ class Model
 
           options[:save_to] = new_model
         else
+          puts "SAVE BUFFERED"
           # We have a saved model
           save_to.attributes = self.attributes
         end

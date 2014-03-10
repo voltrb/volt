@@ -46,6 +46,8 @@ Volt's reactive objects contain extra data about how to propigate events.  Thing
 
 # Why Ruby
 
+Isomorphic type system with javascript
+
 In web development today, JavaScript gets to be the default language by virtue of being in the browser.  JavaScript is a very good language, but it has a lot of warts.  (See http://wtfjs.com/ for some great examples)  Some of these can introduce bugs, others are just difficult to deal with.  JavaScript was rushed to market quickly and standardized very quickly.  Ruby was used by a small community for years while most of the kinks were worked out.  Ruby also has some great concepts such as [uniform access](http://en.wikipedia.org/wiki/Uniform_access_principle), [mixin's](http://en.wikipedia.org/wiki/Mixin), [duck typing](http://en.wikipedia.org/wiki/Duck_typing), and [blocks](http://yehudakatz.com/2012/01/10/javascript-needs-blocks/) to name a few.  While many of these features can be implemented in JavaScript in userland, few are standardardized and the solutions are seldom eloquent.
 
 [5,10,1].sort()

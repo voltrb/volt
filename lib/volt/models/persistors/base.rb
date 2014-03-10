@@ -1,7 +1,7 @@
 module Persistors
   # Implements the base persistor functionality.
   class Base
-    def loaded
+    def loaded(initial_state=nil)
     end
 
     def changed(attribute_name)

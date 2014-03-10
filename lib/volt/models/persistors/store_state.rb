@@ -2,8 +2,8 @@
 module StoreState
 
   # Called when a collection loads
-  def loaded
-    change_state_to :not_loaded
+  def loaded(initial_state=nil)
+    change_state_to(initial_state || :not_loaded)
   end
 
   def state
@@ -12,7 +12,6 @@ module StoreState
 
   # Called from the QueryListener when the data is loaded
   def change_state_to(new_state)
-    # puts "CHANGE STATE TO: #{new_state.inspect}"
     @state = new_state
 
     # Trigger changed on the 'state' method

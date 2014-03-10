@@ -73,6 +73,7 @@ module Persistors
 
     # Clear out the models data, since we're not listening anymore.
     def unload_data
+      puts "Unload data"
       change_state_to :not_loaded
       @model.clear
     end
@@ -119,12 +120,12 @@ module Persistors
     # Called from backend
     def add(index, data)
       $loading_models = true
-      puts "INSERT: #{data.inspect} into #{self.inspect}"
+      # puts "INSERT: #{data.inspect} into #{self.inspect}"
 
       new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
 
       # Find the existing model, or create one
-      new_model = @@identity_map.find(data['_id']) { @model.new_model(data.symbolize_keys, new_options) }
+      new_model = @@identity_map.find(data['_id']) { @model.new_model(data.symbolize_keys, new_options, :loaded) }
 
       # Don't add if the model is already in the ArrayModel
       if !@model.cur.array.find {|v| v['_id'] == data['_id'] }

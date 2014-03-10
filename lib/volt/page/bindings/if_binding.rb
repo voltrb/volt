@@ -39,8 +39,10 @@ class IfBinding < BaseBinding
     @branches.each do |branch|
       value, template_name = branch
 
+      current_value = value.cur
+
       # TODO: A bug in opal requires us to check == true
-      if value.cur.true? == true
+      if current_value.true? == true && !current_value.is_a?(Exception)
         # This branch is currently true
         true_template = template_name
         break

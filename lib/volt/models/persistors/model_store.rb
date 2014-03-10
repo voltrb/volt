@@ -4,7 +4,7 @@ require 'volt/models/persistors/store_state'
 module Persistors
   class ModelStore < Store
     include StoreState
-    
+
     ID_CHARS = [('a'..'z'), ('A'..'Z'), ('0'..'9')].map {|v| v.to_a }.flatten
 
     attr_reader :model

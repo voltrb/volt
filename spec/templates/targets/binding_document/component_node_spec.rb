@@ -16,15 +16,15 @@ describe ComponentNode do
 
   end
 
-  it "should render if blocks" do
-    view = <<-END
-    {#if _show}show{/} title
-    END
-
-    page = Page.new
-
-    template = ViewParser.new(view, 'home/index/index/title')
-
-    page.add_template
-  end
+  # it "should render if blocks" do
+  #   view = <<-END
+  #   {#if _show}show{/} title
+  #   END
+  #
+  #   page = Page.new
+  #
+  #   template = ViewParser.new(view, 'home/index/index/title')
+  #
+  #   page.add_template
+  # end
 end
