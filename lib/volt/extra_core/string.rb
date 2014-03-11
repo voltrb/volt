@@ -1,3 +1,5 @@
+require 'volt/extra_core/inflector'
+
 class String
   # TODO: replace with better implementations
   # NOTE: strings are currently immutable in Opal, so no ! methods
@@ -9,31 +11,25 @@ class String
     self.scan(/[A-Z][a-z]*/).join("_").downcase
   end
 
+  def dasherize
+    self.gsub('_', '-')
+  end
+
   def pluralize
-    # TODO: Temp implementation
-    if self[-1] != 's'
-      return self + 's'
-    else
-      return self
-    end
+    Inflector.pluralize(self)
   end
 
   def singularize
-    # TODO: Temp implementation
-    if self[-1] == 's'
-      return self[0..-2]
-    else
-      return self
-    end
+    Inflector.singularize(self)
   end
 
   def plural?
     # TODO: Temp implementation
-    self[-1] == 's'
+    self.pluralize == self
   end
 
   def singular?
     # TODO: Temp implementation
-    self[-1] != 's'
+    self.singularize == self
   end
 end
