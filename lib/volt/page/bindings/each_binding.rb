@@ -96,19 +96,7 @@ class EachBinding < BaseBinding
 
     return values
   end
-  #
-  # def update(item=nil)
-  #   if item
-  #     values = [item]
-  #   else
-  #     values = current_values
-  #   end
-  #
-  #   # TODO: Switch to #each?
-  #   values.each_with_index do |value,index|
-  #     item_added(index)
-  #   end
-  # end
+
 
   # When this each_binding is removed, cleanup.
   def remove

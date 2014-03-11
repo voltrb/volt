@@ -18,6 +18,7 @@ module Persistors
       super
 
       query = @model.options[:query]
+      puts "INIT #{@model.path.inspect} WITH #{query.inspect}"
 
       @query = ReactiveValue.from_hash(query || {})
     end
@@ -54,7 +55,7 @@ module Persistors
     def load_data
       # Don't load data from any queried
       if @state == :not_loaded || @state == :dirty
-        puts "Load Data at #{@model.path.inspect}"
+        puts "Load Data at #{@model.path.inspect} - query: #{@query.inspect}"
         change_state_to :loading
 
         @query_changed_listener.remove if @query_changed_listener

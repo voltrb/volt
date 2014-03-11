@@ -51,7 +51,12 @@ module Inflector
     if word.empty? || inflections.uncountables.include?(result.downcase[/\b\w+\Z/])
       result
     else
-      rules.each { |(rule, replacement)| break if result.sub!(rule, replacement) }
+      rules.each do |(rule, replacement)|
+        if result.match(rule)
+          result = result.sub(rule, replacement)
+          break
+        end
+      end
       result
     end
   end

@@ -182,6 +182,10 @@ class Model
   end
 
   def new_array_model(attributes, options)
+    # Start with an empty query
+    options = options.dup
+    options[:query] = {}
+
     ArrayModel.new(attributes, options)
   end
 
