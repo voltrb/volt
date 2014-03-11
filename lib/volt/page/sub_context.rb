@@ -16,7 +16,7 @@ class SubContext
 
   def method_missing(method_name, *args, &block)
     method_name = method_name.to_s
-    if @locals[method_name]
+    if @locals.has_key?(method_name)
       return @locals[method_name]
     elsif @context
       return @context.send(method_name, *args, &block)

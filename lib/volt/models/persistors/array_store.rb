@@ -17,7 +17,9 @@ module Persistors
     def initialize(model, tasks=nil)
       super
 
-      @query = ReactiveValue.from_hash(@model.options[:query] || {})
+      query = @model.options[:query]
+
+      @query = ReactiveValue.from_hash(query || {})
     end
 
     def event_added(event, scope_provider, first, first_for_event)
@@ -52,7 +54,7 @@ module Persistors
     def load_data
       # Don't load data from any queried
       if @state == :not_loaded || @state == :dirty
-        puts "Load Data"
+        puts "Load Data at #{@model.path.inspect}"
         change_state_to :loading
 
         @query_changed_listener.remove if @query_changed_listener
@@ -66,14 +68,12 @@ module Persistors
           end
         end
 
-        # puts "RUN QUERY: #{@query.inspect}"
         run_query(@model, @query.deep_cur)
       end
     end
 
     # Clear out the models data, since we're not listening anymore.
     def unload_data
-      puts "Unload data"
       change_state_to :not_loaded
       @model.clear
     end
@@ -91,6 +91,7 @@ module Persistors
         end
       end
 
+      # puts "IN QUERY: #{query.inspect} - #{self.inspect}"
       @query_listener = @@query_pool.lookup(collection, query) do
         # Create if it does not exist
         QueryListener.new(@@query_pool, @tasks, collection, query)
@@ -124,11 +125,12 @@ module Persistors
 
       new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
 
-      # Find the existing model, or create one
-      new_model = @@identity_map.find(data['_id']) { @model.new_model(data.symbolize_keys, new_options, :loaded) }
-
       # Don't add if the model is already in the ArrayModel
       if !@model.cur.array.find {|v| v['_id'] == data['_id'] }
+        # Find the existing model, or create one
+        new_model = @@identity_map.find(data['_id']) { @model.new_model(data.symbolize_keys, new_options, :loaded) }
+
+        puts "ADD: #{new_model.attributes.inspect}"
         @model.insert(index, new_model)
       end
 

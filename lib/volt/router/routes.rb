@@ -112,15 +112,16 @@ class Routes
       if part == nil
         if node[part]
           # We found a match, replace the bindings and return
-          # TODO: Handle nested
+          # TODO: Handvle nested
           return setup_bindings_in_params(original_parts, node[part])
         else
           return false
         end
       elsif (new_node = node[part])
-        # Direct match, continue
+        # Direct match for section, continue
         return match_path(original_parts, parts, new_node)
       elsif (new_node = node['*'])
+        # Match on binding section
         return match_path(original_parts, parts, new_node)
       end
     end
@@ -128,6 +129,9 @@ class Routes
     # The params out of match_path will have integers in the params that came from bindings
     # in the url.  This replaces those with the values from the url.
     def setup_bindings_in_params(original_parts, params)
+      # Create a copy of the params we can modify and return
+      params = params.dup
+
       params.each_pair do |key, value|
         if value.is_a?(Fixnum)
           # Lookup the param's value in the original url parts

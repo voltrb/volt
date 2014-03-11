@@ -32,10 +32,6 @@ module Persistors
       @model.attributes ||= {}
       @model.attributes[method_name] = model
 
-      # if model.is_a?(StoreArray)# && model.state == :not_loaded
-      #   model.load!
-      # end
-
       return model
     end
   end

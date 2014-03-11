@@ -181,8 +181,8 @@ class Model
     class_at_path(options[:path]).new(attributes, options)
   end
 
-  def new_array_model(*args)
-    ArrayModel.new(*args)
+  def new_array_model(attributes, options)
+    ArrayModel.new(attributes, options)
   end
 
   def trigger_by_attribute!(event_name, attribute, *passed_args)

@@ -19,7 +19,7 @@ class EachBinding < BaseBinding
     reload
 
     @added_listener = @value.on('added') { |_, position, item| puts "ITEM ADDED: #{position.inspect}" ; item_added(position) }
-    @changed_listener = @value.on('changed') { reload }
+    @changed_listener = @value.on('changed') { puts "CHANGED---" ; reload }
     @removed_listener = @value.on('removed') { |_, position| item_removed(position) }
   end
 
@@ -90,6 +90,7 @@ class EachBinding < BaseBinding
 
   def current_values
     values = @value.cur
+
     return [] if values.is_a?(Model) || values.is_a?(Exception)
     values = values.attributes
 

@@ -19,7 +19,7 @@ class QueryTasks
     live_query = @@live_query_pool.lookup(collection, query)
     track_channel_in_live_query(live_query)
 
-    puts "ADD CH on #{collection.inspect} - #{query.inspect}"
+    puts "Load data on #{collection.inspect} - #{query.inspect}"
     live_query.add_channel(@channel)
 
     # Return the initial data
