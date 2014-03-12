@@ -5,31 +5,46 @@ class ModelController
 
   # Sets the current model on this controller
   def model(val)
+    # Start with a nil reactive value.
+    @model ||= ReactiveValue.new(Proc.new { nil })
+
     if Symbol === val || String === val
       collections = [:page, :store, :params, :controller]
       if collections.include?(val.to_sym)
-        # puts "ASSIGN: #{val.inspect}"
-        @model = self.send(val)
+        @model.cur = self.send(val).cur
       else
         raise "#{val} is not the name of a valid model, choose from: #{collections.join(', ')}"
       end
     elsif val
-      @model = val
+      @model.cur = val.cur
     else
       raise "model can not be #{val.inspect}"
     end
   end
 
+  def model_inst
+    @model
+  end
+
   def self.new(*args, &block)
     inst = self.allocate
 
-    if @default_model
-      inst.model(@default_model || :page)
-    end
+    inst.model(@default_model || :controller)
 
     inst.initialize(*args, &block)
 
     return inst
+  end
+
+  def initialize(*args)
+
+
+    # Set the instance variable to match any passed in arguments
+    if args.size > 0
+      args[0].each_pair do |key, value|
+        instance_variable_set(:"@#{key}", value)
+      end
+    end
   end
 
   # Change the url params, similar to redirecting to a new url

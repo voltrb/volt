@@ -18,8 +18,8 @@ class EachBinding < BaseBinding
     # update
     reload
 
-    @added_listener = @value.on('added') { |_, position, item| puts "ITEM ADDED: #{position.inspect}" ; item_added(position) }
-    @changed_listener = @value.on('changed') { puts "CHANGED---" ; reload }
+    @added_listener = @value.on('added') { |_, position, item| item_added(position) }
+    @changed_listener = @value.on('changed') { reload }
     @removed_listener = @value.on('removed') { |_, position| item_removed(position) }
   end
 

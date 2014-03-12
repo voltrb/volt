@@ -18,8 +18,8 @@ class TemplateBinding < BaseBinding
       # Render this as a section
       @section = section
     else
-      # Use the value passed in as the default model
-      @model = section
+      # Use the value passed in as the default arguments
+      @arguments = section
     end
 
     # Run the initial render
@@ -108,14 +108,15 @@ class TemplateBinding < BaseBinding
 
   def update
     full_path, controller_path = path_for_template(@path.cur, @section.cur)
+    puts "UPDATE: #{@path.inspect} - #{full_path.inspect}"
 
     @current_template.remove if @current_template
 
-    if @model
+    if @arguments
       # Load in any procs
-      @model.each_pair do |key,value|
+      @arguments.each_pair do |key,value|
         if value.class == Proc
-          @model[key.gsub('-', '_')] = value.call
+          @arguments[key.gsub('-', '_')] = value.call
         end
       end
     end
@@ -125,29 +126,56 @@ class TemplateBinding < BaseBinding
 
   # The context for templates can be either a controller, or the original context.
   def render_template(full_path, controller_path)
+    args = @arguments ? [@arguments] : []
+
     # TODO: at the moment a :body section and a :title will both initialize different
     # controllers.  Maybe we should have a way to tie them together?
     controller_class, action = get_controller(controller_path)
-    if controller_class
-      args = []
-      args << SubContext.new(@model) if @model
 
+    if controller_class
       # Setup the controller
       current_context = controller_class.new(*args)
-      @controller = current_context
-
-      # Trigger the action
-      @controller.send(action) if @controller.respond_to?(action)
     else
-      # Pass the context directly
-      current_context = @context
-      @controller = nil
+      current_context = ModelController.new(*args)
     end
+    @controller = current_context
+
+    # Trigger the action
+    @controller.send(action) if @controller.respond_to?(action)
 
     @current_template = TemplateRenderer.new(@page, @target, current_context, @binding_name, full_path)
 
     call_ready
   end
+
+
+
+  # # The context for templates can be either a controller, or the original context.
+  # def render_template(full_path, controller_path)
+  #   # TODO: at the moment a :body section and a :title will both initialize different
+  #   # controllers.  Maybe we should have a way to tie them together?
+  #   controller_class, action = get_controller(controller_path)
+  #   if controller_class
+  #     args = []
+  #     puts "MODEL: #{@arguments.inspect}"
+  #     args << SubContext.new(@arguments) if @arguments
+  #
+  #     # Setup the controller
+  #     current_context = controller_class.new(*args)
+  #     @controller = current_context
+  #
+  #     # Trigger the action
+  #     @controller.send(action) if @controller.respond_to?(action)
+  #   else
+  #     # Pass the context directly
+  #     current_context = @context
+  #     @controller = nil
+  #   end
+  #
+  #   @current_template = TemplateRenderer.new(@page, @target, current_context, @binding_name, full_path)
+  #
+  #   call_ready
+  # end
 
   def call_ready
     if @controller
@@ -196,11 +224,10 @@ class TemplateBinding < BaseBinding
     def get_controller(controller_path)
       return nil, nil unless controller_path && controller_path.size > 0
 
-      action = controller_path.pop
-      # *controller_path, action = controller_path
+      action = controller_path[-1]
 
       # Get the constant parts
-      parts = controller_path.map {|v| v.gsub('-', '_').camelize }
+      parts = controller_path[0..-2].map {|v| v.gsub('-', '_').camelize }
 
       # Home doesn't get namespaced
       if parts.first == 'Home'

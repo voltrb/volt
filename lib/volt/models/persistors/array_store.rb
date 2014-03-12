@@ -18,7 +18,6 @@ module Persistors
       super
 
       query = @model.options[:query]
-      puts "INIT #{@model.path.inspect} WITH #{query.inspect}"
 
       @query = ReactiveValue.from_hash(query || {})
     end
@@ -131,7 +130,7 @@ module Persistors
         # Find the existing model, or create one
         new_model = @@identity_map.find(data['_id']) { @model.new_model(data.symbolize_keys, new_options, :loaded) }
 
-        puts "ADD: #{new_model.attributes.inspect}"
+        # puts "ADD: #{new_model.attributes.inspect}"
         @model.insert(index, new_model)
       end
 
