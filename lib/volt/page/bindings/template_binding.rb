@@ -42,7 +42,7 @@ class TemplateBinding < BaseBinding
   end
 
   # Takes in a lookup path and returns the full path for the matching
-  # template.  Also returns the controller name if applicable.
+  # template.  Also returns the controller and action name if applicable.
   #
   # Looking up a path is fairly simple.  There are 4 parts needed to find
   # the html to be rendered.  File paths look like this:
@@ -77,7 +77,6 @@ class TemplateBinding < BaseBinding
 
       full_path = [@collection_name, @controller_name, @page_name, nil]
 
-      offset = 0
       start_at = full_path.size - parts_size - path_position
 
       full_path.size.times do |index|
@@ -93,9 +92,12 @@ class TemplateBinding < BaseBinding
       path = full_path.join('/')
       if check_for_template?(path)
         controller = nil
+
+        # Don't return a controller if we are just getting another section
+        # from the same controller
         if path_position >= 1
           # Lookup the controller
-          controller = [full_path[0], full_path[1] + '_controller']
+          controller = [full_path[0], full_path[1] + '_controller', full_path[2]]
         end
         return path, controller
       end
@@ -106,6 +108,7 @@ class TemplateBinding < BaseBinding
 
   def update
     full_path, controller_name = path_for_template(@path.cur, @section.cur)
+    puts "UPDATE: #{full_path.inspect} - #{controller_name.inspect} - #{@path.inspect}"
 
     @current_template.remove if @current_template
 
