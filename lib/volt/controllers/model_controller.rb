@@ -29,16 +29,6 @@ class ModelController
 
     inst.initialize(*args, &block)
 
-    # Call action if params._action is specified
-    action = inst.params._action.cur
-
-    if !action.nil?
-      # call action if it responds to it
-      if inst.respond_to?(action)
-        inst.send(action)
-      end
-    end
-
     return inst
   end
 

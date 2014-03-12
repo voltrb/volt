@@ -107,8 +107,7 @@ class TemplateBinding < BaseBinding
   end
 
   def update
-    full_path, controller_name = path_for_template(@path.cur, @section.cur)
-    puts "UPDATE: #{full_path.inspect} - #{controller_name.inspect} - #{@path.inspect}"
+    full_path, controller_path = path_for_template(@path.cur, @section.cur)
 
     @current_template.remove if @current_template
 
@@ -121,14 +120,14 @@ class TemplateBinding < BaseBinding
       end
     end
 
-    render_template(full_path, controller_name)
+    render_template(full_path, controller_path)
   end
 
   # The context for templates can be either a controller, or the original context.
-  def render_template(full_path, controller_name)
+  def render_template(full_path, controller_path)
     # TODO: at the moment a :body section and a :title will both initialize different
     # controllers.  Maybe we should have a way to tie them together?
-    controller_class = get_controller(controller_name)
+    controller_class, action = get_controller(controller_path)
     if controller_class
       args = []
       args << SubContext.new(@model) if @model
@@ -136,6 +135,9 @@ class TemplateBinding < BaseBinding
       # Setup the controller
       current_context = controller_class.new(*args)
       @controller = current_context
+
+      # Trigger the action
+      @controller.send(action) if @controller.respond_to?(action)
     else
       # Pass the context directly
       current_context = @context
@@ -191,11 +193,14 @@ class TemplateBinding < BaseBinding
   private
 
     # Fetch the controller class
-    def get_controller(controller_name)
-      return nil unless controller_name && controller_name.size > 0
+    def get_controller(controller_path)
+      return nil, nil unless controller_path && controller_path.size > 0
+
+      action = controller_path.pop
+      # *controller_path, action = controller_path
 
       # Get the constant parts
-      parts = controller_name.map {|v| v.gsub('-', '_').camelize }
+      parts = controller_path.map {|v| v.gsub('-', '_').camelize }
 
       # Home doesn't get namespaced
       if parts.first == 'Home'
@@ -213,7 +218,7 @@ class TemplateBinding < BaseBinding
         end
       end
 
-      return obj
+      return obj, action
     end
 
 end
