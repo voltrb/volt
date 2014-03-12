@@ -139,7 +139,7 @@ class Page
     # puts "Add Template: #{name}\n#{template.inspect}\n#{bindings.inspect}"
     @templates ||= {}
     @templates[name] = {'html' => template, 'bindings' => bindings}
-    # puts "Add Template: #{name}"
+    puts "Add Template: #{name}"
   end
 
   def add_routes(&block)

@@ -4,7 +4,7 @@ class ModelController
   end
 
   # Sets the current model on this controller
-  def model(val)
+  def model=(val)
     # Start with a nil reactive value.
     @model ||= ReactiveValue.new(Proc.new { nil })
 
@@ -22,14 +22,14 @@ class ModelController
     end
   end
 
-  def model_inst
+  def model
     @model
   end
 
   def self.new(*args, &block)
     inst = self.allocate
 
-    inst.model(@default_model || :controller)
+    inst.model = (@default_model || :controller)
 
     inst.initialize(*args, &block)
 
