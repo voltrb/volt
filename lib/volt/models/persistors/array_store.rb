@@ -53,7 +53,7 @@ module Persistors
     def load_data
       # Don't load data from any queried
       if @state == :not_loaded || @state == :dirty
-        puts "Load Data at #{@model.path.inspect} - query: #{@query.inspect}"# on #{@model.inspect}"
+        # puts "Load Data at #{@model.path.inspect} - query: #{@query.inspect}"# on #{@model.inspect}"
         change_state_to :loading
 
         @query_changed_listener.remove if @query_changed_listener
@@ -142,14 +142,10 @@ module Persistors
     def remove(ids)
       $loading_models = true
       ids.each do |id|
-        puts "delete at: #{id} on #{@model.inspect}"
-
         # TODO: optimize this delete so we don't need to loop
         @model.each_with_index do |model, index|
-          puts "#{model._id.inspect} vs #{id.inspect} - #{index}"
           if model._id == id
             del = @model.delete_at(index)
-            puts "DELETED AT #{index}: #{del.inspect} - #{@model.inspect}"
             break
           end
         end
