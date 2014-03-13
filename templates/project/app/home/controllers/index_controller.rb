@@ -1,9 +1,9 @@
 class IndexController < ModelController
-  model :page
+  def index
+    # Add code for when the main page is loaded
+  end
 
-  def initialize
-    super
-
-    # Add controller setup code here
+  def home
+    # Add code for when the home view is loaded
   end
 end
