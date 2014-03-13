@@ -15,6 +15,7 @@ module Persistors
     end
 
     def initialize(model, tasks=nil)
+      # puts "NEW ARRAY STORE FOR #{model.inspect}"
       super
 
       query = @model.options[:query]
@@ -29,32 +30,30 @@ module Persistors
 
     def event_removed(event, last, last_for_event)
       # Remove listener where there are no more events on this model
-      if last && @query_listener
-        stop_listening
-      end
+      stop_listening if last
     end
 
     # Called when an event is removed and we no longer want to keep in
     # sync with the database.
     def stop_listening
-      if @query_listener
-        @query_listener.remove_store(self)
-        @query_listener = nil
-      end
-
       if @query_changed_listener
         @query_changed_listener.remove
         @query_changed_listener = nil
       end
 
-      change_state_to :dirty
+      if @query_listener
+        @query_listener.remove_store(self)
+        @query_listener = nil
+      end
+
+      @state = :dirty
     end
 
     # Called the first time data is requested from this collection
     def load_data
       # Don't load data from any queried
       if @state == :not_loaded || @state == :dirty
-        puts "Load Data at #{@model.path.inspect} - query: #{@query.inspect}"
+        puts "Load Data at #{@model.path.inspect} - query: #{@query.inspect}"# on #{@model.inspect}"
         change_state_to :loading
 
         @query_changed_listener.remove if @query_changed_listener
@@ -64,7 +63,8 @@ module Persistors
           @query_changed_listener = @query.on('changed') do
             stop_listening
 
-            load_data
+            # Don't load again if all of the listeners are gone
+            load_data if @model.has_listeners?
           end
         end
 
@@ -96,7 +96,8 @@ module Persistors
         # Create if it does not exist
         QueryListener.new(@@query_pool, @tasks, collection, query)
       end
-      @query_listener.add_store(model.persistor)
+
+      @query_listener.add_store(self)
     end
 
     def find(query={})
@@ -108,6 +109,7 @@ module Persistors
     # Fetch does a one time load of the data on an unloaded model and returns
     # the result.
     def fetch(&block)
+      # puts "FETCH: #{@state.inspect}"
       if @state == :loaded
         block.call(@model)
       else

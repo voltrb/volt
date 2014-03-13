@@ -15,6 +15,7 @@ class ArrayModel < ReactiveArray
   def self.proxy_with_load_data(*method_names)
     method_names.each do |method_name|
       define_method(method_name) do |*args|
+        # puts "CALL #{method_name} - Load Data on #{self.inspect}"
         load_data
         super(*args)
       end

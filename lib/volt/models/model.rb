@@ -301,20 +301,28 @@ class Model
     model_klass = class_at_path(model_path)
 
     new_options = options.merge(path: model_path, save_to: self).reject {|k,_| k.to_sym == :persistor }
-    model = model_klass.new({}, new_options)
-    model.change_state_to(:loading)
+    model = model_klass.new({}, new_options, :loading)
 
-    self.parent.fetch do
-      model.attributes = self.attributes
+    if state == :loaded
+      setup_buffer(model)
+    else
+      self.parent.fetch do
+        setup_buffer(model)
+      end
     end
 
-    puts "SAVE TO:: #{model.options[:save_to].inspect} for #{model.inspect}"
+    # puts "SAVE TO:: #{model.options[:save_to].inspect} for #{model.inspect}"
 
     return ReactiveValue.new(model)
   end
 
 
   private
+  def setup_buffer(model)
+    model.attributes = self.attributes
+    model.change_state_to(:loaded)
+  end
+
     # Clear the previous value and assign a new one
     def __assign_element(key, value)
       __clear_element(key)
