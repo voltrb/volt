@@ -1,4 +1,4 @@
-get "/about", _view: 'about'
+get "/about", _controller: 'about'
 
 # The main route
 get '/'
