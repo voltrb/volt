@@ -53,7 +53,8 @@ module Persistors
 
     # Called when the model changes
     def changed(attribute_name=nil)
-      # puts "CHANGED: #{attribute_name.inspect} - #{@model.inspect}"
+      promise = Promise.new
+
       ensure_setup
 
       path_size = @model.path.size
@@ -62,9 +63,17 @@ module Persistors
           @model.attributes[:"#{@model.path[-4].singularize}_id"] = source._id
         end
 
-        # puts "Save: #{collection} - #{self_attributes.inspect} - #{@model.path.inspect}"
-        @tasks.call('StoreTasks', 'save', collection, self_attributes)
+        @tasks.call('StoreTasks', 'save', collection, self_attributes) do |errors|
+          puts "SAVE GOT: #{errors.inspect}"
+          if errors.size == 0
+            promise.resolve
+          else
+            promise.reject(errors)
+          end
+        end
       end
+
+      return promise
     end
 
     def event_added(event, scope_provider, first, first_for_event)

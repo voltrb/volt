@@ -32,7 +32,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "listen", "~> 2.4.0"
   spec.add_dependency "uglifier", "~> 2.4.0"
   spec.add_dependency "yui-compressor", "~> 0.12.0"
-  spec.add_dependency "promise.rb", "~> 0.6.1"
+  # spec.add_dependency "promise.rb", "~> 0.6.1"
 
   # spec.add_dependency "rack-colorized_logger", "~> 1.0.4"
 

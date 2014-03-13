@@ -108,7 +108,7 @@ class TemplateBinding < BaseBinding
 
   def update
     full_path, controller_path = path_for_template(@path.cur, @section.cur)
-    puts "UPDATE: #{@path.inspect} - #{full_path.inspect}"
+    # puts "UPDATE: #{@path.inspect} - #{full_path.inspect}"
 
     @current_template.remove if @current_template
 

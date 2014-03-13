@@ -63,6 +63,7 @@ class Model
       @persistor.changed if @persistor
     end
   end
+  alias_method :assign_attributes, :attributes=
 
   # Pass the comparison through
   def ==(val)
@@ -272,7 +273,7 @@ class Model
         else
           puts "SAVE BUFFERED"
           # We have a saved model
-          save_to.attributes = self.attributes
+          return save_to.assign_attributes(self.attributes)
         end
       else
         raise "Model is not a buffer, can not be saved, modifications should be persisted as they are made."

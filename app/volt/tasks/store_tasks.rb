@@ -14,8 +14,7 @@ class StoreTasks
     @@db
   end
 
-  def valid?(collection, data)
-    puts "CHECK VALID: #{data.inspect}"
+  def model_errors(collection, data)
     model_name = collection[1..-1].singularize.camelize
 
     # TODO: Security check to make sure we have a valid model
@@ -26,22 +25,19 @@ class StoreTasks
     end
 
     if model_class
-      errors = model_class.new(data).errors
-
-      if errors.size > 0
-        puts "ERRORS: #{errors.inspect} - #{data.inspect}"
-        return false
-      end
+      return model_class.new(data).errors
     end
 
-    return true
+    return {}
   end
 
   def save(collection, data)
     puts "Insert: #{data.inspect} on #{collection.inspect}"
     data = data.symbolize_keys
 
-    if valid?(collection, data)
+    errors = model_errors(collection, data)
+
+    if errors.size == 0
       id = data[:_id]
 
       # Try to create
@@ -62,6 +58,9 @@ class StoreTasks
 
       puts "SAVE: #{@channel.inspect}"
       QueryTasks.live_query_pool.updated_collection(collection, @channel)
+      return {}
+    else
+      return errors
     end
   end
 

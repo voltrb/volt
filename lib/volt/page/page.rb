@@ -1,9 +1,7 @@
 if RUBY_PLATFORM == 'opal'
   require 'opal'
-
   require 'opal-jquery'
 end
-require 'promise.rb'
 require 'volt/models'
 require 'volt/controllers/model_controller'
 require 'volt/page/bindings/attribute_binding'
@@ -31,6 +29,15 @@ require 'volt'
 require 'volt/benchmark/benchmark'
 require 'volt/page/draw_cycle'
 require 'volt/page/tasks'
+
+if RUBY_PLATFORM == 'opal'
+  require 'promise.rb'
+else
+  # Opal doesn't expose its promise library directly
+  spec = Gem::Specification.find_by_name("opal")
+  require(spec.gem_dir + "/stdlib/promise")
+end
+
 
 class Page
   attr_reader :url, :params, :page, :templates, :routes, :draw_cycle, :events
@@ -139,7 +146,7 @@ class Page
     # puts "Add Template: #{name}\n#{template.inspect}\n#{bindings.inspect}"
     @templates ||= {}
     @templates[name] = {'html' => template, 'bindings' => bindings}
-    puts "Add Template: #{name}"
+    # puts "Add Template: #{name}"
   end
 
   def add_routes(&block)
