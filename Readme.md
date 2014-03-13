@@ -83,9 +83,10 @@ You can access the volt console with:
   4. [Automatic Model Conversion](#automatic-model-conversion)
 5. [Controllers](#controllers)
 6. [Components](#components)
-  1. [Assets](#assets)
-  2. [Component Generator](#component-generator)
-  3. [Provided Components](#provided-components)
+  1. [Dependencies](#dependencies)
+  2. [Assets](#assets)
+  3. [Component Generator](#component-generator)
+  4. [Provided Components](#provided-components)
     1. [Notices](#notices)
     2. [Flash](#flash)
 7. [Controls](#controls)
@@ -112,7 +113,7 @@ When a user interacts with a web page, typically we want to do two things:
 
 For example when a user clicks to add a new todo item to a todo list, we might create a JavaScript object to represent the todo item, then add an item to the list's DOM.  A lot of work needs to be done to make sure that the JavaScript object and the DOM always stay in sync.
 
-Recently the idea of "reactive programming" has been used to simplify maintaining the DOM.  The idea is instead of having event handlers that manage a model (or JavaScript object) and manage the DOM, we have event handlers that manage reactive data models.  We describe our DOM layer in a declarative way so that it automatically knows how to render our data models.
+The idea of "reactive programming" has been used to simplify maintaining the DOM.  The idea is instead of having event handlers that manage a model (or JavaScript object) and manage the DOM, we have event handlers that manage reactive data models.  We describe our DOM layer in a declarative way so that it automatically knows how to render our data models.
 
 ## Reactive Value's
 
@@ -249,7 +250,7 @@ Views in Volt are use a templating language similar to handlebars.  They can be 
 <:Body>
 ```
 
-Section headers should start with a capital letter so as not to be confused with [controls](#controls).  Section headers do not use close tags.  If section headers are not provided, the body section is assumed.
+Section headers should start with a capital letter so as not to be confused with [controls](#controls).  Section headers do not use closing tags.  If section headers are not provided, the Body section is assumed.
 
 Section's help you split up different parts of the same content (title and body usually), but within the same file.
 
@@ -261,17 +262,21 @@ One you understand the basics of ReactiveValue's, we can discuss bindings.  In V
 
 The most basic binding is a content binding:
 
+```html
     <p>{some_method}<p>
+```
 
-The content binding runs the ruby code between { and }, then renders the return value.  If the returned value is a ReactiveValue, it will update the value updated whenever a 'changed' event is called.
+The content binding runs the ruby code between { and }, then renders the return value.  If the returned value is a ReactiveValue, it will update the value updated whenever a 'changed' event is triggered on the reactive value.
 
 ### If binding
 
 An if binding lets you provide basic flow control.
 
+```html
     {#if _some_check?}
       <p>render this</p>
     {/}
+```
 
 Blocks are closed with a {/}
 
@@ -279,6 +284,7 @@ When the #if binding is rendered, it will run the ruby code after #if.  If the c
 
 If bindings can also have #elsif and #else blocks.
 
+```html
     {#if _condition_1?}
       <p>condition 1 true</p>
     {#elsif _condition_2?}
@@ -286,22 +292,27 @@ If bindings can also have #elsif and #else blocks.
     {#else}
       <p>neither true</p>
     {/}
+```
 
 ### Each binding
 
 For iteration over objects, the each binding is provided.
 
+```html
     {#each _items as item}
       <p>{item}</p>
     {/}
+```
 
 Above, if _items was an array, the block would be rendered for each item, setting 'item' to the value of the array element.
 
 You can also access the position of the item in the array with the #index method.
 
+```html
     {#each _items as item}
       <p>{index}. {item}</p>
     {/}
+```
 
 For the array: ['one', 'two', 'three'] this would print:
 
@@ -309,7 +320,7 @@ For the array: ['one', 'two', 'three'] this would print:
     1. two
     2. three
 
-You can do {index + 1} to correct the numbers.
+You can do {index + 1} to correct the zero offset.
 
 When items are removed or added to the array, the #each binding automatically and intelligently add or removes the items from/to the DOM.
 
@@ -317,15 +328,21 @@ When items are removed or added to the array, the #each binding automatically an
 
 Bindings can also be placed inside of attributes.
 
+```html
     <p class="{#if _is_cool?}cool{/}">Text</p>
+```
 
 There are some special features provided to make for elements work as "two way bindings"
 
+```html
     <input type="text" value="{_name}" />
+```
 
 In the example above, if _name changes, the field will update and if the field is updated, _name will be changed.
 
+```html
     <input type="checkbox" checked="{_checked}" />
+```
 
 If the value of a checked attribute is true, the checkbox will be shown checked.  If it is checked/unchecked, the value will be updated to true or false.
 
@@ -338,14 +355,14 @@ If you have a controller at app/home/controller/index_controller.rb, and a view 
 When you need to use { and } outside of bindings.  Anything in a triple mustache will be escaped and not processed as a binding:
 
 ```html
-{{{ bindings look like: {this}  }}}
+    {{{ bindings look like: {this}  }}}
 ```
 
 # Models
 
-Volt's concept of a model is slightly different from many frameworks where a model is the name for the ORM to the database.  In Volt a model is a class where you can store data easily.  Where that data stored is not the concern of the model, but the class that created the model.  Lets first see how to use a model.
+Volt's concept of a model is slightly different from many frameworks where a model is the name for the ORM to the database.  In Volt a model is a class where you can store data easily.  Models can be created with a "Persistor", which is responsible for storing the data in the model.  Models created without a persistor, simply store the data in the classes instance.  Lets first see how to use a model.
 
-Volt comes with many built-in models, one is called 'page'.  If you call #page on a controller, you will get access to the model.  Models provided by Volt are automatically wrapped in a ReactiveValue.
+Volt comes with many built-in models, one is called 'page'.  If you call #page on a controller, you will get access to the model.  Models provided by Volt are automatically wrapped in a ReactiveValue so update events can be tracked.
 
 ```ruby
     page._name = 'Ryan'
@@ -353,9 +370,9 @@ Volt comes with many built-in models, one is called 'page'.  If you call #page o
     # => @'Ryan'
 ```
 
-Models act like a hash that you can access with getters and setters that start with an _  Prefixing with an underscore makes sure we don't accidentally try to call a method that doesn't exist and get back nil.  There is no need to define which fields a model has, they act similar to a hash, but with a shorter access and assign syntax.
+Models act like a hash that you can access with getters and setters that start with an _   If an underscore method is called that hasn't yet been assigned, you will get back a "nil model".  Prefixing with an underscore makes sure we don't accidentally try to call a method that doesn't exist and get back nil model instead of raising an exception.  There is no need to define which fields a model has, they act similar to a hash, but with a different access and assign syntax.
 
-Models also let you nest data:
+Models also let you nest data without creating the intermediate models:
 
 ```ruby
     page._settings._color = 'blue'
@@ -368,7 +385,7 @@ Models also let you nest data:
 
 Nested data is automatically setup when assigned.  In this case, page._settings is a model that is part of the page model.
 
-You can also append to a model if its not defined yet.
+You can also append to a model if its not defined yet.  In Volt models, plural properties are assumed to contain arrays (or more specifically ArrayModels)
 
 ```ruby
     page._items << 'item 1'
@@ -379,7 +396,7 @@ You can also append to a model if its not defined yet.
     # => @"item 1"
 ```
 
-An array model will automatically be setup to contain the items appended.
+ArrayModels can be appended to and accessed just like regular arrays.
 
 ## Provided Collections
 
@@ -398,7 +415,7 @@ Above I mentioned that Volt comes with many default collection models accessible
 
 ## Reactive Models
 
-Because all models provided by Volt are wrapped in a ReactiveValue, you can register listeners on them and be updated when values change.  You can also call methods on their values and get updates when the source's change.  Bindings also setup listeners.  Models should be the main place you store all data in Volt.  While you can use ReactiveValue's manually, most of the time you will want to just use something like the page model.
+Because all models provided by Volt are wrapped in a ReactiveValue, you can register listeners on them and be updated when values change.  You can also call methods on their values and get updates when the source's change.  Bindings also setup listeners.  Models should be the main place you store all data in Volt.  While you can use ReactiveValue's manually, most of the time you will want to just use something like the controller model.
 
 ## Model Events
 
@@ -483,7 +500,7 @@ You can get a normal array again by calling .to_a on an ArrayModel.
 
 # Controllers
 
-A controller can be any class in Volt, however it is common to have that class inherit from ModelController.  A model controller lets you specify a model that the controller works off of.  This is a common pattern in Volt.  To assign the current model for a controller, simply call the model method passing in one of the following:
+A controller can be any class in Volt, however it is common to have that class inherit from ModelController.  A model controller lets you specify a model that the controller works off of.  This is a common pattern in Volt.  The model for a controller can be assigned by one of the following:
 
 1. A symbol representing the name of a provided collection model:
 
@@ -495,21 +512,25 @@ A controller can be any class in Volt, however it is common to have that class i
     end
 ```
 
-This can also be done at anytime on the controller instance:
+2. Calling self.method = in a method:
 
 ```ruby
     class TodosController < ModelController
       def initialize
-        model :page
+        self.model = :page
       end
     end
 ```
+
+In methods, the #model method returns the current model.
 
 See the [provided collections](#provided-collections) section for a list of the available collection models.
 
 You can also provide your own object to model.
 
-Now any methods not defined on the TodosController will fall through to the provided model.  All views in views/{controller_name} will have this controller as the target for any ruby run in their bindings.  This means that calls on self (implicit or with self.) will have the model as their target (after calling through the controller).  This lets you add methods to the controller to control how the model is handled.
+In the example above any methods not defined on the TodosController will fall through to the provided model.  All views in views/{controller_name} will have this controller as the target for any ruby run in their bindings.  This means that calls on self (implicit or with self.) will have the model as their target (after calling through the controller).  This lets you add methods to the controller to control how the model is handled, or provide extra methods to the views.
+
+Volt is more similar to an MVVM architecture than an MVC architecture.  Instead of the controllers passing data off to the views, the controllers are the context for the views.  When using a ModelController, the controller automatically forwards all methods it does not handle to the model.  This is convienant since you can set a model in the controller and then access its properties directly with methods in bindings.  This lets you do something like ```{_name}``` instead of something like ```{@model._name}```
 
 Controllers in the app/home component do not need to be namespaced, all other components should namespace controllers like so:
 
@@ -525,9 +546,11 @@ Here "auth" would be the component name.
 
 # Components
 
-Apps are made up of Components.  Each folder under app/ is a component.  When you visit a route, it loads all of the files in the component on the front end, so new pages within the component can be rendered on the front end.  If a URL is visited that routes to a different component, the request will be loaded as a normal page load and all of that components files will be loaded.  You can think of components as the "reload boundary" between sections of your app.
+Apps are made up of Components.  Each folder under app/ is a component.  When you visit a route, it loads all of the files in the component on the front end, so new pages within the component can be rendered without a new http request.  If a URL is visited that routes to a different component, the request will be loaded as a normal page load and all of that components files will be loaded.  You can think of components as the "reload boundary" between sections of your app.
 
-You can also use controls (see below) from one component in another.  To do this, you must require the component from the component you wish to use them.  This can be done in the ```config/dependencies.rb``` file.  Just put
+## Dependencies
+
+You can also use controls (see below) from one component in another.  To do this, you must require the component from the component you wish to use them in.  This can be done in the ```config/dependencies.rb``` file.  Just put
 
 ```ruby
     component 'component_name'
@@ -550,13 +573,15 @@ Note above though that jquery and bootstrap are currently included by default.  
 
 **Note, asset management is still early, and likely will change quite a bit**
 
-In volt, assets such as JavaScript and CSS (or sass) are automatically included on the page for you.  Anything placed inside of a components asset folder is served at /assets (via [Sprockets](https://github.com/sstephenson/sprockets))  Link and script tags are automatically added for each css and js file in assets/css and assets/js respectively.  Files are included in their lexical order, so you can add numbers in front if you need to change the load order.
+In volt, assets such as JavaScript and CSS (or sass) are automatically included on the page for you.  Anything placed inside of a components asset/js or assets/css folder is served at /assets/{js,css} (via [Sprockets](https://github.com/sstephenson/sprockets))  Link and script tags are automatically added for each css and js file in assets/css and assets/js respectively.  Files are included in their lexical order, so you can add numbers in front if you need to change the load order.
 
 Any JS/CSS from an included component or component gem will be included as well.  By default [bootstrap](http://getbootstrap.com/) is provided by the volt-bootstrap gem.
 
+**Note: asset bundling is on the TODO list**
+
 ## Component Generator
 
-Components can easily be shared as a gem.  Volt provides a scaffold for component gems.  In a folder (not in a volt project), simply type: volt gem {component_name}  This will create the files needed for the gem.  Note that all volt component gems will be prefixed with volt- so they can easily be found by others.
+Components can easily be shared as a gem.  Volt provides a scaffold for component gems.  In a folder (not in a volt project), simply type: volt gem {component_name}  This will create the files needed for the gem.  Note that all volt component gems will be prefixed with volt- so they can easily be found by others on github and rubygems.
 
 While developing, you can use the component by placing the following in your Gemfile:
 
@@ -656,16 +681,33 @@ The above would search the following:
 | blog        | comments       | index.html   | :body     |
 | gems/blog   | comments       | index.html   | :body     |
 
-# Context in Controls
+Once the view file for the control or template is found, it will look for a matching controller.  If the control is specified as a local template, an empty ModelController will be used.  If a controller is found and loaded, a corrosponding "action" method will be called on it if its exists.  Action methods default to "index" unless the component or template path has two parts, in which case the last part is the action.
 
-Controls that render without a provided controller can access the context they were inserted in with the ```.parent``` method.  Most of the time you want to pass in any data that will be used.  But for things like calling methods on the parent controller, using ```.parent.some_method``` can be useful.
+# Control Arguments/Attributes
+
+Like other html tags, controls can be passed attributes.  These are then converted into a hash and passed as the first argument to the initialize method on the controller.  The standard ModelController's initialize will then assign each key/value in the attributes hash as instance values.  This makes it easy to access attributes passed in.
+
+```html
+
+<:Body>
+
+  <ul>
+    {#each _todos as todo}
+      <:todo name="{todo._name}" />
+    {/}
+  </ul>
+
+<:Todo>
+  <li>{@name}</li>
+
+```
 
 
 # Routes
 
-Routes in Volt are very different from traditional backend frameworks.  Since data is synchronized using websockets, routes are mainly used to serialize the state of the application in a pretty way.  When a page is first loaded, the URL is parsed with the routes and the params model's values are set from the URL.  Later if the params model is updated, the URL is updated based on the routes.
+Routes in Volt are very different from traditional backend frameworks.  Since data is synchronized using websockets, routes are mainly used to serialize the state of the application into the url in a pretty way.  When a page is first loaded, the URL is parsed with the routes and the params model's values are set from the URL.  Later if the params model is updated, the URL is updated based on the routes.
 
-This means that routes in volt have to go both from URL to params and params to URL.  It should also be noted that if a link is clicked and the controller/view to render the new URL is within the current component (or an included component), the page will not be reloaded, the URL will be updated with the HTML5 history API, and the params hash will reflect the new URL.  You can use the changes in params to render different views based on the URL.
+This means that routes in Volt have to be able to go both from URL to params and params to URL.  It should also be noted that if a link is clicked and the controller/view to render the new URL is within the current component (or an included component), the page will not be reloaded, the URL will be updated with the HTML5 history API, and the params hash will reflect the new URL.  You can use the changes in params to render different views based on the URL.
 
 ## Routes file
 
@@ -720,7 +762,7 @@ TODO
 
 # Data Store
 
-Volt provides a data store collection on the front-end and the back-end.  Unlike the other [collections](#provided-collections), all plural names are assumed to be collections (like an array), and all singular are assumed to be a model (like a hash).
+Volt provides a data store collection on the front-end and the back-end.  In store, all plural names are assumed to be collections (like an array), and all singular are assumed to be a model (like a hash).
 
 ```ruby
 store._things

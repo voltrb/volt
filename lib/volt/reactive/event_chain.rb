@@ -16,7 +16,12 @@ class ChainListener
   end
 
   def remove
-    raise "event chain already removed" if @removed
+    # raise "event chain already removed" if @removed
+    if @removed
+      puts "event chain already removed"
+      return
+    end
+
     @removed = true
     @event_chain.remove_object(self)
 
@@ -82,7 +87,8 @@ class EventChain
   def remove_object(chain_listener)
     @event_chain[chain_listener].each_pair do |event,listener|
       # Unbind each listener
-      listener.remove
+      # TODO: The if shouldn't be needed, but sometimes we get nil for some reason?
+      listener.remove if listener
     end
 
     @event_chain.delete(chain_listener)
