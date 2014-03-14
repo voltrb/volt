@@ -52,7 +52,7 @@ class StoreTasks
           update_data.delete(:_id)
           @@db[collection].update({:_id => id}, update_data)
         else
-          raise
+          return {:error => error.message}
         end
       end
 

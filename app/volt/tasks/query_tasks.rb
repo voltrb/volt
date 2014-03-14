@@ -22,8 +22,17 @@ class QueryTasks
     puts "Load data on #{collection.inspect} - #{query.inspect}"
     live_query.add_channel(@channel)
 
-    # Return the initial data
-    return live_query.initial_data
+    errors = {}
+
+    begin
+      # Get the initial data
+      initial_data = live_query.initial_data
+    rescue => exception
+      # Capture and pass up any exceptions
+      error = {:error => exception.message}
+    end
+
+    return initial_data, error
   end
 
   def initial_data

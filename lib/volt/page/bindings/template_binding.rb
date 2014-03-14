@@ -12,7 +12,7 @@ class TemplateBinding < BaseBinding
     @current_template = nil
 
     # Find the source for the getter binding
-    @path, section = value_from_getter(getter)
+    @path, section, @options = value_from_getter(getter)
 
     if section.is_a?(String)
       # Render this as a section

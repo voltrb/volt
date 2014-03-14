@@ -60,7 +60,11 @@ class Model
       trigger!('changed')
 
       # Let the persistor know something changed
-      @persistor.changed if @persistor
+      if @persistor
+        # the changed method on a persistor should return a promise that will
+        # be resolved when the save is complete, or fail with a hash of errors.
+        return @persistor.changed
+      end
     end
   end
   alias_method :assign_attributes, :attributes=
