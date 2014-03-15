@@ -266,7 +266,6 @@ class Model
 
   def save!
     if errors.size == 0
-      puts "SAVING: #{self.errors.inspect} - #{self.inspect} - #{options[:save_to].inspect} on #{self.inspect}"
       save_to = options[:save_to]
       if save_to
         if save_to.is_a?(ArrayModel)
@@ -274,8 +273,9 @@ class Model
           new_model = save_to.append(self.attributes)
 
           options[:save_to] = new_model
+
+          # TODO: return a promise that resolves if the append works
         else
-          puts "SAVE BUFFERED"
           # We have a saved model
           return save_to.assign_attributes(self.attributes)
         end
@@ -283,7 +283,7 @@ class Model
         raise "Model is not a buffer, can not be saved, modifications should be persisted as they are made."
       end
 
-      return true
+      return Promise.new.resolve({})
     else
       # Some errors, mark all fields
       self.class.validations.keys.each do |key|
@@ -291,7 +291,7 @@ class Model
       end
       trigger_for_methods!('changed', :errors, :marked_errors)
 
-      return false
+      return Promise.new.reject(errors)
     end
   end
 
