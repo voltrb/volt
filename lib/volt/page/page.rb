@@ -164,7 +164,7 @@ class Page
     main_controller = MainController.new
 
     # Setup main page template
-    TemplateRenderer.new(self, DomTarget.new, main_controller, 'CONTENT', main/main/main/main/main/body')
+    TemplateRenderer.new(self, DomTarget.new, main_controller, 'CONTENT', 'main/main/main/body')
 
     # Setup title listener template
     title_target = AttributeTarget.new
