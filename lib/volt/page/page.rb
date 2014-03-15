@@ -43,8 +43,6 @@ class Page
   attr_reader :url, :params, :page, :templates, :routes, :draw_cycle, :events
 
   def initialize
-    # debugger
-    puts "------ Page Loaded -------"
     @model_classes = {}
 
     # Run the code to setup the page

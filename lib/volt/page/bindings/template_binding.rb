@@ -1,5 +1,6 @@
 require 'volt/page/bindings/base_binding'
 require 'volt/page/template_renderer'
+require 'volt/page/bindings/template_binding/grouped_controllers'
 
 class TemplateBinding < BaseBinding
   def initialize(page, target, context, binding_name, binding_in_path, getter)
@@ -20,6 +21,12 @@ class TemplateBinding < BaseBinding
     else
       # Use the value passed in as the default arguments
       @arguments = section
+    end
+
+    # Sometimes we want multiple template bindings to share the same controller (usually
+    # when displaying a :Title and a :Body), this instance tracks those.
+    if @options && (controller_group = @options[:controller_group])
+      @grouped_controller = GroupedControllers.new(controller_group)
     end
 
     # Run the initial render
@@ -106,6 +113,14 @@ class TemplateBinding < BaseBinding
     return nil, nil
   end
 
+  # Called when the path changes.  If we are sharing a controller, clear the cached
+  # controller before we queue
+  def queue_update
+    @grouped_controller.clear if @grouped_controller
+
+    super
+  end
+
   def update
     full_path, controller_path = path_for_template(@path.cur, @section.cur)
     # puts "UPDATE: #{@path.inspect} - #{full_path.inspect}"
@@ -128,61 +143,36 @@ class TemplateBinding < BaseBinding
   def render_template(full_path, controller_path)
     args = @arguments ? [@arguments] : []
 
-    # TODO: at the moment a :body section and a :title will both initialize different
-    # controllers.  Maybe we should have a way to tie them together?
-    controller_class, action = get_controller(controller_path)
+    @controller = nil
 
-    if controller_class
-      # Setup the controller
-      current_context = controller_class.new(*args)
-    else
-      current_context = ModelController.new(*args)
+    # Fetch grouped controllers if we're grouping
+    @controller = @grouped_controller.get if @grouped_controller
+
+    # Otherwise, make a new controller
+    unless @controller
+      controller_class, action = get_controller(controller_path)
+
+      if controller_class
+        # Setup the controller
+        @controller = controller_class.new(*args)
+      else
+        @controller = ModelController.new(*args)
+      end
+
+      # Trigger the action
+      @controller.send(action) if @controller.respond_to?(action)
+
+      # Track the grouped controller
+      @grouped_controller.set(@controller) if @grouped_controller
     end
-    @controller = current_context
 
-    # Trigger the action
-    @controller.send(action) if @controller.respond_to?(action)
-
-    @current_template = TemplateRenderer.new(@page, @target, current_context, @binding_name, full_path)
+    @current_template = TemplateRenderer.new(@page, @target, @controller, @binding_name, full_path)
 
     call_ready
   end
 
-
-
-  # # The context for templates can be either a controller, or the original context.
-  # def render_template(full_path, controller_path)
-  #   # TODO: at the moment a :body section and a :title will both initialize different
-  #   # controllers.  Maybe we should have a way to tie them together?
-  #   controller_class, action = get_controller(controller_path)
-  #   if controller_class
-  #     args = []
-  #     puts "MODEL: #{@arguments.inspect}"
-  #     args << SubContext.new(@arguments) if @arguments
-  #
-  #     # Setup the controller
-  #     current_context = controller_class.new(*args)
-  #     @controller = current_context
-  #
-  #     # Trigger the action
-  #     @controller.send(action) if @controller.respond_to?(action)
-  #   else
-  #     # Pass the context directly
-  #     current_context = @context
-  #     @controller = nil
-  #   end
-  #
-  #   @current_template = TemplateRenderer.new(@page, @target, current_context, @binding_name, full_path)
-  #
-  #   call_ready
-  # end
-
   def call_ready
     if @controller
-      if @controller.respond_to?(:section=)
-        @controller.section = @current_template.section
-      end
-
       if @controller.respond_to?(:dom_ready)
         @controller.dom_ready
       end
@@ -190,6 +180,8 @@ class TemplateBinding < BaseBinding
   end
 
   def remove
+    @grouped_controller.clear if @grouped_controller
+
     if @path_changed_listener
       @path_changed_listener.remove
       @path_changed_listener = nil
