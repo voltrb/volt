@@ -30,13 +30,6 @@ require 'volt/benchmark/benchmark'
 require 'volt/page/draw_cycle'
 require 'volt/page/tasks'
 
-if RUBY_PLATFORM == 'opal'
-  require 'promise.rb'
-else
-  # Opal doesn't expose its promise library directly
-  spec = Gem::Specification.find_by_name("opal")
-  require(spec.gem_dir + "/stdlib/promise")
-end
 
 
 class Page

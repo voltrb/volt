@@ -108,6 +108,7 @@ class URL
           }
           console.log('found anchor: ', anchor);
           if (anchor && anchor.length > 0) {
+            console.log('scroll to: ', anchor.offset().top);
             $(document.body).scrollTop(anchor.offset().top);
           }
         }
