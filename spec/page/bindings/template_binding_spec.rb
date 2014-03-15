@@ -72,12 +72,12 @@ describe TemplateBinding do
 
   it "should find a matching component" do
     @templates = {
-      'comments/new/main/body' => ''
+      'comments/new/index/body' => ''
     }
 
     path, result = @template_binding.path_for_template('comments/new')
-    expect(path).to eq('comments/new/main/body')
-    expect(result).to eq(['comments', 'new_controller', 'main'])
+    expect(path).to eq('comments/new/index/body')
+    expect(result).to eq(['comments', 'new_controller', 'index'])
   end
 
   it "should lookup sub-templates within its own file" do
@@ -108,10 +108,10 @@ describe TemplateBinding do
 
   it "should lookup in a controller" do
     @templates = {
-      'main/nav/main/body' => ''
+      'main/nav/index/body' => ''
     }
 
-    expect(@template_binding.path_for_template('nav').first).to eq('main/nav/main/body')
+    expect(@template_binding.path_for_template('nav').first).to eq('main/nav/index/body')
   end
 
   it "should lookup in a controller/view" do
@@ -124,18 +124,18 @@ describe TemplateBinding do
 
   it "should lookup in a controller" do
     @templates = {
-      'main/nav/main/body' => ''
+      'main/nav/index/body' => ''
     }
 
-    expect(@template_binding.path_for_template('nav').first).to eq('main/nav/main/body')
+    expect(@template_binding.path_for_template('nav').first).to eq('main/nav/index/body')
   end
 
   it "should lookup in a component" do
     @templates = {
-      'nav/main/main/body' => ''
+      'nav/main/index/body' => ''
     }
 
-    expect(@template_binding.path_for_template('nav').first).to eq('nav/main/main/body')
+    expect(@template_binding.path_for_template('nav').first).to eq('nav/main/index/body')
   end
 
   it "should lookup in a component/controller/view" do
@@ -149,10 +149,10 @@ describe TemplateBinding do
 
   it "should let you force a sub template" do
     @templates = {
-      'nav/main/main/title' => '',
+      'nav/main/index/title' => '',
       'auth/login/new/title' => ''
     }
 
-    expect(@template_binding.path_for_template('nav', 'title').first).to eq('nav/main/main/title')
+    expect(@template_binding.path_for_template('nav', 'title').first).to eq('nav/main/index/title')
   end
 end
