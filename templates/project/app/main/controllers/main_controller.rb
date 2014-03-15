@@ -1,4 +1,4 @@
-class IndexController < ModelController
+class MainController < ModelController
   def index
     # Add code for when the main page is loaded
   end
