@@ -1,19 +1,20 @@
 <:Title>
-  {#template params._controller.or('main') + '/' + params._action.or('index'), "title"}
+  {#template main_path, "title", {controller_group: 'main'}}
 
 <:Body>
   <div class="container">
     <div class="header">
       <ul class="nav nav-pills pull-right">
-        <:nav action="" text="Home" />
-        <:nav action="about" text="About" />
+        <:nav href="/" text="Home" />
+        <:nav href="/blog" text="Blog" />
+        <:nav href="/about" text="About" />
       </ul>
       <h3 class="text-muted">Project name</h3>
     </div>
 
     <:volt:notices />
 
-    {#template params._controller.or('main') + '/' + params._action.or('index')}
+    {#template main_path, 'body', {controller_group: 'main'}}
 
     <div class="footer">
       <p>&copy; Company 2014</p>
@@ -21,9 +22,8 @@
 
   </div>
 
-
 <:Nav>
-  <li class="{#if params._action.or('') == @action}active{/}">
-    <a href="/{@action}">{@text}</a>
+  <li class="{#if url.path.split('/')[1] == @href.split('/')[1]}active{/}">
+    <a href="{@href}">{@text}</a>
   </li>
 

@@ -49,6 +49,8 @@ class URL
 
     scroll
 
+    trigger_for_methods!('changed', :path)
+
     return true
   end
 

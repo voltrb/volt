@@ -65,15 +65,15 @@ class TemplateBinding < BaseBinding
   # until a file is either found or the component level is reached.
   #
   # The defaults are as follows:
-  # 1. component - home
-  # 2. controller - index
-  # 3. view - index
+  # 1. component - main
+  # 2. controller - main
+  # 3. view - main
   # 4. section - body
   def path_for_template(lookup_path, force_section=nil)
     parts = lookup_path.split('/')
     parts_size = parts.size
 
-    default_parts = ['main', 'main', 'main', 'body']
+    default_parts = ['main', 'main', 'index', 'body']
 
     # When forcing a sub template, we can default the sub template section
     default_parts[-1] = force_section if force_section
@@ -222,7 +222,7 @@ class TemplateBinding < BaseBinding
       parts = controller_path[0..-2].map {|v| v.gsub('-', '_').camelize }
 
       # Home doesn't get namespaced
-      if parts.first == 'Home'
+      if parts.first == 'Main'
         parts.shift
       end
 
