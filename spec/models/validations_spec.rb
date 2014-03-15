@@ -2,16 +2,20 @@ require 'volt/models'
 
 class TestModel < Model
   validate :_name, length: 4
-end
-
-class TestModel2 < Model
-  validate :_name, length: {message: 'needs to be longer', length: 50}
+  validate :_description, length: {message: 'needs to be longer', length: 50}
+  validate :_username, presence: true
 end
 
 
 describe Model do
   it "should validate the name" do
-    expect(TestModel.new.errors).to eq({:_name => ["must be at least 4 characters"]})
+    expect(TestModel.new.errors).to eq(
+      {
+        :_name => ["must be at least 4 characters"],
+        :_description => ["needs to be longer"],
+        :_username => ["must be specified"]
+      }
+    )
   end
 
   it "should show marked validations once they are marked" do
@@ -35,24 +39,38 @@ describe Model do
 
     model.save!
 
-    expect(model.marked_errors).to eq(
-      {
-        :_name => ["must be at least 4 characters"]
-      }
-    )
+    expect(model.marked_errors.keys).to eq([:_name, :_description, :_username])
   end
 
-  it "should allow custom errors" do
-    model = TestModel2.new
+  describe "length" do
+    it "should allow custom errors on length" do
+      model = TestModel.new
 
-    expect(model.marked_errors).to eq({})
+      expect(model.marked_errors).to eq({})
 
-    model.save!
+      model.mark_field!(:_description)
 
-    expect(model.marked_errors).to eq(
-      {
-        :_name => ["needs to be longer"]
-      }
-    )
+      expect(model.marked_errors).to eq(
+        {
+          :_description => ["needs to be longer"]
+        }
+      )
+    end
+  end
+
+  describe "presence" do
+    it "should validate presence" do
+      model = TestModel.new
+
+      expect(model.marked_errors).to eq({})
+
+      model.mark_field!(:_username)
+
+      expect(model.marked_errors).to eq(
+        {
+          :_username => ["must be specified"]
+        }
+      )
+    end
   end
 end
