@@ -3,7 +3,7 @@ require 'volt/models/array_model'
 require 'volt/models/model_helpers'
 require 'volt/reactive/object_tracking'
 require 'volt/models/model_hash_behaviour'
-require 'volt/models/validations/validations'
+require 'volt/models/validations'
 require 'volt/models/model_state'
 
 
@@ -310,7 +310,7 @@ class Model
     if state == :loaded
       setup_buffer(model)
     else
-      self.parent.fetch do
+      self.parent.then do
         setup_buffer(model)
       end
     end

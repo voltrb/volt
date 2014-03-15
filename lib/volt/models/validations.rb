@@ -1,5 +1,6 @@
 # require 'volt/models/validations/errors'
-require 'volt/models/validations/length'
+require 'volt/models/validators/length_validator'
+require 'volt/models/validators/presence_validator'
 
 # Include in any class to get validation logic
 module Validations
@@ -67,16 +68,30 @@ module Validations
         options.each_pair do |validation, args|
           # Call the specific validator, then merge the results back
           # into one large errors hash.
-          case validation
-          when :length
-            merge.call(Length.validate(self, field_name, args))
+          klass = validation_class(validation)
+
+          if klass
+            validate_with(merge, klass, field_name, args)
+          else
+            raise "validtion type #{validation} is not specified."
           end
         end
       end
     end
 
-    # puts "ERROR: #{errors.inspect}"
-
     return errors
   end
+
+  private
+    # calls the validate method on the class, passing the right arguments.
+    def validate_with(merge, klass, field_name, args)
+      return merge.call(klass.validate(self, field_name, args))
+    end
+
+    def validation_class(validation)
+      return {
+        :length => Length,
+        :presence => Presence
+        }[validation]
+    end
 end

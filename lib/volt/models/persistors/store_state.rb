@@ -17,10 +17,10 @@ module StoreState
     # Trigger changed on the 'state' method
     @model.trigger_for_methods!('changed', :state, :loaded?)
 
-    if @state == :loaded && @fetch_callbacks
+    if @state == :loaded && @fetch_promises
       # Trigger each waiting fetch
-      @fetch_callbacks.compact.each {|fc| fc.call(@model) }
-      @fetch_callbacks = nil
+      @fetch_promises.compact.each {|fp| fp.resolve(@model) }
+      @fetch_promises = nil
     end
   end
 

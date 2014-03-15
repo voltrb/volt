@@ -106,18 +106,24 @@ module Persistors
       return ReactiveValue.new(model)
     end
 
-    # Fetch does a one time load of the data on an unloaded model and returns
-    # the result.
-    def fetch(&block)
+    # Returns a promise that is resolved/rejected when the query is complete.  Any
+    # passed block will be passed to the promises then.  Then will be passed the model.
+    def then(&block)
+      promise = Promise.new
+
+      promise = promise.then(&block) if block
+
       # puts "FETCH: #{@state.inspect}"
       if @state == :loaded
-        block.call(@model)
+        promise.resolve(@model)
       else
-        @fetch_callbacks ||= []
-        @fetch_callbacks << block
+        @fetch_promises ||= []
+        @fetch_promises << promise
 
         load_data
       end
+
+      return promise
     end
 
     # Called from backend

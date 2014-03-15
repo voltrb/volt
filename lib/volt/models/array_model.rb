@@ -49,14 +49,14 @@ class ArrayModel < ReactiveArray
     end
   end
 
-  tag_method(:fetch) do
+  tag_method(:then) do
     destructive!
   end
-  def fetch(*args, &block)
+  def then(*args, &block)
     if @persistor
-      return @persistor.fetch(*args, &block)
+      return @persistor.then(*args, &block)
     else
-      raise "this model's persistance layer does not support fetch, try using store"
+      raise "this model's persistance layer does not support then, try using store"
     end
   end
 
