@@ -10,7 +10,7 @@ class IndexFiles
 
     @@router ||= Routes.new.define do
       # Find the route file
-      home_path = component_paths.component_path('home')
+      home_path = component_paths.component_path('main')
       route_file = File.read("#{home_path}/config/routes.rb")
       eval(route_file)
     end
@@ -41,11 +41,11 @@ class IndexFiles
 
   def javascript_files
     # TODO: Cache somehow, this is being loaded every time
-    AssetFiles.new('home', @component_paths).javascript_files(@opal_files)
+    AssetFiles.new('main', @component_paths).javascript_files(@opal_files)
   end
 
   def css_files
-    AssetFiles.new('home', @component_paths).css_files
+    AssetFiles.new('main', @component_paths).css_files
   end
 
 
