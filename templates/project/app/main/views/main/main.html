@@ -1,0 +1,29 @@
+<:Title>
+  {#template params._controller.or('index') + '/' + params._action.or('home'), "title"}
+
+<:Body>
+  <div class="container">
+    <div class="header">
+      <ul class="nav nav-pills pull-right">
+        <:nav action="" text="Home" />
+        <:nav action="about" text="About" />
+      </ul>
+      <h3 class="text-muted">Project name</h3>
+    </div>
+
+    <:volt:notices />
+
+    {#template params._controller.or('index') + '/' + params._action.or('home')}
+
+    <div class="footer">
+      <p>&copy; Company 2014</p>
+    </div>
+
+  </div>
+
+
+<:Nav>
+  <li class="{#if params._action.or('') == @action}active{/}">
+    <a href="/{@action}">{@text}</a>
+  </li>
+
