@@ -43,7 +43,7 @@ class CLI
       components_folder = File.join(Volt.root, '/public/components')
       puts "CF: #{components_folder}"
       FileUtils.mkdir_p(components_folder)
-      File.open(File.join(components_folder, '/home.js'), 'w') do |file|
+      File.open(File.join(components_folder, '/main.js'), 'w') do |file|
         file.write(javascript_code)
       end
     end

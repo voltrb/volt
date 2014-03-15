@@ -83,7 +83,7 @@ class AssetFiles
     else
       opal_js_files << '/assets/volt/page/page.js'
     end
-    opal_js_files << '/components/home.js'
+    opal_js_files << '/components/main.js'
 
     javascript_files += opal_js_files
 
