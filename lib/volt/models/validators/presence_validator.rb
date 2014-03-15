@@ -3,7 +3,7 @@ class PresenceValidator
     errors = {}
     value = model.send(field_name)
     if !value || value.blank?
-      errors[field_name] = ["must be specified"]
+      errors[field_name] = [args[:message] || "must be specified"]
     end
 
     return errors
