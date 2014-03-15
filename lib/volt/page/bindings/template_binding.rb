@@ -73,7 +73,7 @@ class TemplateBinding < BaseBinding
     parts = lookup_path.split('/')
     parts_size = parts.size
 
-    default_parts = ['home', 'index', 'index', 'body']
+    default_parts = ['main', 'main', 'main', 'body']
 
     # When forcing a sub template, we can default the sub template section
     default_parts[-1] = force_section if force_section

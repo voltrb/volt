@@ -1,9 +1,9 @@
 class MainController < ModelController
   def index
-    # Add code for when the main page is loaded
+    # Add code for when the index view is loaded
   end
 
-  def home
-    # Add code for when the home view is loaded
+  def about
+    # Add code for when the about view is loaded
   end
 end

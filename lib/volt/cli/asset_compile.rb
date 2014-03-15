@@ -36,7 +36,7 @@ class CLI
     def write_component_js
       component_paths = ComponentPaths.new(Volt.root)
 
-      code = ComponentCode.new('home', component_paths).code
+      code = ComponentCode.new('main', component_paths).code
 
       javascript_code = Opal.compile(code)
 

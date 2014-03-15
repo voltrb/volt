@@ -10,8 +10,8 @@ class ComponentHtmlRenderer
     req = Rack::Request.new(env)
     path = req.path
 
-    # For now just assume home
-    component_name = 'home'
+    # For now just assume main
+    component_name = 'main'
 
     page = Page.new
 
