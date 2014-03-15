@@ -68,7 +68,7 @@ module Validations
         options.each_pair do |validation, args|
           # Call the specific validator, then merge the results back
           # into one large errors hash.
-          klass = validation_class(validation)
+          klass = validation_class(validation, args)
 
           if klass
             validate_with(merge, klass, field_name, args)
@@ -88,10 +88,11 @@ module Validations
       return merge.call(klass.validate(self, field_name, args))
     end
 
-    def validation_class(validation)
-      return {
-        :length => Length,
-        :presence => Presence
-        }[validation]
+    def validation_class(validation, args)
+      begin
+        Object.const_get(:"#{validation.camelize}Validator")
+      rescue NameError => e
+        puts "Unable to find #{validation} validator"
+      end
     end
 end
