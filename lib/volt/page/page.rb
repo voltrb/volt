@@ -161,10 +161,10 @@ class Page
     # Do the initial url params parse
     @url_tracker.url_updated(true)
 
-    main_controller = IndexController.new
+    main_controller = MainController.new
 
     # Setup main page template
-    TemplateRenderer.new(self, DomTarget.new, main_controller, 'CONTENT', 'home/index/index/body')
+    TemplateRenderer.new(self, DomTarget.new, main_controller, 'CONTENT', main/main/main/main/main/body')
 
     # Setup title listener template
     title_target = AttributeTarget.new
@@ -173,7 +173,7 @@ class Page
       # puts "SET TITLE: #{title.inspect}: #{title_target.inspect}"
       `document.title = title;`
     end
-    TemplateRenderer.new(self, title_target, main_controller, "main", "home/index/index/title")
+    TemplateRenderer.new(self, title_target, main_controller, "main", "main/main/main/title")
 
     # TODO: this dom ready should really happen in the template renderer
     main_controller.dom_ready if main_controller.respond_to?(:dom_ready)

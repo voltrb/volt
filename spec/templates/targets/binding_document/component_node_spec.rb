@@ -23,7 +23,7 @@ describe ComponentNode do
   #
   #   page = Page.new
   #
-  #   template = ViewParser.new(view, 'home/index/index/title')
+  #   template = ViewParser.new(view, main/main/main/index/index/title')
   #
   #   page.add_template
   # end

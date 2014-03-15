@@ -19,7 +19,7 @@ describe ContentBinding do
     binding = lambda {|page, target, context, id| ContentBinding.new(page, target, context, id, Proc.new { self[:name] }) }
 
     templates = {
-      'home/index' => {
+      'main/main' => {
         'html' => 'hello <!-- $1 --><!-- $/1 -->',
         'bindings' => {1 => [binding]}
       }
@@ -30,7 +30,7 @@ describe ContentBinding do
 
     dom = AttributeTarget.new(0)
 
-    TemplateRenderer.new(page, dom, context, 'main', 'home/index')
+    TemplateRenderer.new(page, dom, context, 'main', 'main/main')
 
     expect(dom.to_html).to eq('hello jimmy')
   end
