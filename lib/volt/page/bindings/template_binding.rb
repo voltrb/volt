@@ -173,6 +173,12 @@ class TemplateBinding < BaseBinding
 
   def call_ready
     if @controller
+      # Set the current section on the controller if it wants so it can manipulate
+      # the dom if needed
+      if @controller.respond_to?(:section=)
+        @controller.section = @current_template.section
+      end
+
       if @controller.respond_to?(:dom_ready)
         @controller.dom_ready
       end
