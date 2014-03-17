@@ -2,8 +2,6 @@ require 'volt/page/bindings/base_binding'
 
 class EachBinding < BaseBinding
   def initialize(page, target, context, binding_name, getter, variable_name, template_name)
-    # puts "New EACH Binding"
-
     super(page, target, context, binding_name)
 
     @item_name = variable_name
@@ -53,7 +51,6 @@ class EachBinding < BaseBinding
 
   def item_added(position)
     # ObjectTracker.enable_cache
-    # puts "ADDED 1"
     binding_name = @@binding_number
     @@binding_number += 1
 
@@ -82,7 +79,6 @@ class EachBinding < BaseBinding
     size = @templates.size
     if size > 0
       start_index.upto(size-1) do |index|
-        puts "UP INDEX: #{index}"
         @templates[index].context.locals[:index].cur = index
       end
     end
@@ -100,7 +96,6 @@ class EachBinding < BaseBinding
 
   # When this each_binding is removed, cleanup.
   def remove
-    # puts "Remove Each"
     @added_listener.remove
     @added_listener = nil
 

@@ -62,14 +62,12 @@ class Listener
 
   # Removes the listener from where ever it was created.
   def remove
-    # puts "FAIL:" if @removed
     if @removed
       # raise "event #{@event} already removed"
       puts "event #{@event} already removed"
       return
     end
 
-    # puts "e rem: #{@event} on #{@klass.inspect}"
     if DEBUG && RUBY_PLATFORM == 'opal'
       @@all_events.delete(self) if @@all_events
 
@@ -80,8 +78,6 @@ class Listener
 
     @removed = true
     @klass.remove_listener(@event, self)
-
-    # puts "Removed Listener for: #{@event} - #{@scope_provider && @scope_provider.scope.inspect} from #{@klass.inspect}"
 
     # We need to clear these references to free the memory
     @scope_provider = nil
@@ -101,7 +97,6 @@ module Events
   # Add a listener for an event
   def on(event, scope_provider=nil, &block)
 
-    # puts "Register: #{event} on #{self.inspect}"
     event = event.to_sym
 
     @has_listeners = true
@@ -177,15 +172,10 @@ module Events
 
   def trigger!(event, filter=nil, *args)
     are_reactive = reactive?
-    # ObjectTracker.process_queue if !are_reactive
-    # puts "DT"
-    # insp = self.inspect
-    # puts "TRIGGER #{event} on #{insp}"
 
     event = event.to_sym
 
     if @listeners && @listeners[event]
-      # puts "LISTENERS FOR #{event} on #{self.inspect} - #{@listeners[event].inspect}"
       # TODO: We have to dup here because one trigger might remove another
       @listeners[event].dup.each do |listener|
         # Call the event on each listener
@@ -194,7 +184,6 @@ module Events
         # if we aren't reactive, we should pass to all of our reactive listeners, since they
         # just proxy us.
         # If the filter exists, check it
-        # puts "CHECK #{listener.inspect} : #{self.inspect} -- #{listener.klass.inspect}"
         if (!filter || (!are_reactive && listener.scope_provider.reactive?) || filter.call(listener.scope))
           listener.call(filter, *args)
         end

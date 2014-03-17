@@ -208,7 +208,6 @@ class ReactiveArray# < Array
     self.trigger_by_scope!(event_name, *passed_args) do |scope|
       # method_name, *args, block = scope
       method_name, args, block = split_scope(scope)
-      # puts "SCOPE CHECK: TFI: #{method_name.inspect} - #{args.inspect} on #{self.inspect}"
 
       result = case method_name
       when nil

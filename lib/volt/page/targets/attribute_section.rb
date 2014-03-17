@@ -7,7 +7,6 @@ class AttributeSection < BaseSection
   def initialize(target, binding_name)
     @target = target
     @binding_name = binding_name
-    # puts "init attr section on #{binding_name}"
   end
 
   def text=(text)

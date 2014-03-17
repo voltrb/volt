@@ -12,7 +12,6 @@ class BaseBinding
   attr_accessor :target, :context, :binding_name
 
   def initialize(page, target, context, binding_name)
-    # puts "NEW #{context.inspect} - #{self.inspect}"
     @page = page
     @target = target
     @context = context

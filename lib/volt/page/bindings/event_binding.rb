@@ -42,7 +42,6 @@ class EventBinding < BaseBinding
 
   # Remove the event binding
   def remove
-    # puts "REMOVE EL FOR #{@event}"
     @page.events.remove(@event_name, self)
   end
 end

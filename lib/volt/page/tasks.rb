@@ -57,12 +57,10 @@ class Tasks
   # a query.
   def notify_query(method_name, collection, query, *args)
     query_obj = Persistors::ArrayStore.query_pool.lookup(collection, query)
-    # puts "FOUND QUERY: #{collection.inspect} - #{query.inspect} - #{query_obj.inspect} - #{method_name} - #{query_obj.instance_variable_get('@stores').inspect}"
     query_obj.send(method_name, *args)
   end
 
   def reload
-    puts "RELOAD"
     # Stash the current page value
     value = JSON.dump($page.page.cur.to_h.reject {|k,v| v.reactive? })
 

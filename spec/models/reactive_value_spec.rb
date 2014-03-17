@@ -4,8 +4,6 @@ class TestYield
   def call_with_yield
     yield(1)
     yield(2)
-  # rescue => e
-  #   puts "ERROR: #{e.inspect}"
   end
 end
 class SampleClass

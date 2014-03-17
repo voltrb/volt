@@ -41,7 +41,6 @@ class CLI
       javascript_code = Opal.compile(code)
 
       components_folder = File.join(Volt.root, '/public/components')
-      puts "CF: #{components_folder}"
       FileUtils.mkdir_p(components_folder)
       File.open(File.join(components_folder, '/main.js'), 'w') do |file|
         file.write(javascript_code)

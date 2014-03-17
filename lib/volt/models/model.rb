@@ -318,8 +318,6 @@ class Model
       end
     end
 
-    # puts "SAVE TO:: #{model.options[:save_to].inspect} for #{model.inspect}"
-
     return ReactiveValue.new(model)
   end
 
@@ -340,7 +338,6 @@ class Model
     def __clear_element(key)
       # Cleanup any tracking on an index
       # TODO: is this send a security risk?
-      # puts "TRY TO CLEAR: #{key} - #{@reactive_element_listeners && @reactive_element_listeners.keys.inspect}"
       if @reactive_element_listeners && @reactive_element_listeners[key]
         @reactive_element_listeners[key].remove
         @reactive_element_listeners.delete(key)

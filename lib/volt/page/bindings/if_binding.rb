@@ -2,7 +2,6 @@ require 'volt/page/bindings/base_binding'
 
 class IfBinding < BaseBinding
   def initialize(page, target, context, binding_name, branches)
-    # puts "New If Binding: #{binding_name}, #{getter.inspect}"
     super(page, target, context, binding_name)
 
     getter, template_name = branches[0]

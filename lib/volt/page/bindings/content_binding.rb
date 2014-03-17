@@ -2,7 +2,6 @@ require 'volt/page/bindings/base_binding'
 
 class ContentBinding < BaseBinding
   def initialize(page, target, context, binding_name, getter)
-    # puts "new content binding: #{getter}"
     super(page, target, context, binding_name)
 
     # Find the source for the content binding

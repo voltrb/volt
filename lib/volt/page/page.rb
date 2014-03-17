@@ -62,6 +62,9 @@ class Page
         });
       }
     end
+
+    # Initialize tasks so we can get the reload message
+    self.tasks if Volt.env.development?
   end
 
   def flash
@@ -128,13 +131,10 @@ class Page
   end
 
   def add_model(model_name)
-    # puts "ADD MODEL: #{model_name.inspect} - #{model_name.camelize.inspect}"
-
     @model_classes[["*", "_#{model_name}"]] = Object.const_get(model_name.camelize)
   end
 
   def add_template(name, template, bindings)
-    # puts "Add Template: #{name}\n#{template.inspect}\n#{bindings.inspect}"
     @templates ||= {}
     @templates[name] = {'html' => template, 'bindings' => bindings}
     # puts "Add Template: #{name}"
@@ -163,7 +163,6 @@ class Page
     title_target = AttributeTarget.new
     title_target.on('changed') do
       title = title_target.to_html
-      # puts "SET TITLE: #{title.inspect}: #{title_target.inspect}"
       `document.title = title;`
     end
     TemplateRenderer.new(self, title_target, main_controller, "main", "main/main/main/title")

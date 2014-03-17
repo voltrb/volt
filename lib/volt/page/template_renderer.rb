@@ -3,10 +3,7 @@ require 'volt/page/bindings/base_binding'
 class TemplateRenderer < BaseBinding
   attr_reader :context
   def initialize(page, target, context, binding_name, template_name)
-    # puts "new template renderer: #{context.inspect} - #{binding_name.inspect}"
     super(page, target, context, binding_name)
-
-    # puts "Template Name: #{template_name}"
 
     @sub_bindings = []
 
@@ -20,17 +17,7 @@ class TemplateRenderer < BaseBinding
   end
 
   def remove
-    # puts "Remove Template: #{self} - #{@sub_bindings.inspect}"
-
-    # Remove all of the sub-bindings
-    # @sub_bindings.each(&:remove)
-
-    @sub_bindings.each do |binding|
-      # puts "REMOVE: #{binding.inspect}"
-      binding.remove
-      # puts "REMOVED"
-    end
-
+    @sub_bindings.each(&:remove)
     @sub_bindings = []
 
     super

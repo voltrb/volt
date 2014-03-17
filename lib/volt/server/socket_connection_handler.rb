@@ -51,7 +51,6 @@ class SocketConnectionHandler < SockJS::Session
   end
 
   def closed
-    puts "CHANNEL CLOSED: #{self.inspect}"
     # Remove ourself from the available channels
     @@channels.delete(self)
 

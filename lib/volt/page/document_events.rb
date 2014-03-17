@@ -21,14 +21,11 @@ class DocumentEvents
 
     end
 
-    # puts "Register: #{event} - #{binding.binding_name} - #{binding.object_id}"
-
     @events[event][binding.binding_name] ||= {}
     @events[event][binding.binding_name][binding.object_id] = handler
   end
 
   def handle(event_name, event, target)
-    # puts "Handle: #{event_name} on #{target}"
     element = Element.find(target)
 
     loop do
@@ -37,8 +34,6 @@ class DocumentEvents
       # TODO: Sometimes the event doesn't exist, but we still get
       # an event.
       handlers = @events[event_name]
-      # puts "EVENT: #{event_name} - #{handlers.inspect} for #{element.id}"
-      # `console.log('target: ', target);`
       handlers = handlers[element.id] if handlers
 
       if handlers

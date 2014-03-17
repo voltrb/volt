@@ -101,7 +101,6 @@ class ReactiveValue < BasicObject
       # TODO: Should cache the lookup on pass_reactive
       pass_args = reactive_manager.unwrap_if_pass_reactive(in_args, method_name, val)
 
-      # puts "GET #{method_name.inspect}"
       val.__send__(method_name, *pass_args, &block)
     end
 
@@ -114,7 +113,6 @@ class ReactiveValue < BasicObject
     # result = result.with(block_reactives) if block
 
     # if args.size == 0 || method_name == :[]
-      # puts "STORE: #{method_name} - #{args.inspect}"
       # @reactive_cache[[method_name, args.map(&:object_id)]] = result
     # end
 
@@ -144,7 +142,6 @@ class ReactiveValue < BasicObject
   # end
 
   def respond_to_missing?(name, include_private=false)
-    puts "RT"
     cur.respond_to?(name)
   end
 
@@ -244,7 +241,6 @@ class ReactiveManager
   def cur(shallow=false, ignore_cache=false)
     # Return from cache if it is cached
     if @cur_cache && !shallow && !ignore_cache
-      # puts "From Cache: #{@cur_cache.inspect}"
       return @cur_cache
     end
 
@@ -265,8 +261,6 @@ class ReactiveManager
       result = result.cur
     end
 
-    # puts "CUR FOR: #{result.inspect}"
-
     return result
   end
 
@@ -275,14 +269,11 @@ class ReactiveManager
     if has_listeners?
       current_obj = cur(false, true)
       should_attach = current_obj.respond_to?(:on)
-      # puts "SA #{should_attach} - #{current_obj.inspect}"
 
       if should_attach
         if !@cur_cache || current_obj.object_id != @cur_cache.object_id
-          # puts "CHANGED FROM: #{@cur_cache.inspect} to #{current_obj.inspect} - #{current_obj.object_id} vs #{@cur_cache.object_id}"
           remove_followers
 
-          # puts "SET TO: #{current_obj.inspect} on #{self.inspect}"
           @cur_cache_chain_listener = self.event_chain.add_object(current_obj)
         end
       else
@@ -295,7 +286,6 @@ class ReactiveManager
   end
 
   def remove_followers
-    # puts "REMOVE FOLLOWERS: #{@cur_cache.inspect} on #{self.inspect}"
     # Remove from previous
     if @cur_cache
       @cur_cache = nil

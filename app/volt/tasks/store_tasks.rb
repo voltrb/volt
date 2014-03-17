@@ -32,7 +32,6 @@ class StoreTasks
   end
 
   def save(collection, data)
-    puts "Insert: #{data.inspect} on #{collection.inspect}"
     data = data.symbolize_keys
 
     errors = model_errors(collection, data)
@@ -56,7 +55,6 @@ class StoreTasks
         end
       end
 
-      puts "SAVE: #{@channel.inspect}"
       QueryTasks.live_query_pool.updated_collection(collection, @channel)
       return {}
     else
@@ -65,7 +63,6 @@ class StoreTasks
   end
 
   def delete(collection, id)
-    puts "DELETE: #{collection.inspect} - #{id.inspect}"
     @@db[collection].remove('_id' => id)
 
     QueryTasks.live_query_pool.updated_collection(collection, @channel)

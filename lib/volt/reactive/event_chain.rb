@@ -67,8 +67,6 @@ class EventChain
   # We can chain our events to any other object that includes
   # Events
   def add_object(object, &block)
-    # puts "ADD OBJECT: #{object.inspect} to #{self.inspect}"
-
     chain_listener = ChainListener.new(self, object, block)
 
     listeners = {}

@@ -69,6 +69,7 @@ class Server
   def setup_change_listener
     # Setup the listeners for file changes
     listener = Listen.to("#{@app_path}/") do |modified, added, removed|
+      puts "file changed, sending reload"
       SocketConnectionHandler.send_message_all(nil, 'reload')
     end
     listener.start

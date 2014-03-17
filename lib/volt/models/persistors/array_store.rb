@@ -15,7 +15,6 @@ module Persistors
     end
 
     def initialize(model, tasks=nil)
-      # puts "NEW ARRAY STORE FOR #{model.inspect}"
       super
 
       query = @model.options[:query]
@@ -91,7 +90,6 @@ module Persistors
         end
       end
 
-      # puts "IN QUERY: #{query.inspect} - #{self.inspect}"
       @query_listener = @@query_pool.lookup(collection, query) do
         # Create if it does not exist
         QueryListener.new(@@query_pool, @tasks, collection, query)
@@ -113,7 +111,6 @@ module Persistors
 
       promise = promise.then(&block) if block
 
-      # puts "FETCH: #{@state.inspect}"
       if @state == :loaded
         promise.resolve(@model)
       else
@@ -129,7 +126,6 @@ module Persistors
     # Called from backend
     def add(index, data)
       $loading_models = true
-      # puts "INSERT: #{data.inspect} into #{self.inspect}"
 
       new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
 
@@ -138,7 +134,6 @@ module Persistors
         # Find the existing model, or create one
         new_model = @@identity_map.find(data['_id']) { @model.new_model(data.symbolize_keys, new_options, :loaded) }
 
-        # puts "ADD: #{new_model.attributes.inspect}"
         @model.insert(index, new_model)
       end
 
@@ -183,7 +178,6 @@ module Persistors
       if defined?($loading_models) && $loading_models
         return
       else
-        puts "delete #{channel_name} - #{model.attributes[:_id]}"
         @tasks.call('StoreTasks', 'delete', channel_name, model.attributes[:_id])
       end
     end

@@ -64,7 +64,6 @@ module Persistors
         end
 
         @tasks.call('StoreTasks', 'save', collection, self_attributes) do |errors|
-          # puts "SAVE GOT: #{errors.inspect}"
           if errors.size == 0
             promise.resolve
           else

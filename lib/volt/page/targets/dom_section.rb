@@ -45,7 +45,6 @@ class DomSection < BaseSection
   end
 
   def insert_anchor_before(binding_name, insert_after_binding)
-    puts "insert_anchor_before"
     node = find_by_comment("$#{insert_after_binding}")
     Element.find(node).before("<!-- $#{binding_name} --><!-- $/#{binding_name} -->")
   end

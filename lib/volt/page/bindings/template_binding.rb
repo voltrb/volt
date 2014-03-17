@@ -4,7 +4,6 @@ require 'volt/page/bindings/template_binding/grouped_controllers'
 
 class TemplateBinding < BaseBinding
   def initialize(page, target, context, binding_name, binding_in_path, getter)
-    # puts "New template binding: #{context.inspect} - #{binding_name.inspect}"
     super(page, target, context, binding_name)
 
     # Binding in path is the path for the template this binding is in
@@ -123,7 +122,6 @@ class TemplateBinding < BaseBinding
 
   def update
     full_path, controller_path = path_for_template(@path.cur, @section.cur)
-    # puts "UPDATE: #{@path.inspect} - #{full_path.inspect}"
 
     @current_template.remove if @current_template
 

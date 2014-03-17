@@ -3,7 +3,6 @@ require 'volt/page/targets/attribute_target'
 
 class AttributeBinding < BaseBinding
   def initialize(page, target, context, binding_name, attribute_name, getter)
-    # puts "New Attribute Binding: #{binding_name}, #{attribute_name}, #{getter}"
     super(page, target, context, binding_name)
 
     @attribute_name = attribute_name
@@ -37,14 +36,11 @@ class AttributeBinding < BaseBinding
     case @attribute_name
     when 'value'
       current_value = element.value
-      # puts "NEW VAL: #{current_value} : #{@value.inspect}"
     else
       current_value = element.is(':checked')
     end
 
-    # puts "ASSIGN #{current_value}"
     @value.cur = current_value
-    # puts "ASSIGNED"
   end
 
   def element
@@ -91,7 +87,6 @@ class AttributeBinding < BaseBinding
   end
 
   def remove
-    # puts "REMOVE #{self.inspect}"
     # Unbind events, leave the element there since attribute bindings
     # aren't responsible for it being there.
     case @attribute_name
