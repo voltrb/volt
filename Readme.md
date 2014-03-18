@@ -1,4 +1,3 @@
-![Volt](https://raw.github.com/voltrb/volt/master/docs/volt-logo.jpg)
 [![Gem Version](https://badge.fury.io/rb/volt.png)](http://badge.fury.io/rb/volt)
 [![Code Climate](https://codeclimate.com/github/voltrb/volt.png)](https://codeclimate.com/github/voltrb/volt)
 [![Build Status](https://travis-ci.org/voltrb/volt.png?branch=master)](https://travis-ci.org/voltrb/volt)
