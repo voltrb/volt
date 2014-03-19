@@ -14,7 +14,14 @@ Instead of syncing data between the client and server via HTTP, volt uses a pers
 
 Pages HTML is written in a handlebars like template language.  Volt uses data flow/reactive programming to automatically and intelligently propagate changes to the DOM (or anything other code wanting to know when a value updates)  When something in the DOM changes, Volt intelligently updates only the nodes that need to be changed.
 
-See a quick demo video here: [https://www.youtube.com/watch?v=6ZIvs0oKnYs](https://www.youtube.com/watch?v=6ZIvs0oKnYs) and [https://www.youtube.com/watch?v=c478sMlhx1o](https://www.youtube.com/watch?v=c478sMlhx1o)
+See some demo videos here:
+ - [https://www.youtube.com/watch?v=6ZIvs0oKnYs](https://www.youtube.com/watch?v=6ZIvs0oKnYs)
+ - [https://www.youtube.com/watch?v=c478sMlhx1o](https://www.youtube.com/watch?v=c478sMlhx1o)
+
+Check out demo apps:
+ - https://github.com/voltrb/todos
+ - https://github.com/voltrb/blog
+ - https://github.com/voltrb/contactsdemo
 
 
 ## Goals
