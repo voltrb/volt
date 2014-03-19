@@ -214,7 +214,7 @@ class ReactiveManager
   end
 
   def inspect
-    "@<#{self.class.to_s}:#{reactive_object_id} #{cur.inspect}>"
+    "@<#{self.class.to_s}:#{object_id} #{cur.inspect}>"
   end
 
   def reactive_object_id
@@ -266,6 +266,7 @@ class ReactiveManager
 
 
   def update_followers
+    return if @setting_up
     if has_listeners?
       current_obj = cur(false, true)
       should_attach = current_obj.respond_to?(:on)
@@ -274,7 +275,9 @@ class ReactiveManager
         if !@cur_cache || current_obj.object_id != @cur_cache.object_id
           remove_followers
 
+          @setting_up = true
           @cur_cache_chain_listener = self.event_chain.add_object(current_obj)
+          @setting_up = nil
         end
       else
         remove_followers
@@ -283,6 +286,7 @@ class ReactiveManager
       # Store current if we have listeners
       @cur_cache = current_obj
     end
+
   end
 
   def remove_followers

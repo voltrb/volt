@@ -275,6 +275,8 @@ class Model
           # Add to the collection
           new_model = save_to.append(self.attributes)
 
+          # Set the buffer's id to track the main model's id
+          self.attributes[:_id] = new_model._id
           options[:save_to] = new_model
 
           # TODO: return a promise that resolves if the append works

@@ -59,7 +59,13 @@ class GenericPool
   alias_method :__lookup, :lookup
 
   def lookup_all(*args)
-    __lookup(*args).values
+    result = __lookup(*args) { nil }
+
+    if result
+      return result.values
+    else
+      return []
+    end
   end
 
   def remove(*args)

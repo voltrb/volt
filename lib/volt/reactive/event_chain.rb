@@ -47,7 +47,7 @@ class EventChain
   # Register an event listener that chains from object to self
   def setup_listener(event, chain_listener)
     return chain_listener.object.on(event, @main_object) do |filter, *args|
-      if callback = chain_listener.callback
+      if (callback = chain_listener.callback)
         callback.call(event, filter, *args)
       else
         # Trigger on this value, when it happens on the parent

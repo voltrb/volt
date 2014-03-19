@@ -236,7 +236,7 @@ class ReactiveArray# < Array
   end
 
   def inspect
-    "#<#{self.class.to_s} #{@array.inspect}>"
+    "#<#{self.class.to_s}:#{object_id} #{@array.inspect}>"
   end
 
   # tag_method(:count) do

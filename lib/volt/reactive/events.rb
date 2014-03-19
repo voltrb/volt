@@ -171,6 +171,7 @@ module Events
   end
 
   def trigger!(event, filter=nil, *args)
+    # puts "TRIGGER: #{event} on #{self.inspect}" if event == :added
     are_reactive = reactive?
 
     event = event.to_sym

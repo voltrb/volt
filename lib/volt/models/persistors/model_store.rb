@@ -53,14 +53,16 @@ module Persistors
 
     # Called when the model changes
     def changed(attribute_name=nil)
+      path = @model.path
+
       promise = Promise.new
 
       ensure_setup
 
-      path_size = @model.path.size
+      path_size = path.size
       if !(defined?($loading_models) && $loading_models) && @tasks && path_size > 0 && !@model.nil?
         if path_size > 3 && (parent = @model.parent) && source = parent.parent
-          @model.attributes[:"#{@model.path[-4].singularize}_id"] = source._id
+          @model.attributes[:"#{path[-4].singularize}_id"] = source._id
         end
 
         @tasks.call('StoreTasks', 'save', collection, self_attributes) do |errors|

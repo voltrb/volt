@@ -22,7 +22,7 @@ class LiveQueryPool < GenericPool
   private
     # Creates the live query if it doesn't exist, and stores it so it
     # can be found later.
-    def create(collection, query)
+    def create(collection, query={})
       # If not already setup, create a new one for this collection/query
       return LiveQuery.new(self, @data_store, collection, query)
     end
