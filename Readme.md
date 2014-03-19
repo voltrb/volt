@@ -17,6 +17,7 @@ Pages HTML is written in a handlebars like template language.  Volt uses data fl
 See some demo videos here:
  - [https://www.youtube.com/watch?v=6ZIvs0oKnYs](https://www.youtube.com/watch?v=6ZIvs0oKnYs)
  - [https://www.youtube.com/watch?v=c478sMlhx1o](https://www.youtube.com/watch?v=c478sMlhx1o)
+ - [https://www.youtube.com/watch?v=yZIQ-2irY-Q](https://www.youtube.com/watch?v=yZIQ-2irY-Q)
 
 Check out demo apps:
  - https://github.com/voltrb/todos
