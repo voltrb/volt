@@ -552,6 +552,18 @@ Controllers in the app/home component do not need to be namespaced, all other co
 
 Here "auth" would be the component name.
 
+## Reactive Accessors
+
+The default ModelController proxies any missing methods to its model.  Since models are wrapped in ReactiveValue's, they return ReactiveValue's by default.  Sometimes you need to store additional data reactively in the controller outside of the model.  (Though often you may want to condier doing another control/controller)  In this case, you can add a ```reactive_accessor```.  These behave just like ```attr_accessor``` except the values assigned and returned are wrapped in a ReactiveValue.  Updates update the existing ReactiveValue.
+
+```ruby
+  class Contacts < ModelController
+    reactive_accessor :_query
+  end
+```
+
+Now from the view we can bind to _query while also changing in and out the model.  You can also use ```reactive_reader``` and ```reactive_writer```
+
 # Components
 
 Apps are made up of Components.  Each folder under app/ is a component.  When you visit a route, it loads all of the files in the component on the front end, so new pages within the component can be rendered without a new http request.  If a URL is visited that routes to a different component, the request will be loaded as a normal page load and all of that components files will be loaded.  You can think of components as the "reload boundary" between sections of your app.
