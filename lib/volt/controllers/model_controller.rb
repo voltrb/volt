@@ -1,4 +1,8 @@
+require 'volt/controllers/reactive_accessors'
+
 class ModelController
+  include ReactiveAccessors
+
   def self.model(val)
     @default_model = val
   end
