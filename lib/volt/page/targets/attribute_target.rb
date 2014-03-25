@@ -8,7 +8,7 @@ require 'volt/page/targets/binding_document/html_node'
 
 class AttributeTarget < ComponentNode
 
-  def section(*args)
+  def dom_section(*args)
     return AttributeSection.new(self, *args)
   end
 end

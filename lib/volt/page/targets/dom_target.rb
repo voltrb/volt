@@ -5,7 +5,7 @@ require 'volt/page/targets/dom_section'
 # the dom.  Currently only one "dom" is supported, but multiple
 # may be allowed in the future (iframes?)
 class DomTarget < BaseSection
-  def section(*args)
+  def dom_section(*args)
     return DomSection.new(*args)
   end
 end

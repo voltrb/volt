@@ -20,21 +20,21 @@ class BaseBinding
     @@binding_number ||= 10000
   end
 
-  def section
-    @section ||= target.section(@binding_name)
+  def dom_section
+    @dom_section ||= target.dom_section(@binding_name)
   end
 
   def remove
-    section.remove if @section
+    @dom_section.remove if @dom_section
 
     # Clear any references
     @target = nil
     @context = nil
-    @section = nil
+    @dom_section = nil
   end
 
   def remove_anchors
-    section.remove_anchors
+    @dom_section.remove_anchors if @dom_section
   end
 
   def queue_update

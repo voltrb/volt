@@ -23,7 +23,7 @@ class ContentBinding < BaseBinding
 
     # Update the html in this section
     # TODO: Move the formatter into another class.
-    section.html = value.gsub("\n", "<br />\n")
+    dom_section.html = value.gsub("\n", "<br />\n")
   end
 
   def remove

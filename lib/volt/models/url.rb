@@ -130,7 +130,13 @@ class URL
       query_hash = self.query_hash
 
       # Get the params that are in the route
-      query_hash.merge!(@router.url_to_params(@path))
+      new_params = @router.url_to_params(@path)
+
+      if new_params == false
+        raise "no routes match path: #{@path}"
+      end
+
+      query_hash.merge!(new_params)
 
       # Loop through the .params we already have assigned.
       assign_from_old(@params, query_hash)

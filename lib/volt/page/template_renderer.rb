@@ -7,7 +7,7 @@ class TemplateRenderer < BaseBinding
 
     @sub_bindings = []
 
-    bindings = self.section.set_content_to_template(page, template_name)
+    bindings = self.dom_section.set_content_to_template(page, template_name)
 
     bindings.each_pair do |id,bindings_for_id|
       bindings_for_id.each do |binding|

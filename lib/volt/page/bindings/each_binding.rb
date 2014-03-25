@@ -56,10 +56,10 @@ class EachBinding < BaseBinding
 
     if position >= @templates.size
       # Setup new bindings in the spot we want to insert the item
-      section.insert_anchor_before_end(binding_name)
+      dom_section.insert_anchor_before_end(binding_name)
     else
       # Insert the item before an existing item
-      section.insert_anchor_before(binding_name, @templates[position].binding_name)
+      dom_section.insert_anchor_before(binding_name, @templates[position].binding_name)
     end
 
     index = ReactiveValue.new(position)
