@@ -239,21 +239,23 @@ class ReactiveManager
 
   # Fetch the current value
   def cur(shallow=false, ignore_cache=false)
-    # Return from cache if it is cached
+    # Use cache if it is cached
     if @cur_cache && !shallow && !ignore_cache
-      return @cur_cache
-    end
-
-    if @getter.class == ::Proc
-      # Get the current value, capture any errors
-      begin
-        result = @getter.call
-      rescue => e
-        result = e
-      end
+      # We might be caching another reactive value, so we just set
+      # it as the result and let it get unwrapped.
+      result = @cur_cache
     else
-      # getter is just an object, return it
-      result = @getter
+      if @getter.class == ::Proc
+        # Get the current value, capture any errors
+        begin
+          result = @getter.call
+        rescue => e
+          result = e
+        end
+      else
+        # getter is just an object, return it
+        result = @getter
+      end
     end
 
     if !shallow && result.reactive?
@@ -268,7 +270,7 @@ class ReactiveManager
   def update_followers
     return if @setting_up
     if has_listeners?
-      current_obj = cur(false, true)
+      current_obj = cur(true, true)
       should_attach = current_obj.respond_to?(:on)
 
       if should_attach

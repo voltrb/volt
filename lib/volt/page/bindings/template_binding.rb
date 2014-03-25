@@ -174,7 +174,7 @@ class TemplateBinding < BaseBinding
       # Set the current section on the controller if it wants so it can manipulate
       # the dom if needed
       if @controller.respond_to?(:section=)
-        @controller.dom_section = @current_template.dom_ection
+        @controller.section = @current_template.dom_section
       end
 
       if @controller.respond_to?(:dom_ready)

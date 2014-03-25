@@ -17,6 +17,8 @@ class ReactiveCount
   # After events are bound, we keep a cache of each cell's count
   # value, and base the results
   def cached_count
+    @cached_results = []
+
 
   end
 
@@ -24,7 +26,7 @@ class ReactiveCount
   # run the count on the source object.
   def direct_count
     count = 0
-    @source.size.cur.times do |index|
+    @source.cur.size.times do |index|
       val = @source[index]
       result = @block.call(val).cur
       if result == true
@@ -37,15 +39,16 @@ class ReactiveCount
 
   def setup_listeners
     @cell_trackers = []
+    @setup = false
     @added_tracker = @source.on('added') do |_, index|
       change_cell_count(@source.size.cur)
-      trigger!('changed')
     end
 
     @removed_tracker = @source.on('removed') do |_, index|
       change_cell_count(@source.size.cur)
-      trigger!('changed')
     end
+
+    @setup = true
 
     # Initial cell tracking
     change_cell_count(@source.size.cur)
@@ -54,6 +57,7 @@ class ReactiveCount
   # We need to make sure we're listening on the result from each cell,
   # that way we can trigger when the value changes.
   def change_cell_count(size)
+    # puts "CHANGE SIZE: #{size}"
     current_size = @cell_trackers.size
 
     if current_size < size
@@ -66,6 +70,7 @@ class ReactiveCount
         result = @block.call(val)
 
         @cell_trackers << result.on('changed') do
+          # puts "RESULT CHANGED: #{index}"
           trigger!('changed')
         end
       end

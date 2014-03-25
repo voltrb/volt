@@ -17,6 +17,9 @@ class ContentBinding < BaseBinding
 
   def update
     value = @value.cur.or('')
+    if value.reactive?
+      puts "GOT CUR: #{value.inspect}"
+    end
 
     # Exception values display the exception as a string
     value = value.to_s
