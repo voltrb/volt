@@ -1,6 +1,6 @@
 require 'volt/models'
 
-describe ReactiveCount do
+describe ReactiveBlock do
   it "should call cur through the reactive count to the number" do
     model = ReactiveValue.new(Model.new)
 

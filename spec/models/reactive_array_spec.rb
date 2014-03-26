@@ -327,4 +327,38 @@ describe ReactiveArray do
       expect(count).to eq(0)
     end
   end
+
+  # describe "concat, diff" do
+  #   it "should concat two arrays and trigger added/removed through" do
+  #     a = ReactiveValue.new(ReactiveArray.new([1,2,3]))
+  #     b = ReactiveValue.new(ReactiveArray.new([1,2,3]))
+  #
+  #     c = a + b
+  #
+  #     count = 0
+  #     # c.on('added') { count += 1 }
+  #     c.on('changed') { count += 1 }
+  #     expect(count).to eq(0)
+  #
+  #     b << 4
+  #
+  #     expect(count).to eq(1)
+  #   end
+  # end
+
+  describe "array methods" do
+    it "should handle compact with events" do
+      a = ReactiveValue.new(ReactiveArray.new([1,2,nil,3]))
+
+      count = 0
+      last_position = nil
+      compact = a.compact
+      compact.on('changed') { count += 1 }
+      expect(count).to eq(0)
+
+      a << 4
+
+      expect(count).to eq(1)
+    end
+  end
 end

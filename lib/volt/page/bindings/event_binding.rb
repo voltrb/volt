@@ -11,8 +11,11 @@ class JSEvent
     `this.js_event.keyCode`
   end
 
-  def stop
-    # `this.js_event.stopPropagation();`
+  def stop!
+    `this.js_event.stopPropagation();`
+  end
+
+  def prevent_default!
     `this.js_event.preventDefault();`
   end
 
@@ -30,7 +33,7 @@ class EventBinding < BaseBinding
 
     handler = Proc.new do |js_event|
       event = JSEvent.new(js_event)
-      event.stop if event_name == 'submit'
+      event.prevent_default! if event_name == 'submit'
 
       # Call the proc the user setup for the event in context,
       # pass in the wrapper for the JS event

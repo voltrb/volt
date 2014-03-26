@@ -1,5 +1,5 @@
 require 'volt/reactive/object_tracking'
-require 'volt/reactive/reactive_count'
+require 'volt/reactive/reactive_block'
 
 class ReactiveArray# < Array
   include ReactiveTags
@@ -244,7 +244,7 @@ class ReactiveArray# < Array
   # end
   def count(&block)
     if block
-      return ReactiveCount.new(self, block)
+      return ReactiveBlock.new(self, block)
     else
       @array.count
     end

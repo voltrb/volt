@@ -1,4 +1,4 @@
-class ReactiveCount
+class ReactiveBlock
   include ReactiveTags
 
   def reactive?
@@ -14,27 +14,10 @@ class ReactiveCount
     direct_count
   end
 
-  # After events are bound, we keep a cache of each cell's count
-  # value, and base the results
-  def cached_count
-    @cached_results = []
-
-
-  end
-
   # Before events are bound, when .cur is called, we simply
   # run the count on the source object.
   def direct_count
-    count = 0
-    @source.cur.size.times do |index|
-      val = @source[index]
-      result = @block.call(val).cur
-      if result == true
-        count += 1
-      end
-    end
-
-    count
+    @source.cur.array.count(&@block)
   end
 
   def setup_listeners
