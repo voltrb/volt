@@ -23,19 +23,20 @@ class URL
       update!
     else
       host = `document.location.host`
+      protocol = `document.location.protocol`
 
-      if url[0..3] != 'http'
-        # Add the host for localized names
-        url = "http://#{host}" + url
+      if url !~ /[:]\/\//
+        # Add the host for local urls
+        url = protocol + "//#{host}" + url
       else
-        # Make sure its on the same host, otherwise its external.
-        if url !~ /https?[:]\/\/#{host}/
+        # Make sure its on the same protocol and host, otherwise its external.
+        if url !~ /#{protocol}\/\/#{host}/
           # Different host, don't process
           return false
         end
       end
 
-      matcher = url.match(/^(https?)[:]\/\/([^\/]+)(.*)$/)
+      matcher = url.match(/^(#{protocol[0..-2]})[:]\/\/([^\/]+)(.*)$/)
       @scheme = matcher[1]
       @host, @port = matcher[2].split(':')
       @port ||= 80
@@ -91,9 +92,13 @@ class URL
     if Volt.client?
       new_url = full_url()
 
-      if `(document.location.href != new_url)`
-        `history.pushState(null, null, new_url)`
-      end
+      # Push the new url if pushState is supported
+      # TODO: add fragment fallback
+      %x{
+        if (document.location.href != new_url && history && history.pushState) {
+          history.pushState(null, null, new_url);
+        }
+      }
     end
   end
 
@@ -127,8 +132,6 @@ class URL
     def assign_query_hash_to_params
       # Get a nested hash representing the current url params.
       query_hash = self.query_hash
-
-      puts "CUR PATH: #{@path.inspect}"
 
       # Get the params that are in the route
       new_params = @router.url_to_params(@path)

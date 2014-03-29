@@ -16,7 +16,6 @@ class CLI
     listener.start # non-blocking
 
     Signal.trap("SIGINT") do
-      puts "Terminating..."
       listener.stop
     end
 
@@ -39,6 +38,7 @@ class CLI
       require 'volt/server/rack/component_code'
       require 'volt/server/rack/opal_files'
       require 'volt/server/rack/index_files'
+      require 'volt/server/component_handler'
 
       @root_path ||= Dir.pwd
       Volt.root = @root_path
@@ -49,6 +49,7 @@ class CLI
       @app = Rack::Builder.new
       @opal_files = OpalFiles.new(@app, @app_path, @component_paths)
       @index_files = IndexFiles.new(@app, @component_paths, @opal_files)
+      @component_handler = ComponentHandler.new(@component_paths)
 
       write_component_js
       write_sprockets
@@ -93,11 +94,7 @@ class CLI
     end
 
     def write_component_js
-      component_paths = ComponentPaths.new(Volt.root)
-
-      code = ComponentCode.new('main', component_paths).code
-
-      javascript_code = Opal.compile(code)
+      javascript_code = @component_handler.compile_for_component('main')
 
       components_folder = File.join(Volt.root, '/compiled/components')
       FileUtils.mkdir_p(components_folder)

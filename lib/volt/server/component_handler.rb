@@ -13,11 +13,22 @@ class ComponentHandler
     # TODO: Sanatize template path
     component_name = req.path.strip.gsub(/^\/components\//, '').gsub(/[.]js$/, '')
 
+    javascript_code = compile_for_component(component_name)
+
+    return [200, {"Content-Type" => "text/html; charset=utf-8"}, StringIO.new(javascript_code)]
+  end
+
+  def compile_for_component(component_name)
     code = ComponentCode.new(component_name, @component_paths).code
 
+    # Add the lib directory to the load path
+    Opal.append_path(Volt.root + '/lib')
+
+    # Compile the code
     javascript_code = Opal.compile(code)
 
-    [200, {"Content-Type" => "text/html; charset=utf-8"}, StringIO.new(javascript_code)]
+    return javascript_code
+
   end
 
 
