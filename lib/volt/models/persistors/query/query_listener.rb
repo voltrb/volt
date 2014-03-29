@@ -18,7 +18,9 @@ class QueryListener
     @tasks.call('QueryTasks', 'add_listener', @collection, @query) do |results, errors|
       # When the initial data comes back, add it into the stores.
       @stores.each do |store|
-        store.model.clear
+        # Clear if there are existing items
+        store.model.clear if store.model.size > 0
+
         results.each do |index, data|
           store.add(index, data)
         end

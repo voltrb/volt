@@ -88,7 +88,7 @@ class EachBinding < BaseBinding
     values = @value.cur
 
     return [] if values.is_a?(Model) || values.is_a?(Exception)
-    values = values.attributes
+    values = values.attributes unless values.is_a?(ReactiveArray)
 
     return values
   end

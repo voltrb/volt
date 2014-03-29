@@ -106,7 +106,6 @@ class URL
           if (anchor.length == 0) {
             anchor = $('*[name="' + this.fragment + '"]:first');
           }
-          console.log('found anchor: ', anchor);
           if (anchor && anchor.length > 0) {
             console.log('scroll to: ', anchor.offset().top);
             $(document.body).scrollTop(anchor.offset().top);
@@ -128,6 +127,8 @@ class URL
     def assign_query_hash_to_params
       # Get a nested hash representing the current url params.
       query_hash = self.query_hash
+
+      puts "CUR PATH: #{@path.inspect}"
 
       # Get the params that are in the route
       new_params = @router.url_to_params(@path)

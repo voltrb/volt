@@ -115,7 +115,6 @@ class ReactiveArray# < Array
 
     trigger_for_index!('changed', self.size-1)
     trigger_on_direct_listeners!('added', self.size-1)
-
     trigger_size_change!
 
     return result
@@ -231,6 +230,8 @@ class ReactiveArray# < Array
         true
       end
 
+      result = false if method_name == :reject
+
       result
     end
   end
@@ -242,9 +243,45 @@ class ReactiveArray# < Array
   # tag_method(:count) do
   #   destructive!
   # end
-  def count(&block)
+  def count(*args, &block)
+    # puts "GET COUNT"
     if block
-      return ReactiveBlock.new(self, block)
+      run_block = Proc.new do |source|
+        count = 0
+        source.cur.size.times do |index|
+          val = source[index]
+          result = block.call(val).cur
+          if result == true
+            count += 1
+          end
+        end
+
+        count
+      end
+
+      return ReactiveBlock.new(self, block, run_block)
+    else
+      @array.count(*args)
+    end
+  end
+
+  def reject(*args, &block)
+    if block
+      run_block = Proc.new do |source|
+        puts "RUN REJECT"
+        new_array = []
+        source.cur.size.times do |index|
+          val = source[index]
+          result = block.call(val).cur
+          if result != true
+            new_array << val.cur
+          end
+        end
+
+        ReactiveArray.new(new_array)
+      end
+
+      return ReactiveBlock.new(self, block, run_block)
     else
       @array.count
     end

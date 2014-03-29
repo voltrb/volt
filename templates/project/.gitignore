@@ -6,3 +6,4 @@ tmp
 .yardoc
 .sass-cache
 .DS_Store
+compiled

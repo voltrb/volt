@@ -5,19 +5,16 @@ class ReactiveBlock
     true
   end
 
-  def initialize(source, block)
+  def initialize(source, check_block, run_block)
     @source = ReactiveValue.new(source)
-    @block = block
+    @check_block = check_block
+    @run_block = run_block
   end
 
   def cur
-    direct_count
-  end
+    val = @run_block.call(@source)
 
-  # Before events are bound, when .cur is called, we simply
-  # run the count on the source object.
-  def direct_count
-    @source.cur.array.count(&@block)
+    return val
   end
 
   def setup_listeners
@@ -40,7 +37,6 @@ class ReactiveBlock
   # We need to make sure we're listening on the result from each cell,
   # that way we can trigger when the value changes.
   def change_cell_count(size)
-    # puts "CHANGE SIZE: #{size}"
     current_size = @cell_trackers.size
 
     if current_size < size
@@ -50,10 +46,10 @@ class ReactiveBlock
         # Get the reactive value for the index
         val = @source[index]
 
-        result = @block.call(val)
+        result = @check_block.call(val)
 
         @cell_trackers << result.on('changed') do
-          # puts "RESULT CHANGED: #{index}"
+          puts "RESULT CHANGED: #{index} - #{self.object_id}"
           trigger!('changed')
         end
       end

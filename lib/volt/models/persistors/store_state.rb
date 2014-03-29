@@ -11,11 +11,16 @@ module StoreState
   end
 
   # Called from the QueryListener when the data is loaded
-  def change_state_to(new_state)
+  def change_state_to(new_state, skip_trigger=false)
+    old_state = @state
     @state = new_state
 
     # Trigger changed on the 'state' method
-    @model.trigger_for_methods!('changed', :state, :loaded?)
+    unless skip_trigger
+      if old_state != @state
+        @model.trigger_for_methods!('changed', :state, :loaded?)
+      end
+    end
 
     if @state == :loaded && @fetch_promises
       # Trigger each waiting fetch

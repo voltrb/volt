@@ -1,7 +1,18 @@
 class Volt
   class Environment
     def initialize
-      @env = ENV['VOLT_ENV'] || 'development'
+      @env = ENV['VOLT_ENV']
+
+      # If we're in opal, we can set the env from JS before opal loads
+      if RUBY_PLATFORM == 'opal'
+        unless @env
+          `if (window.start_env) {`
+            @env = `window.start_env`
+          `}`
+        end
+      end
+
+      @env ||= 'development'
     end
 
     def ==(val)
