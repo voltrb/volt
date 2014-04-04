@@ -1,4 +1,8 @@
-require 'logger'
+if RUBY_PLATFORM == 'opal'
+  require 'volt/extra_core/logger'
+else
+  require 'logger'
+end
 
 # Simple global access to the logger.
 # You can also include Log into a class to get the logger
