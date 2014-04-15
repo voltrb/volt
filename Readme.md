@@ -658,13 +658,13 @@ or
 To find the control's views and optional controller, Volt will search the following (in order):
 
 
-| Component   | View Folder    | View File    | Section   |
-|-------------|----------------|--------------|-----------|
-|             |                |              | :{name}   |
-|             |                | {name}.html  | :body     |
-|             | {name}         | index.html   | :body     |
-| {name}      | index          | index.html   | :body     |
-| gems/{name} | index          | index.html   | :body     |
+| Section   | View File    | View Folder    | Component   |
+|-----------|--------------|----------------|-------------|
+| :{name}   |              |                |             |
+| :body     | {name}.html  |                |             |
+| :body     | index.html   | {name}         |             |
+| :body     | index.html   | index          | {name}      |
+| :body     | index.html   | index          | gems/{name} |
 
 **Note that anything with a view folder will also load a controller if the name/folder matches.**
 
@@ -694,12 +694,12 @@ When you create a control, you can also specify multiple parts of the search pat
 
 The above would search the following:
 
-| Component   | View Folder    | View File    | Section   |
-|-------------|----------------|--------------|-----------|
-|             |                | blog.html    | :comments |
-|             | blog           | comments.html| :body     |
-| blog        | comments       | index.html   | :body     |
-| gems/blog   | comments       | index.html   | :body     |
+| Section   | View File    | View Folder    | Component   |
+|-----------|--------------|----------------|-------------|
+| :comments | blog.html    |                |             |
+| :body     | comments.html| blog           |             |
+| :body     | index.html   | comments       | blog        |
+| :body     | index.html   | comments       | gems/blog   |
 
 Once the view file for the control or template is found, it will look for a matching controller.  If the control is specified as a local template, an empty ModelController will be used.  If a controller is found and loaded, a corrosponding "action" method will be called on it if its exists.  Action methods default to "index" unless the component or template path has two parts, in which case the last part is the action.
 
