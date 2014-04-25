@@ -32,6 +32,10 @@ Gem::Specification.new do |spec|
   spec.add_dependency "listen", "~> 2.7.0"
   spec.add_dependency "uglifier", "~> 2.4.0"
   spec.add_dependency "yui-compressor", "~> 0.12.0"
+  spec.add_dependency "opal", "~> 0.6.0"
+  spec.add_dependency "opal-jquery", "~> 0.2.0"
+  spec.add_dependency "volt-sockjs", "~> 0.3.0"
+
   # spec.add_dependency "promise.rb", "~> 0.6.1"
 
   # spec.add_dependency "rack-colorized_logger", "~> 1.0.4"
@@ -40,7 +44,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.5"
   spec.add_development_dependency "guard", "2.0.1" # bug in current guard
   spec.add_development_dependency "guard-rspec", "~> 1.2.0"
-  spec.add_development_dependency "opal-rspec", "0.3.0.beta2"
+  spec.add_development_dependency "opal-rspec", "0.3.0.beta3"
   spec.add_development_dependency "yard", "~> 0.8.7.0"
   spec.add_development_dependency "capybara", "~> 2.2.0"
   spec.add_development_dependency "selenium-webdriver", "~> 2.39.0"

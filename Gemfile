@@ -3,9 +3,9 @@ source 'http://rubygems.org'
 gemspec
 
 # gem 'rspec', '3.0.0.beta1'
-gem 'opal', git: 'https://github.com/opal/opal.git'
-gem 'opal-jquery', :git => 'https://github.com/opal/opal-jquery.git'
-gem 'sockjs', git: 'https://github.com/voltrb/sockjs-ruby.git', require: false, platforms: :mri
+# gem 'opal', git: 'https://github.com/opal/opal.git'
+# gem 'opal-jquery', :git => 'https://github.com/opal/opal-jquery.git'
+# gem 'sockjs', git: 'https://github.com/voltrb/sockjs-ruby.git', require: false, platforms: :mri
 
 # gem 'thor'
 
