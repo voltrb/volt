@@ -26,4 +26,4 @@ end
 
 #---------------------
 # Needed at the moment
-gem 'sockjs', git: 'https://github.com/voltrb/sockjs-ruby.git', require: false, platforms: :mri
+gem 'volt-sockjs', require: false, platforms: :mri

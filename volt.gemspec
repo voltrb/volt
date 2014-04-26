@@ -34,7 +34,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "yui-compressor", "~> 0.12.0"
   spec.add_dependency "opal", "~> 0.6.0"
   spec.add_dependency "opal-jquery", "~> 0.2.0"
-  spec.add_dependency "volt-sockjs", "~> 0.3.0"
 
   # spec.add_dependency "promise.rb", "~> 0.6.1"
 
