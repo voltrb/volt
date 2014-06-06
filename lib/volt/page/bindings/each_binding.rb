@@ -105,8 +105,10 @@ class EachBinding < BaseBinding
     @removed_listener.remove
     @removed_listener = nil
 
-    @templates.each(&:remove)
-    @templates = nil
+    if @templates
+      @templates.compact.each(&:remove)
+      @templates = nil
+    end
 
     super
   end
