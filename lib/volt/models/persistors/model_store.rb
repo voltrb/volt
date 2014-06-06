@@ -5,7 +5,7 @@ module Persistors
   class ModelStore < Store
     include StoreState
 
-    ID_CHARS = [('a'..'z'), ('A'..'Z'), ('0'..'9')].map {|v| v.to_a }.flatten
+    ID_CHARS = [('a'..'f'), ('0'..'9')].map {|v| v.to_a }.flatten
 
     attr_reader :model
     attr_accessor :in_identity_map
@@ -46,7 +46,7 @@ module Persistors
     # Create a random unique id that can be used as the mongo id as well
     def generate_id
       id = []
-      12.times { id << ID_CHARS.sample }
+      24.times { id << ID_CHARS.sample }
 
       return id.join
     end

@@ -37,11 +37,13 @@ class StoreTasks
     errors = model_errors(collection, data)
 
     if errors.size == 0
+      # id = BSON::ObjectId(data[:_id])
       id = data[:_id]
 
       # Try to create
       # TODO: Seems mongo is dumb and doesn't let you upsert with custom id's
       begin
+        # data['_id'] = BSON::ObjectId('_id') if data['_id']
         @@db[collection].insert(data)
       rescue Mongo::OperationFailure => error
         # Really mongo client?

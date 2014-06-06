@@ -12,7 +12,7 @@ class DataStore
     query = query.dup
     query.keys.each do |key|
       if key =~ /_id$/
-        query[key] = BSON::ObjectId(query[key])
+        # query[key] = BSON::ObjectId(query[key])
       end
     end
 
