@@ -53,7 +53,11 @@ class LiveQuery
 
   # return the query results the first time a channel connects
   def initial_data
-    @query_tracker.results.map.with_index {|data, index| [index, data] }
+    @query_tracker.results.map.with_index do |data, index|
+      data = data.dup
+      data['_id'] = data['_id'].to_s
+      [index, data]
+    end
   end
 
   def add_channel(channel)

@@ -36,7 +36,10 @@ class QueryTasks
   end
 
   def initial_data
-    return live_query.initial_data
+    data = live_query.initial_data
+    data['_id'] = data['_id'].to_s
+
+    return data
   end
 
   # Remove a listening channel, the LiveQuery will automatically remove
