@@ -377,7 +377,7 @@ Volt comes with many built-in models; one is called `page`.  If you call `#page`
     # => @'Ryan'
 ```
 
-Models act like a hash that you can access with getters and setters that start with an _   If an underscore method is called that hasn't yet been assigned, you will get back a "nil model".  Prefixing with an underscore makes sure we don't accidentally try to call a method that doesn't exist and get back nil model instead of raising an exception.  There is no need to define which fields a model has, they act similar to a hash, but with a different access and assign syntax.
+Models act like a hash that you can access with getters and setters that start with an _   If an underscore method is called that hasn't yet been assigned, you will get back a "nil model".  Prefixing with an underscore makes sure we don't accidentally try to call a method that doesn't exist and get back nil model instead of raising an exception.  There is no need to define which fields a model has. Fields behave similarly to a hash, but with a different access and assignment syntax.
 
 Models also let you nest data without creating the intermediate models:
 
