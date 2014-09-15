@@ -62,7 +62,7 @@ Then create a new project:
 
     volt new project_name
 
-This will setup a basic project.  Now lets run the server.
+This will setup a basic project.  Now let's run the server.
 
     volt server
 
