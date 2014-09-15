@@ -122,7 +122,7 @@ For example when a user clicks to add a new todo item to a todo list, we might c
 
 The idea of "reactive programming" has been used to simplify maintaining the DOM.  The idea is instead of having event handlers that manage a model (or JavaScript object) and manage the DOM, we have event handlers that manage reactive data models.  We describe our DOM layer in a declarative way so that it automatically knows how to render our data models.
 
-## Reactive Value's
+## Reactive Values
 
 To build bindings, Volt provides the ReactiveValue class.  This wraps any object in a reactive interface.  To create a ReactiveValue, simply pass the object you want to wrap as the first argument to new.
 
@@ -131,7 +131,7 @@ To build bindings, Volt provides the ReactiveValue class.  This wraps any object
     # => @"my object"
 ```
 
-When .inspect is called on a ReactiveValue (like in the console), an @ is placed in front of the value's inspect string, so you know its reactive.
+When .inspect is called on a ReactiveValue (like in the console), an @ is placed in front of the value inspect string, so you know its reactive.
 
 When you call a method on a ReactiveValue, you get back a new reactive value that depends on the previous one.  It remembers how it was created and you can call .cur on it any time to get its current value, which will be computed based off of the first reactive value.  (Keep in mind below that + is a method call, the same as a.+(b) in ruby.)
 
@@ -157,7 +157,7 @@ When you call a method on a ReactiveValue, you get back a new reactive value tha
 
 This provides the backbone for reactive programming.  We setup computation/flow graphs instead of doing an actual calculation.  Calling .cur (or .inspect, .to_s, etc..) runs the computation and returns the current value at that time, based on all of its dependencies.
 
-ReactiveValue's also let you setup listeners and trigger events:
+ReactiveValues also let you setup listeners and trigger events:
 
 ```ruby
     a = ReactiveValue.new(0)
@@ -166,7 +166,7 @@ ReactiveValue's also let you setup listeners and trigger events:
     # => A Changed
 ```
 
-These events propagate to any reactive value's created off of a reactive value.
+These events propagate to any reactive values created off of a reactive value.
 
 ```ruby
     a = ReactiveValue.new(1)
@@ -179,7 +179,7 @@ These events propagate to any reactive value's created off of a reactive value.
 
 This event flow lets us know when an object has changed, so we can update everything that depended on that object.
 
-Lastly, we can also pass in other reactive value's as arguments to methods on a reactive value.  The dependencies will be tracked for both and events will propagate down from both.  (Also, note that doing `.cur =` to update the current value triggers a "changed" event.)
+Lastly, we can also pass in other reactive values as arguments to methods on a reactive value.  The dependencies will be tracked for both and events will propagate down from both.  (Also, note that doing `.cur =` to update the current value triggers a "changed" event.)
 
 ```ruby
     a = ReactiveValue.new(1)
@@ -199,27 +199,27 @@ Lastly, we can also pass in other reactive value's as arguments to methods on a 
     # => C changed
 ```
 
-### ReactiveValue Gotcha's
+### ReactiveValue Gotchas
 
-There are a few simple things to keep in mind with ReactiveValue's.  In order to make them mostly compatible with other ruby objects, a two methods do not return another ReactiveValue.
+There are a few simple things to keep in mind with ReactiveValues.  In order to make them mostly compatible with other ruby objects, a two methods do not return another ReactiveValue.
 
     to_s and inspect
 
 If you want these to be used reactively, see the section on [with](#with)
 
-Also, due to a small limitation in ruby, ReactiveValue's always are truthy.  See the [truthy checks](#truthy-checks-true-false-or-and-and) section on how to check for truth.
+Also, due to a small limitation in ruby, ReactiveValues always are truthy.  See the [truthy checks](#truthy-checks-true-false-or-and-and) section on how to check for truth.
 
-When passing something that may contain reactive values to a JS function, you can call ```.deep_cur``` on any object to get back a copy that will have all reactive value's turned into their current value.
+When passing something that may contain reactive values to a JS function, you can call ```.deep_cur``` on any object to get back a copy that will have all reactive values turned into their current value.
 
 ### Current Status
 
-NOTE: currently ReactiveValue's are not complete.  At the moment, they do not handle methods that are passed blocks (or procs, lambda's).  This is planned, but not complete.  At the moment you can use [with](#with) to accomplish similar things.
+NOTE: currently ReactiveValues are not complete.  At the moment, they do not handle methods that are passed blocks (or procs, lambdas).  This is planned, but not complete.  At the moment you can use [with](#with) to accomplish similar things.
 
 ### Truthy Checks: .true?, .false?, .or, and .and
 
 Because a method on a reactive value always returns another reactive value, and because only nil and false are false in ruby, we need a way to check if a ReactiveValue is truthy in our code.  The easiest way to do this is by calling .true? on it.  It will return a non-wrapped boolean.  .nil? and .false? do as you would expect.
 
-One common place we use a truthy check is in setting up default values with || (logical or)  Volt provides a convience method that does the same thing .or, but works with ReactiveValue's.
+One common place we use a truthy check is in setting up default values with || (logical or)  Volt provides a convience method that does the same thing .or, but works with ReactiveValues.
 
 Instead of
 
@@ -238,7 +238,7 @@ Simply use:
 
 ### With
 
-Normally when you want to have a value that depends on another value, but transforms it somehow, you simply call your transform method on the ReactiveValue.  However sometimes the transform is not directly on the ReactiveValue's object.
+Normally when you want to have a value that depends on another value, but transforms it somehow, you simply call your transform method on the ReactiveValue.  However sometimes the transform is not directly on the ReactiveValues object.
 
 You can call .with on any ReactiveValue.  .with will return a new ReactiveValue that depends on the current ReactiveValue.  .with takes a block, the first argument to the block will be the cur value of the ReactiveValue you called with on.  Any additional arguments to with will be passed in after the first one.  If you pass another ReactiveValue as an argument to .with, the returned ReactiveValue will depend on the argument ReactiveValue as well, and the block will receive the arguments cur value.
 
@@ -259,11 +259,11 @@ Views in Volt are use a templating language similar to handlebars.  They can be 
 
 Section headers should start with a capital letter so as not to be confused with [controls](#controls).  Section headers do not use closing tags.  If section headers are not provided, the Body section is assumed.
 
-Section's help you split up different parts of the same content (title and body usually), but within the same file.
+Sections help you split up different parts of the same content (title and body usually), but within the same file.
 
 ## Bindings
 
-One you understand the basics of ReactiveValue's, we can discuss bindings.  In Volt, you code your views in a handlebar's like template language.  Volt provides several bindings, which handle rendering of something for you.  Content bindings are anything inbetween { and }
+One you understand the basics of ReactiveValues, we can discuss bindings.  In Volt, you code your views in a handlebars like template language.  Volt provides several bindings, which handle rendering of something for you.  Content bindings are anything inbetween { and }
 
 ### Content binding
 
@@ -422,7 +422,7 @@ Above I mentioned that Volt comes with many default collection models accessible
 
 ## Reactive Models
 
-Because all models provided by Volt are wrapped in a ReactiveValue, you can register listeners on them and be updated when values change.  You can also call methods on their values and get updates when the source's change.  Bindings also setup listeners.  Models should be the main place you store all data in Volt.  While you can use ReactiveValue's manually, most of the time you will want to just use something like the controller model.
+Because all models provided by Volt are wrapped in a ReactiveValue, you can register listeners on them and be updated when values change.  You can also call methods on their values and get updates when the sources change.  Bindings also setup listeners.  Models should be the main place you store all data in Volt.  While you can use ReactiveValues manually, most of the time you will want to just use something like the controller model.
 
 ## Model Events
 
@@ -553,7 +553,7 @@ Here "auth" would be the component name.
 
 ## Reactive Accessors
 
-The default ModelController proxies any missing methods to its model.  Since models are wrapped in ReactiveValue's, they return ReactiveValue's by default.  Sometimes you need to store additional data reactively in the controller outside of the model.  (Though often you may want to condier doing another control/controller)  In this case, you can add a ```reactive_accessor```.  These behave just like ```attr_accessor``` except the values assigned and returned are wrapped in a ReactiveValue.  Updates update the existing ReactiveValue.
+The default ModelController proxies any missing methods to its model.  Since models are wrapped in ReactiveValues, they return ReactiveValues by default.  Sometimes you need to store additional data reactively in the controller outside of the model.  (Though often you may want to condier doing another control/controller)  In this case, you can add a ```reactive_accessor```.  These behave just like ```attr_accessor``` except the values assigned and returned are wrapped in a ReactiveValue.  Updates update the existing ReactiveValue.
 
 ```ruby
   class Contacts < ModelController
@@ -640,7 +640,7 @@ These messages will show for 5 seconds, then disappear (both from the screen and
 
 # Controls
 
-Everyone wishes that we could predict the scope and required features for each part of our application, but in the real world, things we don't expect to grow large often do and things we think will be large don't end up that way.  Controls let you quickly setup reusable code/views.  The location of the control's code can be moved as it grows without changing the way controls are invoked.
+Everyone wishes that we could predict the scope and required features for each part of our application, but in the real world, things we don't expect to grow large often do and things we think will be large don't end up that way.  Controls let you quickly setup reusable code/views.  The location of the controls code can be moved as it grows without changing the way controls are invoked.
 
 To render a control, simply use a tag like so:
 
@@ -740,7 +740,7 @@ Routes take two arguments, a path, and a params hash.  When a new URL is loaded 
 
 When the params are changed, the URL will be set to the path for the route that's params hash matches.
 
-Route path's can also contain variables similar to bindings.
+Route paths can also contain variables similar to bindings.
 
 ```ruby
     get "/todos/{_index}", _view: 'todos'
