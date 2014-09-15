@@ -529,7 +529,7 @@ A controller can be any class in Volt, however it is common to have that class i
     end
 ```
 
-In methods, the #model method returns the current model.
+In methods, the `#model` method returns the current model.
 
 See the [provided collections](#provided-collections) section for a list of the available collection models.
 
