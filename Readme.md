@@ -535,7 +535,7 @@ See the [provided collections](#provided-collections) section for a list of the 
 
 You can also provide your own object to model.
 
-In the example above any methods not defined on the TodosController will fall through to the provided model.  All views in views/{controller_name} will have this controller as the target for any ruby run in their bindings.  This means that calls on self (implicit or with self.) will have the model as their target (after calling through the controller).  This lets you add methods to the controller to control how the model is handled, or provide extra methods to the views.
+In the example above, any methods not defined on the TodosController will fall through to the provided model.  All views in views/{controller_name} will have this controller as the target for any ruby run in their bindings.  This means that calls on self (implicit or with self.) will have the model as their target (after calling through the controller).  This lets you add methods to the controller to control how the model is handled, or provide extra methods to the views.
 
 Volt is more similar to an MVVM architecture than an MVC architecture.  Instead of the controllers passing data off to the views, the controllers are the context for the views.  When using a ModelController, the controller automatically forwards all methods it does not handle to the model.  This is convienant since you can set a model in the controller and then access its properties directly with methods in bindings.  This lets you do something like ```{_name}``` instead of something like ```{@model._name}```
 
