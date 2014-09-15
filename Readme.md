@@ -219,7 +219,7 @@ NOTE: currently ReactiveValues are not complete.  At the moment, they do not han
 
 Because a method on a reactive value always returns another reactive value, and because only nil and false are false in ruby, we need a way to check if a ReactiveValue is truthy in our code.  The easiest way to do this is by calling .true? on it.  It will return a non-wrapped boolean.  .nil? and .false? do as you would expect.
 
-One common place we use a truthy check is in setting up default values with || (logical or)  Volt provides a convience method that does the same thing .or, but works with ReactiveValues.
+One common place we use a truthy check is in setting up default values with || (logical or)  Volt provides a convience method that does the same thing `#or`, but works with ReactiveValues.
 
 Instead of
 
@@ -233,7 +233,7 @@ Simply use:
     a.or(b)
 ```
 
-.and works the same way as &&.  #and and #or let you maintain the reactivity all of the way through.
+`#and` works the same way as &&.  #and and #or let you maintain the reactivity all of the way through.
 
 
 ### With
