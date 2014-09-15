@@ -179,7 +179,7 @@ These events propagate to any reactive values created off of a reactive value.
 
 This event flow lets us know when an object has changed, so we can update everything that depended on that object.
 
-Lastly, we can also pass in other reactive values as arguments to methods on a reactive value.  The dependencies will be tracked for both and events will propagate down from both.  (Also, note that doing `.cur =` to update the current value triggers a "changed" event.)
+Lastly, we can also pass in other reactive values as arguments to methods on a reactive value.  The dependencies will be tracked for both and events will propagate down from both.  (Also, note that calling `#cur=` to update the current value triggers a "changed" event.)
 
 ```ruby
     a = ReactiveValue.new(1)
