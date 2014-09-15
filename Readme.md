@@ -4,6 +4,9 @@
 [![Volt Chat](https://badges.gitter.im/voltrb/volt.png)](https://gitter.im/voltrb/volt)
 [![Pledgie](https://pledgie.com/campaigns/26731.png?skin_name=chrome)](https://pledgie.com/campaigns/26731)
 
+=======
+** For the current status of volt, read: http://voltframework.com/blog
+
 # Volt
 
 Volt is a ruby web framework where your ruby code runs on both the server and the client (via [opal](https://github.com/opal/opal).)  The DOM automatically update as the user interacts with the page.  Page state can be stored in the URL, if the user hits a URL directly, the HTML will first be rendered on the server for faster load times and easier indexing by search engines.
@@ -18,7 +21,7 @@ See some demo videos here:
  - [Reactive Values in Volt](https://www.youtube.com/watch?v=yZIQ-2irY-Q)
 
 Check out demo apps:
- - https://github.com/voltrb/todos
+ - https://github.com/voltrb/todos3
  - https://github.com/voltrb/blog
  - https://github.com/voltrb/contactsdemo
 
