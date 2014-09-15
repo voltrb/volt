@@ -738,7 +738,7 @@ Routes are specified on a per-component basis in the config/routes.rb file.  Rou
 
 Routes take two arguments, a path, and a params hash.  When a new URL is loaded and the path is matched on a route, the params will be set to the params provided for that route.
 
-When the params are changed, the URL will be set to the path for the route that's params hash matches.
+When the params are changed, the URL will be set to the path for the route whose params hash matches.
 
 Route paths can also contain variables similar to bindings.
 
