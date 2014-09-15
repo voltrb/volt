@@ -392,7 +392,7 @@ Models also let you nest data without creating the intermediate models:
 
 Nested data is automatically setup when assigned.  In this case, page._settings is a model that is part of the page model.
 
-You can also append to a model if its not defined yet.  In Volt models, plural properties are assumed to contain arrays (or more specifically ArrayModels)
+You can also append to a model if it's not defined yet.  In Volt models, plural properties are assumed to contain arrays (or more specifically, ArrayModels).
 
 ```ruby
     page._items << 'item 1'
