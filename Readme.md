@@ -407,7 +407,7 @@ ArrayModels can be appended to and accessed just like regular arrays.
 
 ## Provided Collections
 
-Above I mentioned that Volt comes with many default collection models accessible from a controller.  Each stores in a different location.
+Above, I mentioned that Volt comes with many default collection models accessible from a controller.  Each stores in a different location.
 
 | Name      | Storage Location                                                          |
 |-----------|---------------------------------------------------------------------------|
