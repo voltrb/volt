@@ -136,10 +136,6 @@ class ReactiveValue < BasicObject
       end
     end
   end
-  #
-  # def respond_to?(name, include_private=false)
-  #   [:event_added, :event_removed].include?(name) || super
-  # end
 
   def respond_to_missing?(name, include_private=false)
     cur.respond_to?(name)
@@ -428,5 +424,4 @@ class ReactiveManager
   def setter!(setter=nil, &block)
     @setter = setter || block
   end
-
 end
