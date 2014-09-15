@@ -43,12 +43,10 @@ Volt has the following goals:
 
 Many of the core Volt features are implemented.  We still have a bit to go before 1.0, most of it involving models.
 
-1. Database storing models
-2. Model validations (client and server side)
-3. Reactive model queries
-4. Reactive Enumerators with Blocks (.map .count, etc...)
-5. Full managed render loop (for fast rendering)
-6. Fix N+1 issue with some reactive values (I know how to fix, just haven't gotten around to doing it)
+1. Reactive model queries
+2. Reactive Enumerators with Blocks (.map .count, etc...)
+3. Full managed render loop (for fast rendering)
+4. Fix N+1 issue with some reactive values (I know how to fix, just haven't gotten around to doing it)
 
 # VOLT guide
 
