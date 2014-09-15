@@ -311,7 +311,7 @@ For iteration over objects, the each binding is provided.
     {/}
 ```
 
-Above, if _items was an array, the block would be rendered for each item, setting 'item' to the value of the array element.
+Above, if _items were an array, the block would be rendered for each item, setting 'item' to the value of the array element.
 
 You can also access the position of the item in the array with the #index method.
 
