@@ -9,7 +9,7 @@
 
 Volt is a ruby web framework where your ruby code runs on both the server and the client (via [opal](https://github.com/opal/opal).)  The DOM automatically update as the user interacts with the page.  Page state can be stored in the URL, if the user hits a URL directly, the HTML will first be rendered on the server for faster load times and easier indexing by search engines.
 
-Instead of syncing data between the client and server via HTTP, volt uses a persistent connection between the client and server.  When data updated on one client, it is updated in the database and any other listening clients.  (With almost no setup code needed)
+Instead of syncing data between the client and server via HTTP, volt uses a persistent connection between the client and server.  When data is updated on one client, it is updated in the database and any other listening clients (with almost no setup code needed).
 
 Pages HTML is written in a handlebars like template language.  Volt uses data flow/reactive programming to automatically and intelligently propagate changes to the DOM (or anything other code wanting to know when a value updates)  When something in the DOM changes, Volt intelligently updates only the nodes that need to be changed.
 
@@ -62,7 +62,7 @@ Then create a new project:
 
     volt new project_name
 
-This will setup a basic project.  Now lets run the server.
+This will setup a basic project.  Now let's run the server.
 
     volt server
 
@@ -105,7 +105,7 @@ You can access the volt console with:
 
 Volt is still a work in progress, but early feedback is appreciated.  Use the following to communicate with the developers, someone will get back to you very quickly:
 
-- **If you need help**: post on [stackoverflow.com](http://www.stackoverflow.com), be sure to tag your question with voltrb
+- **If you need help**: post on [stackoverflow.com](http://www.stackoverflow.com). Be sure to tag your question with `voltrb`.
 - **If you found a bug**: post on [github issues](https://github.com/voltrb/volt/issues)
 - **If you have an idea or need a feature**: post on [github issues](https://github.com/voltrb/volt/issues)
 - **If you want to discuss volt**: use #voltrb on freenode.
@@ -120,7 +120,7 @@ When a user interacts with a web page, typically we want to do two things:
 
 For example when a user clicks to add a new todo item to a todo list, we might create a JavaScript object to represent the todo item, then add an item to the list's DOM.  A lot of work needs to be done to make sure that the JavaScript object and the DOM always stay in sync.
 
-The idea of "reactive programming" has been used to simplify maintaining the DOM.  The idea is instead of having event handlers that manage a model (or JavaScript object) and manage the DOM, we have event handlers that manage reactive data models.  We describe our DOM layer in a declarative way so that it automatically knows how to render our data models.
+The idea of "reactive programming" has been used to simplify maintaining the DOM.  The idea that is instead of having event handlers that manage a model (or JavaScript object) and manage the DOM, we have event handlers that manage reactive data models.  We describe our DOM layer in a declarative way so that it automatically knows how to render our data models.
 
 ## Reactive Values
 
@@ -131,9 +131,9 @@ To build bindings, Volt provides the ReactiveValue class.  This wraps any object
     # => @"my object"
 ```
 
-When .inspect is called on a ReactiveValue (like in the console), an @ is placed in front of the value inspect string, so you know its reactive.
+When `#inspect` is called on a ReactiveValue (like in the console), an '@' is placed in front of the value's inspect string, so you know its reactive.
 
-When you call a method on a ReactiveValue, you get back a new reactive value that depends on the previous one.  It remembers how it was created and you can call .cur on it any time to get its current value, which will be computed based off of the first reactive value.  (Keep in mind below that + is a method call, the same as a.+(b) in ruby.)
+When you call a method on a ReactiveValue, you get back a new reactive value that depends on the previous one.  It remembers how it was created and you can call `#cur` on it any time to get its current value, which will be computed based off of the first reactive value.  (Keep in mind below that + is a method call, the same as `a.+(b)` in ruby.)
 
 ```ruby
     a = ReactiveValue.new(1)
@@ -155,7 +155,7 @@ When you call a method on a ReactiveValue, you get back a new reactive value tha
     # => 7
 ```
 
-This provides the backbone for reactive programming.  We setup computation/flow graphs instead of doing an actual calculation.  Calling .cur (or .inspect, .to_s, etc..) runs the computation and returns the current value at that time, based on all of its dependencies.
+This provides the backbone for reactive programming.  We setup computation/flow graphs instead of doing an actual calculation.  Calling `#cur` (or `#inspect`, `#to_s`, etc..) runs the computation and returns the current value at that time, based on all of its dependencies.
 
 ReactiveValues also let you setup listeners and trigger events:
 
@@ -179,7 +179,7 @@ These events propagate to any reactive values created off of a reactive value.
 
 This event flow lets us know when an object has changed, so we can update everything that depended on that object.
 
-Lastly, we can also pass in other reactive values as arguments to methods on a reactive value.  The dependencies will be tracked for both and events will propagate down from both.  (Also, note that doing `.cur =` to update the current value triggers a "changed" event.)
+Lastly, we can also pass in other reactive values as arguments to methods on a reactive value.  The dependencies will be tracked for both and events will propagate down from both.  (Also, note that calling `#cur=` to update the current value triggers a "changed" event.)
 
 ```ruby
     a = ReactiveValue.new(1)
@@ -201,7 +201,7 @@ Lastly, we can also pass in other reactive values as arguments to methods on a r
 
 ### ReactiveValue Gotchas
 
-There are a few simple things to keep in mind with ReactiveValues.  In order to make them mostly compatible with other ruby objects, a two methods do not return another ReactiveValue.
+There are a few simple things to keep in mind with ReactiveValues.  In order to make them mostly compatible with other ruby objects, two methods do not return another ReactiveValue.
 
     to_s and inspect
 
@@ -209,7 +209,7 @@ If you want these to be used reactively, see the section on [with](#with)
 
 Also, due to a small limitation in ruby, ReactiveValues always are truthy.  See the [truthy checks](#truthy-checks-true-false-or-and-and) section on how to check for truth.
 
-When passing something that may contain reactive values to a JS function, you can call ```.deep_cur``` on any object to get back a copy that will have all reactive values turned into their current value.
+When passing something that may contain reactive values to a JS function, you can call ```#deep_cur``` on any object to get back a copy that will have all reactive values turned into their current value.
 
 ### Current Status
 
@@ -219,7 +219,7 @@ NOTE: currently ReactiveValues are not complete.  At the moment, they do not han
 
 Because a method on a reactive value always returns another reactive value, and because only nil and false are false in ruby, we need a way to check if a ReactiveValue is truthy in our code.  The easiest way to do this is by calling .true? on it.  It will return a non-wrapped boolean.  .nil? and .false? do as you would expect.
 
-One common place we use a truthy check is in setting up default values with || (logical or)  Volt provides a convience method that does the same thing .or, but works with ReactiveValues.
+One common place we use a truthy check is in setting up default values with || (logical or)  Volt provides a convience method that does the same thing `#or`, but works with ReactiveValues.
 
 Instead of
 
@@ -233,14 +233,14 @@ Simply use:
     a.or(b)
 ```
 
-.and works the same way as &&.  #and and #or let you maintain the reactivity all of the way through.
+`#and` works the same way as &&.  #and and #or let you maintain the reactivity all of the way through.
 
 
 ### With
 
 Normally when you want to have a value that depends on another value, but transforms it somehow, you simply call your transform method on the ReactiveValue.  However sometimes the transform is not directly on the ReactiveValues object.
 
-You can call .with on any ReactiveValue.  .with will return a new ReactiveValue that depends on the current ReactiveValue.  .with takes a block, the first argument to the block will be the cur value of the ReactiveValue you called with on.  Any additional arguments to with will be passed in after the first one.  If you pass another ReactiveValue as an argument to .with, the returned ReactiveValue will depend on the argument ReactiveValue as well, and the block will receive the arguments cur value.
+You can call `#with` on any ReactiveValue.  `#with` will return a new ReactiveValue that depends on the current ReactiveValue.  `#with` takes a block, the first argument to the block will be the cur value of the ReactiveValue you called `#with` on.  Any additional arguments to `#with` will be passed in after the first one.  If you pass another ReactiveValue as an argument to `#with`, the returned ReactiveValue will depend on the argument ReactiveValue as well, and the block will receive the arguments cur value.
 
 ```ruby
     a = ReactiveValue.new(5)
@@ -311,7 +311,7 @@ For iteration over objects, the each binding is provided.
     {/}
 ```
 
-Above, if _items was an array, the block would be rendered for each item, setting 'item' to the value of the array element.
+Above, if _items were an array, the block would be rendered for each item, setting 'item' to the value of the array element.
 
 You can also access the position of the item in the array with the #index method.
 
@@ -339,7 +339,7 @@ Bindings can also be placed inside of attributes.
     <p class="{#if _is_cool?}cool{/}">Text</p>
 ```
 
-There are some special features provided to make for elements work as "two way bindings"
+There are some special features provided to make elements work as "two way bindings"
 
 ```html
     <input type="text" value="{_name}" />
@@ -359,7 +359,7 @@ If you have a controller at app/home/controller/index_controller.rb, and a view 
 
 ## Escaping
 
-When you need to use { and } outside of bindings.  Anything in a triple mustache will be escaped and not processed as a binding:
+When you need to use { and } outside of bindings, anything in a triple mustache will be escaped and not processed as a binding:
 
 ```html
     {{{ bindings look like: {this}  }}}
@@ -369,7 +369,7 @@ When you need to use { and } outside of bindings.  Anything in a triple mustache
 
 Volt's concept of a model is slightly different from many frameworks where a model is the name for the ORM to the database.  In Volt a model is a class where you can store data easily.  Models can be created with a "Persistor", which is responsible for storing the data in the model.  Models created without a persistor, simply store the data in the classes instance.  Lets first see how to use a model.
 
-Volt comes with many built-in models, one is called 'page'.  If you call #page on a controller, you will get access to the model.  Models provided by Volt are automatically wrapped in a ReactiveValue so update events can be tracked.
+Volt comes with many built-in models; one is called `page`.  If you call `#page` on a controller, you will get access to the model.  Models provided by Volt are automatically wrapped in a ReactiveValue so update events can be tracked.
 
 ```ruby
     page._name = 'Ryan'
@@ -377,7 +377,7 @@ Volt comes with many built-in models, one is called 'page'.  If you call #page o
     # => @'Ryan'
 ```
 
-Models act like a hash that you can access with getters and setters that start with an _   If an underscore method is called that hasn't yet been assigned, you will get back a "nil model".  Prefixing with an underscore makes sure we don't accidentally try to call a method that doesn't exist and get back nil model instead of raising an exception.  There is no need to define which fields a model has, they act similar to a hash, but with a different access and assign syntax.
+Models act like a hash that you can access with getters and setters that start with an _   If an underscore method is called that hasn't yet been assigned, you will get back a "nil model".  Prefixing with an underscore makes sure we don't accidentally try to call a method that doesn't exist and get back nil model instead of raising an exception.  There is no need to define which fields a model has. Fields behave similarly to a hash, but with a different access and assignment syntax.
 
 Models also let you nest data without creating the intermediate models:
 
@@ -392,7 +392,7 @@ Models also let you nest data without creating the intermediate models:
 
 Nested data is automatically setup when assigned.  In this case, page._settings is a model that is part of the page model.
 
-You can also append to a model if its not defined yet.  In Volt models, plural properties are assumed to contain arrays (or more specifically ArrayModels)
+You can also append to a model if it's not defined yet.  In Volt models, plural properties are assumed to contain arrays (or more specifically, ArrayModels).
 
 ```ruby
     page._items << 'item 1'
@@ -407,7 +407,7 @@ ArrayModels can be appended to and accessed just like regular arrays.
 
 ## Provided Collections
 
-Above I mentioned that Volt comes with many default collection models accessible from a controller.  Each stores in a different location.
+Above, I mentioned that Volt comes with many default collection models accessible from a controller.  Each stores in a different location.
 
 | Name      | Storage Location                                                          |
 |-----------|---------------------------------------------------------------------------|
@@ -426,7 +426,7 @@ Because all models provided by Volt are wrapped in a ReactiveValue, you can regi
 
 ## Model Events
 
-Models trigger events when their data is updated.  Currently models emit three events: changed, added, and removed.  For example:
+Models trigger events when their data is updated.  Currently, models emit three events: changed, added, and removed.  For example:
 
 ```ruby
     model = Model.new
@@ -466,9 +466,9 @@ For convenience, when placing a hash inside of another model, it is automaticall
     # => Model
 ```
 
-Models are accessed differently from hashes.  Instead of using model[:symbol] to access, you call a method model.method_name.  This provides a dynamic unified store where setters and getters can be added without changing any access code.
+Models are accessed differently from hashes.  Instead of using `model[:symbol]` to access, you call a method `model.method_name`.  This provides a dynamic unified store where setters and getters can be added without changing any access code.
 
-You can get a ruby hash back out by calling .to_h on a Model.
+You can get a ruby hash back out by calling `#to_h` on a Model.
 
 ### Array -> ArrayModel
 
@@ -486,7 +486,7 @@ Arrays inside of models are automatically converted to an instance of ArrayModel
 ```
 
 
-To convert a Model or an ArrayModel back to a normal hash, call .to_h or .to_a respectively.  To convert them to a JavaScript Object (for passing to some JavaScript code), call .to_n (to native).
+To convert a Model or an ArrayModel back to a normal hash, call .to_h or .to_a respectively.  To convert them to a JavaScript Object (for passing to some JavaScript code), call `#to_n` (to native).
 
 ```ruby
     user = Model.new
@@ -519,7 +519,7 @@ A controller can be any class in Volt, however it is common to have that class i
     end
 ```
 
-2. Calling self.method = in a method:
+2. Calling `self.method=` in a method:
 
 ```ruby
     class TodosController < ModelController
@@ -529,13 +529,13 @@ A controller can be any class in Volt, however it is common to have that class i
     end
 ```
 
-In methods, the #model method returns the current model.
+In methods, the `#model` method returns the current model.
 
 See the [provided collections](#provided-collections) section for a list of the available collection models.
 
 You can also provide your own object to model.
 
-In the example above any methods not defined on the TodosController will fall through to the provided model.  All views in views/{controller_name} will have this controller as the target for any ruby run in their bindings.  This means that calls on self (implicit or with self.) will have the model as their target (after calling through the controller).  This lets you add methods to the controller to control how the model is handled, or provide extra methods to the views.
+In the example above, any methods not defined on the TodosController will fall through to the provided model.  All views in views/{controller_name} will have this controller as the target for any ruby run in their bindings.  This means that calls on self (implicit or with self.) will have the model as their target (after calling through the controller).  This lets you add methods to the controller to control how the model is handled, or provide extra methods to the views.
 
 Volt is more similar to an MVVM architecture than an MVC architecture.  Instead of the controllers passing data off to the views, the controllers are the context for the views.  When using a ModelController, the controller automatically forwards all methods it does not handle to the model.  This is convienant since you can set a model in the controller and then access its properties directly with methods in bindings.  This lets you do something like ```{_name}``` instead of something like ```{@model._name}```
 
@@ -553,7 +553,7 @@ Here "auth" would be the component name.
 
 ## Reactive Accessors
 
-The default ModelController proxies any missing methods to its model.  Since models are wrapped in ReactiveValues, they return ReactiveValues by default.  Sometimes you need to store additional data reactively in the controller outside of the model.  (Though often you may want to condier doing another control/controller)  In this case, you can add a ```reactive_accessor```.  These behave just like ```attr_accessor``` except the values assigned and returned are wrapped in a ReactiveValue.  Updates update the existing ReactiveValue.
+The default ModelController proxies any missing methods to its model.  Since models are wrapped in ReactiveValues, they return ReactiveValues by default.  Sometimes you need to store additional data reactively in the controller outside of the model.  (Though often you may want to condier doing another control/controller).  In this case, you can add a ```reactive_accessor```.  These behave just like ```attr_accessor``` except the values assigned and returned are wrapped in a ReactiveValue.  Updates update the existing ReactiveValue.
 
 ```ruby
   class Contacts < ModelController
@@ -592,7 +592,7 @@ Note above though that jquery and bootstrap are currently included by default.  
 
 **Note, asset management is still early, and likely will change quite a bit**
 
-In volt, assets such as JavaScript and CSS (or sass) are automatically included on the page for you.  Anything placed inside of a components asset/js or assets/css folder is served at /assets/{js,css} (via [Sprockets](https://github.com/sstephenson/sprockets))  Link and script tags are automatically added for each css and js file in assets/css and assets/js respectively.  Files are included in their lexical order, so you can add numbers in front if you need to change the load order.
+In volt, assets such as JavaScript and CSS (or sass) are automatically included on the page for you.  Anything placed inside of a components asset/js or assets/css folder is served at /assets/{js,css} (via [Sprockets](https://github.com/sstephenson/sprockets)).  Link and script tags are automatically added for each css and js file in assets/css and assets/js respectively.  Files are included in their lexical order, so you can add numbers in front if you need to change the load order.
 
 Any JS/CSS from an included component or component gem will be included as well.  By default [bootstrap](http://getbootstrap.com/) is provided by the volt-bootstrap gem.
 
@@ -616,7 +616,7 @@ Remove the path: option in the gemfile if you wish to use the rubygems version.
 
 ## Provided Components
 
-Volt provides a few components to make web developers lives easier.
+Volt provides a few components to make web developers' lives easier.
 
 ### Notices
 
@@ -674,7 +674,7 @@ Each part is explained below:
 Views are composed of sections.  Sections start with a ```<:SectionName>``` and are not closed.  Volt will look first for a section in the same view.
 
 2. views
-Next Volt will look for a view file that with the control name.  If found, it will render the body section of that view.
+Next Volt will look for a view file with the control name.  If found, it will render the body section of that view.
 
 3. view folder
 Failing above, Volt will look for a view folder with the control name, and an index.html file within that folder.  It will render the :body section of that view.  If a controller exists for the view folder, it will make a new instance of that controller and render in that instance.
@@ -738,7 +738,7 @@ Routes are specified on a per-component basis in the config/routes.rb file.  Rou
 
 Routes take two arguments, a path, and a params hash.  When a new URL is loaded and the path is matched on a route, the params will be set to the params provided for that route.
 
-When the params are changed, the URL will be set to the path for the route that's params hash matches.
+When the params are changed, the URL will be set to the path for the route whose params hash matches.
 
 Route paths can also contain variables similar to bindings.
 
@@ -748,22 +748,22 @@ Route paths can also contain variables similar to bindings.
 
 In the case above, if any URL matches /todos/*, (where * is anything but a slash), it will be the active route. ```params._view``` would be set to 'todos', and ```params._index``` would be set to the value in the path.
 
-If ```params._view``` is 'todos' and ```params._index``` is not nil, the route would be matched.
+If ```params._view``` were 'todos' and ```params._index``` were not nil, the route would be matched.
 
 Routes are matched top to bottom in a routes file.
 
 ## Debugging
 
-An in browser irb is in the works.  We also have source maps support, but they are currently disabled due by default.  To enable them run:
+An in browser irb is in the works.  We also have source maps support, but they are currently disabled by default.  To enable them run:
 
     MAPS=true volt s
 
-They are disabled by default because they slow down page rendering because so many files are rendered.  We're working with the opal and sprockets teams to make it so everything is still served in one big source maps file (which would show the files as they originated on disk)
+This feature is disabled by default because (due to the volume of pages rendered) it slows down page rendering. We're working with the opal and sprockets teams to make it so everything is still served in one big source maps file (which would show the files as they originated on disk)
 
 
 ## Channel
 
-Controllers provide a .channel method, that you can use to get the status of the connection to the backend.  Channel is provided in a ReactiveValue, and when the status changes, the changed events are triggered.  It provides the following:
+Controllers provide a `#channel` method, that you can use to get the status of the connection to the backend.  Channel is provided in a ReactiveValue, and when the status changes, the changed events are triggered.  It provides the following:
 
 | method      | description                                               |
 |-------------|-----------------------------------------------------------|
@@ -787,7 +787,7 @@ Volt provides a data store collection on the front-end and the back-end.  In sto
 store._things
 ```
 
-**Work in process**
+**Work in progress**
 
 | state       | events bound | description                                                  |
 |-------------|--------------|--------------------------------------------------------------|
