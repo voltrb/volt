@@ -466,9 +466,9 @@ For convenience, when placing a hash inside of another model, it is automaticall
     # => Model
 ```
 
-Models are accessed differently from hashes.  Instead of using model[:symbol] to access, you call a method model.method_name.  This provides a dynamic unified store where setters and getters can be added without changing any access code.
+Models are accessed differently from hashes.  Instead of using `model[:symbol]` to access, you call a method `model.method_name`.  This provides a dynamic unified store where setters and getters can be added without changing any access code.
 
-You can get a ruby hash back out by calling .to_h on a Model.
+You can get a ruby hash back out by calling `#to_h` on a Model.
 
 ### Array -> ArrayModel
 
