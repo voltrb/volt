@@ -131,7 +131,7 @@ To build bindings, Volt provides the ReactiveValue class.  This wraps any object
     # => @"my object"
 ```
 
-When .inspect is called on a ReactiveValue (like in the console), an @ is placed in front of the value inspect string, so you know its reactive.
+When `#inspect` is called on a ReactiveValue (like in the console), an '@' is placed in front of the value's inspect string, so you know its reactive.
 
 When you call a method on a ReactiveValue, you get back a new reactive value that depends on the previous one.  It remembers how it was created and you can call .cur on it any time to get its current value, which will be computed based off of the first reactive value.  (Keep in mind below that + is a method call, the same as a.+(b) in ruby.)
 
