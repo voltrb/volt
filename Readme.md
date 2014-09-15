@@ -155,7 +155,7 @@ When you call a method on a ReactiveValue, you get back a new reactive value tha
     # => 7
 ```
 
-This provides the backbone for reactive programming.  We setup computation/flow graphs instead of doing an actual calculation.  Calling .cur (or .inspect, .to_s, etc..) runs the computation and returns the current value at that time, based on all of its dependencies.
+This provides the backbone for reactive programming.  We setup computation/flow graphs instead of doing an actual calculation.  Calling `#cur` (or `#inspect`, `#to_s`, etc..) runs the computation and returns the current value at that time, based on all of its dependencies.
 
 ReactiveValues also let you setup listeners and trigger events:
 
