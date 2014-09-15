@@ -209,7 +209,7 @@ If you want these to be used reactively, see the section on [with](#with)
 
 Also, due to a small limitation in ruby, ReactiveValues always are truthy.  See the [truthy checks](#truthy-checks-true-false-or-and-and) section on how to check for truth.
 
-When passing something that may contain reactive values to a JS function, you can call ```.deep_cur``` on any object to get back a copy that will have all reactive values turned into their current value.
+When passing something that may contain reactive values to a JS function, you can call ```#deep_cur``` on any object to get back a copy that will have all reactive values turned into their current value.
 
 ### Current Status
 
