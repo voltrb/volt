@@ -763,7 +763,7 @@ This feature is disabled by default because (due to the volume of pages rendered
 
 ## Channel
 
-Controllers provide a .channel method, that you can use to get the status of the connection to the backend.  Channel is provided in a ReactiveValue, and when the status changes, the changed events are triggered.  It provides the following:
+Controllers provide a `#channel` method, that you can use to get the status of the connection to the backend.  Channel is provided in a ReactiveValue, and when the status changes, the changed events are triggered.  It provides the following:
 
 | method      | description                                               |
 |-------------|-----------------------------------------------------------|
