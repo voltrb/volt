@@ -339,7 +339,7 @@ Bindings can also be placed inside of attributes.
     <p class="{#if _is_cool?}cool{/}">Text</p>
 ```
 
-There are some special features provided to make for elements work as "two way bindings"
+There are some special features provided to make elements work as "two way bindings"
 
 ```html
     <input type="text" value="{_name}" />
