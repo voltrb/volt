@@ -201,7 +201,7 @@ Lastly, we can also pass in other reactive values as arguments to methods on a r
 
 ### ReactiveValue Gotchas
 
-There are a few simple things to keep in mind with ReactiveValues.  In order to make them mostly compatible with other ruby objects, a two methods do not return another ReactiveValue.
+There are a few simple things to keep in mind with ReactiveValues.  In order to make them mostly compatible with other ruby objects, two methods do not return another ReactiveValue.
 
     to_s and inspect
 
