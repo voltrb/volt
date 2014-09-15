@@ -426,7 +426,7 @@ Because all models provided by Volt are wrapped in a ReactiveValue, you can regi
 
 ## Model Events
 
-Models trigger events when their data is updated.  Currently models emit three events: changed, added, and removed.  For example:
+Models trigger events when their data is updated.  Currently, models emit three events: changed, added, and removed.  For example:
 
 ```ruby
     model = Model.new
