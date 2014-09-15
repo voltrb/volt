@@ -787,7 +787,7 @@ Volt provides a data store collection on the front-end and the back-end.  In sto
 store._things
 ```
 
-**Work in process**
+**Work in progress**
 
 | state       | events bound | description                                                  |
 |-------------|--------------|--------------------------------------------------------------|
