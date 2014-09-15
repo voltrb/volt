@@ -369,7 +369,7 @@ When you need to use { and } outside of bindings, anything in a triple mustache 
 
 Volt's concept of a model is slightly different from many frameworks where a model is the name for the ORM to the database.  In Volt a model is a class where you can store data easily.  Models can be created with a "Persistor", which is responsible for storing the data in the model.  Models created without a persistor, simply store the data in the classes instance.  Lets first see how to use a model.
 
-Volt comes with many built-in models, one is called 'page'.  If you call #page on a controller, you will get access to the model.  Models provided by Volt are automatically wrapped in a ReactiveValue so update events can be tracked.
+Volt comes with many built-in models; one is called `page`.  If you call `#page` on a controller, you will get access to the model.  Models provided by Volt are automatically wrapped in a ReactiveValue so update events can be tracked.
 
 ```ruby
     page._name = 'Ryan'
