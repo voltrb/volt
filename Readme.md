@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/voltrb/volt.png?branch=master)](https://travis-ci.org/voltrb/volt)
 [![Pledgie](https://pledgie.com/campaigns/26731.png?skin_name=chrome)](https://pledgie.com/campaigns/26731)
 
-
+** For the current status of volt, read: http://voltframework.com/blog
 
 # Volt
 
