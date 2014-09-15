@@ -754,7 +754,7 @@ Routes are matched top to bottom in a routes file.
 
 ## Debugging
 
-An in browser irb is in the works.  We also have source maps support, but they are currently disabled due by default.  To enable them run:
+An in browser irb is in the works.  We also have source maps support, but they are currently disabled by default.  To enable them run:
 
     MAPS=true volt s
 
