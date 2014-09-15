@@ -616,7 +616,7 @@ Remove the path: option in the gemfile if you wish to use the rubygems version.
 
 ## Provided Components
 
-Volt provides a few components to make web developers lives easier.
+Volt provides a few components to make web developers' lives easier.
 
 ### Notices
 
