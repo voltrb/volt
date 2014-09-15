@@ -19,7 +19,7 @@ See some demo videos here:
  - [Reactive Values in Volt](https://www.youtube.com/watch?v=yZIQ-2irY-Q)
 
 Check out demo apps:
- - https://github.com/voltrb/todos
+ - https://github.com/voltrb/todos3
  - https://github.com/voltrb/blog
  - https://github.com/voltrb/contactsdemo
 
