@@ -1,5 +1,3 @@
-require 'volt/reactive/object_tracking'
-require 'volt/reactive/reactive_block'
 
 class ReactiveArray# < Array
   include ReactiveTags

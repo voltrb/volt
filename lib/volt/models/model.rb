@@ -1,14 +1,12 @@
 require 'volt/models/model_wrapper'
-require 'volt/models/array_model'
+# require 'volt/models/array_model'
 require 'volt/models/model_helpers'
-require 'volt/reactive/object_tracking'
 require 'volt/models/model_hash_behaviour'
 require 'volt/models/validations'
 require 'volt/models/model_state'
 
 class Model
   include ModelWrapper
-  include ObjectTracking
   include ModelHelpers
   include ModelHashBehaviour
   include Validations
@@ -74,11 +72,6 @@ class Model
   end
 
 
-  tag_all_methods do
-    pass_reactive! do |method_name|
-      method_name[0] == '_' && method_name[-1] == '='
-    end
-  end
   def method_missing(method_name, *args, &block)
     if method_name[0] == '_'
       if method_name[-1] == '='
@@ -213,9 +206,6 @@ class Model
     end
   end
 
-  tag_method(:<<) do
-    pass_reactive!
-  end
   # Initialize an empty array and append to it
   def <<(value)
     if @parent
@@ -290,9 +280,6 @@ class Model
 
 
   # Returns a buffered version of the model
-  tag_method(:buffer) do
-    destructive!
-  end
   def buffer
     model_path = options[:path]
     model_klass = class_at_path(model_path)

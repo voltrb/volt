@@ -2,30 +2,6 @@
 # Moving this into a module cleans up the main Model class for things that
 # make it behave like a model.
 module ModelHashBehaviour
-  def self.included(base)
-    # In modules, since we need to tag on the main class, we setup the
-    # tags with included.
-    base.tag_method(:delete) do
-      destructive!
-    end
-
-    base.tag_method(:clear) do
-      destructive!
-    end
-  end
-
-
-  def nil?
-    attributes.nil?
-  end
-
-  def false?
-    attributes.false?
-  end
-
-  def true?
-    attributes.true?
-  end
 
   def delete(name)
     name = name.to_sym
