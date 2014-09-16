@@ -1,5 +1,5 @@
 class Dependency
-  @flush_queue = []
+  @@flush_queue = []
 
   def initialize
     @dependencies = []
@@ -14,12 +14,12 @@ class Dependency
     deps = @dependencies
     @dependencies = []
 
-    @flush_queue += deps
+    @@flush_queue += deps
   end
 
   def self.flush!
-    computations = @flush_queue
-    @flush_queue = []
+    computations = @@flush_queue
+    @@flush_queue = []
 
     computations.each do |computation|
       computation.run_in do
