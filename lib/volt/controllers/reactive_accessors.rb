@@ -4,17 +4,18 @@ module ReactiveAccessors
     # Create a method to read a reactive value from an instance value.  If it
     # is not setup, create it so it can be updated through the reactive value
     # at a later point.
+    def __reactive_dependency_get(var_name)
+      value_dep = instance_variable_get(:"@__#{var_name}_dependency")
+      value_dep ||= instance_variable_set(:"@__#{var_name}_dependency", Dependency.new)
+    end
+
     def reactive_reader(*names)
       names.each do |name|
         var_name = :"@#{name}"
         define_method(name.to_sym) do
           value = instance_variable_get(var_name)
 
-          unless value
-            value = ReactiveValue.new(nil)
-
-            instance_variable_set(var_name, value)
-          end
+          __reactive_dependency_get(name).depend
 
           value
         end
@@ -27,11 +28,7 @@ module ReactiveAccessors
         define_method(:"#{name}=") do |new_value|
           value = instance_variable_get(var_name)
 
-          if value
-            value.cur = new_value
-          else
-            instance_variable_set(var_name, ReactiveValue.new(value))
-          end
+          __reactive_dependency_get(name).changed!
         end
       end
     end
