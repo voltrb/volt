@@ -26,4 +26,17 @@ class Volt
   def self.env
     @env ||= Volt::Environment.new
   end
+
+  def self.setup
+    yield self.config
+  end
+
+  def self.config
+    @config || self.reset_config!
+  end
+
+  # Resets the configuration to the default (empty hash)
+  def self.reset_config!
+    @config = OpenStruct.new({})
+  end
 end
