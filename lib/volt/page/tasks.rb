@@ -47,6 +47,7 @@ class Tasks
       if error
         # TODO: full error handling
         puts "Error2: #{error.inspect}"
+        promise.reject(error)
       else
         promise.resolve(result)
       end
