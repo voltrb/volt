@@ -4,6 +4,7 @@ require 'volt/models/model_helpers'
 require 'volt/models/model_hash_behaviour'
 require 'volt/models/validations'
 require 'volt/models/model_state'
+require 'volt/reactive/reactive_hash'
 
 class Model
   include ModelWrapper
@@ -12,10 +13,11 @@ class Model
   include Validations
   include ModelState
 
-  attr_accessor :attributes
+  attr_reader :attributes
   attr_reader :parent, :path, :persistor, :options
 
   def initialize(attributes={}, options={}, initial_state=nil)
+    self.attributes = ReactiveHash.new
     self.options = options
 
     self.send(:attributes=, attributes, true)

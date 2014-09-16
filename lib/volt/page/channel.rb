@@ -1,6 +1,5 @@
 # The channel is the connection between the front end and the backend.
 
-require 'volt/reactive/events'
 require 'json'
 
 class Channel

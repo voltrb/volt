@@ -1,5 +1,4 @@
 class Temp1
-  include Events
 
   attr_accessor :seconds
   def initialize

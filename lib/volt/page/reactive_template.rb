@@ -1,6 +1,4 @@
 class ReactiveTemplate
-  include Events
-
   def initialize(page, context, template_path)
     @template_path = template_path
     @target = AttributeTarget.new(nil, nil, self)
