@@ -15,7 +15,7 @@ module ReactiveAccessors
         define_method(name.to_sym) do
           value = instance_variable_get(var_name)
 
-          __reactive_dependency_get(name).depend
+          self.class.__reactive_dependency_get(name).depend
 
           value
         end
@@ -28,7 +28,7 @@ module ReactiveAccessors
         define_method(:"#{name}=") do |new_value|
           value = instance_variable_get(var_name)
 
-          __reactive_dependency_get(name).changed!
+          self.class.__reactive_dependency_get(name).changed!
         end
       end
     end

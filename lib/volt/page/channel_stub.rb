@@ -7,8 +7,6 @@ require 'volt/tasks/dispatcher'
 # sockjs to pass messages to the backend.  ChannelStub, simply passes
 # them directly to SocketConnectionHandlerStub.
 class ChannelStub
-  include ReactiveTags
-
   attr_reader :state, :error, :reconnect_interval
 
   def initiailze
@@ -16,17 +14,14 @@ class ChannelStub
   end
 
   def opened
-    trigger!('open')
-    trigger!('changed')
+    # trigger!('open')
+    # trigger!('changed')
   end
 
   def message_received(*message)
-    trigger!('message', nil, *message)
+    # trigger!('message', nil, *message)
   end
 
-  tag_method(:send_message) do
-    destructive!
-  end
   def send_message(message)
     SocketConnectionHandlerStub.new(self).process_message(message)
   end

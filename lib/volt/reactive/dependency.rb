@@ -1,4 +1,6 @@
 class Dependency
+  @flush_queue = []
+
   def initialize
     @dependencies = []
   end
@@ -12,7 +14,14 @@ class Dependency
     deps = @dependencies
     @dependencies = []
 
-    deps.each do |computation|
+    @flush_queue += deps
+  end
+
+  def self.flush!
+    computations = @flush_queue
+    @flush_queue = []
+
+    computations.each do |computation|
       computation.run_in do
         computation.invalidate!
       end

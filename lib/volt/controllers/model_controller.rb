@@ -1,4 +1,4 @@
-require 'volt/controllers/reactive_accessors'
+require 'volt/reactive/reactive_accessors'
 
 class ModelController
   include ReactiveAccessors

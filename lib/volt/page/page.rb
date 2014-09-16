@@ -39,9 +39,9 @@ class Page
     @model_classes = {}
 
     # Run the code to setup the page
-    @page = ReactiveValue.new(Model.new)
+    @page = Model.new
 
-    @url = ReactiveValue.new(URL.new)
+    @url = URL.new
     @params = @url.params
     @url_tracker = UrlTracker.new(self)
 
@@ -68,15 +68,15 @@ class Page
   end
 
   def flash
-    @flash ||= ReactiveValue.new(Model.new({}, persistor: Persistors::Flash))
+    @flash ||= Model.new({}, persistor: Persistors::Flash)
   end
 
   def store
-    @store ||= ReactiveValue.new(Model.new({}, persistor: Persistors::StoreFactory.new(tasks)))
+    @store ||= Model.new({}, persistor: Persistors::StoreFactory.new(tasks))
   end
 
   def local_store
-    @local_store ||= ReactiveValue.new(Model.new({}, persistor: Persistors::LocalStore))
+    @local_store ||= Model.new({}, persistor: Persistors::LocalStore)
   end
 
   def tasks
@@ -119,9 +119,9 @@ class Page
   def channel
     @channel ||= begin
       if Volt.client?
-        ReactiveValue.new(Channel.new)
+        Channel.new
       else
-        ReactiveValue.new(ChannelStub.new)
+        ChannelStub.new
       end
     end
   end

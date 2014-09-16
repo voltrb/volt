@@ -2,9 +2,9 @@ module ModelWrapper
   # For cretain values, we wrap them to make the behave as a
   # model.
   def wrap_value(value, lookup)
-    if value.cur.is_a?(Array)
+    if value.is_a?(Array)
       value = new_array_model(value, @options.merge(parent: self, path: path + lookup))
-    elsif value.cur.is_a?(Hash)
+    elsif value.is_a?(Hash)
       value = new_model(value, @options.merge(parent: self, path: path + lookup))
     end
 
@@ -12,10 +12,10 @@ module ModelWrapper
   end
 
   def wrap_values(values, lookup=[])
-    if values.cur.is_a?(Array)
+    if values.is_a?(Array)
       # Coming from an array
       values = values.map {|v| wrap_value(v,lookup + [:[]]) }
-    elsif values.cur.is_a?(Hash)
+    elsif values.is_a?(Hash)
       pairs = values.map do |k,v|
         path = lookup + [k]
 

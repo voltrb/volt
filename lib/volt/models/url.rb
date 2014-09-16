@@ -1,6 +1,8 @@
 # The url class handles parsing and updating the url
+require 'volt/reactive/reactive_accessors'
+
 class URL
-  include ReactiveTags
+  include ReactiveAccessors
 
   # TODO: we need to make it so change events only trigger on changes
   reactive_accessor :scheme, :host, :port, :path, :query, :params
@@ -13,9 +15,6 @@ class URL
 
   # Parse takes in a url and extracts each sections.
   # It also assigns and changes to the params.
-  tag_method(:parse) do
-    destructive!
-  end
   def parse(url)
     if url[0] == '#'
       # url only updates fragment

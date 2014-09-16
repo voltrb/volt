@@ -17,7 +17,7 @@ class Model
   attr_reader :parent, :path, :persistor, :options
 
   def initialize(attributes={}, options={}, initial_state=nil)
-    self.attributes = ReactiveHash.new
+    @deps = HashDependency.new
     self.options = options
 
     self.send(:attributes=, attributes, true)
@@ -102,7 +102,7 @@ class Model
     __assign_element(attribute_name, value)
 
     attributes[attribute_name] = wrap_value(value, [attribute_name])
-    trigger_by_attribute!('changed', attribute_name)
+    @deps.changed!(attribute_name)
 
     # Let the persistor know something changed
     @persistor.changed(attribute_name) if @persistor
@@ -126,6 +126,9 @@ class Model
 
       # Also check @cache
       value ||= (@cache && @cache[method_name])
+
+      # Track dependency
+      @deps.depend(method_name)
 
       if value
         # key was in attributes or cache

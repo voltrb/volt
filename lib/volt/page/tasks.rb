@@ -6,9 +6,10 @@ class Tasks
     @callback_id = 0
     @callbacks = {}
 
-    page.channel.on('message') do |_, *args|
-      received_message(*args)
-    end
+    # TODORW: ...
+    # page.channel.on('message') do |_, *args|
+    #   received_message(*args)
+    # end
   end
 
   def call(class_name, method_name, *args, &callback)
