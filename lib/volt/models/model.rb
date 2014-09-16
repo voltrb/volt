@@ -6,19 +6,7 @@ require 'volt/models/model_hash_behaviour'
 require 'volt/models/validations'
 require 'volt/models/model_state'
 
-
-class NilMethodCall < NoMethodError
-  def true?
-    false
-  end
-
-  def false?
-    true
-  end
-end
-
 class Model
-  include ReactiveTags
   include ModelWrapper
   include ObjectTracking
   include ModelHelpers

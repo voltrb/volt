@@ -1,6 +1,7 @@
 require 'volt/volt/environment'
 require 'volt/extra_core/extra_core'
-require 'volt/reactive/reactive_value'
+require 'volt/reactive/computation'
+require 'volt/reactive/dependency'
 
 class Volt
   def self.root
