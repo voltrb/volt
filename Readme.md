@@ -89,15 +89,16 @@ You can access the volt console with:
   3. [Model Events](#model-events)
   4. [Automatic Model Conversion](#automatic-model-conversion)
 5. [Controllers](#controllers)
-6. [Components](#components)
+6. [Tasks](#tasks)
+7. [Components](#components)
   1. [Dependencies](#dependencies)
   2. [Assets](#assets)
   3. [Component Generator](#component-generator)
   4. [Provided Components](#provided-components)
     1. [Notices](#notices)
     2. [Flash](#flash)
-7. [Controls](#controls)
-8. [Routes](#routes)
+8. [Controls](#controls)
+9. [Routes](#routes)
   1. [Routes file](#routes-file)
 
 
@@ -562,6 +563,44 @@ The default ModelController proxies any missing methods to its model.  Since mod
 ```
 
 Now from the view we can bind to _query while also changing in and out the model.  You can also use ```reactive_reader``` and ```reactive_writer```
+
+# Tasks
+
+Sometimes you need to explicitly execute some code on the server. Volt solves this problem through *tasks*. You can define your own tasks by dropping a class into your component's ```tasks``` folder.
+
+```ruby
+    # app/main/tasks/logging_tasks.rb
+
+    class LoggingTasks
+        def initialize(channel=nil, dispatcher=nil)
+            @channel = channel
+            @dispatcher = dispatcher
+        end
+        
+        def log(message)
+            puts message
+        end
+    end
+```
+
+To invoke a task from a controller use ```tasks.call```.
+
+```ruby
+    class Contacts < ModelController
+        def hello
+            tasks.call('LoggingTasks', 'log', 'Hello World!')
+        end
+    end
+```
+
+You can also pass a block to ```tasks.call``` that will receive the return value of your task as soon as it's done.
+
+```ruby
+    tasks.call('MathTasks', 'add', 23, 5) do |result|
+        # result should be 28
+        alert result
+    end
+```
 
 # Components
 
