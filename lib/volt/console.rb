@@ -42,8 +42,8 @@ class Console
     Pry.config.prompt_name = 'volt'
 
     # start a REPL session
-    # Pry.start
+    Pry.start
 
-    Page.new.pry
+    # Page.new.pry
   end
 end
