@@ -1,5 +1,6 @@
 require 'json'
 require 'sockjs/session'
+require File.join(File.dirname(__FILE__), "../../../app/volt/tasks/query_tasks")
 
 class SocketConnectionHandler < SockJS::Session
   # Create one instance of the dispatcher
