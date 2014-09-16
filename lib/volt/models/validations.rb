@@ -73,7 +73,7 @@ module Validations
           if klass
             validate_with(merge, klass, field_name, args)
           else
-            raise "validtion type #{validation} is not specified."
+            raise "validation type #{validation} is not specified."
           end
         end
       end
