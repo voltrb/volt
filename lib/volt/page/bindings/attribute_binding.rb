@@ -48,7 +48,7 @@ class AttributeBinding < BaseBinding
     end
 
     # TODORW: value.is_a?(NilMethodCall) ||
-    if new_value.nil?
+    if new_value.is_a?(NilMethodCall) || new_value.nil?
       new_value = ''
     end
 

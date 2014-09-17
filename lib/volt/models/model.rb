@@ -6,6 +6,10 @@ require 'volt/models/validations'
 require 'volt/models/model_state'
 require 'volt/reactive/reactive_hash'
 
+class NilMethodCall < NoMethodError
+end
+
+
 class Model
   include ModelWrapper
   include ModelHelpers
