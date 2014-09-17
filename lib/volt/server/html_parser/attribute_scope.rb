@@ -57,7 +57,7 @@ module AttributeScope
   def add_single_attribute(id, attribute_name, parts)
     getter = parts[0][1..-2]
 
-    save_binding(id, "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, #{attribute_name.inspect}, Proc.new { #{getter} }, Proc.new { |val| puts '11: #{getter}=(val) ' + val.inspect ; #{getter}=(val) }) }")
+    save_binding(id, "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, #{attribute_name.inspect}, Proc.new { #{getter} }, Proc.new { |val| #{getter}=(val) }) }")
   end
 
 
