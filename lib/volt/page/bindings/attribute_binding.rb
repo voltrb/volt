@@ -2,33 +2,27 @@ require 'volt/page/bindings/base_binding'
 require 'volt/page/targets/attribute_target'
 
 class AttributeBinding < BaseBinding
-  def initialize(page, target, context, binding_name, attribute_name, getter)
+  def initialize(page, target, context, binding_name, attribute_name, getter, setter)
     super(page, target, context, binding_name)
 
     @attribute_name = attribute_name
     @getter = getter
+    @setter = setter
 
     setup
   end
 
   def setup
 
-    # Find the source for the content binding
-    @value = value_from_getter(@getter)
+    # Listen for changes
+    @computation = -> { update(@context.instance_eval(&@getter)) }.bind!
 
-    # Run the initial update (render)
-    update
-
-    if @value.reactive?
-      @update_listener = @value.on('changed') { update }
-
-      # Bind so when this value updates, we update
-      case @attribute_name
-      when 'value'
-        element.on('input.attrbind') { changed }
-      when 'checked'
-        element.on('change.attrbind') {|event| changed(event) }
-      end
+    # Bind so when this value updates, we update
+    case @attribute_name
+    when 'value'
+      element.on('input.attrbind') { changed }
+    when 'checked'
+      element.on('change.attrbind') {|event| changed(event) }
     end
   end
 
@@ -40,26 +34,25 @@ class AttributeBinding < BaseBinding
       current_value = element.is(':checked')
     end
 
-    @value = current_value
+    @context.instance_exec(current_value, &@setter)
   end
 
   def element
     Element.find('#' + binding_name)
   end
 
-  def update
-    value = @value
-
+  def update(new_value)
     if @attribute_name == 'checked'
       update_checked
       return
     end
 
-    if value.is_a?(NilMethodCall) || value.nil?
-      value = ''
+    # TODORW: value.is_a?(NilMethodCall) ||
+    if new_value.nil?
+      new_value = ''
     end
 
-    self.value = value
+    self.value = new_value
   end
 
   def value=(val)

@@ -2,22 +2,17 @@ require 'volt/page/bindings/base_binding'
 
 class ContentBinding < BaseBinding
   def initialize(page, target, context, binding_name, getter)
+    puts "New Content Binding"
     super(page, target, context, binding_name)
 
-    # Find the source for the content binding
-    @value = value_from_getter(getter)
-
-    # Run the initial render
-    update
-
-    if @value.reactive?
-      @changed_listener = @value.on('changed') { update }
-    end
+    # Listen for changes
+    @computation = -> { update(@context.instance_eval(&getter)) }.bind!
   end
 
-  def update
+  def update(value)
+    puts "Update with: #{value}"
     # TODORW:
-    value = @value || ''
+    value = value || ''
 
     # Exception values display the exception as a string
     value = value.to_s
@@ -28,10 +23,8 @@ class ContentBinding < BaseBinding
   end
 
   def remove
-    if @changed_listener
-      @changed_listener.remove
-      @changed_listener = nil
-    end
+    @computation.stop if @computation
+    @computation = nil
 
     super
   end

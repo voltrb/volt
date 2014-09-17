@@ -21,7 +21,8 @@ class Computation
 
   # Stop re-run of the computations
   def stop
-    raise "not implemented"
+    puts "Stop called"
+    # raise "not implemented"
   end
 
   # Runs in this computation as the current computation, returns the computation

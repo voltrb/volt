@@ -13,13 +13,9 @@ class IfBinding < BaseBinding
       getter, template_name = branch
 
       if getter.present?
-        # Lookup the value
-        value = value_from_getter(getter)
+        puts "GOT GETTER: #{getter.inspect}"
 
-        if value.reactive?
-          # Trigger change when value changes
-          @listeners << value.on('changed') { update }
-        end
+        @computation = -> { update(getter.call) }.bind!
       else
         # A nil value means this is an unconditional else branch, it
         # should always be true
@@ -32,7 +28,7 @@ class IfBinding < BaseBinding
     update
   end
 
-  def update
+  def update(current_value)
     # Find the true branch
     true_template = nil
     @branches.each do |branch|
@@ -64,10 +60,10 @@ class IfBinding < BaseBinding
   end
 
   def remove
-    # Remove all listeners on any reactive values
-    @listeners.each(&:remove)
-
     @template.remove if @template
+
+    @computation.stop if @computation
+    @computation = nil
 
     super
   end
