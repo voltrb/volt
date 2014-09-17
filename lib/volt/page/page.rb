@@ -142,7 +142,7 @@ class Page
 
   def add_routes(&block)
     @routes = Routes.new.define(&block)
-    @url.cur.router = @routes
+    @url.router = @routes
   end
 
   def start
@@ -161,10 +161,12 @@ class Page
 
     # Setup title listener template
     title_target = AttributeTarget.new
-    title_target.on('changed') do
-      title = title_target.to_html
-      `document.title = title;`
-    end
+
+    # TODORW:
+    # title_target.on('changed') do
+    #   title = title_target.to_html
+    #   `document.title = title;`
+    # end
     TemplateRenderer.new(self, title_target, main_controller, "main", "main/main/main/title")
 
     # TODO: this dom ready should really happen in the template renderer

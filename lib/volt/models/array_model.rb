@@ -65,9 +65,10 @@ class ArrayModel < ReactiveArray
 
   # Make sure it gets wrapped
   def <<(model)
-    if model.cur.is_a?(Model)
+    # TODORW: handle changes
+    if model.is_a?(Model)
       # Set the new path
-      model.cur.options = @options.merge(path: @options[:path] + [:[]])
+      model.options = @options.merge(path: @options[:path] + [:[]])
     else
       model = wrap_values([model]).first
     end

@@ -1,3 +1,4 @@
+require 'pry'
 
 class Pry
   # To make the console more useful, we make it so we flush the event registry
@@ -12,7 +13,6 @@ class Pry
     end
 
     # Automatically flush after each line
-    puts "FLUSH"
     Dependency.flush!
   end
 end

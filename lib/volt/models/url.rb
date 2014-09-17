@@ -5,7 +5,7 @@ class URL
   include ReactiveAccessors
 
   # TODO: we need to make it so change events only trigger on changes
-  reactive_accessor :scheme, :host, :port, :path, :query, :params
+  reactive_accessor :scheme, :host, :port, :path, :query, :params, :fragment
   attr_accessor :router
 
   def initialize(router=nil)
@@ -47,6 +47,7 @@ class URL
       path, fragment = path.split('#', 2)
       path, query = path.split('?', 2)
 
+      puts "SET PATH: #{path.inspect}"
       self.path = path
       self.fragment = fragment
       self.query = query
@@ -139,6 +140,7 @@ class URL
       query_hash = self.query_hash
 
       # Get the params that are in the route
+      puts "PATH: #{path.inspect}"
       new_params = @router.url_to_params(path)
 
       if new_params == false

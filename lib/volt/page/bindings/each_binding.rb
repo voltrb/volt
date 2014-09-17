@@ -40,7 +40,6 @@ class EachBinding < BaseBinding
   end
 
   def item_removed(position)
-    position = position.cur
     @templates[position].remove_anchors
     @templates[position].remove
     @templates.delete_at(position)

@@ -40,7 +40,7 @@ class AttributeBinding < BaseBinding
       current_value = element.is(':checked')
     end
 
-    @value.cur = current_value
+    @value = current_value
   end
 
   def element
@@ -48,7 +48,7 @@ class AttributeBinding < BaseBinding
   end
 
   def update
-    value = @value.cur
+    value = @value
 
     if @attribute_name == 'checked'
       update_checked
@@ -76,7 +76,7 @@ class AttributeBinding < BaseBinding
   end
 
   def update_checked
-    value = @value.cur
+    value = @value
 
     if value.is_a?(NilMethodCall) || value.nil?
       value = false

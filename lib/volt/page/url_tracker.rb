@@ -6,9 +6,10 @@ class UrlTracker
     @page = page
 
     if Volt.client?
-      page.params.on('child_changed') do
-        @page.url.update!
-      end
+      # TODORW:
+      # page.params.on('child_changed') do
+      #   @page.url.update!
+      # end
 
       that = self
 

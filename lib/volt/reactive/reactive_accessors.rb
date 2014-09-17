@@ -26,7 +26,7 @@ module ReactiveAccessors
       names.each do |name|
         var_name = :"@#{name}"
         define_method(:"#{name}=") do |new_value|
-          value = instance_variable_get(var_name)
+          instance_variable_set(var_name, new_value)
 
           self.class.__reactive_dependency_get(name).changed!
         end

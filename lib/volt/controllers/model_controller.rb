@@ -15,12 +15,12 @@ class ModelController
     if Symbol === val || String === val
       collections = [:page, :store, :params, :controller]
       if collections.include?(val.to_sym)
-        @model.cur = self.send(val).cur
+        @model = self.send(val)
       else
         raise "#{val} is not the name of a valid model, choose from: #{collections.join(', ')}"
       end
     elsif val
-      @model.cur = val.cur
+      @model = val
     else
       raise "model can not be #{val.inspect}"
     end

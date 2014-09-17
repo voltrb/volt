@@ -130,7 +130,7 @@ module Persistors
       new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
 
       # Don't add if the model is already in the ArrayModel
-      if !@model.cur.array.find {|v| v['_id'] == data['_id'] }
+      if !@model.array.find {|v| v['_id'] == data['_id'] }
         # Find the existing model, or create one
         new_model = @@identity_map.find(data['_id']) { @model.new_model(data.symbolize_keys, new_options, :loaded) }
 
