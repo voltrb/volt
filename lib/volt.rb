@@ -37,6 +37,12 @@ class Volt
 
   # Resets the configuration to the default (empty hash)
   def self.reset_config!
-    @config = OpenStruct.new({})
+    @config = OpenStruct.new({
+      db: {
+        name: ENV['VOLT_ENV'] || 'development',
+        host: 'localhost',
+        port: 27017
+      }
+    })
   end
 end
