@@ -121,7 +121,7 @@ class TemplateBinding < BaseBinding
   end
 
   def update
-    full_path, controller_path = path_for_template(@path.cur, @section.cur)
+    full_path, controller_path = path_for_template(@path, @section)
 
     @current_template.remove if @current_template
 

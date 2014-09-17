@@ -45,7 +45,8 @@ class Model
     @attributes = wrap_values(attrs)
 
     unless initial_setup
-      trigger!('changed')
+      # TODORW:
+      # trigger!('changed')
 
       # Let the persistor know something changed
       if @persistor

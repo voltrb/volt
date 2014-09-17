@@ -16,7 +16,8 @@ class ReactiveTemplate
   end
 
   def update
-    trigger!('changed')
+    # TODORW:
+    # trigger!('changed')
   end
 
   def remove

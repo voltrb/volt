@@ -53,7 +53,8 @@ class ComponentNode < BaseNode
       end
     end
 
-    trigger!('changed')
+    # TODORW:
+    # trigger!('changed')
   end
 
   def <<(node)

@@ -10,7 +10,7 @@ class ModelController
   # Sets the current model on this controller
   def model=(val)
     # Start with a nil reactive value.
-    @model ||= ReactiveValue.new(Proc.new { nil })
+    @model ||= Model.new
 
     if Symbol === val || String === val
       collections = [:page, :store, :params, :controller]
@@ -89,7 +89,7 @@ class ModelController
   end
 
   def controller
-    @controller ||= ReactiveValue.new(Model.new)
+    @controller ||= Model.new
   end
 
   def method_missing(method_name, *args, &block)
