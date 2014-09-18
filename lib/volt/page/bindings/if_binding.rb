@@ -13,9 +13,7 @@ class IfBinding < BaseBinding
       getter, template_name = branch
 
       if getter.present?
-        puts "GOT GETTER: #{getter.inspect}"
-
-        @computation = -> { update(getter.call) }.bind!
+        value = getter
       else
         # A nil value means this is an unconditional else branch, it
         # should always be true
@@ -25,19 +23,23 @@ class IfBinding < BaseBinding
       @branches << [value, template_name]
     end
 
-    update
+    @computation = -> { update }.bind!
   end
 
-  def update(current_value)
+  def update
     # Find the true branch
     true_template = nil
     @branches.each do |branch|
       value, template_name = branch
 
-      current_value = value.cur
+      if value.is_a?(Proc)
+        current_value = @context.instance_eval(&value)
+      else
+        current_value = value
+      end
 
       # TODO: A bug in opal requires us to check == true
-      if current_value.true? == true && !current_value.is_a?(Exception)
+      if current_value && !current_value.nil? && !current_value.is_a?(Exception)
         # This branch is currently true
         true_template = template_name
         break
