@@ -43,11 +43,10 @@ class AttributeBinding < BaseBinding
 
   def update(new_value)
     if @attribute_name == 'checked'
-      update_checked
+      update_checked(new_value)
       return
     end
 
-    # TODORW: value.is_a?(NilMethodCall) ||
     if new_value.is_a?(NilMethodCall) || new_value.nil?
       new_value = ''
     end
@@ -68,15 +67,12 @@ class AttributeBinding < BaseBinding
     end
   end
 
-  def update_checked
-    value = @value
-
+  def update_checked(value)
     if value.is_a?(NilMethodCall) || value.nil?
       value = false
     end
 
     element.prop('checked', value)
-
   end
 
   def remove
@@ -89,22 +85,12 @@ class AttributeBinding < BaseBinding
       element.off('change.attrbind', nil)
     end
 
-    # Value is a reactive template, remove it
-    if @value && @value.reactive?
-      @value.remove
-    end
-
-
-    if @update_listener
-      @update_listener.remove
-      @update_listener = nil
-    end
+    @computation.stop if @computation
 
     # Clear any references
     @target = nil
     @context = nil
     @getter = nil
-    @value = nil
   end
 
   def remove_anchors

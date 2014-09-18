@@ -14,6 +14,9 @@ module ModelHashBehaviour
     return value
   end
 
+  def nil?
+    attributes.nil?
+  end
 
   def clear
     attributes.each_pair do |key,value|

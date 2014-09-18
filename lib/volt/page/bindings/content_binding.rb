@@ -12,7 +12,7 @@ class ContentBinding < BaseBinding
   def update(value)
     puts "Update with: #{value}"
     # TODORW:
-    value = value || ''
+    value = value.nil? ? '' : value
 
     # Exception values display the exception as a string
     value = value.to_s
