@@ -29,6 +29,9 @@ require 'volt'
 require 'volt/benchmark/benchmark'
 require 'volt/page/draw_cycle'
 require 'volt/page/tasks'
+if RUBY_PLATFORM == 'opal'
+  require 'volt/page/task_handler'
+end
 
 
 
