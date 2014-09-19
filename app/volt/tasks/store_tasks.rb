@@ -1,5 +1,4 @@
 require 'mongo'
-require 'query_tasks'
 
 class StoreTasks < TaskHandler
   def initialize(channel=nil, dispatcher=nil)
