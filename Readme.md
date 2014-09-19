@@ -520,7 +520,7 @@ A controller can be any class in Volt, however it is common to have that class i
     end
 ```
 
-2. Calling `self.method=` in a method:
+2. Calling `self.model=` in a method:
 
 ```ruby
     class TodosController < ModelController
