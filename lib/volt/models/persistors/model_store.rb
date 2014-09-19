@@ -65,7 +65,7 @@ module Persistors
           @model.attributes[:"#{path[-4].singularize}_id"] = source._id
         end
 
-        @tasks.call('StoreTasks', 'save', collection, self_attributes) do |errors|
+        StoreTasks.save(collection, self_attributes) do |errors|
           if errors.size == 0
             promise.resolve
           else
