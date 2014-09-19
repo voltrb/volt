@@ -46,6 +46,7 @@ class Channel
   end
 
   def opened
+    old_status = @status
     @status = :open
     @connected = true
     @reconnect_interval = nil
@@ -56,6 +57,9 @@ class Channel
 
     trigger!('open')
     trigger!('changed')
+    if old_status == :reconnecting
+      trigger!('reconnected')
+    end
   end
 
   def closed(error)
