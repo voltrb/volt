@@ -126,9 +126,8 @@ class TemplateBinding < BaseBinding
       @grouped_controller = GroupedControllers.new(controller_group)
     end
 
-
-
     full_path, controller_path = path_for_template(path, section)
+    puts "Full path: #{full_path.inspect}"
 
     @current_template.remove if @current_template
 
