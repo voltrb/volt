@@ -17,6 +17,8 @@ require "sprockets-sass"
 require 'listen'
 
 require 'volt'
+require 'volt/tasks/dispatcher'
+require 'volt/tasks/task_handler'
 require 'volt/server/component_handler'
 if RUBY_PLATFORM != 'java'
   require 'volt/server/socket_connection_handler'
@@ -24,7 +26,6 @@ end
 require 'volt/server/rack/component_paths'
 require 'volt/server/rack/index_files'
 require 'volt/server/rack/opal_files'
-require 'volt/tasks/dispatcher'
 require 'volt/page/page'
 
 module Rack
