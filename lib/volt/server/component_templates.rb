@@ -13,7 +13,7 @@ class ComponentTemplates
     code = generate_view_code
     if @client
       # On the backend, we just need the views
-      code << generate_controller_code + generate_model_code + generate_routes_code
+      code << generate_controller_code + generate_model_code + generate_routes_code + generate_tasks_code
     end
 
     return code
@@ -95,5 +95,11 @@ class ComponentTemplates
     end
 
     return code
+  end
+
+  def generate_tasks_code
+    return TaskHandler.known_handlers.map do |handler|
+      "class #{handler.name} < TaskHandler; end"
+    end.join "\n"
   end
 end
