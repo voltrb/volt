@@ -11,28 +11,10 @@ class TemplateBinding < BaseBinding
 
     @current_template = nil
 
-    # Find the source for the getter binding
-    @path, section, @options = value_from_getter(getter)
-
-    if section.is_a?(String)
-      # Render this as a section
-      @section = section
-    else
-      # Use the value passed in as the default arguments
-      @arguments = section
-    end
-
-    # Sometimes we want multiple template bindings to share the same controller (usually
-    # when displaying a :Title and a :Body), this instance tracks those.
-    if @options && (controller_group = @options[:controller_group])
-      @grouped_controller = GroupedControllers.new(controller_group)
-    end
+    @getter = getter
 
     # Run the initial render
-    update
-
-    @path_changed_listener = @path.on('changed') { queue_update } if @path.reactive?
-    @section_changed_listener = @section.on('changed') { queue_update } if @section && @section.reactive?
+    @computation = -> { update(*@context.instance_eval(&getter)) }.bind!
   end
 
   def setup_path(binding_in_path)
@@ -120,8 +102,33 @@ class TemplateBinding < BaseBinding
     super
   end
 
-  def update
-    full_path, controller_path = path_for_template(@path, @section)
+  def update(path, section_or_arguments=nil, options={})
+    @options = options
+
+    path = path.nil? ? nil : path
+
+    section = nil
+    @arguments = nil
+
+    if section_or_arguments.is_a?(String)
+      # Render this as a section
+      section = section_or_arguments
+    else
+      # Use the value passed in as the default arguments
+      @arguments = section_or_arguments
+    end
+
+    puts "LOAD: #{path.inspect} - #{section.inspect}"
+
+    # Sometimes we want multiple template bindings to share the same controller (usually
+    # when displaying a :Title and a :Body), this instance tracks those.
+    if @options && (controller_group = @options[:controller_group])
+      @grouped_controller = GroupedControllers.new(controller_group)
+    end
+
+
+
+    full_path, controller_path = path_for_template(path, section)
 
     @current_template.remove if @current_template
 
@@ -185,16 +192,6 @@ class TemplateBinding < BaseBinding
 
   def remove
     @grouped_controller.clear if @grouped_controller
-
-    if @path_changed_listener
-      @path_changed_listener.remove
-      @path_changed_listener = nil
-    end
-
-    if @section_changed_listener
-      @section_changed_listener.remove
-      @section_changed_listener = nil
-    end
 
     if @current_template
       # Remove the template if one has been rendered, when the template binding is
