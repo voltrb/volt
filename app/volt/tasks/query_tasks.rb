@@ -1,7 +1,7 @@
 require_relative 'live_query/data_store'
 require_relative 'live_query/live_query_pool'
 
-class QueryTasks
+class QueryTasks < TaskHandler
   @@live_query_pool = LiveQueryPool.new(DataStore.new)
   @@channel_live_queries = {}
 

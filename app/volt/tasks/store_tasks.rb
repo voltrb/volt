@@ -1,7 +1,7 @@
 require 'mongo'
 require 'query_tasks'
 
-class StoreTasks
+class StoreTasks < TaskHandler
   def initialize(channel=nil, dispatcher=nil)
     @@mongo_db ||= Mongo::MongoClient.new("localhost", 27017)
     @@db ||= @@mongo_db.db("development")
