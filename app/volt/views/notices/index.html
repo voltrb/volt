@@ -8,6 +8,9 @@
       {#if channel.reconnect_interval}  Reconnecting in {(channel.reconnect_interval / 1000.0).round} sec{/}
     </div>
   {/}
+  {#if page._reconnected}
+    <div class="notices alert alert-success">Reconnected!</div>
+  {/}
   {#if !flash.empty?}
     <div class="notices alert alert-info" e-click="flash.clear">
       {#each flash._notices as notice}
