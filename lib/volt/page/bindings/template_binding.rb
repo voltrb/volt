@@ -105,7 +105,9 @@ class TemplateBinding < BaseBinding
   def update(path, section_or_arguments=nil, options={})
     @options = options
 
-    path = path.nil? ? nil : path
+    # A blank path needs to load a missing template, otherwise it tries to load
+    # the same template.
+    path = path.blank? ? '---missing---' : path
 
     section = nil
     @arguments = nil
@@ -118,8 +120,6 @@ class TemplateBinding < BaseBinding
       @arguments = section_or_arguments
     end
 
-    puts "LOAD: #{path.inspect} - #{section.inspect}"
-
     # Sometimes we want multiple template bindings to share the same controller (usually
     # when displaying a :Title and a :Body), this instance tracks those.
     if @options && (controller_group = @options[:controller_group])
@@ -127,7 +127,6 @@ class TemplateBinding < BaseBinding
     end
 
     full_path, controller_path = path_for_template(path, section)
-    puts "Full path: #{full_path.inspect}"
 
     @current_template.remove if @current_template
 

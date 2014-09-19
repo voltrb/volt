@@ -10,7 +10,6 @@ class ContentBinding < BaseBinding
   end
 
   def update(value)
-    puts "Update with: #{value}"
     # TODORW:
     value = value.nil? ? '' : value
 
