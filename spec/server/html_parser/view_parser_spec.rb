@@ -114,7 +114,7 @@ describe ViewParser do
     view = ViewParser.new(html, "main/main/main")
 
     expect(view.templates).to eq({
-      "main/main/main/body/__template/0" => {
+      "main/main/main/body/__each0/__template/0" => {
         "html" => "\n          <p><!-- $0 --><!-- $/0 --></p>\n        ",
         "bindings" => {
           0 => [
@@ -126,7 +126,7 @@ describe ViewParser do
         "html" => "      <div class=\"main\">\n        <!-- $0 --><!-- $/0 -->\n      </div>\n",
         "bindings" => {
           0 => [
-            "lambda { |__p, __t, __c, __id| EachBinding.new(__p, __t, __c, __id, Proc.new { _items }, \"item\", \"main/main/main/body/__template/0\") }"
+            "lambda { |__p, __t, __c, __id| EachBinding.new(__p, __t, __c, __id, Proc.new { _items }, \"item\", \"main/main/main/body/__each0/__template/0\") }"
           ]
         }
       }

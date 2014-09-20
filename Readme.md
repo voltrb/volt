@@ -9,11 +9,11 @@
 
 # Volt
 
-Volt is a ruby web framework where your ruby code runs on both the server and the client (via [opal](https://github.com/opal/opal).)  The DOM automatically update as the user interacts with the page.  Page state can be stored in the URL, if the user hits a URL directly, the HTML will first be rendered on the server for faster load times and easier indexing by search engines.
+Volt is a Ruby web framework where your ruby code runs on both the server and the client (via [opal](https://github.com/opal/opal)).  The DOM automatically update as the user interacts with the page. Page state can be stored in the URL. If the user hits a URL directly, the HTML will first be rendered on the server for faster load times and easier indexing by search engines.
 
-Instead of syncing data between the client and server via HTTP, volt uses a persistent connection between the client and server.  When data is updated on one client, it is updated in the database and any other listening clients (with almost no setup code needed).
+Instead of syncing data between the client and server via HTTP, Volt uses a persistent connection between the client and server. When data is updated on one client, it is updated in the database and any other listening clients (with almost no setup code needed).
 
-Pages HTML is written in a handlebars like template language.  Volt uses data flow/reactive programming to automatically and intelligently propagate changes to the DOM (or anything other code wanting to know when a value updates)  When something in the DOM changes, Volt intelligently updates only the nodes that need to be changed.
+Pages HTML is written in a handlebars-like template language.  Volt uses data flow/reactive programming to automatically and intelligently propagate changes to the DOM (or anything other code wanting to know when a value updates).  When something in the DOM changes, Volt intelligently updates only the nodes that need to be changed.
 
 See some demo videos here:
  - [Volt Todos Example](https://www.youtube.com/watch?v=6ZIvs0oKnYs)
@@ -31,10 +31,10 @@ Check out demo apps:
 Volt has the following goals:
 
 1. Developer happiness
-2. Write once on the client and the server
+2. Write once on the client and server
 3. Automatic data syncing between client and server
 4. Apps are built as nested components.  Components can be shared (via gems)
-5. Concurrent.  Volt provides tools to simplify concurrency.  Component rendering is done in parallel on the server.
+5. Concurrent.  Volt provides tools to simplify concurrency.  Component rendering is done in parallel on the server
 6. Intelligent asset management
 7. Secure (shouldn't need to be said, but it does)
 8. Be fast/light
@@ -46,15 +46,15 @@ Volt has the following goals:
 Many of the core Volt features are implemented.  We still have a bit to go before 1.0, most of it involving models.
 
 1. Reactive model queries
-2. Reactive Enumerators with Blocks (.map .count, etc...)
+2. Reactive Enumerators with Blocks (.map .count, etc…)
 3. Full managed render loop (for fast rendering)
-4. Fix N+1 issue with some reactive values (I know how to fix, just haven't gotten around to doing it)
+4. Fix N+1 issue with some reactive values (I know how to fix it, just haven't gotten around to doing it)
 
 # VOLT guide
 
-This guide will take you through creating a basic web application in Volt.  This tutorial assumes a basic knowledge of ruby and web development.
+This guide will take you through creating a basic web application in Volt.  This tutorial assumes a basic knowledge of Ruby and web development.
 
-To get started, install volt:
+To get started, install Volt:
 
     gem install volt
 
@@ -62,11 +62,11 @@ Then create a new project:
 
     volt new project_name
 
-This will setup a basic project.  Now let's run the server.
+This will setup a basic project.  Now let's run the server:
 
     volt server
 
-You can access the volt console with:
+You can access the Volt console with:
 
     volt console
 
@@ -109,7 +109,7 @@ Volt is still a work in progress, but early feedback is appreciated.  Use the fo
 - **If you need help**: post on [stackoverflow.com](http://www.stackoverflow.com). Be sure to tag your question with `voltrb`.
 - **If you found a bug**: post on [github issues](https://github.com/voltrb/volt/issues)
 - **If you have an idea or need a feature**: post on [github issues](https://github.com/voltrb/volt/issues)
-- **If you want to discuss volt**: use #voltrb on freenode.
+- **If you want to discuss Volt**: use #voltrb on freenode.
 
 
 # Rendering
@@ -121,7 +121,7 @@ When a user interacts with a web page, typically we want to do two things:
 
 For example when a user clicks to add a new todo item to a todo list, we might create a JavaScript object to represent the todo item, then add an item to the list's DOM.  A lot of work needs to be done to make sure that the JavaScript object and the DOM always stay in sync.
 
-The idea of "reactive programming" has been used to simplify maintaining the DOM.  The idea that is instead of having event handlers that manage a model (or JavaScript object) and manage the DOM, we have event handlers that manage reactive data models.  We describe our DOM layer in a declarative way so that it automatically knows how to render our data models.
+The idea of "reactive programming" has been used to simplify maintaining the DOM.  The idea is instead of having event handlers that manage a model (or JavaScript object) and manage the DOM, we have event handlers that manage reactive data models.  We describe our DOM layer in a declarative way so that it automatically knows how to render our data models.
 
 ## Reactive Values
 
@@ -132,7 +132,7 @@ To build bindings, Volt provides the ReactiveValue class.  This wraps any object
     # => @"my object"
 ```
 
-When `#inspect` is called on a ReactiveValue (like in the console), an '@' is placed in front of the value's inspect string, so you know its reactive.
+When `#inspect` is called on a ReactiveValue (like in the console), an '@' is placed in front of the value's inspect string, so you know it's reactive.
 
 When you call a method on a ReactiveValue, you get back a new reactive value that depends on the previous one.  It remembers how it was created and you can call `#cur` on it any time to get its current value, which will be computed based off of the first reactive value.  (Keep in mind below that + is a method call, the same as `a.+(b)` in ruby.)
 
@@ -167,7 +167,7 @@ ReactiveValues also let you setup listeners and trigger events:
     # => A Changed
 ```
 
-These events propagate to any reactive values created off of a reactive value.
+These events propagate to any reactive values created off of a reactive value:
 
 ```ruby
     a = ReactiveValue.new(1)
@@ -202,11 +202,11 @@ Lastly, we can also pass in other reactive values as arguments to methods on a r
 
 ### ReactiveValue Gotchas
 
-There are a few simple things to keep in mind with ReactiveValues.  In order to make them mostly compatible with other ruby objects, two methods do not return another ReactiveValue.
+There are a few simple things to keep in mind with ReactiveValues.  In order to make them mostly compatible with other Ruby objects, two methods do not return another ReactiveValue.
 
     to_s and inspect
 
-If you want these to be used reactively, see the section on [with](#with)
+If you want these to be used reactively, see the section on [with](#with).
 
 Also, due to a small limitation in ruby, ReactiveValues always are truthy.  See the [truthy checks](#truthy-checks-true-false-or-and-and) section on how to check for truth.
 
@@ -220,7 +220,7 @@ NOTE: currently ReactiveValues are not complete.  At the moment, they do not han
 
 Because a method on a reactive value always returns another reactive value, and because only nil and false are false in ruby, we need a way to check if a ReactiveValue is truthy in our code.  The easiest way to do this is by calling .true? on it.  It will return a non-wrapped boolean.  .nil? and .false? do as you would expect.
 
-One common place we use a truthy check is in setting up default values with || (logical or)  Volt provides a convience method that does the same thing `#or`, but works with ReactiveValues.
+One common place we use a truthy check is in setting up default values with || (logical or)  Volt provides a convenient method that does the same thing `#or`, but works with ReactiveValues.
 
 Instead of
 
@@ -252,7 +252,7 @@ You can call `#with` on any ReactiveValue.  `#with` will return a new ReactiveVa
 
 # Views
 
-Views in Volt are use a templating language similar to handlebars.  They can be broken up into sections, a section header looks like the following:
+Views in Volt use a templating language similar to handlebars. They can be broken up into sections. A section header looks like the following:
 
 ```html
 <:Body>
@@ -264,7 +264,7 @@ Sections help you split up different parts of the same content (title and body u
 
 ## Bindings
 
-One you understand the basics of ReactiveValues, we can discuss bindings.  In Volt, you code your views in a handlebars like template language.  Volt provides several bindings, which handle rendering of something for you.  Content bindings are anything inbetween { and }
+Once you understand the basics of ReactiveValues, we can discuss bindings. In Volt, you code your views in a handlebars like template language.  Volt provides several bindings, which handle rendering of something for you. Content bindings are anything inbetween { and }.
 
 ### Content binding
 
@@ -274,7 +274,7 @@ The most basic binding is a content binding:
     <p>{some_method}<p>
 ```
 
-The content binding runs the ruby code between { and }, then renders the return value.  If the returned value is a ReactiveValue, it will update the value updated whenever a 'changed' event is triggered on the reactive value.
+The content binding runs the Ruby code between { and }, then renders the return value.  If the returned value is a ReactiveValue, it will update the value updated whenever a 'changed' event is triggered on the reactive value.
 
 ### If binding
 
@@ -288,7 +288,7 @@ An if binding lets you provide basic flow control.
 
 Blocks are closed with a {/}
 
-When the #if binding is rendered, it will run the ruby code after #if.  If the code is true it will render the code below.  Again, if the returned value is reactive, it will update as that value changes.
+When the if binding is rendered, it will run the ruby code after #if.  If the code is true it will render the code below.  Again, if the returned value is reactive, it will update as that value changes.
 
 If bindings can also have #elsif and #else blocks.
 
@@ -330,7 +330,7 @@ For the array: ['one', 'two', 'three'] this would print:
 
 You can do {index + 1} to correct the zero offset.
 
-When items are removed or added to the array, the #each binding automatically and intelligently add or removes the items from/to the DOM.
+When items are removed or added to the array, the #each binding automatically and intelligently adds or removes the items from/to the DOM.
 
 ## Attribute Bindings
 
@@ -340,19 +340,19 @@ Bindings can also be placed inside of attributes.
     <p class="{#if _is_cool?}cool{/}">Text</p>
 ```
 
-There are some special features provided to make elements work as "two way bindings"
+There are some special features provided to make elements work as "two way bindings":
 
 ```html
     <input type="text" value="{_name}" />
 ```
 
-In the example above, if _name changes, the field will update and if the field is updated, _name will be changed.
+In the example above, if _name changes, the field will update, and if the field is updated, _name will be changed:
 
 ```html
     <input type="checkbox" checked="{_checked}" />
 ```
 
-If the value of a checked attribute is true, the checkbox will be shown checked.  If it is checked/unchecked, the value will be updated to true or false.
+If the value of a checked attribute is true, the checkbox will be shown checked. If it's checked or unchecked, the value will be updated to true or false.
 
 -- TODO: select boxes
 
@@ -378,7 +378,7 @@ Volt comes with many built-in models; one is called `page`.  If you call `#page`
     # => @'Ryan'
 ```
 
-Models act like a hash that you can access with getters and setters that start with an _   If an underscore method is called that hasn't yet been assigned, you will get back a "nil model".  Prefixing with an underscore makes sure we don't accidentally try to call a method that doesn't exist and get back nil model instead of raising an exception.  There is no need to define which fields a model has. Fields behave similarly to a hash, but with a different access and assignment syntax.
+Models act like a hash that you can access with getters and setters that start with an _ .  If an underscore method is called that hasn't yet been assigned, you will get back a "nil model".  Prefixing with an underscore makes sure we don't accidentally try to call a method that doesn't exist and get back nil model instead of raising an exception.  There is no need to define which fields a model has. Fields behave similarly to a hash, but with a different access and assignment syntax.
 
 Models also let you nest data without creating the intermediate models:
 
@@ -469,7 +469,7 @@ For convenience, when placing a hash inside of another model, it is automaticall
 
 Models are accessed differently from hashes.  Instead of using `model[:symbol]` to access, you call a method `model.method_name`.  This provides a dynamic unified store where setters and getters can be added without changing any access code.
 
-You can get a ruby hash back out by calling `#to_h` on a Model.
+You can get a Ruby hash back out by calling `#to_h` on a Model.
 
 ### Array -> ArrayModel
 
@@ -520,7 +520,7 @@ A controller can be any class in Volt, however it is common to have that class i
     end
 ```
 
-2. Calling `self.method=` in a method:
+2. Calling `self.model=` in a method:
 
 ```ruby
     class TodosController < ModelController
@@ -536,9 +536,9 @@ See the [provided collections](#provided-collections) section for a list of the 
 
 You can also provide your own object to model.
 
-In the example above, any methods not defined on the TodosController will fall through to the provided model.  All views in views/{controller_name} will have this controller as the target for any ruby run in their bindings.  This means that calls on self (implicit or with self.) will have the model as their target (after calling through the controller).  This lets you add methods to the controller to control how the model is handled, or provide extra methods to the views.
+In the example above, any methods not defined on the TodosController will fall through to the provided model.  All views in views/{controller_name} will have this controller as the target for any Ruby run in their bindings.  This means that calls on self (implicit or with self.) will have the model as their target (after calling through the controller).  This lets you add methods to the controller to control how the model is handled, or provide extra methods to the views.
 
-Volt is more similar to an MVVM architecture than an MVC architecture.  Instead of the controllers passing data off to the views, the controllers are the context for the views.  When using a ModelController, the controller automatically forwards all methods it does not handle to the model.  This is convienant since you can set a model in the controller and then access its properties directly with methods in bindings.  This lets you do something like ```{_name}``` instead of something like ```{@model._name}```
+Volt is more similar to an MVVM architecture than an MVC architecture.  Instead of the controllers passing data off to the views, the controllers are the context for the views.  When using a ModelController, the controller automatically forwards all methods it does not handle to the model.  This is convenient since you can set a model in the controller and then access its properties directly with methods in bindings.  This lets you do something like ```{_name}``` instead of something like ```{@model._name}```
 
 Controllers in the app/home component do not need to be namespaced, all other components should namespace controllers like so:
 
@@ -576,7 +576,7 @@ Sometimes you need to explicitly execute some code on the server. Volt solves th
             @channel = channel
             @dispatcher = dispatcher
         end
-        
+
         def log(message)
             puts message
         end
@@ -631,7 +631,7 @@ Note above though that jquery and bootstrap are currently included by default.  
 
 **Note, asset management is still early, and likely will change quite a bit**
 
-In volt, assets such as JavaScript and CSS (or sass) are automatically included on the page for you.  Anything placed inside of a components asset/js or assets/css folder is served at /assets/{js,css} (via [Sprockets](https://github.com/sstephenson/sprockets)).  Link and script tags are automatically added for each css and js file in assets/css and assets/js respectively.  Files are included in their lexical order, so you can add numbers in front if you need to change the load order.
+In Volt, assets such as JavaScript and CSS (or sass) are automatically included on the page for you.  Anything placed inside of a components asset/js or assets/css folder is served at /assets/{js,css} (via [Sprockets](https://github.com/sstephenson/sprockets)).  Link and script tags are automatically added for each css and js file in assets/css and assets/js respectively.  Files are included in their lexical order, so you can add numbers in front if you need to change the load order.
 
 Any JS/CSS from an included component or component gem will be included as well.  By default [bootstrap](http://getbootstrap.com/) is provided by the volt-bootstrap gem.
 
@@ -739,7 +739,7 @@ The above would search the following:
 | :body     | index.html   | comments       | blog        |
 | :body     | index.html   | comments       | gems/blog   |
 
-Once the view file for the control or template is found, it will look for a matching controller.  If the control is specified as a local template, an empty ModelController will be used.  If a controller is found and loaded, a corrosponding "action" method will be called on it if its exists.  Action methods default to "index" unless the component or template path has two parts, in which case the last part is the action.
+Once the view file for the control or template is found, it will look for a matching controller.  If the control is specified as a local template, an empty ModelController will be used.  If a controller is found and loaded, a corresponding "action" method will be called on it if its exists.  Action methods default to "index" unless the component or template path has two parts, in which case the last part is the action.
 
 # Control Arguments/Attributes
 
@@ -779,7 +779,7 @@ Routes take two arguments, a path, and a params hash.  When a new URL is loaded 
 
 When the params are changed, the URL will be set to the path for the route whose params hash matches.
 
-Route paths can also contain variables similar to bindings.
+Route paths can also contain variables similar to bindings:
 
 ```ruby
     get "/todos/{_index}", _view: 'todos'
