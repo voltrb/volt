@@ -47,6 +47,12 @@ class AttributeBinding < BaseBinding
       return
     end
 
+    puts "REACTIVE TEMP: #{new_value.inspect}"
+    if new_value.is_a?(ReactiveTemplate)
+      new_value = new_value.html
+      puts "NV: #{new_value.inspect}"
+    end
+
     if new_value.is_a?(NilMethodCall) || new_value.nil?
       new_value = ''
     end

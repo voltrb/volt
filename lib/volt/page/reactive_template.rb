@@ -3,19 +3,16 @@ class ReactiveTemplate
     @template_path = template_path
     @target = AttributeTarget.new(nil, nil, self)
     @template = TemplateRenderer.new(page, @target, context, "main", template_path)
-
-  end
-
-  def reactive?
-    true
   end
 
   # Render the template and get the current value
-  def cur
+  def html
+    puts "GET HTML FOR REACTIVE: #{@target.to_html.inspect}"
     @target.to_html
   end
 
   def update
+    puts "UPDATE RT"
     # TODORW:
     # trigger!('changed')
   end

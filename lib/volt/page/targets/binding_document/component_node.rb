@@ -54,6 +54,7 @@ class ComponentNode < BaseNode
     end
 
     # TODORW:
+    puts "HTML CH"
     # trigger!('changed')
   end
 
@@ -76,7 +77,7 @@ class ComponentNode < BaseNode
     end
 
     @nodes.each do |node|
-      if node.cur.is_a?(ComponentNode)
+      if node.is_a?(ComponentNode)
         val = node.find_by_binding_id(binding_id)
         return val if val
       end
@@ -88,7 +89,9 @@ class ComponentNode < BaseNode
   def remove
     @nodes = []
 
-    trigger!('changed')
+    # TODORW:
+    puts "Component Node Removed"
+    # trigger!('changed')
 
     # @binding_id = nil
   end
@@ -98,7 +101,8 @@ class ComponentNode < BaseNode
 
     @parent.nodes.delete(self)
 
-    trigger!('changed')
+    # TODORW:
+    # trigger!('changed')
     @parent = nil
     @binding_id = nil
   end
