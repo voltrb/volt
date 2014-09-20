@@ -7,7 +7,6 @@ class TaskHandler
   def self.inherited(subclass)
     @subclasses ||= []
     @subclasses << subclass
-    puts subclass
   end
 
   def self.known_handlers
