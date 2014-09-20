@@ -1,24 +1,27 @@
 class ReactiveTemplate
   def initialize(page, context, template_path)
+    @dependency = Dependency.new
+
     @template_path = template_path
     @target = AttributeTarget.new(nil, nil, self)
     @template = TemplateRenderer.new(page, @target, context, "main", template_path)
+    
   end
 
   # Render the template and get the current value
   def html
-    puts "GET HTML FOR REACTIVE: #{@target.to_html.inspect}"
+    @dependency.depend
     @target.to_html
   end
-
-  def update
-    puts "UPDATE RT"
-    # TODORW:
-    # trigger!('changed')
+  
+  def changed!
+    @dependency.changed!
   end
 
   def remove
     @template.remove
+    @dependency.remove
+    @dependency = nil
 
     @template = nil
     @target = nil

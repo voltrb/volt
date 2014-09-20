@@ -41,8 +41,6 @@ class BaseBinding
     if Volt.server?
       # Run right away
       update
-    else
-      @page.draw_cycle.queue(self)
     end
   end
 

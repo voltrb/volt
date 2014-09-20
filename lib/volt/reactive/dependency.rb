@@ -26,6 +26,11 @@ class Dependency
       self.class.queue_flush!
     end
   end
+  
+  # Called when a dependency is no longer needed
+  def remove
+    @dependencies = nil
+  end
 
   def self.flush!
     # clear any timers

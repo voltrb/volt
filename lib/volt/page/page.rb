@@ -27,13 +27,12 @@ require 'volt/models/url'
 require 'volt/page/url_tracker'
 require 'volt'
 require 'volt/benchmark/benchmark'
-require 'volt/page/draw_cycle'
 require 'volt/page/tasks'
 
 
 
 class Page
-  attr_reader :url, :params, :page, :templates, :routes, :draw_cycle, :events
+  attr_reader :url, :params, :page, :templates, :routes, :events
 
   def initialize
     @model_classes = {}
@@ -46,7 +45,6 @@ class Page
     @url_tracker = UrlTracker.new(self)
 
     @events = DocumentEvents.new
-    @draw_cycle = DrawCycle.new
 
     if RUBY_PLATFORM == 'opal'
       # Setup escape binding for console

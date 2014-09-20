@@ -13,11 +13,9 @@ class ComponentNode < BaseNode
     @root = root
   end
 
-  def trigger!(*args, &block)
+  def changed!
     if @root
-      @root.trigger!(*args, &block)
-    else
-      super
+      @root.changed!
     end
   end
 
@@ -53,9 +51,7 @@ class ComponentNode < BaseNode
       end
     end
 
-    # TODORW:
-    puts "HTML CH"
-    # trigger!('changed')
+    changed!
   end
 
   def <<(node)
@@ -91,7 +87,7 @@ class ComponentNode < BaseNode
 
     # TODORW:
     puts "Component Node Removed"
-    # trigger!('changed')
+    changed!
 
     # @binding_id = nil
   end
@@ -101,8 +97,7 @@ class ComponentNode < BaseNode
 
     @parent.nodes.delete(self)
 
-    # TODORW:
-    # trigger!('changed')
+    changed!
     @parent = nil
     @binding_id = nil
   end
