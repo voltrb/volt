@@ -41,8 +41,6 @@ class ModelController
   end
 
   def initialize(*args)
-
-
     # Set the instance variable to match any passed in arguments
     if args.size > 0
       args[0].each_pair do |key, value|
