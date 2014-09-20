@@ -55,7 +55,8 @@ class ComponentPaths
       app_folders do |app_folder|
         $LOAD_PATH.unshift(app_folder)
 
-        Dir["#{app_folder}/*/{controllers,models}/*.rb"].each do |ruby_file|
+        # Sort so we get consistent load order across platforms
+        Dir["#{app_folder}/*/{controllers,models}/*.rb"].sort.each do |ruby_file|
           path = ruby_file.gsub(/^#{app_folder}\//, '')[0..-4]
           require(path)
         end
@@ -63,8 +64,8 @@ class ComponentPaths
     end
 
     # add each tasks folder directly
-    components.each do |name,component_folders|
-      component_folders.each do |component_folder|
+    components.sort.each do |name,component_folders|
+      component_folders.sort.each do |component_folder|
         Dir["#{component_folder}/tasks"].sort.each do |tasks_folder|
           $LOAD_PATH.unshift(tasks_folder)
         end
