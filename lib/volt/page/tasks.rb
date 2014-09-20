@@ -46,7 +46,7 @@ class Tasks
     if callback
       if error
         # TODO: full error handling
-        puts "Error2: #{error.inspect}"
+        puts "Task Response: #{error.inspect}"
       else
         callback.call(result)
       end

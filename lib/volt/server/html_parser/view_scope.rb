@@ -67,7 +67,7 @@ class ViewScope
   end
 
   def add_each(content)
-    @handler.scope << EachScope.new(@handler, @path, content)
+    @handler.scope << EachScope.new(@handler, @path + "/__each#{@binding_number}", content)
   end
 
   def add_template(content)
