@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "thor", "~> 0.18.0"
   spec.add_dependency "pry", "~> 0.9.12.0"
-  spec.add_dependency "rspec", "3.0.0.beta1"
+  # spec.add_dependency "rspec", "3.0.0.beta1"
   spec.add_dependency "rack", "~> 1.5.0"
   spec.add_dependency "sprockets-sass", "~> 1.0.0"
   spec.add_dependency "sass", "~> 3.2.5"
@@ -39,14 +39,13 @@ Gem::Specification.new do |spec|
 
   # spec.add_dependency "rack-colorized_logger", "~> 1.0.4"
 
-
   spec.add_development_dependency "bundler", "~> 1.5"
-  spec.add_development_dependency "guard", "2.0.1" # bug in current guard
-  spec.add_development_dependency "guard-rspec", "~> 1.2.0"
+  spec.add_development_dependency "guard", "2.6.0" # bug in current guard
+  spec.add_development_dependency "guard-rspec", "~> 4.3.0"
   spec.add_development_dependency "opal-rspec", "0.3.0.beta3"
   spec.add_development_dependency "yard", "~> 0.8.7.0"
-  spec.add_development_dependency "capybara", "~> 2.2.0"
-  spec.add_development_dependency "selenium-webdriver", "~> 2.39.0"
+  spec.add_development_dependency "capybara", "~> 2.4.2"
+  spec.add_development_dependency "selenium-webdriver", "~> 2.43.0"
   spec.add_development_dependency "chromedriver2-helper", "~> 0.0.8"
   spec.add_development_dependency "poltergeist", "~> 1.5.0"
   spec.add_development_dependency "sauce", "~> 3.3.0"

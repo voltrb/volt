@@ -69,7 +69,9 @@ class DomSection < BaseSection
   # Returns the nearest DOM node that contains all of the section.
   def container_node
     range = self.range()
-    return `range.commonAncestorContainer`
+    ancestor = `range.commonAncestorContainer`
+    
+    return ancestor
   end
 
   def set_template(dom_template)

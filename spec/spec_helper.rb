@@ -5,59 +5,51 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
-ENV['SERVER'] = 'true'
-ENV['SAUCE_USERNAME'] = 'ryanstout'
-ENV['SAUCE_ACCESS_KEY'] = 'a537b01d-33ed-4028-9e80-eeb602748a5f'
-
 if ENV['IN_BROWSER']
   if RUBY_PLATFORM == 'opal'
   else
+    require 'capybara'
+    require 'capybara/dsl'
     require 'capybara/rspec'
     # Needed at the moment to get chrome tests working
     require 'chromedriver2/helper'
     require 'capybara/poltergeist'
-    # require "sauce/capybara"
-    # require 'sauce/connect'
   end
 end
 
 require 'volt'
 
-# Capybara.default_driver = :sauce
-# Capybara.server_port = 2020
-#
-# Sauce.config do |conf|
-#   conf[:start_tunnel] = true
-#   conf[:browsers] = [
-#     ["Windows 7","Firefox","26"]
-#   ]
-#   # conf[:application_host] = "127.0.0.1"
-#   # conf[:application_port] = "2020"
-#   # conf[:browser_url] = "http://127.0.0.1:2020/"
-# end
-
-# Capybara.register_driver :selenium do |app|
-#   Capybara::Selenium::Driver.new(app, :browser => :chrome)
-# end
-
 if ENV['IN_BROWSER']
   if RUBY_PLATFORM == 'opal'
   else
+
     require 'volt/server'
 
+    Capybara.server do |app, port|
+      require 'rack/handler/thin'
+      Rack::Handler::Thin.run(app, :Port => port)
+    end
 
     kitchen_sink_path = File.expand_path(File.join(File.dirname(__FILE__), "apps/kitchen_sink"))
     Capybara.app = Server.new(kitchen_sink_path).app
 
     Capybara.default_driver = :poltergeist
-
-    # Capybara.register_driver :chrome do |app|
-    #   Capybara::Selenium::Driver.new(app, :browser => :chrome)
-    # end
     #
-    # Capybara.default_driver = :chrome
+    Capybara.register_driver :chrome do |app|
+      Capybara::Selenium::Driver.new(app, :browser => :chrome)
+    end
 
+    Capybara.default_driver = :chrome
+    
+    # require 'selenium/webdriver'
+    # # require 'selenium/client'
+    #
     # Capybara.default_driver = :selenium
+    
+    # Capybara.register_driver :selenium_firefox do |app|
+    #   Capybara::Selenium::Driver.new(app, :browser => :firefox)
+    # end
+    # Capybara.current_driver = :selenium_firefox
   end
 end
 

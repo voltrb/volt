@@ -69,6 +69,7 @@ class TemplateBinding < BaseBinding
   # 3. view - main
   # 4. section - body
   def path_for_template(lookup_path, force_section=nil)
+    puts "LOOKUP PATH: #{lookup_path}"
     parts = lookup_path.split('/')
     parts_size = parts.size
 

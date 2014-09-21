@@ -26,7 +26,20 @@ class DomTemplate
 
   # Returns the dom nodes and bindings
   def make_new
-    bindings = update_binding_anchors!
+    %x{
+
+      function pr(nodes) {
+        console.log('call pr', nodes, nodes.innerHTML);
+        for (var i=0;i < nodes.length;i++) {
+          var node = nodes[i];
+          console.log('node: ', node);
+        }
+      }
+    }
+    
+    `pr(self.nodes);`
+    bindings = update_binding_anchors!(`self.nodes`)
+    `pr(self.nodes);`
 
     new_nodes = `self.nodes.cloneNode(true)`
 
@@ -60,7 +73,7 @@ class DomTemplate
 
   # Takes the binding_anchors and updates them with new numbers (comments and id's)
   # then returns the bindings updated to the new numbers.
-  def update_binding_anchors!
+  def update_binding_anchors!(nodes)
     new_bindings = {}
 
     @binding_anchors.each_pair do |name, anchors|
@@ -90,7 +103,14 @@ class DomTemplate
           end_comment.textContent = " $/" + new_name + " ";
         }
 
+        # %x{
+        #   start_comment.innerText = " $" + new_name + " ";
+        #   end_comment.innerText = " $/" + new_name + " ";
+        # }
+
         new_bindings[new_name] = @bindings[name]
+        
+        binding = @bindings[name]
       end
     end
 
