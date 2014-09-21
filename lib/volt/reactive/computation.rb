@@ -9,14 +9,29 @@ class Computation
     @@current
   end
 
-  def initialize(invalidate)
-    @computations = []
-    @invalidate = invalidate
+  def initialize(computation)
+    @computation = computation
+    @invalidations = []
+  end
+  
+  # Runs the computation
+  def compute!
+    run_in do
+      @computation.call
+    end
+  end
+  
+  def on_invalidate(callback)
+    @invalidations << callback
   end
 
-  # Run the invalidate method
+  # Calling invalidate removes the computation from all of
+  # its dependencies.  This keeps its dependencies from
+  # invalidating it again.
   def invalidate!
-    @invalidate.call
+    @invalidations.each do |invalidation|
+      invalidation.call
+    end
   end
 
   # Stop re-run of the computations

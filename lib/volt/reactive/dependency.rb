@@ -1,3 +1,26 @@
+# Temp until https://github.com/opal/opal/pull/596 
+class Set
+  def delete(o)
+    @hash.delete(o)
+  end
+  
+  def delete?(o)
+    if include?(o)
+      delete(o)
+    else
+      nil
+    end
+  end
+
+  def delete_if
+    block_given? or return enum_for(__method__)
+    # @hash.delete_if should be faster, but using it breaks the order
+    # of enumeration in subclasses.
+    select { |o| yield o }.each { |o| @hash.delete(o) }
+    self
+  end
+end
+
 class Dependency
   @@flush_queue = []
   if RUBY_PLATFORM == 'opal'
@@ -7,12 +30,20 @@ class Dependency
   end
 
   def initialize
-    @dependencies = []
+    @dependencies = Set.new
   end
 
   def depend
     current = Computation.current
-    @dependencies << current if current
+    if current
+      added = @dependencies.add?(current)
+    
+      if added
+        current.on_invalidate do
+          @dependencies.delete(current)
+        end
+      end
+    end
   end
 
   def changed!
@@ -40,9 +71,7 @@ class Dependency
     @@flush_queue = []
 
     computations.each do |computation|
-      computation.run_in do
-        computation.invalidate!
-      end
+      computation.compute!
     end
   end
 
