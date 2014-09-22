@@ -1,13 +1,10 @@
+# [![Application icon](https://raw.githubusercontent.com/voltrb/volt/master/docs/volt-logo.jpg)](http://voltframework.com/)
 [![Gem Version](https://badge.fury.io/rb/volt.png)](http://badge.fury.io/rb/volt)
 [![Code Climate](https://codeclimate.com/github/voltrb/volt.png)](https://codeclimate.com/github/voltrb/volt)
 [![Build Status](https://travis-ci.org/voltrb/volt.png?branch=master)](https://travis-ci.org/voltrb/volt)
 [![Volt Chat](https://badges.gitter.im/voltrb/volt.png)](https://gitter.im/voltrb/volt)
-[![Pledgie](https://pledgie.com/campaigns/26731.png?skin_name=chrome)](https://pledgie.com/campaigns/26731)
 
-=======
 ** For the current status of volt, read: http://voltframework.com/blog
-
-# Volt
 
 Volt is a Ruby web framework where your ruby code runs on both the server and the client (via [opal](https://github.com/opal/opal)).  The DOM automatically update as the user interacts with the page. Page state can be stored in the URL. If the user hits a URL directly, the HTML will first be rendered on the server for faster load times and easier indexing by search engines.
 
@@ -838,3 +835,5 @@ store._things
 # Contributing
 
 You want to contribute?  Great!  Thanks for being awesome!  At the moment, we have a big internal todo list, hop on https://gitter.im/voltrb/volt so we don't duplicate work.  Pull requests are always welcome, but asking about helping on gitter should save some duplication.
+
+[![Pledgie](https://pledgie.com/campaigns/26731.png?skin_name=chrome)](https://pledgie.com/campaigns/26731)
