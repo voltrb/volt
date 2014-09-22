@@ -26,20 +26,7 @@ class DomTemplate
 
   # Returns the dom nodes and bindings
   def make_new
-    %x{
-
-      function pr(nodes) {
-        console.log('call pr', nodes, nodes.innerHTML);
-        for (var i=0;i < nodes.length;i++) {
-          var node = nodes[i];
-          console.log('node: ', node);
-        }
-      }
-    }
-    
-    `pr(self.nodes);`
     bindings = update_binding_anchors!(`self.nodes`)
-    `pr(self.nodes);`
 
     new_nodes = `self.nodes.cloneNode(true)`
 

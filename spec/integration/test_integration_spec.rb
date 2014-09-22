@@ -10,19 +10,22 @@ if ENV['IN_BROWSER']
       #   end
       # end
       
-      # visit '/'
-      visit 'http://devbox.com:57188/'
+      visit '/'
+      # visit 'http://devbox.com:3000/'
       
+      # visit 'http://localhost:3000/'
+      sleep 1
+      puts "ALERT"
       page.execute_script('alert("hey");')
-      # visit 'http://localhost:3000'
+      sleep 3
 
       puts "Page: #{page.inspect}"
+      
+      # sleep 50
       # expect(page).to have_content('Home')
       # expect(page).to have_content('About')
       # page.has_text?('About')
       # puts "HAS CONTENT: #{page.has_text?('About')}"
-      
-      sleep 300
     end
   end
 end

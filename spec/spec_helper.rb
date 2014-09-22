@@ -12,7 +12,6 @@ if ENV['IN_BROWSER']
     require 'capybara/dsl'
     require 'capybara/rspec'
     # Needed at the moment to get chrome tests working
-    require 'chromedriver2/helper'
     require 'capybara/poltergeist'
   end
 end
@@ -34,7 +33,7 @@ if ENV['IN_BROWSER']
     Capybara.app = Server.new(kitchen_sink_path).app
 
     Capybara.default_driver = :poltergeist
-    #
+
     Capybara.register_driver :chrome do |app|
       Capybara::Selenium::Driver.new(app, :browser => :chrome)
     end
