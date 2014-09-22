@@ -15,7 +15,7 @@ class ComponentHandler
 
     javascript_code = compile_for_component(component_name)
 
-    return [200, {"Content-Type" => "text/html; charset=utf-8"}, StringIO.new(javascript_code)]
+    return [200, {"Content-Type" => "application/javascript; charset=utf-8"}, StringIO.new(javascript_code)]
   end
 
   def compile_for_component(component_name)
