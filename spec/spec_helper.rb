@@ -5,7 +5,7 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
-if ENV['IN_BROWSER']
+if ENV['BROWSER']
   if RUBY_PLATFORM == 'opal'
   else
     require 'capybara'
@@ -18,7 +18,7 @@ end
 
 require 'volt'
 
-if ENV['IN_BROWSER']
+if ENV['BROWSER']
   if RUBY_PLATFORM == 'opal'
   else
 
@@ -32,23 +32,26 @@ if ENV['IN_BROWSER']
     kitchen_sink_path = File.expand_path(File.join(File.dirname(__FILE__), "apps/kitchen_sink"))
     Capybara.app = Server.new(kitchen_sink_path).app
 
-    # Capybara.default_driver = :poltergeist
+    if ENV['BROWSER'] == 'poltergeist'
+      Capybara.default_driver = :poltergeist
+    elsif ENV['BROWSER'] == 'chrome'
+      Capybara.register_driver :chrome do |app|
+        Capybara::Selenium::Driver.new(app, :browser => :chrome)
+      end
 
-    # Capybara.register_driver :chrome do |app|
-    #   Capybara::Selenium::Driver.new(app, :browser => :chrome)
-    # end
-    #
-    # Capybara.default_driver = :chrome
+      Capybara.default_driver = :chrome
+    elsif ENV['BROWSER'] == 'firefox'
     
-    # require 'selenium/webdriver'
-    # # require 'selenium/client'
-    #
-    Capybara.default_driver = :selenium
+      # require 'selenium/webdriver'
+      # # require 'selenium/client'
+      #
+      Capybara.default_driver = :selenium
     
-    # Capybara.register_driver :selenium_firefox do |app|
-    #   Capybara::Selenium::Driver.new(app, :browser => :firefox)
-    # end
-    # Capybara.current_driver = :selenium_firefox
+      # Capybara.register_driver :selenium_firefox do |app|
+      #   Capybara::Selenium::Driver.new(app, :browser => :firefox)
+      # end
+      # Capybara.current_driver = :selenium_firefox
+    end
   end
 end
 

@@ -1,4 +1,4 @@
-if ENV['IN_BROWSER']
+if ENV['BROWSER'] && ENV['BROWSER'] == 'firefox'
   require 'spec_helper'
 
   describe "integration test", :type => :feature do

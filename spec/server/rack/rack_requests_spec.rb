@@ -1,5 +1,5 @@
 
-if ENV['IN_BROWSER']
+if ENV['BROWSER'] && ENV['BROWSER'] == 'poltergeist'
   describe 'Rack Requests', type: :feature do
     it "should send JS file with JS mimetype" do
       visit '/components/main.js'
