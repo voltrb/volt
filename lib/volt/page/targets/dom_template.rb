@@ -96,8 +96,6 @@ class DomTemplate
         # }
 
         new_bindings[new_name] = @bindings[name]
-        
-        binding = @bindings[name]
       end
     end
 

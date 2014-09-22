@@ -24,7 +24,6 @@ class URL
     else
       host = `document.location.host`
       protocol = `document.location.protocol`
-      puts "HOST: #{host.inspect}"
 
       if url !~ /[:]\/\//
         # Add the host for local urls
