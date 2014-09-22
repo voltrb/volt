@@ -1,10 +1,11 @@
-# [![Application icon](https://raw.githubusercontent.com/voltrb/volt/master/docs/volt-logo.jpg)](http://voltframework.com/)
 [![Gem Version](https://badge.fury.io/rb/volt.png)](http://badge.fury.io/rb/volt)
 [![Code Climate](https://codeclimate.com/github/voltrb/volt.png)](https://codeclimate.com/github/voltrb/volt)
 [![Build Status](https://travis-ci.org/voltrb/volt.png?branch=master)](https://travis-ci.org/voltrb/volt)
 [![Volt Chat](https://badges.gitter.im/voltrb/volt.png)](https://gitter.im/voltrb/volt)
 
 ** For the current status of volt, read: http://voltframework.com/blog
+
+# Volt
 
 Volt is a Ruby web framework where your ruby code runs on both the server and the client (via [opal](https://github.com/opal/opal)).  The DOM automatically update as the user interacts with the page. Page state can be stored in the URL. If the user hits a URL directly, the HTML will first be rendered on the server for faster load times and easier indexing by search engines.
 
