@@ -11,7 +11,7 @@ end
 describe TemplateBinding do
   before do
     @page = double('page')
-    expect(@page).to receive(:templates).at_least(1).times.and_return { @templates }
+    expect(@page).to receive(:templates).at_least(1).times { @templates }
 
     # TODO: We should decouple things so we don't need to allocate
     @template_binding = TemplateBinding.allocate

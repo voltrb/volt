@@ -26,7 +26,7 @@ class DomTemplate
 
   # Returns the dom nodes and bindings
   def make_new
-    bindings = update_binding_anchors!
+    bindings = update_binding_anchors!(`self.nodes`)
 
     new_nodes = `self.nodes.cloneNode(true)`
 
@@ -60,7 +60,7 @@ class DomTemplate
 
   # Takes the binding_anchors and updates them with new numbers (comments and id's)
   # then returns the bindings updated to the new numbers.
-  def update_binding_anchors!
+  def update_binding_anchors!(nodes)
     new_bindings = {}
 
     @binding_anchors.each_pair do |name, anchors|
@@ -89,6 +89,11 @@ class DomTemplate
           start_comment.textContent = " $" + new_name + " ";
           end_comment.textContent = " $/" + new_name + " ";
         }
+
+        # %x{
+        #   start_comment.innerText = " $" + new_name + " ";
+        #   end_comment.innerText = " $/" + new_name + " ";
+        # }
 
         new_bindings[new_name] = @bindings[name]
       end
