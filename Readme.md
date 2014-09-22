@@ -64,11 +64,11 @@ Then create a new project:
 
 This will setup a basic project.  Now let's run the server:
 
-    volt server
+    bundle exec volt server
 
 You can access the Volt console with:
 
-    volt console
+    bundle exec volt console
 
 # Guide Sections
 
