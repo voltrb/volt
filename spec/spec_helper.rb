@@ -32,18 +32,18 @@ if ENV['IN_BROWSER']
     kitchen_sink_path = File.expand_path(File.join(File.dirname(__FILE__), "apps/kitchen_sink"))
     Capybara.app = Server.new(kitchen_sink_path).app
 
-    Capybara.default_driver = :poltergeist
+    # Capybara.default_driver = :poltergeist
 
-    Capybara.register_driver :chrome do |app|
-      Capybara::Selenium::Driver.new(app, :browser => :chrome)
-    end
-
-    Capybara.default_driver = :chrome
+    # Capybara.register_driver :chrome do |app|
+    #   Capybara::Selenium::Driver.new(app, :browser => :chrome)
+    # end
+    #
+    # Capybara.default_driver = :chrome
     
     # require 'selenium/webdriver'
     # # require 'selenium/client'
     #
-    # Capybara.default_driver = :selenium
+    Capybara.default_driver = :selenium
     
     # Capybara.register_driver :selenium_firefox do |app|
     #   Capybara::Selenium::Driver.new(app, :browser => :firefox)
