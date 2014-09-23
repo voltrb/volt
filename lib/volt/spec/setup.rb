@@ -11,6 +11,10 @@ class Volt
     end
 
     require 'volt'
+    require 'volt/boot'
+
+    # Require in app
+    Volt.boot(Dir.pwd)
 
     if ENV['BROWSER']
       if RUBY_PLATFORM == 'opal'

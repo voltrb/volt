@@ -1,10 +1,12 @@
 require 'volt/spec/setup'
 
+puts "BOOT"
+ENV['SERVER'] = 'true'
+# Specs are run against the kitchen sink app
+kitchen_sink_path = File.expand_path(File.join(File.dirname(__FILE__), "apps/kitchen_sink"))
+Volt.spec_setup(kitchen_sink_path)
 
 if RUBY_PLATFORM != 'opal'
-  # Specs are run against the kitchen sink app
-  kitchen_sink_path = File.expand_path(File.join(File.dirname(__FILE__), "apps/kitchen_sink"))
-  Volt.spec_setup(kitchen_sink_path)
 
   RSpec.configure do |config|
     config.run_all_when_everything_filtered = true

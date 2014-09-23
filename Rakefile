@@ -4,10 +4,11 @@ require "bundler/gem_tasks"
 Bundler.require(:development)
 
 require 'opal'
-require 'opal/rspec/rake_task'
 
 # Add our opal/ directory to the load path
 Opal.append_path(File.expand_path('../lib', __FILE__))
+
+require 'opal/rspec/rake_task'
 
 
 task :docs do
@@ -29,7 +30,7 @@ task default: [:test]
 
 task :test do
   puts "--------------------------\nRun specs in normal ruby\n--------------------------"
-  system 'bundle exec rspec spec'
+  # system 'bundle exec rspec'
   puts "--------------------------\nRun specs in Opal\n--------------------------"
   Rake::Task['opal:rspec'].invoke
 end

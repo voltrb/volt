@@ -1,3 +1,4 @@
+require 'spec_helper'
 require 'volt/extra_core/inflector'
 
 describe Inflector do
