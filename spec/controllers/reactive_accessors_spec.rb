@@ -1,4 +1,5 @@
-require 'volt/reactive/reactive_accessors'
+require 'spec_helper'
+require 'volt/controllers/reactive_accessors'
 
 class TestReactiveAccessors
   include ReactiveAccessors

@@ -25,7 +25,6 @@ end
 require 'volt/router/routes'
 require 'volt/models/url'
 require 'volt/page/url_tracker'
-require 'volt'
 require 'volt/benchmark/benchmark'
 require 'volt/page/tasks'
 
@@ -63,6 +62,14 @@ class Page
 
     # Initialize tasks so we can get the reload message
     self.tasks if Volt.env.development?
+
+    channel.on('reconnected') do
+      @page._reconnected.cur = true
+
+      `setTimeout(function() {`
+        @page._reconnected.cur = false
+      `}, 2000);`
+    end
   end
 
   def flash

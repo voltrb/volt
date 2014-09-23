@@ -17,6 +17,7 @@ require "sprockets-sass"
 require 'listen'
 
 require 'volt'
+require 'volt/boot'
 require 'volt/server/component_handler'
 if RUBY_PLATFORM != 'java'
   require 'volt/server/socket_connection_handler'
@@ -25,7 +26,6 @@ require 'volt/server/rack/component_paths'
 require 'volt/server/rack/index_files'
 require 'volt/server/rack/opal_files'
 require 'volt/tasks/dispatcher'
-require 'volt/page/page'
 
 module Rack
   # TODO: For some reason in Rack (or maybe thin), 304 headers close
@@ -55,7 +55,8 @@ class Server
 
     @app_path = File.expand_path(File.join(root_path, "app"))
 
-    @component_paths = ComponentPaths.new(root_path)
+    # Boot the volt app
+    @component_paths = Volt.boot(root_path)
 
     setup_change_listener
 

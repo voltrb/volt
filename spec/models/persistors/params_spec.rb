@@ -1,3 +1,4 @@
+require 'spec_helper'
 require 'volt/models'
 
 describe Persistors::Params do

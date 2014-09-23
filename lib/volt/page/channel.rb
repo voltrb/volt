@@ -42,10 +42,11 @@ class Channel
   end
 
   def opened
-    self.status = :open
-    self.connected = true
-    self.reconnect_interval = nil
-    self.retry_count = 0
+    old_status = @status
+    @status = :open
+    @connected = true
+    @reconnect_interval = nil
+    @retry_count = 0
     @queue.each do |message|
       send_message(message)
     end

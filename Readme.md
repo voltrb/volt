@@ -2,9 +2,7 @@
 [![Code Climate](https://codeclimate.com/github/voltrb/volt.png)](https://codeclimate.com/github/voltrb/volt)
 [![Build Status](https://travis-ci.org/voltrb/volt.png?branch=master)](https://travis-ci.org/voltrb/volt)
 [![Volt Chat](https://badges.gitter.im/voltrb/volt.png)](https://gitter.im/voltrb/volt)
-[![Pledgie](https://pledgie.com/campaigns/26731.png?skin_name=chrome)](https://pledgie.com/campaigns/26731)
 
-=======
 ** For the current status of volt, read: http://voltframework.com/blog
 
 # Volt
@@ -64,11 +62,11 @@ Then create a new project:
 
 This will setup a basic project.  Now let's run the server:
 
-    volt server
+    bundle exec volt server
 
 You can access the Volt console with:
 
-    volt console
+    bundle exec volt console
 
 # Guide Sections
 
@@ -100,6 +98,7 @@ You can access the Volt console with:
 8. [Controls](#controls)
 9. [Routes](#routes)
   1. [Routes file](#routes-file)
+10. [Testing](#testing)
 
 
 # Getting Help
@@ -772,10 +771,10 @@ This means that routes in Volt have to be able to go both from URL to params and
 Routes are specified on a per-component basis in the config/routes.rb file.  Routes simply map from URL to params.
 
 ```ruby
-    get "/todos", _view: 'todos'
+    get "/todos", {_view: 'todos'}
 ```
 
-Routes take two arguments, a path, and a params hash.  When a new URL is loaded and the path is matched on a route, the params will be set to the params provided for that route.
+Routes take two arguments; a path, and a params hash.  When a new URL is loaded and the path is matched on a route, the params will be set to the params provided for that route.  The specified params hash acts as a constraint.  An empty hash will match any url.  Any params that are not matched will be placed in the query parameters.
 
 When the params are changed, the URL will be set to the path for the route whose params hash matches.
 
@@ -813,6 +812,25 @@ Controllers provide a `#channel` method, that you can use to get the status of t
 | reconnect_interval | the time until the next reconnection attempt (in seconds) |
 
 
+# Testing
+
+** Testing is being reworked at the moment.
+Volt provides rspec and capybara out of the box.  You can test directly against your models, controllers, etc... or you can do full integration tests via [Capybara](https://github.com/jnicklas/capybara).
+
+To run Capybara tests, you need to specify a driver.  The following drivers are currently supported:
+
+1. Phantom (via poltergeist)
+
+    BROWSER=phantom bundle exec rspec
+
+2. Firefox
+
+    BROWSER=firefox bundle exec rspec
+
+3. IE - coming soon
+
+Chrome is not supported due to [this issue](https://code.google.com/p/chromedriver/issues/detail?id=887#makechanges) with ChromeDriver.  Feel free to go [here](https://code.google.com/p/chromedriver/issues/detail?id=887#makechanges) and pester the chromedriver team to fix it.
+
 ## Accessing DOM section in a controller
 
 TODO
@@ -838,3 +856,5 @@ store._things
 # Contributing
 
 You want to contribute?  Great!  Thanks for being awesome!  At the moment, we have a big internal todo list, hop on https://gitter.im/voltrb/volt so we don't duplicate work.  Pull requests are always welcome, but asking about helping on gitter should save some duplication.
+
+[![Pledgie](https://pledgie.com/campaigns/26731.png?skin_name=chrome)](https://pledgie.com/campaigns/26731)
