@@ -30,7 +30,7 @@ task default: [:test]
 
 task :test do
   puts "--------------------------\nRun specs in normal ruby\n--------------------------"
-  # system 'bundle exec rspec'
+  system 'bundle exec rspec'
   puts "--------------------------\nRun specs in Opal\n--------------------------"
   Rake::Task['opal:rspec'].invoke
 end

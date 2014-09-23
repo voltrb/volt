@@ -1,6 +1,10 @@
 require 'volt/models'
 require 'volt/server/rack/component_paths'
-require 'volt/page/page'
+if RUBY_PLATFORM == 'opal'
+  require 'volt'
+else
+  require 'volt/page/page'
+end
 
 class Volt
   def self.boot(app_path)
