@@ -1,8 +1,8 @@
-if ENV['BROWSER'] && ENV['BROWSER'] == 'firefox'
+if ENV['BROWSER']
   require 'spec_helper'
 
   describe "integration test", :type => :feature do
-    it "should load the page" do      
+    it "should load the page" do
       visit '/'
 
       expect(page).to have_content('Home')

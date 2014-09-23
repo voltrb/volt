@@ -1,12 +1,49 @@
 module CommentSearchers
+  if RUBY_PLATFORM == 'opal'
+    PHANTOM = `!!window._phantom`
+  else
+    PHANTOM = false
+  end
 
   def find_by_comment(text, in_node=`document`)
-    node = nil
+    if PHANTOM
+      return find_by_comment_without_xml(text, in_node)
+    else
+      node = nil
 
+      %x{
+        node = document.evaluate("//comment()[. = ' " + text + " ']", in_node, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null).iterateNext();
+      }
+      return node
+    end
+  end
+
+  # PhantomJS does not support xpath in document.evaluate
+  def find_by_comment_without_xml(text, in_node)
+    match_text = " #{text} "
     %x{
-      node = document.evaluate("//comment()[. = ' " + text + " ']", in_node, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null).iterateNext();
+      function walk(node) {
+        if (node.nodeType === 8 && node.nodeValue === match_text) {
+          return node;
+        }
+
+        var children = node.childNodes;
+        if (children) {
+          for (var i=0;i < children.length;i++) {
+            var matched = walk(children[i]);
+            if (matched) {
+              return matched;
+            }
+          }
+        }
+
+        return null;
+      }
+
+
+      return walk(in_node);
+
     }
-    return node
   end
 
 

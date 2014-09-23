@@ -25,7 +25,6 @@ end
 require 'volt/router/routes'
 require 'volt/models/url'
 require 'volt/page/url_tracker'
-require 'volt'
 require 'volt/benchmark/benchmark'
 require 'volt/page/draw_cycle'
 require 'volt/page/tasks'
