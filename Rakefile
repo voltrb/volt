@@ -8,7 +8,7 @@ task :docs do
   `bundle exec yardoc 'lib/**/*.rb' - Readme.md docs/*`
   # require 'yard'
   # require 'yard-docco'
-  # 
+  #
   # YARD::Rake::YardocTask.new do |t|
   #   t.files   = ['lib/**/*.rb']
   #   # t.options = ['--any', '--extra', '--opts'] # optional
@@ -16,6 +16,7 @@ task :docs do
 end
 
 
+require 'opal'
 # Add our opal/ directory to the load path
 Opal.append_path(File.expand_path('../lib', __FILE__))
 
