@@ -98,6 +98,7 @@ You can access the Volt console with:
 8. [Controls](#controls)
 9. [Routes](#routes)
   1. [Routes file](#routes-file)
+10. [Testing](#testing)
 
 
 # Getting Help
@@ -810,6 +811,25 @@ Controllers provide a `#channel` method, that you can use to get the status of t
 | retry_count | the number of reconnection attempts that have been made without a successful connection |
 | reconnect_interval | the time until the next reconnection attempt (in seconds) |
 
+
+# Testing
+
+** Testing is being reworked at the moment.
+Volt provides rspec and capybara out of the box.  You can test directly against your models, controllers, etc... or you can do full integration tests via [Capybara](https://github.com/jnicklas/capybara).
+
+To run Capybara tests, you need to specify a driver.  The following drivers are currently supported:
+
+1. Phantom (via poltergeist)
+
+    BROWSER=phantom bundle exec rspec
+
+2. Firefox
+
+    BROWSER=firefox bundle exec rspec
+
+3. IE - coming soon
+
+Chrome is not supported due to [this issue](https://code.google.com/p/chromedriver/issues/detail?id=887#makechanges) with ChromeDriver.  Feel free to go [here](https://code.google.com/p/chromedriver/issues/detail?id=887#makechanges) and pester the chromedriver team to fix it.
 
 ## Accessing DOM section in a controller
 
