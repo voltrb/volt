@@ -86,8 +86,19 @@ class DomTemplate
         start_comment, end_comment = anchors
 
         %x{
-          start_comment.textContent = " $" + new_name + " ";
-          end_comment.textContent = " $/" + new_name + " ";
+          if (start_comment.textContent) {
+            // direct update
+            start_comment.textContent = " $" + new_name + " ";
+            end_comment.textContent = " $/" + new_name + " ";
+          } else if (start_comment.innerText) {
+            start_comment.innerText = " $" + new_name + " ";
+            end_comment.innerText = " $/" + new_name + " ";
+          } else {
+            // phantomjs doesn't work with textContent, so we replace the nodes
+            // and update the references
+            start_comment.nodeValue = " $" + new_name + " ";
+            end_comment.nodeValue = " $/" + new_name + " ";
+          }
         }
 
         # %x{
