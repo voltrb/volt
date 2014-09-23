@@ -13,14 +13,16 @@ class Computation
     @computation = computation
     @invalidations = []
   end
-  
+
   # Runs the computation
   def compute!
-    run_in do
-      @computation.call
+    unless @stopped
+      run_in do
+        @computation.call
+      end
     end
   end
-  
+
   def on_invalidate(callback)
     @invalidations << callback
   end

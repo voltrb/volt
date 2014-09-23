@@ -1,9 +1,11 @@
-# Temp until https://github.com/opal/opal/pull/596 
+# Temp until https://github.com/opal/opal/pull/596
+require 'set'
+
 class Set
   def delete(o)
     @hash.delete(o)
   end
-  
+
   def delete?(o)
     if include?(o)
       delete(o)
@@ -18,6 +20,10 @@ class Set
     # of enumeration in subclasses.
     select { |o| yield o }.each { |o| @hash.delete(o) }
     self
+  end
+
+  def to_a
+    @hash.keys
   end
 end
 
@@ -37,7 +43,7 @@ class Dependency
     current = Computation.current
     if current
       added = @dependencies.add?(current)
-    
+
       if added
         current.on_invalidate do
           @dependencies.delete(current)
@@ -48,16 +54,16 @@ class Dependency
 
   def changed!
     deps = @dependencies
-    @dependencies = []
+    @dependencies = Set.new
 
-    @@flush_queue += deps
+    @@flush_queue += deps.to_a
 
     # If we are in the browser, we queue a flush for the next tick
     if @@in_browser
       self.class.queue_flush!
     end
   end
-  
+
   # Called when a dependency is no longer needed
   def remove
     @dependencies = nil
