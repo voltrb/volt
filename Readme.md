@@ -821,11 +821,11 @@ To run Capybara tests, you need to specify a driver.  The following drivers are 
 
 1. Phantom (via poltergeist)
 
-    BROWSER=phantom bundle exec rspec
+```BROWSER=phantom bundle exec rspec```
 
 2. Firefox
 
-    BROWSER=firefox bundle exec rspec
+```BROWSER=firefox bundle exec rspec```
 
 3. IE - coming soon
 
