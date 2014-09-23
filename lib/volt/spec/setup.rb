@@ -3,6 +3,8 @@ class Volt
     if RUBY_PLATFORM == 'opal'
       require 'volt'
     else
+      ENV['SERVER'] = 'true'
+
       if ENV['BROWSER']
         require 'capybara'
         require 'capybara/dsl'
