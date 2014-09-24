@@ -455,8 +455,8 @@ For convenience, when placing a hash inside of another model, it is automaticall
     user = Model.new
     user._name = 'Ryan'
     user._profiles = {
-      twitter: 'http://www.twitter.com/ryanstout',
-      dribbble: 'http://dribbble.com/ryanstout'
+      _twitter: 'http://www.twitter.com/ryanstout',
+      _dribbble: 'http://dribbble.com/ryanstout'
     }
 
     user._name
