@@ -1,6 +1,7 @@
 [![Gem Version](https://badge.fury.io/rb/volt.png)](http://badge.fury.io/rb/volt)
 [![Code Climate](https://codeclimate.com/github/voltrb/volt.png)](https://codeclimate.com/github/voltrb/volt)
 [![Build Status](https://travis-ci.org/voltrb/volt.png?branch=master)](https://travis-ci.org/voltrb/volt)
+[![Inline docs](http://inch-ci.org/github/voltrb/volt.svg?branch=master)](http://inch-ci.org/github/voltrb/volt)
 [![Volt Chat](https://badges.gitter.im/voltrb/volt.png)](https://gitter.im/voltrb/volt)
 
 ** For the current status of volt, read: http://voltframework.com/blog
@@ -454,8 +455,8 @@ For convenience, when placing a hash inside of another model, it is automaticall
     user = Model.new
     user._name = 'Ryan'
     user._profiles = {
-      twitter: 'http://www.twitter.com/ryanstout',
-      dribbble: 'http://dribbble.com/ryanstout'
+      _twitter: 'http://www.twitter.com/ryanstout',
+      _dribbble: 'http://dribbble.com/ryanstout'
     }
 
     user._name
@@ -821,11 +822,11 @@ To run Capybara tests, you need to specify a driver.  The following drivers are 
 
 1. Phantom (via poltergeist)
 
-    BROWSER=phantom bundle exec rspec
+```BROWSER=phantom bundle exec rspec```
 
 2. Firefox
 
-    BROWSER=firefox bundle exec rspec
+```BROWSER=firefox bundle exec rspec```
 
 3. IE - coming soon
 
