@@ -1,6 +1,9 @@
 class ReactiveArray# < Array
   def initialize(array=[])
     @array = array
+    @array_deps = []
+    @size_dep = Dependency.new
+    @old_size = 0
   end
 
   # Forward any missing methods to the array
@@ -17,54 +20,63 @@ class ReactiveArray# < Array
     @array.each(&block)
   end
 
+  # TODO: Handle a range
+  def [](index)
+    # Handle a negative index
+    index = size + index if index < 0
+
+    # Get or create the dependency
+    dep = (@array_deps[index] ||= Dependency.new)
+
+    # Track the dependency
+    dep.depend
+
+    # Return the index
+    return @array[index]
+  end
+
   def []=(index, value)
-    index_val = index.cur
 
-    if index_val < 0
-      # Handle a negative index
-      index_val = size + index_val
-    end
+    # Assign the new value
+    @array[index] = value
 
-    # Clean old value
-    __clear_element(index)
+    __trigger_for_index!(index)
 
-    @array[index.cur] = value
-
-    # Track new value
-    __track_element(index, value)
-
-    # Also track the index if its reactive
-    if index.reactive?
-      # TODO: Need to clean this up when the index changes
-      event_chain.add_object(index.reactive_manager) do |event, *args|
-        trigger_for_index!(event, index.cur)
-      end
-    end
-
-    # Trigger changed
-    trigger_for_index!('changed', index_val)
+    __trigger_size_change!
   end
 
-  tag_method(:delete_at) do
-    destructive!
+  # Check to see if the size has changed, trigger a change on size if it has
+  def __trigger_size_change!
+    new_size = @array.size
+    if new_size != @old_size
+      @old_size = new_size
+      @size_dep.changed!
+    end
   end
-  # alias :__old_delete_at :delete_at
+
+  def __trigger_for_index!(index)
+    # Trigger a change for the cell
+    dep = @array_deps[index]
+    dep.changed! if dep
+  end
+
+  def size
+    @size_dep.depend
+
+    return @array.size
+  end
+  alias :length :size
+
   def delete_at(index)
-    index_val = index.cur
-
-    __clear_element(index)
-
     model = @array.delete_at(index_val)
 
-    trigger_on_direct_listeners!('removed', index_val)
-
     # Trigger a changed event for each element in the zone where the
-    # lookup would change
+    # delete would change
     index.upto(self.size+1) do |position|
-      trigger_for_index!('changed', position)
+      __trigger_for_index!(position)
     end
 
-    trigger_size_change!
+    __trigger_size_change!
 
     @persistor.removed(model) if @persistor
 
@@ -72,34 +84,28 @@ class ReactiveArray# < Array
   end
 
 
-  # Delete is implemented as part of delete_at
-  tag_method(:delete) do
-    destructive!
-  end
   def delete(val)
     self.delete_at(@array.index(val))
   end
 
-  # Removes all items in the array model.
-  tag_method(:clear) do
-    destructive!
-  end
   def clear
+    deps = @array_deps
+    @array_deps = []
+
+    # Trigger on each cell since we are clearing out the array
+    deps.each do |dep|
+      dep.changed! if dep
+    end
+
+    # clear the array
     @array = []
-    trigger!('changed')
   end
 
-  tag_method(:<<) do
-    pass_reactive!
-  end
   # alias :__old_append :<<
   def <<(value)
     result = (@array << value)
 
-    # Track new value
-    __track_element(self.size-1, value)
-
-    trigger_for_index!('changed', self.size-1)
+    __trigger_for_index!(self.size-1)
     trigger_on_direct_listeners!('added', self.size-1)
     trigger_size_change!
 
@@ -123,9 +129,6 @@ class ReactiveArray# < Array
     return result
   end
 
-  tag_method(:insert) do
-    destructive!
-  end
   def insert(index, *objects)
     result = @array.insert(index, *objects)
 

@@ -23,7 +23,7 @@ class Computation
     end
   end
 
-  def on_invalidate(callback)
+  def on_invalidate(&callback)
     @invalidations << callback
   end
 
