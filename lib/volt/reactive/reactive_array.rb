@@ -1,8 +1,4 @@
-
 class ReactiveArray# < Array
-  include ReactiveTags
-  include ObjectTracking
-
   def initialize(array=[])
     @array = array
   end
@@ -16,19 +12,11 @@ class ReactiveArray# < Array
     @array.==(*args)
   end
 
-  tag_method(:each) do
-    destructive!
-  end
   # At the moment, each just passes through.
   def each(&block)
     @array.each(&block)
   end
 
-  tag_method(:[]=) do
-    pass_reactive!
-  end
-
-  # alias :__old_assign :[]=
   def []=(index, value)
     index_val = index.cur
 
