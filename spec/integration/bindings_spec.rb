@@ -78,5 +78,12 @@ if ENV['BROWSER']
         expect(current_path).to eq('/bindings/bound_url')
       end
     end
+
+    it 'should go from a url and query to params' do
+      visit '/bindings/testing?name=cool'
+
+      expect(find('#paramsName3')).to have_content('cool')
+      expect(find('#routesName3')).to have_content('testing')
+    end
   end
 end
