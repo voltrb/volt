@@ -23,7 +23,7 @@ class IfBinding < BaseBinding
       @branches << [value, template_name]
     end
 
-    @computation = -> { update }.bind!
+    @computation = -> { update }.watch!
   end
 
   def update

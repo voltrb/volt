@@ -46,7 +46,8 @@ class Dependency
 
       if added
         current.on_invalidate do
-          @dependencies.delete(current)
+          # If @dependencies is nil, this Dependency has been removed
+          @dependencies.delete(current) if @dependencies
         end
       end
     end

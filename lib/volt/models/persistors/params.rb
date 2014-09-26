@@ -7,6 +7,7 @@ module Persistors
     end
 
     def changed(attribute_name)
+      puts "CHANGED"
       if RUBY_PLATFORM == 'opal'
         %x{
           if (window.setTimeout && this.$run_update.bind) {
@@ -20,7 +21,11 @@ module Persistors
     end
 
     def run_update
-      $page.params.trigger!('child_changed') if Volt.client?
+      # TODORW:
+      # $page.params.trigger!('child_changed') if Volt.client?
+      if Volt.client?
+        $page.url.update!
+      end
     end
   end
 end

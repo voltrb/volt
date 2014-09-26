@@ -1,3 +1,4 @@
+require 'volt/reactive/reactive_array'
 require 'volt/models/model_wrapper'
 require 'volt/models/model_helpers'
 require 'volt/models/model_state'
@@ -36,10 +37,6 @@ class ArrayModel < ReactiveArray
     @persistor.loaded if @persistor
   end
 
-  tag_method(:find) do
-    destructive!
-    pass_reactive!
-  end
   def find(*args)
     if @persistor
       return @persistor.find(*args)
@@ -48,9 +45,6 @@ class ArrayModel < ReactiveArray
     end
   end
 
-  tag_method(:then) do
-    destructive!
-  end
   def then(*args, &block)
     if @persistor
       return @persistor.then(*args, &block)
@@ -121,9 +115,6 @@ class ArrayModel < ReactiveArray
     super
   end
 
-  tag_method(:buffer) do
-    destructive!
-  end
   def buffer
     model_path = options[:path] + [:[]]
     model_klass = class_at_path(model_path)

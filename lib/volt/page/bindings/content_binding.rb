@@ -2,11 +2,11 @@ require 'volt/page/bindings/base_binding'
 
 class ContentBinding < BaseBinding
   def initialize(page, target, context, binding_name, getter)
-    puts "New Content Binding"
+    # puts "New Content Binding"
     super(page, target, context, binding_name)
 
     # Listen for changes
-    @computation = -> { update(@context.instance_eval(&getter)) }.bind!
+    @computation = -> { update(@context.instance_eval(&getter)) }.watch!
   end
 
   def update(value)

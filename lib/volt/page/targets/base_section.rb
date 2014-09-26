@@ -22,7 +22,6 @@ class BaseSection
 
       return set_template(dom_template)
     else
-      puts "RENDER: #{template_name}"
       template = page.templates[template_name]
 
       if template

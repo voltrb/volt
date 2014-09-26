@@ -22,23 +22,25 @@ module Validations
   # Sometimes we want to skip checking a field until some event
   # has happened (usually a field has been typed in or blurred)
   def exclude_from_errors!(field_name)
-    @exclude_from_errors ||= {}
+    @exclude_from_errors ||= ReactiveHash.new
     @exclude_from_errors[field_name] = true
 
     @include_in_errors.delete(field_name) if @include_in_errors
 
-    trigger_for_methods!('changed', :errors, :marked_errors)
+    # TODORW:
+    # trigger_for_methods!('changed', :errors, :marked_errors)
   end
 
   # Once a field is ready, we can use include_in_errors! to start
   # showing its errors.
   def mark_field!(field_name, trigger_changed=true)
-    @marked_fields ||= {}
+    @marked_fields ||= ReactiveHash.new
     @marked_fields[field_name] = true
 
-    if trigger_changed
-      trigger_for_methods!('changed', :errors, :marked_errors)
-    end
+    # TODORW:
+    # if trigger_changed
+    #   trigger_for_methods!('changed', :errors, :marked_errors)
+    # end
   end
 
   def marked_errors
@@ -46,7 +48,7 @@ module Validations
   end
 
   def errors(marked_only=false)
-    errors = {}
+    errors = ReactiveHash.new
 
     validations = self.class.validations
 

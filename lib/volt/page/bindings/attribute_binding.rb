@@ -15,7 +15,7 @@ class AttributeBinding < BaseBinding
   def setup
 
     # Listen for changes
-    @computation = -> { update(@context.instance_eval(&@getter)) }.bind!
+    @computation = -> { update(@context.instance_eval(&@getter)) }.watch!
 
     # Bind so when this value updates, we update
     case @attribute_name
@@ -47,10 +47,8 @@ class AttributeBinding < BaseBinding
       return
     end
 
-    puts "REACTIVE TEMP: #{new_value.inspect}"
     if new_value.is_a?(ReactiveTemplate)
       new_value = new_value.html
-      puts "NV: #{new_value.inspect}"
     end
 
     if new_value.is_a?(NilMethodCall) || new_value.nil?

@@ -5,9 +5,9 @@ module ModelHashBehaviour
 
   def delete(name)
     name = name.to_sym
-    __clear_element(name)
+
     value = attributes.delete(name)
-    trigger_by_attribute!('changed', name)
+    @deps.delete(name)
 
     @persistor.removed(name) if @persistor
 
@@ -20,11 +20,10 @@ module ModelHashBehaviour
 
   def clear
     attributes.each_pair do |key,value|
-      __clear_element(key)
+      @deps.changed!(key)
     end
 
     attributes.clear
-    trigger!('changed')
 
     @persistor.removed(nil) if @persistor
   end

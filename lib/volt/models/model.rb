@@ -1,5 +1,5 @@
 require 'volt/models/model_wrapper'
-# require 'volt/models/array_model'
+require 'volt/models/array_model'
 require 'volt/models/model_helpers'
 require 'volt/models/model_hash_behaviour'
 require 'volt/models/validations'
@@ -237,8 +237,9 @@ class Model
     # Add the new item
     result << value
 
-    trigger!('added', nil, 0)
-    trigger!('changed')
+    # TODORW:
+    # trigger!('added', nil, 0)
+    # trigger!('changed')
 
     return nil
   end
@@ -282,7 +283,9 @@ class Model
       self.class.validations.keys.each do |key|
         mark_field!(key.to_sym)
       end
-      trigger_for_methods!('changed', :errors, :marked_errors)
+
+      # TODORW:
+      # trigger_for_methods!('changed', :errors, :marked_errors)
 
       return Promise.new.reject(errors)
     end

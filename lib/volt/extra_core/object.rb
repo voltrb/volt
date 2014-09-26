@@ -9,7 +9,7 @@ class Object
   # Provides the same functionality as ||, but since ReactiveValue's only
   # work with method calls, we provide .or as a convience.
   def or(other)
-    if self.true?
+    if self && !self.nil?
       return self
     else
       return other
@@ -19,7 +19,7 @@ class Object
   # Provides the same functionality as &&, but since ReactiveValue's only
   # work with method calls, we provide .and as a convience
   def and(other)
-    if self.true?
+    if self && !self.nil?
       return other
     else
       return self

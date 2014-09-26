@@ -14,7 +14,7 @@ class TemplateBinding < BaseBinding
     @getter = getter
 
     # Run the initial render
-    @computation = -> { update(*@context.instance_eval(&getter)) }.bind!
+    @computation = -> { update(*@context.instance_eval(&getter)) }.watch!
   end
 
   def setup_path(binding_in_path)

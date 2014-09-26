@@ -52,11 +52,18 @@ class Computation
 
     return self
   end
+
+  def self.run_without_tracking
+    previous = Computation.current
+    Computation.current = nil
+    yield
+    Computation.current = previous
+  end
 end
 
 
 class Proc
-  def bind!
+  def watch!
     return Computation.new(self).run_in do
       # run self
       self.call
