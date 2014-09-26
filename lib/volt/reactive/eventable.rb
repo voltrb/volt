@@ -32,6 +32,16 @@ module Eventable
     @listeners[event] ||= []
     @listeners[event] << listener
 
+    first_for_event = @listeners[event].size == 1
+    first = first_for_event && @listeners.size == 1
+
+    # Let the included class know that an event was registered. (if it cares)
+    if self.respond_to?(:event_added)
+      # call event added passing the event, the scope, and a boolean if it
+      # is the first time this event has been added.
+      self.event_added(event, first, first_for_event)
+    end
+
     return listener
   end
 
@@ -50,19 +60,23 @@ module Eventable
   def remove_listener(event, listener)
     event = event.to_sym
 
-    puts "#{event.inspect} - #{listener.inspect}"
-
     raise "Unable to delete #{event} from #{self.inspect}" unless @listeners && @listeners[event]
 
     @listeners[event].delete(listener)
-
-    puts @listeners.inspect
 
     last_for_event = @listeners[event].size == 0
 
     if last_for_event
       # No registered listeners now on this event
       @listeners.delete(event)
+    end
+
+    last = last_for_event && @listeners.size == 0
+
+    # Let the class we're included on know that we removed a listener (if it cares)
+    if self.respond_to?(:event_removed)
+      # Pass in the event and a boolean indicating if it is the last event
+      self.event_removed(event, last, last_for_event)
     end
   end
 end

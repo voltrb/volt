@@ -7,8 +7,9 @@ module StoreState
   end
 
   def state
-    @store_dep ||= Dependency.new
-    @store_dep.depend
+    puts "Depend on state"
+    @state_dep ||= Dependency.new
+    @state_dep.depend
 
     return @state
   end
@@ -21,7 +22,7 @@ module StoreState
     # Trigger changed on the 'state' method
     unless skip_trigger
       if old_state != @state
-        @store_dep.changed! if @store_dep
+        @state_dep.changed! if @state_dep
       end
     end
 

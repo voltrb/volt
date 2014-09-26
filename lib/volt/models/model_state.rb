@@ -15,7 +15,7 @@ module ModelState
   end
 
   def loaded?
-    state == :loaded
+    self.state == :loaded
   end
 
 

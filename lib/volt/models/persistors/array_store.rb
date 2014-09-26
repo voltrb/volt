@@ -18,9 +18,12 @@ module Persistors
       super
 
       @query = @model.options[:query]
+
+      # TODORW: Temp
+      load_data
     end
 
-    def event_added(event, scope_provider, first, first_for_event)
+    def event_added(event, first, first_for_event)
       # First event, we load the data.
       load_data if first
     end
@@ -33,10 +36,7 @@ module Persistors
     # Called when an event is removed and we no longer want to keep in
     # sync with the database.
     def stop_listening
-      if @query_changed_listener
-        @query_changed_listener.remove
-        @query_changed_listener = nil
-      end
+      @query_computation.stop if @query_computation
 
       if @query_listener
         @query_listener.remove_store(self)
@@ -50,22 +50,14 @@ module Persistors
     def load_data
       # Don't load data from any queried
       if @state == :not_loaded || @state == :dirty
-        # puts "Load Data at #{@model.path.inspect} - query: #{@query.inspect}"# on #{@model.inspect}"
+        puts "Load Data at #{@model.path.inspect} - query: #{@query.inspect} on #{self.inspect}"
         change_state_to :loading
 
-        @query_changed_listener.remove if @query_changed_listener
-        if @query.reactive?
-          # puts "SETUP REACTIVE QUERY LISTENER: #{@query.inspect}"
-          # Query might change, change the query when it does
-          @query_changed_listener = @query.on('changed') do
-            stop_listening
-
-            # Don't load again if all of the listeners are gone
-            load_data if @model.has_listeners?
-          end
+        if @query.is_a?(Proc)
+          @query_computation = -> { run_query(@model, @query.call) }.watch!
+        else
+          run_query(@model, @query)
         end
-
-        run_query(@model, @query.deep_cur)
       end
     end
 
@@ -76,6 +68,9 @@ module Persistors
     end
 
     def run_query(model, query={})
+      @model.clear
+
+      puts "Run Query: #{query.inspect}"
       collection = model.path.last
       # Scope to the parent
       if model.path.size > 1
@@ -96,7 +91,19 @@ module Persistors
       @query_listener.add_store(self)
     end
 
-    def find(query={})
+    # Find can take either a query object, or a block that returns a query object.  Use
+    # the block style if you need reactive updating queries
+    def find(query=nil, &block)
+      # Set a default query if there is no block
+      if block
+        if query
+          raise "Query should not be passed in to a find if a block is specified"
+        end
+        query = block
+      else
+        query ||= {}
+      end
+
       return Cursor.new([], @model.options.merge(:query => query))
     end
 
@@ -166,6 +173,8 @@ module Persistors
     end
 
     def removed(model)
+      puts "Persistor: #{model.inspect}"
+      puts " - #{model.persistor.inspect}"
       if model.persistor
         # Tell the persistor it was removed
         model.persistor.remove_from_collection

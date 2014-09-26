@@ -7,9 +7,9 @@ class Tasks
     @callbacks = {}
 
     # TODORW: ...
-    # page.channel.on('message') do |_, *args|
-    #   received_message(*args)
-    # end
+    page.channel.on('message') do |*args|
+      received_message(*args)
+    end
   end
 
   def call(class_name, method_name, *args, &callback)

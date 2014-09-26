@@ -84,7 +84,7 @@ class URL
     end
 
     frag = self.fragment
-    new_url += '#' + frag if frag
+    new_url += '#' + frag if frag.present?
 
     return new_url
   end

@@ -29,8 +29,8 @@ class EachBinding < BaseBinding
       @added_listener.remove if @added_listener
       @removed_listener.remove if @removed_listener
 
-      @added_listener = @value.on('added') { |position| puts "Item Added: #{position}" ; item_added(position) }
-      @removed_listener = @value.on('removed') { |position| puts "Item Removed: #{position}" ; item_removed(position) }
+      @added_listener = @value.on('added') { |position| item_added(position) }
+      @removed_listener = @value.on('removed') { |position| item_removed(position) }
 
       templates_size = @templates.size
       values_size = values.size
@@ -72,7 +72,7 @@ class EachBinding < BaseBinding
 
     # TODORW: :parent => @value may change
     item_context = SubContext.new({:_index_value => position, :parent => @value}, @context)
-    item_context.locals[@item_name.to_sym] = Proc.new { puts "GET AT: #{item_context.locals[:_index_value].inspect}" ; @value[item_context.locals[:_index_value]] }
+    item_context.locals[@item_name.to_sym] = Proc.new { @value[item_context.locals[:_index_value]] }
     item_context.locals[:index] = Proc.new { item_context.locals[:_index_value] }
 
     item_template = TemplateRenderer.new(@page, @target, item_context, binding_name, @template_name)

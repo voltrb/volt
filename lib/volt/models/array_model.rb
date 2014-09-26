@@ -37,9 +37,9 @@ class ArrayModel < ReactiveArray
     @persistor.loaded if @persistor
   end
 
-  def find(*args)
+  def find(*args, &block)
     if @persistor
-      return @persistor.find(*args)
+      return @persistor.find(*args, &block)
     else
       raise "this model's persistance layer does not support find, try using store"
     end

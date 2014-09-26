@@ -2,9 +2,11 @@
 
 require 'json'
 require 'volt/reactive/reactive_accessors'
+require 'volt/reactive/eventable'
 
 class Channel
   include ReactiveAccessors
+  include Eventable
 
   reactive_accessor :connected, :status, :error, :reconnect_interval, :retry_count
 
@@ -78,8 +80,7 @@ class Channel
   def message_received(message)
     message = JSON.parse(message)
 
-    # TODORW:
-    # trigger!('message', nil, *message)
+    trigger!('message', *message)
   end
 
   def send_message(message)

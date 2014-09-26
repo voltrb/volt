@@ -33,7 +33,6 @@ class ReactiveArray# < Array
     dep = (@array_deps[index] ||= Dependency.new)
 
     # Track the dependency
-    puts "Depend for #{index} - #{dep.inspect}"
     dep.depend
 
     # Return the index
@@ -81,6 +80,8 @@ class ReactiveArray# < Array
 
     trigger_size_change!
 
+    puts "DELETED MODEL: #{model.inspect}"
+
     @persistor.removed(model) if @persistor
 
     return model
@@ -92,12 +93,21 @@ class ReactiveArray# < Array
   end
 
   def clear
+    old_size = @array.size
+
     deps = @array_deps
     @array_deps = []
 
+    # Trigger remove for each cell
+    old_size.times do |index|
+      trigger_removed!(old_size - index - 1)
+    end
+
     # Trigger on each cell since we are clearing out the array
-    deps.each do |dep|
-      dep.changed! if dep
+    if deps
+      deps.each do |dep|
+        dep.changed! if dep
+      end
     end
 
     # clear the array

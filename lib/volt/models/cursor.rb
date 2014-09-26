@@ -1,6 +1,6 @@
-# require 'volt/models/array_model'
+require 'volt/models/array_model'
 
-class Cursor# < ArrayModel
+class Cursor < ArrayModel
 
 
 end

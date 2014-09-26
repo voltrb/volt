@@ -7,7 +7,6 @@ module Persistors
     end
 
     def changed(attribute_name)
-      puts "CHANGED"
       if RUBY_PLATFORM == 'opal'
         %x{
           if (window.setTimeout && this.$run_update.bind) {

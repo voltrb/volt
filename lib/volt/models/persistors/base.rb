@@ -15,7 +15,7 @@ module Persistors
       changed(attribute_name)
     end
 
-    def event_added(event, scope_provider, first, first_for_event)
+    def event_added(event, first, first_for_event)
     end
 
     def event_removed(event, last, last_for_event)
