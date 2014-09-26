@@ -17,9 +17,7 @@ module Persistors
     def initialize(model, tasks=nil)
       super
 
-      query = @model.options[:query]
-
-      @query = ReactiveValue.from_hash(query || {})
+      @query = @model.options[:query]
     end
 
     def event_added(event, scope_provider, first, first_for_event)
@@ -99,9 +97,7 @@ module Persistors
     end
 
     def find(query={})
-      model = Cursor.new([], @model.options.merge(:query => query))
-
-      return ReactiveValue.new(model)
+      return Cursor.new([], @model.options.merge(:query => query))
     end
 
     # Returns a promise that is resolved/rejected when the query is complete.  Any

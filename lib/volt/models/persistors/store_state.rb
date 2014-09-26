@@ -7,7 +7,10 @@ module StoreState
   end
 
   def state
-    @state
+    @store_dep ||= Dependency.new
+    @store_dep.depend
+
+    return @state
   end
 
   # Called from the QueryListener when the data is loaded
@@ -18,7 +21,7 @@ module StoreState
     # Trigger changed on the 'state' method
     unless skip_trigger
       if old_state != @state
-        @model.trigger_for_methods!('changed', :state, :loaded?)
+        @store_dep.changed! if @store_dep
       end
     end
 
