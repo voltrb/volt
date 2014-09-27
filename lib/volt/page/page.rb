@@ -165,15 +165,15 @@ class Page
     # Setup main page template
     TemplateRenderer.new(self, DomTarget.new, main_controller, 'CONTENT', 'main/main/main/body')
 
-    # Setup title listener template
-    title_target = AttributeTarget.new
+    # Setup title reactive template
+    @title_template = ReactiveTemplate.new(self, main_controller, "main/main/main/title")
 
-    # TODORW:
-    # title_target.on('changed') do
-    #   title = title_target.to_html
-    #   `document.title = title;`
-    # end
-    TemplateRenderer.new(self, title_target, main_controller, "main", "main/main/main/title")
+    # Watch for changes to the title template
+    Proc.new do
+      title = @title_template.html.gsub(/\n/, ' ')
+      `document.title = title;`
+      puts "Change title: #{title}"
+    end.watch!
 
     # TODO: this dom ready should really happen in the template renderer
     main_controller.dom_ready if main_controller.respond_to?(:dom_ready)

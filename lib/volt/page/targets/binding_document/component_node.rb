@@ -1,10 +1,13 @@
 require 'volt/page/targets/binding_document/html_node'
+require 'volt/reactive/eventable'
 
 # Component nodes contain an array of both HtmlNodes and ComponentNodes.
 # Instead of providing a full DOM API, component nodes are the branch
 # nodes and html nodes are the leafs.  This is all we need to produce
 # the html from templates outside of a normal dom.
 class ComponentNode < BaseNode
+  include Eventable
+
   attr_accessor :parent, :binding_id, :nodes
   def initialize(binding_id=nil, parent=nil, root=nil)
     @nodes = []
@@ -16,7 +19,11 @@ class ComponentNode < BaseNode
   def changed!
     if @root
       @root.changed!
+    else
+      puts "TRIG ON #{self.inspect}"
+      trigger!('changed')
     end
+
   end
 
   def text=(text)

@@ -4,6 +4,8 @@
 <:Body>
   <h1>Bindings</h1>
 
+
+  <h2>Text</h2>
   <table class="table">
     <tr>
       <td>Page</td>
@@ -22,5 +24,22 @@
       <td><input type="text" id="routesName1" value="{params._route_test}"></td>
       <td><input type="text" id="routesName2" value="{params._route_test}"></td>
       <td id="routesName3">{params._route_test}</td>
+    </tr>
+  </table>
+
+  <h2>Checkbox</h2>
+
+  <table class="table">
+    <tr>
+      <td>Page</td>
+      <td><input type="checkbox" id="pageCheck1" checked="{page._check}" /></td>
+      <td><input type="checkbox" id="pageCheck2" checked="{page._check}" /></td>
+      <td id="pageCheck3">{page._check}</td>
+    </tr>
+    <tr>
+      <td>Params</td>
+      <td><input type="checkbox" id="paramsCheck1" checked="{params._check}" /></td>
+      <td><input type="checkbox" id="paramsCheck2" checked="{params._check}" /></td>
+      <td id="paramsCheck3">{params._check}</td>
     </tr>
   </table>
