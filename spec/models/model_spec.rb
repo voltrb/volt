@@ -135,103 +135,113 @@ describe Model do
     expect(values).to eq([nil, 'one'])
 
   end
-  #
-  # it "should trigger changed for any indicies after a deleted index" do
-  #   model = ReactiveValue.new(Model.new)
-  #
-  #   model._items << {_name: 'One'}
-  #   model._items << {_name: 'Two'}
-  #   model._items << {_name: 'Three'}
-  #
-  #   count = 0
-  #   model._items[2].on('changed') { count += 1 }
-  #   expect(count).to eq(0)
-  #
-  #   model._items.delete_at(1)
-  #   expect(count).to eq(1)
-  # end
-  #
-  # it "should change the size and length when an item gets added" do
-  #   model = ReactiveValue.new(Model.new)
-  #
-  #   model._items << {_name: 'One'}
-  #   size = model._items.size
-  #   length = model._items.length
-  #
-  #   count_size = 0
-  #   count_length = 0
-  #   size.on('changed') { count_size += 1 }
-  #   length.on('changed') { count_length += 1 }
-  #   expect(count_size).to eq(0)
-  #   expect(count_length).to eq(0)
-  #
-  #   model._items << {_name: 'Two'}
-  #   expect(count_size).to eq(1)
-  #   expect(count_length).to eq(1)
-  # end
-  #
-  # it "should add doubly nested arrays" do
-  #   model = ReactiveValue.new(Model.new)
-  #
-  #   model._items << {_name: 'Cool', _lists: []}
-  #   model._items[0]._lists << {_name: 'worked'}
-  #   expect(model._items[0]._lists[0]._name.cur).to eq('worked')
-  # end
-  #
-  # it "should make pushed subarrays into ArrayModels" do
-  #   model = ReactiveValue.new(Model.new)
-  #
-  #   model._items << {_name: 'Test', _lists: []}
-  #   expect(model._items[0]._lists.cur.class).to eq(ArrayModel)
-  # end
-  #
-  # it "should make assigned subarrays into ArrayModels" do
-  #   model = ReactiveValue.new(Model.new)
-  #
-  #   model._item._name = 'Test'
-  #   model._item._lists = []
-  #   expect(model._item._lists.cur.class).to eq(ArrayModel)
-  # end
-  #
-  # it "should call changed when a the reference to a submodel is assigned to another value" do
-  #   a = ReactiveValue.new(Model.new)
-  #
-  #   count = 0
-  #   a._blue._green.on('changed') { count += 1 }
-  #   expect(count).to eq(0)
-  #
-  #   a._blue._green = 5
-  #
-  #   # TODO: Should actually just equal one
-  #   expect(count).to eq(2)
-  #
-  #   a._blue = 22
-  #   expect(count).to eq(3)
-  # end
-  #
-  # it "should trigger changed when a value is deleted" do
-  #   a = ReactiveValue.new(Model.new)
-  #
-  #   count = 0
-  #   a._blue.on('changed') { count += 1 }
-  #   expect(count).to eq(0)
-  #
-  #   a._blue = 1
-  #   expect(count).to eq(1)
-  #
-  #   a.delete(:_blue)
-  #   expect(count).to eq(2)
-  # end
-  #
-  # it "should not trigger a change if the new value is exactly the same" do
-  #
-  # end
-  #
-  # it "should let you append nested hashes" do
-  #   a = Model.new
-  #   # TODO: Fails
-  #   # a._items << {_name: {_text: 'Name'}}
-  # end
+
+  it "should trigger changed for any indicies after a deleted index" do
+    model = Model.new
+
+    model._items << {_name: 'One'}
+    model._items << {_name: 'Two'}
+    model._items << {_name: 'Three'}
+
+    count = 0
+    -> { model._items[2] ; count += 1 }.watch!
+    expect(count).to eq(1)
+
+    model._items.delete_at(1)
+    Dependency.flush!
+    expect(count).to eq(2)
+  end
+
+  it "should change the size and length when an item gets added" do
+    model = Model.new
+
+    model._items << {_name: 'One'}
+    size = model._items.size
+    length = model._items.length
+
+    count_size = 0
+    count_length = 0
+    -> { model._items.size ; count_size += 1 }.watch!
+    -> { model._items.length ; count_length += 1 }.watch!
+    expect(count_size).to eq(1)
+    expect(count_length).to eq(1)
+
+    model._items << {_name: 'Two'}
+    Dependency.flush!
+
+    expect(count_size).to eq(2)
+    expect(count_length).to eq(2)
+  end
+
+  it "should add doubly nested arrays" do
+    model = Model.new
+
+    model._items << {_name: 'Cool', _lists: []}
+    model._items[0]._lists << {_name: 'worked'}
+    expect(model._items[0]._lists[0]._name).to eq('worked')
+  end
+
+  it "should make pushed subarrays into ArrayModels" do
+    model = Model.new
+
+    model._items << {_name: 'Test', _lists: []}
+    expect(model._items[0]._lists.class).to eq(ArrayModel)
+  end
+
+  it "should make assigned subarrays into ArrayModels" do
+    model = Model.new
+
+    model._item._name = 'Test'
+    model._item._lists = []
+    expect(model._item._lists.class).to eq(ArrayModel)
+  end
+
+  it "should call changed when a the reference to a submodel is assigned to another value" do
+    a = Model.new
+
+    count = 0
+    -> { a._blue && a._blue.respond_to?(:_green) && a._blue._green ; count += 1 }.watch!
+    expect(count).to eq(1)
+
+    a._blue._green = 5
+    Dependency.flush!
+
+    # TODO: Should equal 2
+    expect(count).to eq(2)
+
+    a._blue = 22
+    Dependency.flush!
+    expect(count).to eq(3)
+
+    a._blue = {_green: 50}
+    expect(a._blue._green).to eq(50)
+    Dependency.flush!
+    expect(count).to eq(4)
+  end
+
+  it "should trigger changed when a value is deleted" do
+    a = Model.new
+
+    count = 0
+    -> { a._blue ; count += 1 }.watch!
+    expect(count).to eq(1)
+
+    a._blue = 1
+    Dependency.flush!
+    expect(count).to eq(2)
+
+    a.delete(:_blue)
+    Dependency.flush!
+    expect(count).to eq(3)
+  end
+
+  it "should let you append nested hashes" do
+    a = Model.new
+
+    a._items << {_name: {_text: 'Name'}}
+
+    expect(a._items[0]._name._text).to eq('Name')
+  end
   #
   # it "should work" do
   #   store = ReactiveValue.new(Model.new)

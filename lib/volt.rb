@@ -27,4 +27,12 @@ class Volt
   def self.env
     @env ||= Volt::Environment.new
   end
+
+  def self.logger
+    @logger ||= Logger.new
+  end
+
+  def self.logger=(val)
+    @logger = val
+  end
 end

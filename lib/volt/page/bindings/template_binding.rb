@@ -94,15 +94,9 @@ class TemplateBinding < BaseBinding
     return nil, nil
   end
 
-  # Called when the path changes.  If we are sharing a controller, clear the cached
-  # controller before we queue
-  def queue_update
+  def update(path, section_or_arguments=nil, options={})
     @grouped_controller.clear if @grouped_controller
 
-    super
-  end
-
-  def update(path, section_or_arguments=nil, options={})
     @options = options
 
     # A blank path needs to load a missing template, otherwise it tries to load

@@ -148,11 +148,11 @@ describe ViewParser do
         "html" => "      <div id=\"id0\">\n      </div>\n",
         "bindings" => {
           "id0" => [
-            "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, \"class\", Proc.new { main_class }) }"
-          ]
+            "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, \"class\", Proc.new { main_class }, Proc.new { |val| main_class=(val) }) }"
+            ]
+          }
         }
-      }
-    })
+      })
   end
 
   it "should parse multiple attribute bindings in a single attribute" do
@@ -278,7 +278,7 @@ describe ViewParser do
         "html" => "    <textarea name=\"cool\" id=\"id1\"></textarea>\n",
         "bindings" => {
           "id1" => [
-            "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, \"value\", Proc.new { awesome }) }"
+            "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, \"value\", Proc.new { awesome }, Proc.new { |val| awesome=(val) }) }"
           ]
         }
       }

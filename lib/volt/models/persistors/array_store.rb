@@ -18,9 +18,6 @@ module Persistors
       super
 
       @query = @model.options[:query]
-
-      # TODORW: Temp
-      load_data
     end
 
     def event_added(event, first, first_for_event)
@@ -35,8 +32,8 @@ module Persistors
 
     # Called when an event is removed and we no longer want to keep in
     # sync with the database.
-    def stop_listening
-      @query_computation.stop if @query_computation
+    def stop_listening(stop_watching_query=true)
+      @query_computation.stop if @query_computation && stop_watching_query
 
       if @query_listener
         @query_listener.remove_store(self)
@@ -54,7 +51,14 @@ module Persistors
         change_state_to :loading
 
         if @query.is_a?(Proc)
-          @query_computation = -> { run_query(@model, @query.call) }.watch!
+          @query_computation = -> do
+            puts "Run Query Again"
+            stop_listening(false)
+
+            change_state_to :loading
+
+            run_query(@model, @query.call)
+          end.watch!
         else
           run_query(@model, @query)
         end
@@ -104,6 +108,7 @@ module Persistors
         query ||= {}
       end
 
+      puts "MODEL OPTIONS: #{@model.options.inspect}"
       return Cursor.new([], @model.options.merge(:query => query))
     end
 

@@ -15,7 +15,15 @@ class AttributeBinding < BaseBinding
   def setup
 
     # Listen for changes
-    @computation = -> { update(@context.instance_eval(&@getter)) }.watch!
+    @computation = -> do
+      begin
+        update(@context.instance_eval(&@getter))
+      rescue => e
+        puts "New Attribute Binding Error: #{self.inspect}"
+        Volt.logger.error("AttributeBinding Error: #{e.inspect}")
+        update('')
+      end
+    end.watch!
 
     # Bind so when this value updates, we update
     case @attribute_name

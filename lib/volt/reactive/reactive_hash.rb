@@ -14,5 +14,7 @@ class ReactiveHash
 
   def []=(key, value)
     @deps.changed!(key)
+
+    @hash[key] = value
   end
 end

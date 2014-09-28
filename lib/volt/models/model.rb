@@ -28,7 +28,7 @@ class Model
 
     @cache = {}
 
-    # Models stat in a loaded state since they are normally setup from an
+    # Models start in a loaded state since they are normally setup from an
     # ArrayModel, which will have the data when they get added.
     @state = :loaded
 
@@ -104,7 +104,6 @@ class Model
     attribute_name = method_name[0..-2].to_sym
 
     value = args[0]
-    __assign_element(attribute_name, value)
 
     attributes[attribute_name] = wrap_value(value, [attribute_name])
     @deps.changed!(attribute_name)
@@ -308,36 +307,14 @@ class Model
       end
     end
 
-    return ReactiveValue.new(model)
+    return model
   end
 
 
   private
-  def setup_buffer(model)
-    model.attributes = self.attributes
-    model.change_state_to(:loaded)
-  end
-
-    # Clear the previous value and assign a new one
-    def __assign_element(key, value)
-      __clear_element(key)
-      __track_element(key, value)
-    end
-
-    # TODO: Somewhat duplicated from ReactiveArray
-    def __clear_element(key)
-      # Cleanup any tracking on an index
-      # TODO: is this send a security risk?
-      if @reactive_element_listeners && @reactive_element_listeners[key]
-        @reactive_element_listeners[key].remove
-        @reactive_element_listeners.delete(key)
-      end
-    end
-
-    def __track_element(key, value)
-      __setup_tracking(key, value) do |event, key, args|
-        trigger_by_attribute!(event, key, *args)
-      end
+    def setup_buffer(model)
+      model.attributes = self.attributes
+      model.change_state_to(:loaded)
     end
 
     # Takes the persistor if there is one and

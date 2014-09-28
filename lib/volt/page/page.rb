@@ -172,7 +172,6 @@ class Page
     Proc.new do
       title = @title_template.html.gsub(/\n/, ' ')
       `document.title = title;`
-      puts "Change title: #{title}"
     end.watch!
 
     # TODO: this dom ready should really happen in the template renderer

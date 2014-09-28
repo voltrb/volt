@@ -48,7 +48,6 @@ class EachBinding < BaseBinding
   end
 
   def item_removed(position)
-    puts "REMOVED AT #{position}"
     @templates[position].remove_anchors
     @templates[position].remove
     @templates.delete_at(position)
@@ -84,7 +83,6 @@ class EachBinding < BaseBinding
   def update_indexes_after(start_index)
     size = @templates.size
     if size > 0
-      puts @templates.inspect
       start_index.upto(size-1) do |index|
         @templates[index].context.locals[:_index_value] = index
       end

@@ -122,7 +122,7 @@ class ArrayModel < ReactiveArray
     new_options = options.merge(path: model_path, save_to: self).reject {|k,_| k.to_sym == :persistor }
     model = model_klass.new({}, new_options)
 
-    return ReactiveValue.new(model)
+    return model
   end
 
   private
