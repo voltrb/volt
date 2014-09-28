@@ -44,10 +44,9 @@ Volt has the following goals:
 
 Many of the core Volt features are implemented.  We still have a bit to go before 1.0, most of it involving models.
 
-1. Reactive model queries
-2. Reactive Enumerators with Blocks (.map .count, etc…)
+1. Model read/write permissions
+2. User accounts, user collection, signup/login templates
 3. Full managed render loop (for fast rendering)
-4. Fix N+1 issue with some reactive values (I know how to fix it, just haven't gotten around to doing it)
 
 # VOLT guide
 
@@ -100,7 +99,8 @@ You can access the Volt console with:
 9. [Routes](#routes)
   1. [Routes file](#routes-file)
 10. [Testing](#testing)
-
+11. [Volt Helpers](#volt-helpers)
+  1. [Logging](#logging)
 
 # Getting Help
 
@@ -109,7 +109,7 @@ Volt is still a work in progress, but early feedback is appreciated.  Use the fo
 - **If you need help**: post on [stackoverflow.com](http://www.stackoverflow.com). Be sure to tag your question with `voltrb`.
 - **If you found a bug**: post on [github issues](https://github.com/voltrb/volt/issues)
 - **If you have an idea or need a feature**: post on [github issues](https://github.com/voltrb/volt/issues)
-- **If you want to discuss Volt**: use #voltrb on freenode.
+- **If you want to discuss Volt**: [chat on gitter](https://gitter.im/voltrb/volt), someone from the volt team is usually online and happy to help with anything.
 
 
 # Rendering
@@ -353,6 +353,15 @@ In the example above, if _name changes, the field will update, and if the field 
 ```
 
 If the value of a checked attribute is true, the checkbox will be shown checked. If it's checked or unchecked, the value will be updated to true or false.
+
+Radio buttons bind to a checked state as well, except instead of setting the value to true or false, they set it to a supplied field value.
+
+```html
+    <input type="radio" checked="{_radio}" value="one" />
+    <input type="radio" checked="{_radio}" value="two" />
+```
+
+When a radio button is checked, whatever checked is bound to is set to the field's value.  When the checked binding value is changed, any radio buttons where the binding's value matches the fields value are checked.  NOTE: This seems to be the most useful behaviour for radio buttons.
 
 -- TODO: select boxes
 
@@ -831,6 +840,23 @@ To run Capybara tests, you need to specify a driver.  The following drivers are 
 3. IE - coming soon
 
 Chrome is not supported due to [this issue](https://code.google.com/p/chromedriver/issues/detail?id=887#makechanges) with ChromeDriver.  Feel free to go [here](https://code.google.com/p/chromedriver/issues/detail?id=887#makechanges) and pester the chromedriver team to fix it.
+
+# Volt Helpers
+
+## Logging
+
+Volt provides a helper for logging.  Calling ```Volt.logger``` returns an instance of the ruby logger.  See [here](http://www.ruby-doc.org/stdlib-2.1.3/libdoc/logger/rdoc/Logger.html) for more.
+
+```ruby
+Volt.logger.info("Some info...")
+```
+
+You can change the logger with:
+
+```ruby
+Volt.logger = Logger.new
+```
+
 
 ## Accessing DOM section in a controller
 

@@ -33,7 +33,12 @@ class IfBinding < BaseBinding
       value, template_name = branch
 
       if value.is_a?(Proc)
-        current_value = @context.instance_eval(&value)
+        begin
+          current_value = @context.instance_eval(&value)
+        rescue => e
+          Volt.logger.error("IfBinding error: #{e.inspect}")
+          current_value = false
+        end
       else
         current_value = value
       end

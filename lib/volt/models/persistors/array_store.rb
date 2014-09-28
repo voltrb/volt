@@ -178,8 +178,6 @@ module Persistors
     end
 
     def removed(model)
-      puts "Persistor: #{model.inspect}"
-      puts " - #{model.persistor.inspect}"
       if model.persistor
         # Tell the persistor it was removed
         model.persistor.remove_from_collection

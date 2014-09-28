@@ -25,6 +25,11 @@ class AttributeBinding < BaseBinding
       end
     end.watch!
 
+    @is_radio = element.is('[type=radio]')
+    if @is_radio
+      @selected_value = element.attr('value')
+    end
+
     # Bind so when this value updates, we update
     case @attribute_name
     when 'value'
@@ -42,7 +47,14 @@ class AttributeBinding < BaseBinding
       current_value = element.is(':checked')
     end
 
-    @context.instance_exec(current_value, &@setter)
+    if @is_radio
+      if current_value
+        # if it is a radio button and its checked
+        @context.instance_exec(@selected_value, &@setter)
+      end
+    else
+      @context.instance_exec(current_value, &@setter)
+    end
   end
 
   def element
@@ -82,6 +94,10 @@ class AttributeBinding < BaseBinding
   def update_checked(value)
     if value.is_a?(NilMethodCall) || value.nil?
       value = false
+    end
+
+    if @is_radio
+      value = (@selected_value == value)
     end
 
     element.prop('checked', value)
