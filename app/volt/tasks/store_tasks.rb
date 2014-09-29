@@ -3,8 +3,10 @@ require 'query_tasks'
 
 class StoreTasks
   def initialize(channel=nil, dispatcher=nil)
-    @@mongo_db ||= Mongo::MongoClient.new("localhost", 27017)
-    @@db ||= @@mongo_db.db("development")
+    @@mongo_db ||= Mongo::MongoClient.new(
+      Volt.config.db[:host], Volt.config.db[:port]
+    )
+    @@db ||= @@mongo_db.db(Volt.config.db[:name])
 
     @channel = channel
     @dispatcher = dispatcher
