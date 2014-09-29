@@ -25,6 +25,8 @@ class QueryTracker
     @current_ids = @results.map {|r| r['_id'] }
     @results_hash = Hash[@results.map {|r| [r['_id'], r] }]
 
+    puts "RESULTS: #{@results.inspect}"
+
     process_changes(skip_channel)
   end
 

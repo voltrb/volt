@@ -106,13 +106,15 @@ class ArrayModel < ReactiveArray
   end
 
   def inspect
-    if @persistor && @persistor.is_a?(Persistors::ArrayStore) && state == :not_loaded
-      # Show a special message letting users know it is not loaded yet.
-      return "#<#{self.class.to_s}:not loaded, access with [] or size to load>"
-    end
+    Computation.run_without_tracking do
+      if @persistor && @persistor.is_a?(Persistors::ArrayStore) && state == :not_loaded
+        # Show a special message letting users know it is not loaded yet.
+        return "#<#{self.class.to_s}:not loaded, access with [] or size to load>"
+      end
 
-    # Otherwise inspect normally
-    super
+      # Otherwise inspect normally
+      super
+    end
   end
 
   def buffer

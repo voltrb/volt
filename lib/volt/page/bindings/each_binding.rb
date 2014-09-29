@@ -48,6 +48,7 @@ class EachBinding < BaseBinding
   end
 
   def item_removed(position)
+    puts "REMOVE AT: #{position.inspect} - #{@templates.size} - #{@templates.inspect}"
     @templates[position].remove_anchors
     @templates[position].remove
     @templates.delete_at(position)
@@ -57,7 +58,6 @@ class EachBinding < BaseBinding
   end
 
   def item_added(position)
-    # ObjectTracker.enable_cache
     binding_name = @@binding_number
     @@binding_number += 1
 
@@ -72,7 +72,19 @@ class EachBinding < BaseBinding
     # TODORW: :parent => @value may change
     item_context = SubContext.new({:_index_value => position, :parent => @value}, @context)
     item_context.locals[@item_name.to_sym] = Proc.new { @value[item_context.locals[:_index_value]] }
-    item_context.locals[:index] = Proc.new { item_context.locals[:_index_value] }
+
+    position_dependency = Dependency.new
+
+    # Get and set index
+    item_context.locals[:index=] = Proc.new do |val|
+      position_dependency.changed!
+      item_context.locals[:_index_value] = val
+    end
+
+    item_context.locals[:index] = Proc.new do
+      position_dependency.depend
+      item_context.locals[:_index_value]
+    end
 
     item_template = TemplateRenderer.new(@page, @target, item_context, binding_name, @template_name)
     @templates.insert(position, item_template)
@@ -84,7 +96,7 @@ class EachBinding < BaseBinding
     size = @templates.size
     if size > 0
       start_index.upto(size-1) do |index|
-        @templates[index].context.locals[:_index_value] = index
+        @templates[index].context.locals[:index=].call(index)
       end
     end
   end
@@ -99,6 +111,7 @@ class EachBinding < BaseBinding
 
   # When this each_binding is removed, cleanup.
   def remove
+    puts "REMOVE EACH BINDING"
     @computation.stop
 
     # Clear value
@@ -106,9 +119,6 @@ class EachBinding < BaseBinding
 
     @added_listener.remove
     @added_listener = nil
-    #
-    # @changed_listener.remove
-    # @changed_listener = nil
 
     @removed_listener.remove
     @removed_listener = nil
