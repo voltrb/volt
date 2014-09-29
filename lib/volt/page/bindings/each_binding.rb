@@ -88,6 +88,8 @@ class EachBinding < BaseBinding
 
     item_template = TemplateRenderer.new(@page, @target, item_context, binding_name, @template_name)
     @templates.insert(position, item_template)
+
+    update_indexes_after(position)
   end
 
   # When items are added or removed in the middle of the list, we need
