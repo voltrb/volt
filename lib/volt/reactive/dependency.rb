@@ -85,7 +85,7 @@ class Dependency
   def self.queue_flush!
     unless @timer
       # Flush once everything else has finished running
-      @timer = `setTimeout(function() { self['$flush!'](); }, 0);`
+      @timer = `setImmediate(function() { self['$flush!'](); });`
     end
   end
 end

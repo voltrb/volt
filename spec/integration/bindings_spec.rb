@@ -86,6 +86,24 @@ if ENV['BROWSER']
         expect(find('#paramsName3')).to have_content('cool')
         expect(find('#routesName3')).to have_content('testing')
       end
+
+      it 'should load the bindings page and update bindings' do
+        visit '/'
+
+        click_link 'Bindings'
+
+        # Fill in one field and see if it updates the rest
+        fill_in('textareaName1', :with => 'Page bindings')
+        expect(find('#textareaName1').value).to eq('Page bindings')
+        expect(find('#textareaName2').value).to eq('Page bindings')
+        expect(find('#textareaName3')).to have_content('Page bindings')
+
+        fill_in('textareaName2', :with => 'Update everywhere')
+        expect(find('#textareaName1').value).to eq('Update everywhere')
+        expect(find('#textareaName2').value).to eq('Update everywhere')
+        expect(find('#textareaName3')).to have_content('Update everywhere')
+      end
+
     end
 
     describe "check boxes" do

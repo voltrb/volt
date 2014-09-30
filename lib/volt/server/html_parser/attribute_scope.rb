@@ -57,7 +57,19 @@ module AttributeScope
   def add_single_attribute(id, attribute_name, parts)
     getter = parts[0][1..-2]
 
-    save_binding(id, "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, #{attribute_name.inspect}, Proc.new { #{getter} }, Proc.new { |val| #{getter}=(val) }) }")
+    # if getter.index('@')
+    #   raise "Bindings currently do not support instance variables"
+    # end
+
+    # Convert a getter into a setter
+    if getter.index('.') || getter.index('@')
+      prefix = ''
+    else
+      prefix = 'self.'
+    end
+    setter = "#{prefix}#{getter}=(val)"
+
+    save_binding(id, "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, #{attribute_name.inspect}, Proc.new { #{getter} }, Proc.new { |val| #{setter} }) }")
   end
 
 
