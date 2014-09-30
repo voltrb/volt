@@ -31,4 +31,14 @@ class ReactiveHash
 
     @hash[key] = value
   end
+
+  def delete(key)
+    @deps.delete(key)
+  end
+
+  def clear
+    @hash.each_pair do |key,_|
+      delete(key)
+    end
+  end
 end

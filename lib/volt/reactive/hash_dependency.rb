@@ -15,7 +15,12 @@ class HashDependency
     # TODORW: should this .remove
     dep = @hash_depedencies[key]
 
-    dep.changed! if dep
+    if dep
+      dep.changed!
+      dep.remove
+    end
+
+    @hash_depedencies.delete(key)
   end
 
   private
