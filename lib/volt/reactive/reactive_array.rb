@@ -147,8 +147,8 @@ class ReactiveArray# < Array
     result = @array.insert(index, *objects)
 
     # All objects from index to the end have "changed"
-    index.upto(result.size-1) do |index|
-      trigger_for_index!(index+1)
+    index.upto(result.size) do |index|
+      trigger_for_index!(index)
     end
 
     objects.size.times do |count|
