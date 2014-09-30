@@ -7,7 +7,6 @@ module StoreState
   end
 
   def state
-    puts "Depend on state"
     @state_dep ||= Dependency.new
     @state_dep.depend
 

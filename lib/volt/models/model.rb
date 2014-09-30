@@ -244,7 +244,12 @@ class Model
   end
 
   def inspect
-    "<#{self.class.to_s}:#{object_id} #{attributes.inspect}>"
+    str = nil
+    Computation.run_without_tracking do
+      str = "<#{self.class.to_s}:#{object_id} #{attributes.inspect}>"
+    end
+
+    return str
   end
 
   def deep_cur

@@ -244,9 +244,8 @@ describe Model do
   end
   #
   # it "should work" do
-  #   store = ReactiveValue.new(Model.new)
-  #   # params = ReactiveValue.new(Params.new)
-  #   index = ReactiveValue.new(0)
+  #   store = Model.new
+  #   index = 0
   #
   #   a = store._todo_lists
   #   store._current_todo = a#[index]

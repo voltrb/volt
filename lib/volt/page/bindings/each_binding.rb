@@ -12,16 +12,22 @@ class EachBinding < BaseBinding
     @getter = getter
 
     # Listen for changes
-    @computation = -> { reload(@context.instance_eval(&@getter)) }.watch!
+    @computation = -> { reload }.watch!
   end
 
   # When a changed event happens, we update to the new size.
-  def reload(value)
+  def reload
+    begin
+      value = @context.instance_eval(&@getter)
+    rescue => e
+      Volt.logger.error("EachBinding Error: #{e.inspect}")
+      value = []
+    end
 
     # Since we're checking things like size, we don't want this to be re-triggered on a
     # size change, so we run without tracking.
     Computation.run_without_tracking do
-      puts "RELOAD:--------------"
+      puts "RELOAD:-------------- #{self.inspect}"
       # Adjust to the new size
       values = current_values(value)
       @value = values
@@ -29,8 +35,10 @@ class EachBinding < BaseBinding
       @added_listener.remove if @added_listener
       @removed_listener.remove if @removed_listener
 
-      @added_listener = @value.on('added') { |position| item_added(position) }
-      @removed_listener = @value.on('removed') { |position| item_removed(position) }
+      if @value.respond_to?(:on)
+        @added_listener = @value.on('added') { |position| item_added(position) }
+        @removed_listener = @value.on('removed') { |position| item_removed(position) }
+      end
 
       templates_size = @templates.size
       values_size = values.size
@@ -105,7 +113,7 @@ class EachBinding < BaseBinding
 
   def current_values(values)
     return [] if values.is_a?(Model) || values.is_a?(Exception)
-    values = values.attributes unless values.is_a?(ReactiveArray)
+    values = values.attributes if values.respond_to?(:attributes)
 
     return values
   end

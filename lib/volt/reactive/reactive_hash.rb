@@ -34,6 +34,7 @@ class ReactiveHash
 
   def delete(key)
     @deps.delete(key)
+    @hash.delete(key)
   end
 
   def clear

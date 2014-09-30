@@ -58,8 +58,8 @@ class ReactiveArray# < Array
 
   def delete_at(index)
     # Handle a negative index
-    index = size + index if index < 0
     puts "Delete at: #{index}"
+    index = size + index if index < 0
 
     model = @array.delete_at(index)
 
@@ -180,9 +180,6 @@ class ReactiveArray# < Array
       # Trigger a change for the cell
       dep = @array_deps[index]
 
-      if dep
-        puts "TRIG: #{dep.inspect} for #{index}"
-      end
       dep.changed! if dep
     end
 

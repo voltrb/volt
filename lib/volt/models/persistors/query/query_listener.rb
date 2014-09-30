@@ -16,7 +16,7 @@ class QueryListener
   def add_listener
     @listening = true
     @tasks.call('QueryTasks', 'add_listener', @collection, @query) do |results, errors|
-      puts "Query Tasks: #{results.inspect} - #{@stores.inspect} - #{self.inspect}"
+      # puts "Query Tasks: #{results.inspect} - #{@stores.inspect} - #{self.inspect}"
       # When the initial data comes back, add it into the stores.
       @stores.each do |store|
         # Clear if there are existing items

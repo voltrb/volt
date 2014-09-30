@@ -74,7 +74,7 @@ module Persistors
     def run_query(model, query={})
       @model.clear
 
-      puts "Run Query: #{query.inspect}"
+      # puts "Run Query: #{query.inspect}"
       collection = model.path.last
       # Scope to the parent
       if model.path.size > 1
@@ -167,9 +167,9 @@ module Persistors
       @model.path[-1]
     end
 
-
     # When a model is added to this collection, we call its "changed"
     # method.  This should trigger a save.
+    # TODORW:
     def added(model, index)
       if model.persistor
         # Tell the persistor it was added

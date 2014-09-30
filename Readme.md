@@ -123,132 +123,71 @@ For example when a user clicks to add a new todo item to a todo list, we might c
 
 The idea of "reactive programming" has been used to simplify maintaining the DOM.  The idea is instead of having event handlers that manage a model (or JavaScript object) and manage the DOM, we have event handlers that manage reactive data models.  We describe our DOM layer in a declarative way so that it automatically knows how to render our data models.
 
-## Reactive Values
+## State and Computations
 
-To build bindings, Volt provides the ReactiveValue class.  This wraps any object in a reactive interface.  To create a ReactiveValue, simply pass the object you want to wrap as the first argument to new.
+Web applications center around maintaining state.  Many events can trigger changes to a state.  Page interaction like entering text into form elements, clicking button, links, scrolling, etc.. can change the state of the page.  In the past, each page interaction event would manually change any state stored on a page.
 
+To simplify managing application state, all application state is kept in models that can optionally be persisted in different locations.  By centralizing the application state, we reduce the amount of complex code needed to update a page.  We can then build our page's html declaratively.  The relationship to the page's models' are bound using function and method calls.
+
+We want our DOM to automatically update when our model data changes.  To make this happen, Volt lets you "watch" any method/proc call and have it get called again when data accessed by the method/proc call changes.
+
+### Computations
+
+Lets take a look at this in practice.  We'll use the ```page``` collection as an example.  (You'll see more on it later)
+
+First, we setup a computation watch.  Computations are built by calling .watch! on a Proc.  Here we'll use the ruby 1.9 proc shorthand syntax ```-> { ... }``` It will run once, then run again each time the data in page._name changes.
 ```ruby
-    a = ReactiveValue.new("my object")
-    # => @"my object"
+    page._name = 'Ryan'
+    -> { puts page._name }.watch!
+    # => Ryan
+    page._name = 'Jimmy'
+    # => Jimmy
 ```
 
-When `#inspect` is called on a ReactiveValue (like in the console), an '@' is placed in front of the value's inspect string, so you know it's reactive.
-
-When you call a method on a ReactiveValue, you get back a new reactive value that depends on the previous one.  It remembers how it was created and you can call `#cur` on it any time to get its current value, which will be computed based off of the first reactive value.  (Keep in mind below that + is a method call, the same as `a.+(b)` in ruby.)
+Each time page._name is assigned to a new value, the computation is run again.  We can also call anything in the Proc and it will still call again when any data is changed.
 
 ```ruby
-    a = ReactiveValue.new(1)
-    a.reactive?
-    # => true
+    page._first = 'Ryan'
+    page._last = 'Stout'
 
-    a.cur
-    # => 1
+    def lookup_name
+      return "#{page._first} #{page._last}"
+    end
 
-    b = a + 5
-    b.reactive?
-    # => true
+    -> do
+      puts lookup_name
+    end.watch!
+    # => Ryan Stout
 
-    b.cur
-    # => 6
+    page._first = 'Jimmy'
+    # => Jimmy Stout
 
-    a.cur = 2
-    b.cur
-    # => 7
+    page._last = 'Jones'
+    # => Jimmy Jones
 ```
 
-This provides the backbone for reactive programming.  We setup computation/flow graphs instead of doing an actual calculation.  Calling `#cur` (or `#inspect`, `#to_s`, etc..) runs the computation and returns the current value at that time, based on all of its dependencies.
-
-ReactiveValues also let you setup listeners and trigger events:
+When you call .watch! the return value is a Computation object.  In the event you no longer want to receive updates, you can call .stop on the computation.
 
 ```ruby
-    a = ReactiveValue.new(0)
-    a.on('changed') { puts "A changed" }
-    a.trigger!('changed')
-    # => A Changed
+    page._name = 'Ryan'
+
+    comp = -> { puts page._name }.watch!
+    # => Ryan
+
+    page._name = 'Jimmy'
+    # => Jimmy
+
+    comp.stop
+
+    page._name = 'Jo'
+    # (nothing)
 ```
 
-These events propagate to any reactive values created off of a reactive value:
+## Dependencies
 
-```ruby
-    a = ReactiveValue.new(1)
-    b = a + 5
-    b.on('changed') { puts "B changed" }
+TODO: Explain Dependencies
 
-    a.trigger!('changed')
-    # => B changed
-```
-
-This event flow lets us know when an object has changed, so we can update everything that depended on that object.
-
-Lastly, we can also pass in other reactive values as arguments to methods on a reactive value.  The dependencies will be tracked for both and events will propagate down from both.  (Also, note that calling `#cur=` to update the current value triggers a "changed" event.)
-
-```ruby
-    a = ReactiveValue.new(1)
-    b = ReactiveValue.new(2)
-    c = a + b
-
-    a.on('changed') { puts "A changed" }
-    b.on('changed') { puts "B changed" }
-    c.on('changed') { puts "C changed" }
-
-    a.cur = 3
-    # => A changed
-    # => C changed
-
-    b.cur = 5
-    # => B changed
-    # => C changed
-```
-
-### ReactiveValue Gotchas
-
-There are a few simple things to keep in mind with ReactiveValues.  In order to make them mostly compatible with other Ruby objects, two methods do not return another ReactiveValue.
-
-    to_s and inspect
-
-If you want these to be used reactively, see the section on [with](#with).
-
-Also, due to a small limitation in ruby, ReactiveValues always are truthy.  See the [truthy checks](#truthy-checks-true-false-or-and-and) section on how to check for truth.
-
-When passing something that may contain reactive values to a JS function, you can call ```#deep_cur``` on any object to get back a copy that will have all reactive values turned into their current value.
-
-### Current Status
-
-NOTE: currently ReactiveValues are not complete.  At the moment, they do not handle methods that are passed blocks (or procs, lambdas).  This is planned, but not complete.  At the moment you can use [with](#with) to accomplish similar things.
-
-### Truthy Checks: .true?, .false?, .or, and .and
-
-Because a method on a reactive value always returns another reactive value, and because only nil and false are false in ruby, we need a way to check if a ReactiveValue is truthy in our code.  The easiest way to do this is by calling .true? on it.  It will return a non-wrapped boolean.  .nil? and .false? do as you would expect.
-
-One common place we use a truthy check is in setting up default values with || (logical or)  Volt provides a convenient method that does the same thing `#or`, but works with ReactiveValues.
-
-Instead of
-
-```ruby
-    a || b
-```
-
-Simply use:
-
-```ruby
-    a.or(b)
-```
-
-`#and` works the same way as &&.  #and and #or let you maintain the reactivity all of the way through.
-
-
-### With
-
-Normally when you want to have a value that depends on another value, but transforms it somehow, you simply call your transform method on the ReactiveValue.  However sometimes the transform is not directly on the ReactiveValues object.
-
-You can call `#with` on any ReactiveValue.  `#with` will return a new ReactiveValue that depends on the current ReactiveValue.  `#with` takes a block, the first argument to the block will be the cur value of the ReactiveValue you called `#with` on.  Any additional arguments to `#with` will be passed in after the first one.  If you pass another ReactiveValue as an argument to `#with`, the returned ReactiveValue will depend on the argument ReactiveValue as well, and the block will receive the arguments cur value.
-
-```ruby
-    a = ReactiveValue.new(5)
-    b = a.with {|v| v + 10 }
-    b.cur
-    # => 15
-```
+As a Volt user, you rarely need to use Comptuations and Dependencies directly.  Instead you usually just interact with models and bindings.  Computations are used under the hood, and having a full understanding of what's going on is useful, but not required.
 
 # Views
 
@@ -415,6 +354,41 @@ You can also append to a model if it's not defined yet.  In Volt models, plural 
 
 ArrayModels can be appended to and accessed just like regular arrays.
 
+
+### Nil Models: .nil?, .or, and .and
+
+As a convience, calling something like ```page._info``` returns what's called a NilModel (assuming it isn't already initialized).  NilModels are place holders for future possible Models.  NilModels allow us to bind deeply nested values without initializing any intermediate values.
+
+```ruby
+    page._info
+    # => <Model:70260787225140 nil>
+
+    page._info._name
+    # => <Model:70260795424200 nil>
+
+    page._info._name = 'Ryan'
+    # => <Model:70161625994820 {:_info=><Model:70161633901800 {:_name=>"Ryan"}>}>
+```
+
+One gotchya with NilModels is that they are a truthy value (since only nil and false are falsy in ruby).  To make things easier, calling ```.nil?``` on a NilModel will return true.
+
+One common place we use a truthy check is in setting up default values with || (logical or)  Volt provides a convenient method that does the same thing `#or`, but works with NilModels.
+
+Instead of
+
+```ruby
+    a || b
+```
+
+Simply use:
+
+```ruby
+    a.or(b)
+```
+
+`#and` works the same way as &&.  #and and #or let you easily deal with default values involving NilModels.
+
+
 ## Provided Collections
 
 Above, I mentioned that Volt comes with many default collection models accessible from a controller.  Each stores in a different location.
@@ -430,20 +404,12 @@ Above, I mentioned that Volt comes with many default collection models accessibl
 
 **more storage locations are planned**
 
-## Reactive Models
+## ArrayModel Events
 
-Because all models provided by Volt are wrapped in a ReactiveValue, you can register listeners on them and be updated when values change.  You can also call methods on their values and get updates when the sources change.  Bindings also setup listeners.  Models should be the main place you store all data in Volt.  While you can use ReactiveValues manually, most of the time you will want to just use something like the controller model.
-
-## Model Events
-
-Models trigger events when their data is updated.  Currently, models emit three events: changed, added, and removed.  For example:
+Models trigger events when their data is updated.  Currently, models emit two events: added and removed.  For example:
 
 ```ruby
     model = Model.new
-
-    model._name.on('changed') { puts 'name changed' }
-    model._name = 'Ryan'
-    # => name changed
 
     model._items.on('added') { puts 'item added' }
     model._items << 1
@@ -703,7 +669,6 @@ or
 ```
 
 To find the control's views and optional controller, Volt will search the following (in order):
-
 
 | Section   | View File    | View Folder    | Component   |
 |-----------|--------------|----------------|-------------|
