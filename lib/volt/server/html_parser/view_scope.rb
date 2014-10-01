@@ -93,7 +93,11 @@ class ViewScope
           # Multiple bindings
         elsif parts.size == 1 && binding_count == 1
           # A single binding
-          data_hash << "#{name.inspect} => Proc.new { #{value[1..-2]} }"
+          getter = value[1..-2]
+          data_hash << "#{name.inspect} => Proc.new { #{getter} }"
+
+          setter = getter_to_setter(getter)
+          data_hash << "#{(name + "=").inspect} => Proc.new { |val| #{setter} }"
         end
       else
         # String
@@ -102,6 +106,7 @@ class ViewScope
     end
 
     arguments = "#{component_name.inspect}, { #{data_hash.join(',')} }"
+    puts "ARGUMENTS: #{arguments}"
 
     save_binding(@binding_number, "lambda { |__p, __t, __c, __id| ComponentBinding.new(__p, __t, __c, __id, #{@path.inspect}, Proc.new { [#{arguments}] }) }")
 

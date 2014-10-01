@@ -28,13 +28,6 @@ class Set
 end
 
 class Dependency
-  @@flush_queue = []
-  if RUBY_PLATFORM == 'opal'
-    @@in_browser = `!!document`
-  else
-    @@in_browser = false
-  end
-
   def initialize
     @dependencies = Set.new
   end
@@ -45,6 +38,7 @@ class Dependency
       added = @dependencies.add?(current)
 
       if added
+        # puts "Added #{self.inspect} to #{current.inspect}"
         current.on_invalidate do
           # If @dependencies is nil, this Dependency has been removed
           @dependencies.delete(current) if @dependencies
@@ -57,35 +51,14 @@ class Dependency
     deps = @dependencies
     @dependencies = Set.new
 
-    @@flush_queue += deps.to_a
-
-    # If we are in the browser, we queue a flush for the next tick
-    if @@in_browser
-      self.class.queue_flush!
+    deps.each do |dep|
+      dep.invalidate!
     end
   end
 
   # Called when a dependency is no longer needed
   def remove
+    changed!
     @dependencies = nil
-  end
-
-  def self.flush!
-    # clear any timers
-    @timer = nil
-
-    computations = @@flush_queue
-    @@flush_queue = []
-
-    computations.each do |computation|
-      computation.compute!
-    end
-  end
-
-  def self.queue_flush!
-    unless @timer
-      # Flush once everything else has finished running
-      @timer = `setImmediate(function() { self['$flush!'](); });`
-    end
   end
 end

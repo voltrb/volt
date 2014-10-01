@@ -13,7 +13,7 @@ class Pry
     end
 
     # Automatically flush after each line
-    Dependency.flush!
+    Computation.flush!
   end
 end
 

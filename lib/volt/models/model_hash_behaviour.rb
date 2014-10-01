@@ -18,6 +18,14 @@ module ModelHashBehaviour
     attributes.nil?
   end
 
+  def false?
+    attributes.false?
+  end
+
+  def true?
+    attributes.true?
+  end
+
   def clear
     attributes.each_pair do |key,value|
       @deps.changed!(key)

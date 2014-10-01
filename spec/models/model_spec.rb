@@ -23,11 +23,11 @@ describe Model do
     -> { values << a._name }.watch!
 
     expect(values).to eq([nil])
-    Dependency.flush!
+    Computation.flush!
 
     a._name = 'Bob'
 
-    Dependency.flush!
+    Computation.flush!
     expect(values).to eq([nil, 'Bob'])
   end
 
@@ -62,11 +62,11 @@ describe Model do
     expect(count).to eq(1)
 
     a._blue = 'one'
-    Dependency.flush!
+    Computation.flush!
     expect(count).to eq(2)
 
     a._blue = 'two'
-    Dependency.flush!
+    Computation.flush!
     expect(count).to eq(3)
   end
 
@@ -83,12 +83,12 @@ describe Model do
     expect(green_count).to eq(1)
 
     a._green = 'one'
-    Dependency.flush!
+    Computation.flush!
     expect(blue_count).to eq(1)
     expect(green_count).to eq(2)
 
     a._blue = 'two'
-    Dependency.flush!
+    Computation.flush!
     expect(blue_count).to eq(2)
     expect(green_count).to eq(2)
   end
@@ -106,15 +106,15 @@ describe Model do
     expect(count).to eq(1)
 
     a._two = 5
-    Dependency.flush!
+    Computation.flush!
     expect(count).to eq(2)
 
     a._one = 6
-    Dependency.flush!
+    Computation.flush!
     expect(count).to eq(3)
 
     a._three = 7
-    Dependency.flush!
+    Computation.flush!
     expect(count).to eq(3)
   end
 
@@ -130,7 +130,7 @@ describe Model do
     expect(values).to eq([nil])
 
     model._prop = 'one'
-    Dependency.flush!
+    Computation.flush!
 
     expect(values).to eq([nil, 'one'])
 
@@ -148,7 +148,7 @@ describe Model do
     expect(count).to eq(1)
 
     model._items.delete_at(1)
-    Dependency.flush!
+    Computation.flush!
     expect(count).to eq(2)
   end
 
@@ -167,7 +167,7 @@ describe Model do
     expect(count_length).to eq(1)
 
     model._items << {_name: 'Two'}
-    Dependency.flush!
+    Computation.flush!
 
     expect(count_size).to eq(2)
     expect(count_length).to eq(2)
@@ -204,18 +204,18 @@ describe Model do
     expect(count).to eq(1)
 
     a._blue._green = 5
-    Dependency.flush!
+    Computation.flush!
 
     # TODO: Should equal 2
     expect(count).to eq(2)
 
     a._blue = 22
-    Dependency.flush!
+    Computation.flush!
     expect(count).to eq(3)
 
     a._blue = {_green: 50}
     expect(a._blue._green).to eq(50)
-    Dependency.flush!
+    Computation.flush!
     expect(count).to eq(4)
   end
 
@@ -227,11 +227,11 @@ describe Model do
     expect(count).to eq(1)
 
     a._blue = 1
-    Dependency.flush!
+    Computation.flush!
     expect(count).to eq(2)
 
     a.delete(:_blue)
-    Dependency.flush!
+    Computation.flush!
     expect(count).to eq(3)
   end
 

@@ -24,6 +24,22 @@ class ReactiveArray# < Array
     @array.each(&block)
   end
 
+  def count(&block)
+    if block
+      count = 0
+      size.times do |index|
+        if block.call(self[index])
+          count += 1
+        end
+      end
+
+      puts "COUNT: #{count}"
+      return count
+    else
+      return size
+    end
+  end
+
   # TODO: Handle a range
   def [](index)
     # Handle a negative index

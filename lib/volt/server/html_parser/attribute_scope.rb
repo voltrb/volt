@@ -53,6 +53,20 @@ module AttributeScope
     end
   end
 
+  # TODO: We should use a real parser for this
+  def getter_to_setter(getter)
+    getter = getter.strip
+
+    # Convert a getter into a setter
+    if getter.index('.') || getter.index('@')
+      prefix = ''
+    else
+      prefix = 'self.'
+    end
+
+    return "#{prefix}#{getter}=(val)"
+  end
+
   # Add an attribute binding on the tag, bind directly to the getter in the binding
   def add_single_attribute(id, attribute_name, parts)
     getter = parts[0][1..-2]
@@ -61,13 +75,7 @@ module AttributeScope
     #   raise "Bindings currently do not support instance variables"
     # end
 
-    # Convert a getter into a setter
-    if getter.index('.') || getter.index('@')
-      prefix = ''
-    else
-      prefix = 'self.'
-    end
-    setter = "#{prefix}#{getter}=(val)"
+    setter = getter_to_setter(getter)
 
     save_binding(id, "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, #{attribute_name.inspect}, Proc.new { #{getter} }, Proc.new { |val| #{setter} }) }")
   end

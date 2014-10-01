@@ -56,6 +56,9 @@ class EachBinding < BaseBinding
   end
 
   def item_removed(position)
+    # Remove dependency
+    @templates[position].context.locals[:index_dependency].remove
+
     puts "REMOVE AT: #{position.inspect} - #{@templates.size} - #{@templates.inspect}"
     @templates[position].remove_anchors
     @templates[position].remove
@@ -82,6 +85,7 @@ class EachBinding < BaseBinding
     item_context.locals[@item_name.to_sym] = Proc.new { @value[item_context.locals[:_index_value]] }
 
     position_dependency = Dependency.new
+    item_context.locals[:index_dependency] = position_dependency
 
     # Get and set index
     item_context.locals[:index=] = Proc.new do |val|

@@ -12,13 +12,13 @@ describe ReactiveArray do
 
       a[0] = 5
 
-      Dependency.flush!
+      Computation.flush!
 
       a[0] = 10
       expect(count).to eq(2)
       expect(values).to eq([nil, 5])
 
-      Dependency.flush!
+      Computation.flush!
       expect(count).to eq(3)
       expect(values).to eq([nil, 5, 10])
     end
@@ -34,7 +34,7 @@ describe ReactiveArray do
       a << 4
       expect(values).to eq([nil])
 
-      Dependency.flush!
+      Computation.flush!
       expect(values).to eq([nil, 4])
     end
 
@@ -54,7 +54,7 @@ describe ReactiveArray do
 
       a.insert(2,1.3,1.7)
 
-      Dependency.flush!
+      Computation.flush!
 
       expect(values_at_2).to eq([3,1.3])
       expect(values_at_3).to eq([nil,1.7])
@@ -75,7 +75,7 @@ describe ReactiveArray do
 
       array << 5
 
-      Dependency.flush!
+      Computation.flush!
       expect(size_values).to eq([0,1])
     end
 
@@ -90,7 +90,7 @@ describe ReactiveArray do
       array.delete_at(2)
 
       expect(size_values).to eq([3])
-      Dependency.flush!
+      Computation.flush!
       expect(size_values).to eq([3,2])
     end
   end

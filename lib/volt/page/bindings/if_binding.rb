@@ -67,10 +67,10 @@ class IfBinding < BaseBinding
   end
 
   def remove
-    @template.remove if @template
-
     @computation.stop if @computation
     @computation = nil
+
+    @template.remove if @template
 
     super
   end

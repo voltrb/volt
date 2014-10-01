@@ -40,12 +40,13 @@ class ModelController
     return inst
   end
 
+  attr_accessor :data
+
   def initialize(*args)
-    # Set the instance variable to match any passed in arguments
-    if args.size > 0
-      args[0].each_pair do |key, value|
-        instance_variable_set(:"@#{key}", value)
-      end
+    puts "INIT: #{args.inspect}"
+
+    if args[0]
+      self.data = args[0]
     end
   end
 

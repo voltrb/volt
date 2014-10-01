@@ -1,5 +1,12 @@
 class Computation
   @@current = nil
+  @@flush_queue = []
+  if RUBY_PLATFORM == 'opal'
+    @@in_browser = `!!document`
+  else
+    @@in_browser = false
+  end
+
 
   def self.current=(val)
     @@current = val
@@ -16,31 +23,61 @@ class Computation
 
   # Runs the computation
   def compute!
+    @invalidated = false
+
     unless @stopped
+
+      @computing = true
       run_in do
         @computation.call
       end
+      @computing = false
     end
   end
 
   def on_invalidate(&callback)
-    @invalidations << callback
+    if @invalidated
+      # Call invalidate now, since its already invalidated
+      Computation.run_without_tracking do
+        callback.call
+      end
+    else
+      # Store the invalidation
+      @invalidations << callback
+    end
   end
 
   # Calling invalidate removes the computation from all of
   # its dependencies.  This keeps its dependencies from
   # invalidating it again.
   def invalidate!
-    @invalidations.each do |invalidation|
-      invalidation.call
+    unless @invalidated
+      @invalidated = true
+
+      if !@stopped && !@computing
+        @@flush_queue << self
+
+        # If we are in the browser, we queue a flush for the next tick
+        if @@in_browser
+          self.class.queue_flush!
+        end
+      end
+
+      invalidations = @invalidations
+      @invalidations = []
+
+      invalidations.each do |invalidation|
+        invalidation.call
+      end
     end
   end
 
   # Stop re-run of the computations
   def stop
-    @stopped = true
-    invalidate!
-    # raise "not implemented"
+    unless @stopped
+      @stopped = true
+      invalidate!
+    end
   end
 
   # Runs in this computation as the current computation, returns the computation
@@ -58,6 +95,33 @@ class Computation
     Computation.current = nil
     yield
     Computation.current = previous
+  end
+
+
+  def self.flush!
+    raise "Can't flush while in a flush" if @flushing
+
+    @flushing = true
+    # clear any timers
+    @timer = nil
+
+    computations = @@flush_queue
+    @@flush_queue = []
+
+    puts "FLUSH QUEUE: #{computations.size}"
+
+    computations.each do |computation|
+      computation.compute!
+    end
+
+    @flushing = false
+  end
+
+  def self.queue_flush!
+    unless @timer
+      # Flush once everything else has finished running
+      @timer = `setImmediate(function() { self['$flush!'](); });`
+    end
   end
 end
 

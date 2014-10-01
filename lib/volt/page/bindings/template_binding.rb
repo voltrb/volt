@@ -95,6 +95,7 @@ class TemplateBinding < BaseBinding
   end
 
   def update(path, section_or_arguments=nil, options={})
+    puts "SECORARGS: #{section_or_arguments.inspect}"
     @grouped_controller.clear if @grouped_controller
 
     @options = options
@@ -124,21 +125,16 @@ class TemplateBinding < BaseBinding
 
     @current_template.remove if @current_template
 
-    if @arguments
-      # Load in any procs
-      @arguments.each_pair do |key,value|
-        if value.class == Proc
-          @arguments[key.gsub('-', '_')] = value.call
-        end
-      end
-    end
-
     render_template(full_path, controller_path)
   end
 
   # The context for templates can be either a controller, or the original context.
   def render_template(full_path, controller_path)
-    args = @arguments ? [@arguments] : []
+    if @arguments
+      args = [SubContext.new(@arguments)]
+    else
+      args = []
+    end
 
     @controller = nil
 
@@ -149,6 +145,7 @@ class TemplateBinding < BaseBinding
     unless @controller
       controller_class, action = get_controller(controller_path)
 
+      puts "NEW CONTROLLER: #{args.inspect}"
       if controller_class
         # Setup the controller
         @controller = controller_class.new(*args)

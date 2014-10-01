@@ -11,11 +11,11 @@ describe Computation do
     expect(values).to eq([nil])
 
     a[0] = 'one'
-    Dependency.flush!
+    Computation.flush!
     expect(values).to eq([nil, 'one'])
 
     a[0] = 'two'
-    Dependency.flush!
+    Computation.flush!
     expect(values).to eq([nil, 'one', 'two'])
   end
 
@@ -28,13 +28,13 @@ describe Computation do
     expect(values).to eq([nil])
 
     a[0] = 'one'
-    Dependency.flush!
+    Computation.flush!
     expect(values).to eq([nil, 'one'])
 
     computation.stop
 
     a[0] = 'two'
-    Dependency.flush!
+    Computation.flush!
     expect(values).to eq([nil, 'one'])
   end
 end

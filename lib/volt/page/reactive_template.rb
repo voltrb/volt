@@ -5,25 +5,36 @@ class ReactiveTemplate
     @template_path = template_path
     @target = AttributeTarget.new(nil, nil, self)
     @template = TemplateRenderer.new(page, @target, context, "main", template_path)
-    
+
   end
 
   # Render the template and get the current value
   def html
+    puts "FETCH HTML"
     @dependency.depend
-    @target.to_html
+
+    html = nil
+    Computation.run_without_tracking do
+      html = @target.to_html
+    end
+
+    return html
   end
-  
+
   def changed!
+    puts "CHANGED: #{self.inspect}"
     @dependency.changed!
   end
 
   def remove
-    @template.remove
     @dependency.remove
     @dependency = nil
 
-    @template = nil
+    Computation.run_without_tracking do
+      @template.remove
+      @template = nil
+    end
+
     @target = nil
     @template_path = nil
   end
