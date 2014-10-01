@@ -108,8 +108,6 @@ class Computation
     computations = @@flush_queue
     @@flush_queue = []
 
-    puts "FLUSH QUEUE: #{computations.size}"
-
     computations.each do |computation|
       computation.compute!
     end

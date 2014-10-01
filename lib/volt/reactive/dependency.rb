@@ -33,6 +33,9 @@ class Dependency
   end
 
   def depend
+    # If there is no @dependencies, don't depend because it has been removed
+    return unless @dependencies
+
     current = Computation.current
     if current
       added = @dependencies.add?(current)
@@ -49,6 +52,10 @@ class Dependency
 
   def changed!
     deps = @dependencies
+
+    # If no deps, dependency has been removed
+    return unless deps
+
     @dependencies = Set.new
 
     deps.each do |dep|

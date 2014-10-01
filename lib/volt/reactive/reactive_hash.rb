@@ -42,4 +42,8 @@ class ReactiveHash
       delete(key)
     end
   end
+
+  def inspect
+    "#<ReactiveHash #{@hash.inspect}>"
+  end
 end

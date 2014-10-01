@@ -95,37 +95,38 @@ class TemplateBinding < BaseBinding
   end
 
   def update(path, section_or_arguments=nil, options={})
-    puts "SECORARGS: #{section_or_arguments.inspect}"
-    @grouped_controller.clear if @grouped_controller
+    Computation.run_without_tracking do
+      @grouped_controller.clear if @grouped_controller
 
-    @options = options
+      @options = options
 
-    # A blank path needs to load a missing template, otherwise it tries to load
-    # the same template.
-    path = path.blank? ? '---missing---' : path
+      # A blank path needs to load a missing template, otherwise it tries to load
+      # the same template.
+      path = path.blank? ? '---missing---' : path
 
-    section = nil
-    @arguments = nil
+      section = nil
+      @arguments = nil
 
-    if section_or_arguments.is_a?(String)
-      # Render this as a section
-      section = section_or_arguments
-    else
-      # Use the value passed in as the default arguments
-      @arguments = section_or_arguments
+      if section_or_arguments.is_a?(String)
+        # Render this as a section
+        section = section_or_arguments
+      else
+        # Use the value passed in as the default arguments
+        @arguments = section_or_arguments
+      end
+
+      # Sometimes we want multiple template bindings to share the same controller (usually
+      # when displaying a :Title and a :Body), this instance tracks those.
+      if @options && (controller_group = @options[:controller_group])
+        @grouped_controller = GroupedControllers.new(controller_group)
+      end
+
+      full_path, controller_path = path_for_template(path, section)
+
+      @current_template.remove if @current_template
+
+      render_template(full_path, controller_path)
     end
-
-    # Sometimes we want multiple template bindings to share the same controller (usually
-    # when displaying a :Title and a :Body), this instance tracks those.
-    if @options && (controller_group = @options[:controller_group])
-      @grouped_controller = GroupedControllers.new(controller_group)
-    end
-
-    full_path, controller_path = path_for_template(path, section)
-
-    @current_template.remove if @current_template
-
-    render_template(full_path, controller_path)
   end
 
   # The context for templates can be either a controller, or the original context.
@@ -145,7 +146,6 @@ class TemplateBinding < BaseBinding
     unless @controller
       controller_class, action = get_controller(controller_path)
 
-      puts "NEW CONTROLLER: #{args.inspect}"
       if controller_class
         # Setup the controller
         @controller = controller_class.new(*args)

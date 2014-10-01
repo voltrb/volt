@@ -59,7 +59,7 @@ class EachBinding < BaseBinding
     # Remove dependency
     @templates[position].context.locals[:index_dependency].remove
 
-    puts "REMOVE AT: #{position.inspect} - #{@templates.size} - #{@templates.inspect}"
+    # puts "REMOVE AT: #{position.inspect} - #{@templates.size} - #{@templates.inspect}"
     @templates[position].remove_anchors
     @templates[position].remove
     @templates.delete_at(position)
@@ -127,6 +127,7 @@ class EachBinding < BaseBinding
   def remove
     puts "REMOVE EACH BINDING"
     @computation.stop
+    @computation = nil
 
     # Clear value
     @value = nil

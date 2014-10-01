@@ -3,6 +3,8 @@ require 'volt/reactive/reactive_accessors'
 class ModelController
   include ReactiveAccessors
 
+  reactive_accessor :current_model
+
   def self.model(val)
     @default_model = val
   end
@@ -10,24 +12,24 @@ class ModelController
   # Sets the current model on this controller
   def model=(val)
     # Start with a nil reactive value.
-    @model ||= Model.new
+    self.current_model ||= Model.new
 
     if Symbol === val || String === val
       collections = [:page, :store, :params, :controller]
       if collections.include?(val.to_sym)
-        @model = self.send(val)
+        self.current_model = self.send(val)
       else
         raise "#{val} is not the name of a valid model, choose from: #{collections.join(', ')}"
       end
     elsif val
-      @model = val
+      self.current_model = val
     else
       raise "model can not be #{val.inspect}"
     end
   end
 
   def model
-    @model
+    self.current_model
   end
 
   def self.new(*args, &block)
@@ -43,8 +45,6 @@ class ModelController
   attr_accessor :data
 
   def initialize(*args)
-    puts "INIT: #{args.inspect}"
-
     if args[0]
       self.data = args[0]
     end
@@ -92,6 +92,6 @@ class ModelController
   end
 
   def method_missing(method_name, *args, &block)
-    return @model.send(method_name, *args, &block)
+    return current_model.send(method_name, *args, &block)
   end
 end

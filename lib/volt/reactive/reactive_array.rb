@@ -28,12 +28,11 @@ class ReactiveArray# < Array
     if block
       count = 0
       size.times do |index|
-        if block.call(self[index])
+        if block.call(self[index]).true?
           count += 1
         end
       end
 
-      puts "COUNT: #{count}"
       return count
     else
       return size

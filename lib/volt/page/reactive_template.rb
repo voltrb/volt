@@ -5,12 +5,10 @@ class ReactiveTemplate
     @template_path = template_path
     @target = AttributeTarget.new(nil, nil, self)
     @template = TemplateRenderer.new(page, @target, context, "main", template_path)
-
   end
 
   # Render the template and get the current value
   def html
-    puts "FETCH HTML"
     @dependency.depend
 
     html = nil
@@ -22,7 +20,6 @@ class ReactiveTemplate
   end
 
   def changed!
-    puts "CHANGED: #{self.inspect}"
     @dependency.changed!
   end
 
