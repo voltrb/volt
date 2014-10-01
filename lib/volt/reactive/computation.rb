@@ -93,8 +93,10 @@ class Computation
   def self.run_without_tracking
     previous = Computation.current
     Computation.current = nil
-    yield
+    return_value = yield
     Computation.current = previous
+
+    return return_value
   end
 
 

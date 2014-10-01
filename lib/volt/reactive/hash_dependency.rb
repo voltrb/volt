@@ -23,6 +23,12 @@ class HashDependency
     @hash_depedencies.delete(key)
   end
 
+  def changed_all!
+    @hash_depedencies.each_pair do |key,value|
+      value.changed!
+    end
+  end
+
   private
     def ensure_key(key)
       @hash_depedencies[key] ||= Dependency.new

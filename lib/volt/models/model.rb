@@ -48,9 +48,11 @@ class Model
   def attributes=(attrs, initial_setup=false)
     @attributes = wrap_values(attrs)
 
+    # Trigger and change all
+    @deps.changed_all!
+    @deps = HashDependency.new
+
     unless initial_setup
-      # TODORW:
-      # trigger!('changed')
 
       # Let the persistor know something changed
       if @persistor
@@ -152,7 +154,7 @@ class Model
   # Get a new model, make it easy to override
   def read_new_model(method_name)
     if @persistor && @persistor.respond_to?(:read_new_model)
-      @persistor.read_new_model(method_name)
+      return @persistor.read_new_model(method_name)
     else
       return new_model(nil, @options.merge(parent: self, path: path + [method_name]))
     end
@@ -261,6 +263,7 @@ class Model
     # Compute the erros once
     errors = self.errors
 
+    puts "HERE1"
     if errors.size == 0
       save_to = options[:save_to]
       if save_to
@@ -275,6 +278,7 @@ class Model
           # TODO: return a promise that resolves if the append works
         else
           # We have a saved model
+          puts "Save to: #{save_to.inspect} - #{save_to.path.inspect} - #{self.attributes.inspect}"
           return save_to.assign_attributes(self.attributes)
         end
       else
@@ -288,9 +292,6 @@ class Model
         mark_field!(key.to_sym)
       end
 
-      # TODORW:
-      # trigger_for_methods!('changed', :errors, :marked_errors)
-
       return Promise.new.reject(errors)
     end
   end
@@ -299,7 +300,15 @@ class Model
   # Returns a buffered version of the model
   def buffer
     model_path = options[:path]
-    model_klass = class_at_path(model_path)
+
+    # When we grab a buffer off of a plual class (subcollection), we get it as a model.
+    if model_path.last.plural? && model_path[-1] != :[]
+      model_klass = class_at_path(model_path + [:[]])
+    else
+      model_klass = class_at_path(model_path)
+    end
+
+    puts "Model Klass: #{model_klass.inspect}"
 
     new_options = options.merge(path: model_path, save_to: self).reject {|k,_| k.to_sym == :persistor }
     model = model_klass.new({}, new_options, :loading)
