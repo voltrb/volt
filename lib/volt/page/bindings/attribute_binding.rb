@@ -69,12 +69,15 @@ class AttributeBinding < BaseBinding
 
     # Stop any previous reactive template computations
     @reactive_template_computation.stop if @reactive_template_computation
+    @reactive_template.remove if @reactive_template
 
     if new_value.is_a?(ReactiveTemplate)
       # We don't need to refetch the whole reactive template to
       # update, we can just depend on it and update directly.
+      @reactive_template = new_value
+
       @reactive_template_computation = -> do
-        self.value = new_value.html
+        self.value = @reactive_template.html
       end.watch!
     else
       if new_value.is_a?(NilMethodCall) || new_value.nil?
@@ -120,6 +123,7 @@ class AttributeBinding < BaseBinding
       element.off('change.attrbind', nil)
     end
 
+    @reactive_template.remove if @reactive_template
     @reactive_template_computation.stop if @reactive_template_computation
     @computation.stop if @computation
 

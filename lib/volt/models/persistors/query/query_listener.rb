@@ -23,7 +23,7 @@ class QueryListener
         store.model.clear if store.model.size > 0
 
         results.each do |index, data|
-          puts "ADD: #{index} - #{data.inspect}"
+          # puts "ADD: #{index} - #{data.inspect}"
           store.add(index, data)
         end
 

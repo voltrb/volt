@@ -20,7 +20,8 @@ class ReactiveTemplate
   end
 
   def changed!
-    @dependency.changed!
+    # if @dependency is missing, this template has been removed
+    @dependency.changed! if @dependency
   end
 
   def remove

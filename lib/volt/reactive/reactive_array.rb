@@ -73,7 +73,6 @@ class ReactiveArray# < Array
 
   def delete_at(index)
     # Handle a negative index
-    puts "Delete at: #{index}"
     index = size + index if index < 0
 
     model = @array.delete_at(index)
@@ -82,10 +81,7 @@ class ReactiveArray# < Array
     index_deps = @array_deps.delete_at(index)
     index_deps.remove if index_deps
 
-    puts "Trigger removed"
     trigger_removed!(index)
-
-    puts "REMOVED---"
 
     # Trigger a changed event for each element in the zone where the
     # delete would change
@@ -94,8 +90,6 @@ class ReactiveArray# < Array
     end
 
     trigger_size_change!
-
-    puts "DELETED MODEL: #{model.inspect}"
 
     @persistor.removed(model) if @persistor
 

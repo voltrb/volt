@@ -36,7 +36,7 @@ class IfBinding < BaseBinding
         begin
           current_value = @context.instance_eval(&value)
         rescue => e
-          Volt.logger.error("IfBinding error: #{e.inspect}\n" + `value.toString()`)
+          Volt.logger.error("IfBinding:#{object_id} error: #{e.inspect}\n" + `value.toString()`)
           current_value = false
         end
       else
