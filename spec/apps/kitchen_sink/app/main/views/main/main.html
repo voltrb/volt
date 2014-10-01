@@ -23,7 +23,7 @@
   </div>
 
 <:Nav>
-  <li class="{#if url.path.split('/')[1] == @href.split('/')[1]}active{/}">
-    <a href="{@href}">{@text}</a>
+  <li class="{#if url.path.split('/')[1] == data.href.split('/')[1]}active{/}">
+    <a href="{data.href}">{data.text}</a>
   </li>
 
