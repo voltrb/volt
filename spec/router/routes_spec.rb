@@ -142,31 +142,30 @@ describe Routes do
 
   end
 
-  # it "should match routes" do
-  #   params = Model.new({}, persistor: Persistors::Params)
-  #   params._controller = 'blog'
-  #   params._index = '5'
-  #
-  #   routes do
-  #     get '/', _controller: 'index'
-  #     get '/blog', _controller: 'blog'
-  #   end
-  #
-  #   path, cleaned_params = @routes.params_to_url(params)
-  #   expect(path).to eq('/blog')
-  #   expect(cleaned_params).to eq({_index: '5'})
-  # end
-  #
-  # it "should handle routes with bindings in them" do
-  #   params = Model.new({}, persistor: Persistors::Params)
-  #
-  #   routes do
-  #     get '/', _controller: 'index'
-  #     get '/blog/{_id}', _controller: 'blog'
-  #   end
-  #
-  #   params = @routes.url_to_params('/blog/20')
-  #   puts params.inspect
-  #
-  # end
+  it "should match routes" do
+    params = Model.new({}, persistor: Persistors::Params)
+    params._controller = 'blog'
+    params._index = '5'
+
+    routes do
+      get '/', _controller: 'index'
+      get '/blog', _controller: 'blog'
+    end
+
+    path, cleaned_params = @routes.params_to_url(params)
+    expect(path).to eq('/blog')
+    expect(cleaned_params).to eq({_index: '5'})
+  end
+
+  it "should handle routes with bindings in them" do
+    params = Model.new({}, persistor: Persistors::Params)
+
+    routes do
+      get '/', _controller: 'index'
+      get '/blog/{_id}', _controller: 'blog'
+    end
+
+    params = @routes.url_to_params('/blog/20')
+
+  end
 end
