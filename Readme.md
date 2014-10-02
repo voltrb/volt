@@ -487,7 +487,7 @@ Arrays inside of models are automatically converted to an instance of ArrayModel
 ```
 
 
-To convert a Model or an ArrayModel back to a normal hash, call .to_h or .to_a respectively.  To convert them to a JavaScript Object (for passing to some JavaScript code), call `#to_n` (to native).
+To convert a Model or an ArrayModel back to a normal hash or a normal array, call .to_h or .to_a respectively.  To convert them to a JavaScript Object (for passing to some JavaScript code), call `#to_n` (to native).
 
 ```ruby
     user = Model.new
@@ -501,7 +501,8 @@ To convert a Model or an ArrayModel back to a normal hash, call .to_h or .to_a r
     # => {twitter: 'http://www.twitter.com/ryanstout', dribbble: 'http://dribbble.com/ryanstout'}
 
     items = ArrayModel.new([1,2,3,4])
-    items
+    items.to_a
+    # => [1, 2, 3, 4]
 ```
 
 You can get a normal array again by calling .to_a on an ArrayModel.
