@@ -118,6 +118,8 @@ class ViewScope
           # Add an _parent fetcher.  Useful for things like volt-fields to get the parent model.
           parent = parent_fetcher(getter)
 
+          # TODO: This adds some overhead, perhaps there is a way to compute this dynamically on the
+          # front-end.
           data_hash << "#{(name + "_parent").inspect} => Proc.new { #{parent} }"
 
           # Add a _last_method property.  This is useful

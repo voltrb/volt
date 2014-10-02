@@ -2,7 +2,7 @@ class Computation
   @@current = nil
   @@flush_queue = []
   if RUBY_PLATFORM == 'opal'
-    @@in_browser = `!!document`
+    @@in_browser = `!!document && !window._phantom`
   else
     @@in_browser = false
   end
@@ -118,7 +118,7 @@ class Computation
   end
 
   def self.queue_flush!
-    unless @timer
+    if !@timer
       # Flush once everything else has finished running
       @timer = `setImmediate(function() { self['$flush!'](); });`
     end
