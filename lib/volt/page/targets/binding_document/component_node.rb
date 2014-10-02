@@ -20,7 +20,6 @@ class ComponentNode < BaseNode
     if @root
       @root.changed!
     else
-      puts "TRIG ON #{self.inspect}"
       trigger!('changed')
     end
 
@@ -92,8 +91,7 @@ class ComponentNode < BaseNode
   def remove
     @nodes = []
 
-    # TODORW:
-    puts "Component Node Removed"
+    # puts "Component Node Removed"
     changed!
 
     # @binding_id = nil

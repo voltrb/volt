@@ -263,7 +263,6 @@ class Model
     # Compute the erros once
     errors = self.errors
 
-    puts "HERE1"
     if errors.size == 0
       save_to = options[:save_to]
       if save_to

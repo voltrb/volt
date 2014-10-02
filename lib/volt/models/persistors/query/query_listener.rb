@@ -67,7 +67,6 @@ class QueryListener
 
   def added(index, data)
     @stores.each do |store|
-      puts "Added: #{index} - #{data.inspect}"
       store.add(index, data)
     end
   end

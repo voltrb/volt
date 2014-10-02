@@ -115,9 +115,8 @@ class ViewScope
           setter = getter_to_setter(getter)
           data_hash << "#{(name + "=").inspect} => Proc.new { |val| #{setter} }"
 
-          # Add a _parent
+          # Add an _parent fetcher.  Useful for things like volt-fields to get the parent model.
           parent = parent_fetcher(getter)
-          puts parent.inspect
 
           data_hash << "#{(name + "_parent").inspect} => Proc.new { #{parent} }"
           data_hash << "#{(name + "_last_method").inspect} => #{last_method_name(getter).inspect}"
@@ -129,7 +128,6 @@ class ViewScope
     end
 
     arguments = "#{component_name.inspect}, { #{data_hash.join(',')} }"
-    puts "ARGS: #{arguments}"
 
     save_binding(@binding_number, "lambda { |__p, __t, __c, __id| ComponentBinding.new(__p, __t, __c, __id, #{@path.inspect}, Proc.new { [#{arguments}] }) }")
 

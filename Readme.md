@@ -46,7 +46,6 @@ Many of the core Volt features are implemented.  We still have a bit to go befor
 
 1. Model read/write permissions
 2. User accounts, user collection, signup/login templates
-3. Full managed render loop (for fast rendering)
 
 # VOLT guide
 

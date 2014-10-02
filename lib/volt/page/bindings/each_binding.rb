@@ -27,7 +27,7 @@ class EachBinding < BaseBinding
     # Since we're checking things like size, we don't want this to be re-triggered on a
     # size change, so we run without tracking.
     Computation.run_without_tracking do
-      puts "RELOAD:-------------- #{self.inspect}"
+      # puts "RELOAD:-------------- #{self.inspect}"
       # Adjust to the new size
       values = current_values(value)
       @value = values

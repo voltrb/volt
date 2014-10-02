@@ -47,7 +47,7 @@ module Persistors
     def load_data
       # Don't load data from any queried
       if @state == :not_loaded || @state == :dirty
-        puts "Load Data at #{@model.path.inspect} - query: #{@query.inspect} on #{self.inspect}"
+        # puts "Load Data at #{@model.path.inspect} - query: #{@query.inspect} on #{self.inspect}"
         change_state_to :loading
 
         if @query.is_a?(Proc)
@@ -108,7 +108,6 @@ module Persistors
         query ||= {}
       end
 
-      puts "MODEL OPTIONS: #{@model.options.inspect}"
       return Cursor.new([], @model.options.merge(:query => query))
     end
 

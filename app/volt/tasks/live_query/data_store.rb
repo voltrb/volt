@@ -7,8 +7,6 @@ class DataStore
   end
 
   def query(collection, query)
-    puts "QUERY: #{collection} - #{query.inspect}"
-
     query = query.dup
     query.keys.each do |key|
       if key =~ /_id$/
