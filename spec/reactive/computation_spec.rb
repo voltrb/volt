@@ -37,4 +37,27 @@ describe Computation do
     Computation.flush!
     expect(values).to eq([nil, 'one'])
   end
+
+  it 'should support nested watches' do
+    a = ReactiveHash.new
+
+    values = []
+    -> do
+      values << a[0]
+
+      -> do
+        values << a[1]
+      end.watch!
+    end.watch!
+
+    expect(values).to eq([nil,nil])
+
+    a[1] = 'inner'
+    Computation.flush!
+    expect(values).to eq([nil,nil,'inner'])
+
+    a[0] = 'outer'
+    Computation.flush!
+    expect(values).to eq([nil,nil,'inner','outer','inner'])
+  end
 end

@@ -21,5 +21,20 @@ describe ReactiveAccessors do
     expect(inst._name).to eq(nil)
   end
 
+  it 'should trigger changed when assigning a new value' do
+    inst = TestReactiveAccessors.new
+    values = []
 
+    -> { values << inst._name }.watch!
+
+    expect(values).to eq([nil])
+
+    inst._name = 'Ryan'
+    Computation.flush!
+    expect(values).to eq([nil,'Ryan'])
+
+    inst._name = 'Stout'
+    Computation.flush!
+    expect(values).to eq([nil,'Ryan','Stout'])
+  end
 end

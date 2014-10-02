@@ -242,44 +242,18 @@ describe Model do
 
     expect(a._items[0]._name._text).to eq('Name')
   end
-  #
-  # it "should work" do
-  #   store = Model.new
-  #   index = 0
-  #
-  #   a = store._todo_lists
-  #   store._current_todo = a#[index]
-  #
-  #   added_count = 0
-  #   changed_count = 0
-  #   # store._todo_lists.on('added') { added_count += 1 }
-  #   store._current_todo.on('changed') { changed_count += 1 }
-  #   # expect(added_count).to eq(0)
-  #   expect(changed_count).to eq(0)
-  #
-  #   a.cur = 1000
-  #   # store._todo_lists << {_name: 'List 1', _todos: []}
-  #
-  #
-  #   # store._todo_lists[0]._todos << {_name: 'Todo 1'}
-  #
-  #   # expect(added_count).to eq(1)
-  #   # expect(changed_count).to eq(1)
-  # end
-  #
+
+
   # it "should handle a basic todo list with no setup" do
-  #   store = ReactiveValue.new(Model.new)
-  #   params = ReactiveValue.new(Model.new({}, persistor: Persistors::Params))
+  #   store = Model.new
+  #   params = Model.new({}, persistor: Persistors::Params)
   #
   #   a = store._todo_lists
-  #   store._current_todo = store._todo_lists[params._index.or(0).to_i]
+  #   current_todo = -> { store._todo_lists[params._index.or(0).to_i] }
   #
   #   added_count = 0
-  #   changed_count = 0
   #   store._todo_lists.on('added') { added_count += 1 }
-  #   store._current_todo.on('changed') { changed_count += 1 }
   #   expect(added_count).to eq(0)
-  #   expect(changed_count).to eq(0)
   #
   #   store._todo_lists << {_name: 'List 1', _todos: []}
   #   store._todo_lists[0]._todos << {_name: 'Todo 1'}
@@ -304,169 +278,162 @@ describe Model do
   #   expect(count).to eq(1)
   #   expect(passed_count).to eq(0)
   # end
-  #
-  # it "should propigate to different branches" do
-  #   a = ReactiveValue.new(Model.new)
-  #   count = 0
-  #   # a._new_item = {}
-  #   a._new_item._name.on('changed') { count += 1 }
-  #   expect(count).to eq(0)
-  #
-  #   a._new_item._name = 'Testing'
-  #   # expect(count).to eq(1)
-  # end
-  #
-  # describe "paths" do
-  #   it "should store the path" do
-  #     a = Model.new
-  #     expect(a._test.path).to eq([:_test])
-  #     a._test = {_name: 'Yes'}
-  #     expect(a._test.path).to eq([:_test])
-  #
-  #     a._items << {_name: 'Yes'}
-  #     expect(a._items.path).to eq([:_items])
-  #     expect(a._items[0].path).to eq([:_items, :[]])
-  #   end
-  #
-  #   it "should store the paths when assigned" do
-  #     a = Model.new
-  #
-  #     a._items = [{_name: 'Cool'}]
-  #
-  #     expect(a._items.path).to eq([:_items])
-  #     expect(a._items[0].path).to eq([:_items, :[]])
-  #   end
-  #
-  #   it "should handle nested paths" do
-  #     a = Model.new
-  #
-  #     a._items << {_name: 'Cool', _lists: [{_name: 'One'}, {_name: 'Two'}]}
-  #
-  #     expect(a._items[0]._lists.path).to eq([:_items, :[], :_lists])
-  #     expect(a._items[0]._lists[1].path).to eq([:_items, :[], :_lists, :[]])
-  #   end
-  #
-  #   it "should trigger added when added" do
-  #     a = ReactiveValue.new(Model.new)
-  #     count = 0
-  #     b = a._items
-  #
-  #     b.on('added') { count += 1 }
-  #     expect(count).to eq(0)
-  #
-  #     c = b.cur
-  #     c << {_name: 'one'}
-  #
-  #     # TODO: Without fetching this again, this fails.
-  #     c = b.cur
-  #
-  #     c << {_name: 'two'}
-  #
-  #     expect(count).to eq(2)
-  #   end
-  # end
-  #
-  # it "should trigger on false assign" do
-  #   a = ReactiveValue.new(Model.new)
-  #
-  #   count1 = 0
-  #   count2 = 0
-  #
-  #   b = a._complete
-  #   c = a._complete
-  #   b.on('changed') { count1 += 1 }
-  #   c.on('changed') { count2 += 1 }
-  #   expect(count1).to eq(0)
-  #
-  #   a._complete = true
-  #   expect(count1).to eq(1)
-  #   expect(count2).to eq(1)
-  #
-  #   a._complete = false
-  #   expect(count1).to eq(2)
-  #   expect(count2).to eq(2)
-  #
-  # end
-  #
-  # it "should delete from an ArrayModel" do
-  #   array = ArrayModel.new([])
-  #
-  #   array << {_name: 'One'}
-  #   array << {_name: 'Two'}
-  #   array << {_name: 'Three'}
-  #
-  #   expect(array.size).to eq(3)
-  #
-  #   expect(array.index(array[0])).to eq(0)
-  #
-  #   array.delete(array[0])
-  #   expect(array.size).to eq(2)
-  #   expect(array[0]._name).to eq('Two')
-  # end
-  #
-  # it "should compare true" do
-  #   a = Model.new({_name: 'Cool'})
-  #   expect(a == a).to eq(true)
-  # end
-  #
-  # it "should do index" do
-  #   a = [{name: 'One'}, {name: 'Two'}, {name: 'Three'}]
-  #   expect(a.index(a[1])).to eq(1)
-  # end
-  #
-  # it "should convert to a hash, and unwrap all of the way down" do
-  #   a = Model.new
-  #   a._items << {_name: 'Test1', _other: {_time: 'Now'}}
-  #   a._items << {_name: 'Test2', _other: {_time: 'Later'}}
-  #
-  #   item1 = a._items[0].to_h.cur
-  #   expect(item1[:_name]).to eq('Test1')
-  #   expect(item1[:_other][:_time]).to eq('Now')
-  #
-  #   all_items = a._items.to_a.cur
-  #
-  #   a = [
-  #     {:_name => "Test1", :_other => {:_time => "Now"}},
-  #     {:_name => "Test2", :_other => {:_time => "Later"}}
-  #   ]
-  #   expect(all_items).to eq(a)
-  # end
-  #
-  #
-  # describe "model paths" do
-  #   before do
-  #     @model = ReactiveValue.new(Model.new)
-  #   end
-  #
-  #   it "should set the model path" do
-  #     @model._object._name = 'Test'
-  #     expect(@model._object.path.cur).to eq([:_object])
-  #   end
-  #
-  #   it "should set the model path for a sub array" do
-  #     @model._items << {_name: 'Bob'}
-  #     expect(@model._items.path.cur).to eq([:_items])
-  #     expect(@model._items[0].path.cur).to eq([:_items, :[]])
-  #   end
-  #
-  #   it "should set the model path for sub sub arrays" do
-  #     @model._lists << {_name: 'List 1', _items: []}
-  #     expect(@model._lists[0]._items.path.cur).to eq([:_lists, :[], :_items])
-  #   end
-  #
-  #   it "should update the path when added from a model instance to a collection" do
-  #     test_item = TestItem.new
-  #
-  #     @model._items << test_item
-  #     expect(@model._items[0].path).to eq([:_items, :[]])
-  #   end
-  # end
-  #
-  # describe "persistors" do
-  #   it "should setup a new instance of the persistor with self" do
-  #     persistor = double('persistor')
-  #     expect(persistor).to receive(:new)
-  #     @model = Model.new(nil, persistor: persistor)
-  #   end
-  # end
+
+  it "should propigate to different branches" do
+    a = Model.new
+    count = 0
+    -> do
+      count += 1
+      a._new_item._name
+    end.watch!
+    expect(count).to eq(1)
+
+    a._new_item._name = 'Testing'
+    Computation.flush!
+    expect(count).to eq(2)
+  end
+
+  describe "paths" do
+    it "should store the path" do
+      a = Model.new
+      expect(a._test.path).to eq([:_test])
+      a._test = {_name: 'Yes'}
+      expect(a._test.path).to eq([:_test])
+
+      a._items << {_name: 'Yes'}
+      expect(a._items.path).to eq([:_items])
+      expect(a._items[0].path).to eq([:_items, :[]])
+    end
+
+    it "should store the paths when assigned" do
+      a = Model.new
+
+      a._items = [{_name: 'Cool'}]
+
+      expect(a._items.path).to eq([:_items])
+      expect(a._items[0].path).to eq([:_items, :[]])
+    end
+
+    it "should handle nested paths" do
+      a = Model.new
+
+      a._items << {_name: 'Cool', _lists: [{_name: 'One'}, {_name: 'Two'}]}
+
+      expect(a._items[0]._lists.path).to eq([:_items, :[], :_lists])
+      expect(a._items[0]._lists[1].path).to eq([:_items, :[], :_lists, :[]])
+    end
+
+    # it "should trigger added when added" do
+    #   a = Model.new
+    #   count = 0
+    #   b = a._items
+    #
+    #   b.on('added') { count += 1 }
+    #   expect(count).to eq(0)
+    #
+    #   b << {_name: 'one'}
+    #   b << {_name: 'two'}
+    #
+    #   expect(count).to eq(2)
+    # end
+  end
+
+  it "should trigger on false assign" do
+    a = Model.new
+    count = 0
+
+    -> { count += 1 ; a._complete }.watch!
+
+    expect(count).to eq(1)
+
+    a._complete = true
+    Computation.flush!
+    expect(count).to eq(2)
+
+    a._complete = false
+    Computation.flush!
+    expect(count).to eq(3)
+  end
+
+  it "should delete from an ArrayModel" do
+    array = ArrayModel.new([])
+
+    array << {_name: 'One'}
+    array << {_name: 'Two'}
+    array << {_name: 'Three'}
+
+    expect(array.size).to eq(3)
+
+    expect(array.index(array[0])).to eq(0)
+
+    array.delete(array[0])
+    expect(array.size).to eq(2)
+    expect(array[0]._name).to eq('Two')
+  end
+
+  it "should compare true" do
+    a = Model.new({_name: 'Cool'})
+    expect(a == a).to eq(true)
+  end
+
+  it "should do index" do
+    a = [{name: 'One'}, {name: 'Two'}, {name: 'Three'}]
+    expect(a.index(a[1])).to eq(1)
+  end
+
+  it "should convert to a hash, and unwrap all of the way down" do
+    a = Model.new
+    a._items << {_name: 'Test1', _other: {_time: 'Now'}}
+    a._items << {_name: 'Test2', _other: {_time: 'Later'}}
+
+    item1 = a._items[0].to_h
+    expect(item1[:_name]).to eq('Test1')
+    expect(item1[:_other][:_time]).to eq('Now')
+
+    all_items = a._items.to_a
+
+    a = [
+      {:_name => "Test1", :_other => {:_time => "Now"}},
+      {:_name => "Test2", :_other => {:_time => "Later"}}
+    ]
+    expect(all_items).to eq(a)
+  end
+
+
+  describe "model paths" do
+    before do
+      @model = Model.new
+    end
+
+    it "should set the model path" do
+      @model._object._name = 'Test'
+      expect(@model._object.path).to eq([:_object])
+    end
+
+    it "should set the model path for a sub array" do
+      @model._items << {_name: 'Bob'}
+      expect(@model._items.path).to eq([:_items])
+      expect(@model._items[0].path).to eq([:_items, :[]])
+    end
+
+    it "should set the model path for sub sub arrays" do
+      @model._lists << {_name: 'List 1', _items: []}
+      expect(@model._lists[0]._items.path).to eq([:_lists, :[], :_items])
+    end
+
+    it "should update the path when added from a model instance to a collection" do
+      test_item = TestItem.new
+
+      @model._items << test_item
+      expect(@model._items[0].path).to eq([:_items, :[]])
+    end
+  end
+
+  describe "persistors" do
+    it "should setup a new instance of the persistor with self" do
+      persistor = double('persistor')
+      expect(persistor).to receive(:new)
+      @model = Model.new(nil, persistor: persistor)
+    end
+  end
 end

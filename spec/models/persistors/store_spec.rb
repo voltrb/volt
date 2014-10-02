@@ -3,7 +3,6 @@ require 'volt/models'
 
 describe Persistors::Store do
   it "should tell the persistor when the model has changed" do
-    puts "------------"
     persistor = double('persistor')
     persistor_instance = double('persistor instance')
     expect(persistor_instance).to receive(:loaded)
@@ -14,7 +13,6 @@ describe Persistors::Store do
     expect(persistor_instance).to receive(:changed)
 
     @model._attr = 'yes'
-    puts "--------------"
   end
 
   it "should tell the persistor when something is added to an array model" do
