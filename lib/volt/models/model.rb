@@ -156,7 +156,12 @@ class Model
     if @persistor && @persistor.respond_to?(:read_new_model)
       return @persistor.read_new_model(method_name)
     else
-      return new_model(nil, @options.merge(parent: self, path: path + [method_name]))
+      opts = @options.merge(parent: self, path: path + [method_name])
+      if method_name.plural?
+        return new_array_model([], opts)
+      else
+        return new_model(nil, opts)
+      end
     end
   end
 

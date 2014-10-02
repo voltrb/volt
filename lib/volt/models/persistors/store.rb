@@ -27,10 +27,11 @@ module Persistors
         model = @model.new_array_model([], options)
       else
         model = @model.new_model(nil, options)
+
+        @model.attributes ||= {}
+        @model.attributes[method_name] = model
       end
 
-      @model.attributes ||= {}
-      @model.attributes[method_name] = model
 
       return model
     end

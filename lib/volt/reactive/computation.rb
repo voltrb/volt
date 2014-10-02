@@ -2,7 +2,7 @@ class Computation
   @@current = nil
   @@flush_queue = []
   if RUBY_PLATFORM == 'opal'
-    @@in_browser = `!!document && !window._phantom`
+    @@in_browser = `!!document && !window.OPAL_SPEC_PHANTOM`
   else
     @@in_browser = false
   end
