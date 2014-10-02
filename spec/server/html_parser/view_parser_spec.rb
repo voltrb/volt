@@ -170,7 +170,7 @@ describe ViewParser do
         "html" => "      <div id=\"id0\">\n      </div>\n",
         "bindings" => {
           "id0" => [
-            "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, \"class\", Proc.new { ReactiveTemplate.new(__p, __c, \"main/main/main/body/_rv1\") }) }"
+            "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, \"class\", Proc.new { StringTemplateRender.new(__p, __c, \"main/main/main/body/_rv1\") }) }"
           ]
         }
       }

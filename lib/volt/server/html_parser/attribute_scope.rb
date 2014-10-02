@@ -94,12 +94,12 @@ module AttributeScope
       end
     end
 
-    reactive_template_path = add_reactive_template(content)
+    string_template_renderer_path = add_string_template_renderer(content)
 
-    save_binding(id, "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, #{attribute_name.inspect}, Proc.new { ReactiveTemplate.new(__p, __c, #{reactive_template_path.inspect}) }) }")
+    save_binding(id, "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, #{attribute_name.inspect}, Proc.new { StringTemplateRender.new(__p, __c, #{string_template_renderer_path.inspect}) }) }")
   end
 
-  def add_reactive_template(content)
+  def add_string_template_renderer(content)
     path = @path + "/_rv#{@binding_number}"
     new_handler = ViewHandler.new(path, false)
     @binding_number += 1

@@ -12,7 +12,7 @@ require 'volt/page/bindings/template_binding'
 require 'volt/page/bindings/component_binding'
 require 'volt/page/bindings/event_binding'
 require 'volt/page/template_renderer'
-require 'volt/page/reactive_template'
+require 'volt/page/string_template_renderer'
 require 'volt/page/document_events'
 require 'volt/page/sub_context'
 require 'volt/page/targets/dom_target'
@@ -166,7 +166,7 @@ class Page
     TemplateRenderer.new(self, DomTarget.new, main_controller, 'CONTENT', 'main/main/main/body')
 
     # Setup title reactive template
-    @title_template = ReactiveTemplate.new(self, main_controller, "main/main/main/title")
+    @title_template = StringTemplateRender.new(self, main_controller, "main/main/main/title")
 
     # Watch for changes to the title template
     Proc.new do
