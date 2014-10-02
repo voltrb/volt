@@ -1,11 +1,6 @@
 class Computation
   @@current = nil
   @@flush_queue = []
-  if RUBY_PLATFORM == 'opal'
-    @@in_browser = `!!document && !window.OPAL_SPEC_PHANTOM`
-  else
-    @@in_browser = false
-  end
 
 
   def self.current=(val)
@@ -58,7 +53,7 @@ class Computation
         @@flush_queue << self
 
         # If we are in the browser, we queue a flush for the next tick
-        if @@in_browser
+        if Volt.in_browser?
           self.class.queue_flush!
         end
       end

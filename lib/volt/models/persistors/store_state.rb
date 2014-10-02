@@ -29,6 +29,8 @@ module StoreState
       # Trigger each waiting fetch
       @fetch_promises.compact.each {|fp| fp.resolve(@model) }
       @fetch_promises = nil
+
+      stop_listening
     end
   end
 

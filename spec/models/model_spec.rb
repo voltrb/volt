@@ -244,40 +244,17 @@ describe Model do
   end
 
 
-  # it "should handle a basic todo list with no setup" do
-  #   store = Model.new
-  #   params = Model.new({}, persistor: Persistors::Params)
-  #
-  #   a = store._todo_lists
-  #   current_todo = -> { store._todo_lists[params._index.or(0).to_i] }
-  #
-  #   added_count = 0
-  #   store._todo_lists.on('added') { added_count += 1 }
-  #   expect(added_count).to eq(0)
-  #
-  #   store._todo_lists << {_name: 'List 1', _todos: []}
-  #   store._todo_lists[0]._todos << {_name: 'Todo 1'}
-  #
-  #   expect(added_count).to eq(1)
-  #   # expect(changed_count).to eq(1)
-  # end
-  #
-  # it "should not call added too many times" do
-  #   a = ReactiveValue.new(Model.new)
-  #   a._list << 1
-  #   ac = a._current_list = a._list[0]
-  #
-  #   count = 0
-  #   passed_count = 0
-  #   a._list.on('added') { count += 1 }
-  #   a._current_list.on('added') { passed_count += 1 }
-  #   expect(count).to eq(0)
-  #   expect(passed_count).to eq(0)
-  #
-  #   a._list << 2
-  #   expect(count).to eq(1)
-  #   expect(passed_count).to eq(0)
-  # end
+  it "should not call added too many times" do
+    a = Model.new
+    a._list << 1
+
+    count = 0
+    a._list.on('added') { count += 1 }
+    expect(count).to eq(0)
+
+    a._list << 2
+    expect(count).to eq(1)
+  end
 
   it "should propigate to different branches" do
     a = Model.new
@@ -323,19 +300,19 @@ describe Model do
       expect(a._items[0]._lists[1].path).to eq([:_items, :[], :_lists, :[]])
     end
 
-    # it "should trigger added when added" do
-    #   a = Model.new
-    #   count = 0
-    #   b = a._items
-    #
-    #   b.on('added') { count += 1 }
-    #   expect(count).to eq(0)
-    #
-    #   b << {_name: 'one'}
-    #   b << {_name: 'two'}
-    #
-    #   expect(count).to eq(2)
-    # end
+    it "should trigger added when added" do
+      a = Model.new
+      count = 0
+      b = a._items
+
+      b.on('added') { count += 1 }
+      expect(count).to eq(0)
+
+      b << {_name: 'one'}
+      b << {_name: 'two'}
+
+      expect(count).to eq(2)
+    end
   end
 
   it "should trigger on false assign" do

@@ -22,17 +22,26 @@ module Persistors
 
     def event_added(event, first, first_for_event)
       # First event, we load the data.
-      load_data if first
+      if first
+        @has_events = true
+        load_data
+      end
     end
 
     def event_removed(event, last, last_for_event)
       # Remove listener where there are no more events on this model
-      stop_listening if last
+      if last
+        @has_events = false
+        stop_listening
+      end
     end
 
     # Called when an event is removed and we no longer want to keep in
     # sync with the database.
     def stop_listening(stop_watching_query=true)
+      return if @has_events
+      return if @fetch_promises && @fetch_promises.size > 0
+
       @query_computation.stop if @query_computation && stop_watching_query
 
       if @query_listener

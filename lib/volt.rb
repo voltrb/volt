@@ -4,6 +4,12 @@ require 'volt/reactive/computation'
 require 'volt/reactive/dependency'
 
 class Volt
+  if RUBY_PLATFORM == 'opal'
+    @@in_browser = `!!document && !window.OPAL_SPEC_PHANTOM`
+  else
+    @@in_browser = false
+  end
+
   def self.root
     @root ||= File.expand_path(Dir.pwd)
   end
@@ -34,5 +40,9 @@ class Volt
 
   def self.logger=(val)
     @logger = val
+  end
+
+  def self.in_browser?
+    @@in_browser
   end
 end

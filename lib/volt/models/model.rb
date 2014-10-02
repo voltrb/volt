@@ -265,6 +265,7 @@ class Model
 
 
   def save!
+    puts "SAVE"
     # Compute the erros once
     errors = self.errors
 
@@ -282,7 +283,6 @@ class Model
           # TODO: return a promise that resolves if the append works
         else
           # We have a saved model
-          puts "Save to: #{save_to.inspect} - #{save_to.path.inspect} - #{self.attributes.inspect}"
           return save_to.assign_attributes(self.attributes)
         end
       else
@@ -291,6 +291,7 @@ class Model
 
       return Promise.new.resolve({})
     else
+      puts "ERRS"
       # Some errors, mark all fields
       self.class.validations.keys.each do |key|
         mark_field!(key.to_sym)
@@ -311,8 +312,6 @@ class Model
     else
       model_klass = class_at_path(model_path)
     end
-
-    puts "Model Klass: #{model_klass.inspect}"
 
     new_options = options.merge(path: model_path, save_to: self).reject {|k,_| k.to_sym == :persistor }
     model = model_klass.new({}, new_options, :loading)

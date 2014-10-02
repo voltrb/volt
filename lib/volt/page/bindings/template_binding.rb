@@ -96,8 +96,6 @@ class TemplateBinding < BaseBinding
 
   def update(path, section_or_arguments=nil, options={})
     Computation.run_without_tracking do
-      @grouped_controller.clear if @grouped_controller
-
       @options = options
 
       # A blank path needs to load a missing template, otherwise it tries to load
@@ -119,6 +117,8 @@ class TemplateBinding < BaseBinding
       # when displaying a :Title and a :Body), this instance tracks those.
       if @options && (controller_group = @options[:controller_group])
         @grouped_controller = GroupedControllers.new(controller_group)
+      else
+        clear_grouped_controller
       end
 
       full_path, controller_path = path_for_template(path, section)
@@ -126,6 +126,24 @@ class TemplateBinding < BaseBinding
       @current_template.remove if @current_template
 
       render_template(full_path, controller_path)
+
+      if Volt.in_browser?
+        # In the browser, we want to keep a grouped controller around during a single run
+        # of the event loop.  To make that happen, we clear it on the next tick.
+        `setImmediate(function() {`
+          clear_grouped_controller
+        `})`
+      else
+        # For the backend, clear it immediately
+        clear_grouped_controller
+      end
+    end
+  end
+
+  def clear_grouped_controller
+    if @grouped_controller
+      @grouped_controller.clear
+      @grouped_controller = nil
     end
   end
 
@@ -142,8 +160,11 @@ class TemplateBinding < BaseBinding
     # Fetch grouped controllers if we're grouping
     @controller = @grouped_controller.get if @grouped_controller
 
-    # Otherwise, make a new controller
-    unless @controller
+    if @controller
+      # Track that we're using the group controller
+      @grouped_controller.inc if @grouped_controller
+    else
+      # Otherwise, make a new controller
       controller_class, action = get_controller(controller_path)
 
       if controller_class
@@ -154,7 +175,10 @@ class TemplateBinding < BaseBinding
       end
 
       # Trigger the action
-      @controller.send(action) if @controller.respond_to?(action)
+      if action && @controller.respond_to?(action)
+        # puts "Trigger #{controller_class.inspect} - #{action.inspect} from #{self.inspect}"
+        @controller.send(action)
+      end
 
       # Track the grouped controller
       @grouped_controller.set(@controller) if @grouped_controller
@@ -180,7 +204,7 @@ class TemplateBinding < BaseBinding
   end
 
   def remove
-    @grouped_controller.clear if @grouped_controller
+    clear_grouped_controller
 
     if @current_template
       # Remove the template if one has been rendered, when the template binding is
