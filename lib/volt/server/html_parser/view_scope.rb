@@ -77,22 +77,6 @@ class ViewScope
     @binding_number += 1
   end
 
-  # Returns ruby code to fetch the parent. (by removing the last fetch)
-  # TODO: Probably want to do this with AST transforms with the parser/unparser gems
-  def parent_fetcher(getter)
-    parent = getter.strip.gsub(/[.][^.]+$/, '')
-
-    if parent.blank? || !getter.index('.')
-      parent = 'self'
-    end
-
-    return parent
-  end
-
-  def last_method_name(getter)
-    return getter.strip[/[^.]+$/]
-  end
-
   def add_component(tag_name, attributes, unary)
     component_name = tag_name[1..-1].gsub(':', '/')
 
@@ -119,6 +103,8 @@ class ViewScope
           parent = parent_fetcher(getter)
 
           data_hash << "#{(name + "_parent").inspect} => Proc.new { #{parent} }"
+
+          # Add a _last_method property.  This is useful
           data_hash << "#{(name + "_last_method").inspect} => #{last_method_name(getter).inspect}"
         end
       else
