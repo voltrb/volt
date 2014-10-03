@@ -88,6 +88,10 @@ class ModelController
     $page.params
   end
 
+  def local_store
+    $page.local_store
+  end
+
   def url
     $page.url
   end

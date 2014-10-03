@@ -104,6 +104,43 @@ if ENV['BROWSER']
         expect(find('#textareaName3')).to have_content('Update everywhere')
       end
 
+      it 'should update local_store bindings' do
+        visit '/'
+
+        click_link 'Bindings'
+
+        # Fill in one field and see if it updates the rest
+        fill_in('localstoreName1', :with => 'Page bindings')
+        expect(find('#localstoreName1').value).to eq('Page bindings')
+        expect(find('#localstoreName2').value).to eq('Page bindings')
+        expect(find('#localstoreName3')).to have_content('Page bindings')
+
+        fill_in('localstoreName2', :with => 'Update everywhere')
+        expect(find('#localstoreName1').value).to eq('Update everywhere')
+        expect(find('#localstoreName2').value).to eq('Update everywhere')
+        expect(find('#localstoreName3')).to have_content('Update everywhere')
+      end
+
+      # it 'should update local_store bindings' do
+      #   visit '/'
+      #
+      #   click_link 'Bindings'
+      #
+      #   within '#pageSelect1' do
+      #     find("option[value='two']").click
+      #   end
+      #
+      #   # Fill in one field and see if it updates the rest
+      #   expect(find('#pageSelect1').value).to eq('two')
+      #   expect(find('#pageSelect2').value).to eq('two')
+      #   expect(find('#pageSelect3')).to have_content('two')
+      #
+      #   # Fill in one field and see if it updates the rest
+      #   fill_in('pageSelect2', :with => 'three')
+      #   expect(find('#pageSelect1').value).to eq('three')
+      #   expect(find('#pageSelect2').value).to eq('three')
+      #   expect(find('#pageSelect3')).to have_content('three')
+      # end
     end
 
     describe "check boxes" do

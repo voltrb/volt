@@ -1,6 +1,5 @@
 require 'volt/extra_core/log'
 require 'volt/extra_core/array'
-require 'volt/extra_core/hash'
 require 'volt/extra_core/object'
 require 'volt/extra_core/blank'
 require 'volt/extra_core/stringify_keys'

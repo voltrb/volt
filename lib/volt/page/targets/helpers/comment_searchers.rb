@@ -1,12 +1,12 @@
 module CommentSearchers
   if RUBY_PLATFORM == 'opal'
-    PHANTOM = `!!window._phantom`
+    NO_XPATH = `!!window._phantom || !document.evaluate`
   else
-    PHANTOM = false
+    NO_XPATH = false
   end
 
   def find_by_comment(text, in_node=`document`)
-    if PHANTOM
+    if NO_XPATH
       return find_by_comment_without_xml(text, in_node)
     else
       node = nil

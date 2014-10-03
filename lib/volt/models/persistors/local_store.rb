@@ -57,7 +57,7 @@ module Persistors
     def save_all
       return if @loading_data
 
-      json_data = JSON.dump(@model.to_h.deep_cur)
+      json_data = JSON.dump(@model.to_h)
 
       LocalStorage['volt-store'] = json_data
     end

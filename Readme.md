@@ -71,8 +71,8 @@ You can access the Volt console with:
 
 1. [Getting Help](#getting-help)
 2. [Rendering](#rendering)
-  1. [States and Computations](#states-and-computations)
-  1. [Computations](#states-and-computations)
+  1. [States and Computations](#state-and-computations)
+  1. [Computations](#computations)
 3. [Views](#views)
   1. [Bindings](#bindings)
     1. [Content Binding](#content-binding)

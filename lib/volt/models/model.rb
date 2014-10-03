@@ -259,11 +259,6 @@ class Model
     return str
   end
 
-  def deep_cur
-    attributes
-  end
-
-
   def save!
     # Compute the erros once
     errors = self.errors

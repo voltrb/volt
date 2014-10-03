@@ -25,6 +25,12 @@
       <td><input type="text" id="routesName2" value="{params._route_test}"></td>
       <td id="routesName3">{params._route_test}</td>
     </tr>
+    <tr>
+      <td>Local Store</td>
+      <td><input type="text" id="localstoreName1" value="{local_store._name}"></td>
+      <td><input type="text" id="localstoreName2" value="{local_store._name}"></td>
+      <td id="localstoreName3">{local_store._name}</td>
+    </tr>
   </table>
 
   <h2>Checkbox</h2>
@@ -60,6 +66,25 @@
       <td></td>
     </tr>
   </table>
+
+  <h2>Select</h2>
+  <table class="table">
+    <tr>
+      <td>Page</td>
+      <td>
+        <select id="pageSelect1" value="{page._select}">
+          <option value="one">One</option>
+          <option value="two">Two</option>
+          <option value="three">Three</option>
+        </select>
+      </td>
+      <td>
+        <input type="text" id="pageSelect2" value="{page._select}" />
+      </td>
+      <td id="pageSelect3">{page._select}</td>
+    </tr>
+  </table>
+
 
   <h2>Textarea</h2>
   <table class="table">
