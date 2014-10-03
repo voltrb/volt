@@ -265,7 +265,6 @@ class Model
 
 
   def save!
-    puts "SAVE"
     # Compute the erros once
     errors = self.errors
 
@@ -291,7 +290,6 @@ class Model
 
       return Promise.new.resolve({})
     else
-      puts "ERRS"
       # Some errors, mark all fields
       self.class.validations.keys.each do |key|
         mark_field!(key.to_sym)

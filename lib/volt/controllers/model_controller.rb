@@ -29,7 +29,14 @@ class ModelController
   end
 
   def model
-    self.current_model
+    model = self.current_model
+
+    # If the model is a proc, call it now
+    if model.is_a?(Proc)
+      model = model.call
+    end
+
+    return model
   end
 
   def self.new(*args, &block)
@@ -46,7 +53,13 @@ class ModelController
 
   def initialize(*args)
     if args[0]
+      # Assign the first passed in argument to data
       self.data = args[0]
+
+      # If a model attribute is passed in, we assign it directly
+      if data.respond_to?(:model)
+        self.model = data.locals[:model]
+      end
     end
   end
 
@@ -92,6 +105,6 @@ class ModelController
   end
 
   def method_missing(method_name, *args, &block)
-    return current_model.send(method_name, *args, &block)
+    return model.send(method_name, *args, &block)
   end
 end

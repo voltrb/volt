@@ -21,7 +21,6 @@ See some demo videos here:
 
 Check out demo apps:
  - https://github.com/voltrb/todos3
- - https://github.com/voltrb/blog
  - https://github.com/voltrb/contactsdemo
 
 

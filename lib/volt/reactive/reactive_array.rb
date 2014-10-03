@@ -98,7 +98,14 @@ class ReactiveArray# < Array
 
 
   def delete(val)
-    self.delete_at(@array.index(val))
+    index = @array.index(val)
+    if index
+      self.delete_at(index)
+    else
+      # Sometimes the model isn't loaded at the right state yet, so we
+      # just remove it from the persistor
+      @persistor.removed(val) if @persistor
+    end
   end
 
   def clear

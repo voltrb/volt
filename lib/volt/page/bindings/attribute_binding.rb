@@ -19,7 +19,6 @@ class AttributeBinding < BaseBinding
       begin
         update(@context.instance_eval(&@getter))
       rescue => e
-        puts "New Attribute Binding Error: #{self.inspect}"
         Volt.logger.error("AttributeBinding Error: #{e.inspect}")
         update('')
       end

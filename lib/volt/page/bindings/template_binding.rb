@@ -96,6 +96,10 @@ class TemplateBinding < BaseBinding
 
   def update(path, section_or_arguments=nil, options={})
     Computation.run_without_tracking do
+      # Remove existing template and call _removed
+      controller_send(:"#{@action}_removed") if @action && @controller
+      @current_template.remove if @current_template
+
       @options = options
 
       # A blank path needs to load a missing template, otherwise it tries to load
@@ -122,21 +126,24 @@ class TemplateBinding < BaseBinding
       end
 
       full_path, controller_path = path_for_template(path, section)
-
-      @current_template.remove if @current_template
-
       render_template(full_path, controller_path)
 
-      if Volt.in_browser?
-        # In the browser, we want to keep a grouped controller around during a single run
-        # of the event loop.  To make that happen, we clear it on the next tick.
-        `setImmediate(function() {`
-          clear_grouped_controller
-        `})`
-      else
-        # For the backend, clear it immediately
+      queue_clear_grouped_controller
+    end
+  end
+
+  # On the next tick, we clear the grouped controller so that any changes to template paths
+  # will create a new controller and trigger the action.
+  def queue_clear_grouped_controller
+    if Volt.in_browser?
+      # In the browser, we want to keep a grouped controller around during a single run
+      # of the event loop.  To make that happen, we clear it on the next tick.
+      `setImmediate(function() {`
         clear_grouped_controller
-      end
+      `})`
+    else
+      # For the backend, clear it immediately
+      clear_grouped_controller
     end
   end
 
@@ -160,12 +167,15 @@ class TemplateBinding < BaseBinding
     # Fetch grouped controllers if we're grouping
     @controller = @grouped_controller.get if @grouped_controller
 
+    # The action to be called and rendered
+    @action = nil
+
     if @controller
       # Track that we're using the group controller
       @grouped_controller.inc if @grouped_controller
     else
       # Otherwise, make a new controller
-      controller_class, action = get_controller(controller_path)
+      controller_class, @action = get_controller(controller_path)
 
       if controller_class
         # Setup the controller
@@ -175,10 +185,7 @@ class TemplateBinding < BaseBinding
       end
 
       # Trigger the action
-      if action && @controller.respond_to?(action)
-        # puts "Trigger #{controller_class.inspect} - #{action.inspect} from #{self.inspect}"
-        @controller.send(action)
-      end
+      controller_send(@action) if @action
 
       # Track the grouped controller
       @grouped_controller.set(@controller) if @grouped_controller
@@ -197,13 +204,14 @@ class TemplateBinding < BaseBinding
         @controller.section = @current_template.dom_section
       end
 
-      if @controller.respond_to?(:dom_ready)
-        @controller.dom_ready
+      if @action
+        controller_send(:"#{@action}_ready")
       end
     end
   end
 
   def remove
+    puts "remove--#{@action}"
     clear_grouped_controller
 
     if @current_template
@@ -215,16 +223,19 @@ class TemplateBinding < BaseBinding
     super
 
     if @controller
-      # Let the controller know we removed
-      if @controller.respond_to?(:dom_removed)
-        @controller.dom_removed
-      end
+      controller_send(:"#{@action}_removed") if @action
 
       @controller = nil
     end
   end
 
   private
+    # Sends the action to the controller if it exists
+    def controller_send(action_name)
+      if @controller.respond_to?(action_name)
+        @controller.send(action_name)
+      end
+    end
 
     # Fetch the controller class
     def get_controller(controller_path)
