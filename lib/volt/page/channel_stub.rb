@@ -1,14 +1,14 @@
 # Acts the same as the Channel class on the front-end, but calls
 # directly instead of using sockjs.
 
-require 'volt/reactive/events'
 require 'volt/tasks/dispatcher'
+require 'volt/reactive/eventable'
 
 # Behaves the same as the Channel class, only the Channel class uses
 # sockjs to pass messages to the backend.  ChannelStub, simply passes
 # them directly to SocketConnectionHandlerStub.
 class ChannelStub
-  include ReactiveTags
+  include Eventable
 
   attr_reader :state, :error, :reconnect_interval
 
@@ -22,12 +22,9 @@ class ChannelStub
   end
 
   def message_received(*message)
-    trigger!('message', nil, *message)
+    trigger!('message', *message)
   end
 
-  tag_method(:send_message) do
-    destructive!
-  end
   def send_message(message)
     SocketConnectionHandlerStub.new(self).process_message(message)
   end

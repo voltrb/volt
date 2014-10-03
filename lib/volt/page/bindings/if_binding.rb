@@ -13,13 +13,7 @@ class IfBinding < BaseBinding
       getter, template_name = branch
 
       if getter.present?
-        # Lookup the value
-        value = value_from_getter(getter)
-
-        if value.reactive?
-          # Trigger change when value changes
-          @listeners << value.on('changed') { update }
-        end
+        value = getter
       else
         # A nil value means this is an unconditional else branch, it
         # should always be true
@@ -29,7 +23,7 @@ class IfBinding < BaseBinding
       @branches << [value, template_name]
     end
 
-    update
+    @computation = -> { update }.watch!
   end
 
   def update
@@ -38,10 +32,19 @@ class IfBinding < BaseBinding
     @branches.each do |branch|
       value, template_name = branch
 
-      current_value = value.cur
+      if value.is_a?(Proc)
+        begin
+          current_value = @context.instance_eval(&value)
+        rescue => e
+          Volt.logger.error("IfBinding:#{object_id} error: #{e.inspect}\n" + `value.toString()`)
+          current_value = false
+        end
+      else
+        current_value = value
+      end
 
       # TODO: A bug in opal requires us to check == true
-      if current_value.true? == true && !current_value.is_a?(Exception)
+      if current_value && !current_value.nil? && !current_value.is_a?(Exception)
         # This branch is currently true
         true_template = template_name
         break
@@ -64,8 +67,8 @@ class IfBinding < BaseBinding
   end
 
   def remove
-    # Remove all listeners on any reactive values
-    @listeners.each(&:remove)
+    @computation.stop if @computation
+    @computation = nil
 
     @template.remove if @template
 

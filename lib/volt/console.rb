@@ -1,3 +1,23 @@
+require 'pry'
+
+class Pry
+  # To make the console more useful, we make it so we flush the event registry
+  # after each line.  This makes it so events are triggered after each line.
+  # To accomplish this we monkey-patch pry.
+  def rep(target=TOPLEVEL_BINDING)
+    target = Pry.binding_for(target)
+    result = re(target)
+
+    Pry.critical_section do
+      show_result(result)
+    end
+
+    # Automatically flush after each line
+    Computation.flush!
+  end
+end
+
+
 class Console
   def self.start
     require 'pry'

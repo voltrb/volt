@@ -18,30 +18,9 @@ Data in volt is reactive by default.  Changes to the data is automatically updat
 A lot of modern web development is moving data between the front-end to the back-end.  Volt eliminates all of that work.  Model's on the front-end automatically sync to the back-end, and vice versa.  Validations are run on both sides for security.  Models on the front-end are automatically updated whenever they are changed anywhere else (another browser, a background task, etc..)
 
 
-## Speed
-
-Volt's reactive objects contain extra data about how to propigate events.  Things that don't need to be updated when data changes aren't.  Volt uses an intellegent managed draw cycle to do efficient DOM updates.  Only the changed part of the page is re-rendered.
-
-
-
-
 # Why Volt is Awesome
 
-- only the relevant DOM is updated.  There is no match and patch algorithm to update from strings like other frameworks, all associations are tracked through our reactive values, so we know exactly what needs to be updated without the need to generate any extra HTML.  This has a few advantages, namely that things like input fields are retained, so any properties (focus, tab position, etc...) are also retained.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+- only the relevant DOM is updated.  There is no match and patch algorithm to update from strings like other frameworks, all associations are tracked through our reactive core, so we know exactly what needs to be updated without the need to generate any extra HTML.  This has a few advantages, namely that things like input fields are retained, so any properties (focus, tab position, etc...) are also retained.
 
 
 # Why Ruby

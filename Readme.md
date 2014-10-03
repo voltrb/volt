@@ -8,20 +8,20 @@
 
 # Volt
 
-Volt is a Ruby web framework where your ruby code runs on both the server and the client (via [opal](https://github.com/opal/opal)).  The DOM automatically update as the user interacts with the page. Page state can be stored in the URL. If the user hits a URL directly, the HTML will first be rendered on the server for faster load times and easier indexing by search engines.
+Volt is a Ruby web framework where your ruby code runs on both the server and the client (via [opal](https://github.com/opal/opal)).  The DOM automatically updates as the user interacts with the page. Page state can be stored in the URL. If the user hits a URL directly, the HTML will first be rendered on the server for faster load times and easier indexing by search engines.
 
 Instead of syncing data between the client and server via HTTP, Volt uses a persistent connection between the client and server. When data is updated on one client, it is updated in the database and any other listening clients (with almost no setup code needed).
 
-Pages HTML is written in a handlebars-like template language.  Volt uses data flow/reactive programming to automatically and intelligently propagate changes to the DOM (or anything other code wanting to know when a value updates).  When something in the DOM changes, Volt intelligently updates only the nodes that need to be changed.
+Pages HTML is written in a handlebars-like template language.  Volt uses data flow/reactive programming to automatically and intelligently propagate changes to the DOM (or any other code wanting to know when a value updates).  When something in the DOM changes, Volt intelligently updates only the nodes that need to be changed.
 
 See some demo videos here:
+** Note: These videos are outdated, new videos coming tomorrow.
  - [Volt Todos Example](https://www.youtube.com/watch?v=6ZIvs0oKnYs)
  - [Build a Blog with Volt](https://www.youtube.com/watch?v=c478sMlhx1o)
  - [Reactive Values in Volt](https://www.youtube.com/watch?v=yZIQ-2irY-Q)
 
 Check out demo apps:
  - https://github.com/voltrb/todos3
- - https://github.com/voltrb/blog
  - https://github.com/voltrb/contactsdemo
 
 
@@ -44,10 +44,8 @@ Volt has the following goals:
 
 Many of the core Volt features are implemented.  We still have a bit to go before 1.0, most of it involving models.
 
-1. Reactive model queries
-2. Reactive Enumerators with Blocks (.map .count, etc…)
-3. Full managed render loop (for fast rendering)
-4. Fix N+1 issue with some reactive values (I know how to fix it, just haven't gotten around to doing it)
+1. Model read/write permissions
+2. User accounts, user collection, signup/login templates
 
 # VOLT guide
 
@@ -73,8 +71,8 @@ You can access the Volt console with:
 
 1. [Getting Help](#getting-help)
 2. [Rendering](#rendering)
-  1. [Reactive Values](#reactive-values)
-    1. [ReactiveValue Gotchas](#reactivevalue-gotchas)
+  1. [States and Computations](#states-and-computations)
+  1. [Computations](#states-and-computations)
 3. [Views](#views)
   1. [Bindings](#bindings)
     1. [Content Binding](#content-binding)
@@ -84,9 +82,8 @@ You can access the Volt console with:
     5. [Escaping](#escaping)
 4. [Models](#models)
   1. [Provided Collections](#provided-collections)
-  2. [Reactive Models](#reactive-models)
-  3. [Model Events](#model-events)
-  4. [Automatic Model Conversion](#automatic-model-conversion)
+  2. [ArrayModel Events](#arraymodel-events)
+  3. [Automatic Model Conversion](#automatic-model-conversion)
 5. [Controllers](#controllers)
 6. [Tasks](#tasks)
 7. [Components](#components)
@@ -100,7 +97,8 @@ You can access the Volt console with:
 9. [Routes](#routes)
   1. [Routes file](#routes-file)
 10. [Testing](#testing)
-
+11. [Volt Helpers](#volt-helpers)
+  1. [Logging](#logging)
 
 # Getting Help
 
@@ -109,7 +107,7 @@ Volt is still a work in progress, but early feedback is appreciated.  Use the fo
 - **If you need help**: post on [stackoverflow.com](http://www.stackoverflow.com). Be sure to tag your question with `voltrb`.
 - **If you found a bug**: post on [github issues](https://github.com/voltrb/volt/issues)
 - **If you have an idea or need a feature**: post on [github issues](https://github.com/voltrb/volt/issues)
-- **If you want to discuss Volt**: use #voltrb on freenode.
+- **If you want to discuss Volt**: [chat on gitter](https://gitter.im/voltrb/volt), someone from the volt team is usually online and happy to help with anything.
 
 
 # Rendering
@@ -119,136 +117,75 @@ When a user interacts with a web page, typically we want to do two things:
 1. Change application state
 2. Update the DOM
 
-For example when a user clicks to add a new todo item to a todo list, we might create a JavaScript object to represent the todo item, then add an item to the list's DOM.  A lot of work needs to be done to make sure that the JavaScript object and the DOM always stay in sync.
+For example when a user clicks to add a new todo item to a todo list, we might create an object to represent the todo item, then add an item to the list's DOM.  A lot of work needs to be done to make sure that the object and the DOM always stay in sync.
 
-The idea of "reactive programming" has been used to simplify maintaining the DOM.  The idea is instead of having event handlers that manage a model (or JavaScript object) and manage the DOM, we have event handlers that manage reactive data models.  We describe our DOM layer in a declarative way so that it automatically knows how to render our data models.
+The idea of "reactive programming" can be used to simplify maintaining the DOM.  Instead of having event handlers that manage a model and manage the DOM, we have event handlers that manage reactive data models.  We describe our DOM layer in a declarative way so that it automatically knows how to render our data models.
 
-## Reactive Values
+## State and Computations
 
-To build bindings, Volt provides the ReactiveValue class.  This wraps any object in a reactive interface.  To create a ReactiveValue, simply pass the object you want to wrap as the first argument to new.
+Web applications center around maintaining state.  Many events can trigger changes to a state.  Page interaction like entering text into form elements, clicking a button, links, scrolling, etc.. can all change the state of the app.  In the past, each page interaction event would manually change any state stored on a page.
 
+To simplify managing application state, all application state is kept in models that can optionally be persisted in different locations.  By centralizing the application state, we reduce the amount of complex code needed to update a page.  We can then build our page's html declaratively.  The relationship to the page's models' are bound using function and method calls.
+
+We want our DOM to automatically update when our model data changes.  To make this happen, Volt lets you "watch" any method/proc call and have it get called again when data accessed by the method/proc call changes.
+
+### Computations
+
+Lets take a look at this in practice.  We'll use the ```page``` collection as an example.  (You'll see more on collections later)
+
+First, we setup a computation watch.  Computations are built by calling .watch! on a Proc.  Here we'll use the ruby 1.9 proc shorthand syntax ```-> { ... }``` It will run once, then run again each time the data in page._name changes.
 ```ruby
-    a = ReactiveValue.new("my object")
-    # => @"my object"
+    page._name = 'Ryan'
+    -> { puts page._name }.watch!
+    # => Ryan
+    page._name = 'Jimmy'
+    # => Jimmy
 ```
 
-When `#inspect` is called on a ReactiveValue (like in the console), an '@' is placed in front of the value's inspect string, so you know it's reactive.
-
-When you call a method on a ReactiveValue, you get back a new reactive value that depends on the previous one.  It remembers how it was created and you can call `#cur` on it any time to get its current value, which will be computed based off of the first reactive value.  (Keep in mind below that + is a method call, the same as `a.+(b)` in ruby.)
+Each time page._name is assigned to a new value, the computation is run again.  A re-run of the computation will be triggered when any data accessed in the previous run is changed.  This lets us access data through methods and still have watches re-triggered.
 
 ```ruby
-    a = ReactiveValue.new(1)
-    a.reactive?
-    # => true
+    page._first = 'Ryan'
+    page._last = 'Stout'
 
-    a.cur
-    # => 1
+    def lookup_name
+      return "#{page._first} #{page._last}"
+    end
 
-    b = a + 5
-    b.reactive?
-    # => true
+    -> do
+      puts lookup_name
+    end.watch!
+    # => Ryan Stout
 
-    b.cur
-    # => 6
+    page._first = 'Jimmy'
+    # => Jimmy Stout
 
-    a.cur = 2
-    b.cur
-    # => 7
+    page._last = 'Jones'
+    # => Jimmy Jones
 ```
 
-This provides the backbone for reactive programming.  We setup computation/flow graphs instead of doing an actual calculation.  Calling `#cur` (or `#inspect`, `#to_s`, etc..) runs the computation and returns the current value at that time, based on all of its dependencies.
-
-ReactiveValues also let you setup listeners and trigger events:
+When you call .watch! the return value is a Computation object.  In the event you no longer want to receive updates, you can call .stop on the computation.
 
 ```ruby
-    a = ReactiveValue.new(0)
-    a.on('changed') { puts "A changed" }
-    a.trigger!('changed')
-    # => A Changed
+    page._name = 'Ryan'
+
+    comp = -> { puts page._name }.watch!
+    # => Ryan
+
+    page._name = 'Jimmy'
+    # => Jimmy
+
+    comp.stop
+
+    page._name = 'Jo'
+    # (nothing)
 ```
 
-These events propagate to any reactive values created off of a reactive value:
+## Dependencies
 
-```ruby
-    a = ReactiveValue.new(1)
-    b = a + 5
-    b.on('changed') { puts "B changed" }
+TODO: Explain Dependencies
 
-    a.trigger!('changed')
-    # => B changed
-```
-
-This event flow lets us know when an object has changed, so we can update everything that depended on that object.
-
-Lastly, we can also pass in other reactive values as arguments to methods on a reactive value.  The dependencies will be tracked for both and events will propagate down from both.  (Also, note that calling `#cur=` to update the current value triggers a "changed" event.)
-
-```ruby
-    a = ReactiveValue.new(1)
-    b = ReactiveValue.new(2)
-    c = a + b
-
-    a.on('changed') { puts "A changed" }
-    b.on('changed') { puts "B changed" }
-    c.on('changed') { puts "C changed" }
-
-    a.cur = 3
-    # => A changed
-    # => C changed
-
-    b.cur = 5
-    # => B changed
-    # => C changed
-```
-
-### ReactiveValue Gotchas
-
-There are a few simple things to keep in mind with ReactiveValues.  In order to make them mostly compatible with other Ruby objects, two methods do not return another ReactiveValue.
-
-    to_s and inspect
-
-If you want these to be used reactively, see the section on [with](#with).
-
-Also, due to a small limitation in ruby, ReactiveValues always are truthy.  See the [truthy checks](#truthy-checks-true-false-or-and-and) section on how to check for truth.
-
-When passing something that may contain reactive values to a JS function, you can call ```#deep_cur``` on any object to get back a copy that will have all reactive values turned into their current value.
-
-### Current Status
-
-NOTE: currently ReactiveValues are not complete.  At the moment, they do not handle methods that are passed blocks (or procs, lambdas).  This is planned, but not complete.  At the moment you can use [with](#with) to accomplish similar things.
-
-### Truthy Checks: .true?, .false?, .or, and .and
-
-Because a method on a reactive value always returns another reactive value, and because only nil and false are false in ruby, we need a way to check if a ReactiveValue is truthy in our code.  The easiest way to do this is by calling .true? on it.  It will return a non-wrapped boolean.  .nil? and .false? do as you would expect.
-
-One common place we use a truthy check is in setting up default values with || (logical or)  Volt provides a convenient method that does the same thing `#or`, but works with ReactiveValues.
-
-Instead of
-
-```ruby
-    a || b
-```
-
-Simply use:
-
-```ruby
-    a.or(b)
-```
-
-`#and` works the same way as &&.  #and and #or let you maintain the reactivity all of the way through.
-
-
-### With
-
-Normally when you want to have a value that depends on another value, but transforms it somehow, you simply call your transform method on the ReactiveValue.  However sometimes the transform is not directly on the ReactiveValues object.
-
-You can call `#with` on any ReactiveValue.  `#with` will return a new ReactiveValue that depends on the current ReactiveValue.  `#with` takes a block, the first argument to the block will be the cur value of the ReactiveValue you called `#with` on.  Any additional arguments to `#with` will be passed in after the first one.  If you pass another ReactiveValue as an argument to `#with`, the returned ReactiveValue will depend on the argument ReactiveValue as well, and the block will receive the arguments cur value.
-
-```ruby
-    a = ReactiveValue.new(5)
-    b = a.with {|v| v + 10 }
-    b.cur
-    # => 15
-```
+As a Volt user, you rarely need to use Comptuations and Dependencies directly.  Instead you usually just interact with models and bindings.  Computations are used under the hood, and having a full understanding of what's going on is useful, but not required.
 
 # Views
 
@@ -354,7 +291,28 @@ In the example above, if _name changes, the field will update, and if the field 
 
 If the value of a checked attribute is true, the checkbox will be shown checked. If it's checked or unchecked, the value will be updated to true or false.
 
--- TODO: select boxes
+Radio buttons bind to a checked state as well, except instead of setting the value to true or false, they set it to a supplied field value.
+
+```html
+    <input type="radio" checked="{_radio}" value="one" />
+    <input type="radio" checked="{_radio}" value="two" />
+```
+
+When a radio button is checked, whatever checked is bound to is set to the field's value.  When the checked binding value is changed, any radio buttons where the binding's value matches the fields value are checked.  NOTE: This seems to be the most useful behaviour for radio buttons.
+
+Select boxes can be bound to a value (while not technically a property, this is another convient behavior we add).
+
+```html
+  <select value="{_rating}">
+    <option value="1">*</option>
+    <option value="2">**</option>
+    <option value="3">***</option>
+    <option value="4">****</option>
+    <option value="5">*****</option>
+  </select>
+```
+
+When the selected option of the select above changes, ```_rating``` is changed to match.  When ```_rating``` is changed, the selected value is changed to the first option with a matching value.  If no matching values are found, the select box is unselected.
 
 If you have a controller at app/home/controller/index_controller.rb, and a view at app/home/views/index/index.html, all methods called are called on the controller.
 
@@ -406,35 +364,64 @@ You can also append to a model if it's not defined yet.  In Volt models, plural 
 
 ArrayModels can be appended to and accessed just like regular arrays.
 
+
+### Nil Models
+
+As a convience, calling something like ```page._info``` returns what's called a NilModel (assuming it isn't already initialized).  NilModels are place holders for future possible Models.  NilModels allow us to bind deeply nested values without initializing any intermediate values.
+
+```ruby
+    page._info
+    # => <Model:70260787225140 nil>
+
+    page._info._name
+    # => <Model:70260795424200 nil>
+
+    page._info._name = 'Ryan'
+    # => <Model:70161625994820 {:_info=><Model:70161633901800 {:_name=>"Ryan"}>}>
+```
+
+One gotchya with NilModels is that they are a truthy value (since only nil and false are falsy in ruby).  To make things easier, calling ```.nil?``` on a NilModel will return true.
+
+One common place we use a truthy check is in setting up default values with || (logical or)  Volt provides a convenient method that does the same thing `#or`, but works with NilModels.
+
+Instead of
+
+```ruby
+    a || b
+```
+
+Simply use:
+
+```ruby
+    a.or(b)
+```
+
+`#and` works the same way as &&.  #and and #or let you easily deal with default values involving NilModels.
+
+-- TODO: Document .true? / .false?
+
+
 ## Provided Collections
 
 Above, I mentioned that Volt comes with many default collection models accessible from a controller.  Each stores in a different location.
 
-| Name      | Storage Location                                                          |
-|-----------|---------------------------------------------------------------------------|
-| page      | page provides a temporary store that only lasts for the life of the page. |
-| store     | store syncs the data to the backend database and provides query methods.  |
-| session   | values will be stored in a session cookie.                                |
-| params    | values will be stored in the params and URL.  Routes can be setup to change how params are shown in the URL.  (See routes for more info) |
-| flash     | any strings assigned will be shown at the top of the page and cleared as the user navigates between pages. |
-| controller| a model for the current controller                                        |
+| Name        | Storage Location                                                          |
+|-------------|---------------------------------------------------------------------------|
+| page        | page provides a temporary store that only lasts for the life of the page. |
+| store       | store syncs the data to the backend database and provides query methods.  |
+| local_store | values will be stored in the local_store                                  |
+| params      | values will be stored in the params and URL.  Routes can be setup to change how params are shown in the URL.  (See routes for more info) |
+| flash       | any strings assigned will be shown at the top of the page and cleared as the user navigates between pages. |
+| controller  | a model for the current controller                                        |
 
 **more storage locations are planned**
 
-## Reactive Models
+## ArrayModel Events
 
-Because all models provided by Volt are wrapped in a ReactiveValue, you can register listeners on them and be updated when values change.  You can also call methods on their values and get updates when the sources change.  Bindings also setup listeners.  Models should be the main place you store all data in Volt.  While you can use ReactiveValues manually, most of the time you will want to just use something like the controller model.
-
-## Model Events
-
-Models trigger events when their data is updated.  Currently, models emit three events: changed, added, and removed.  For example:
+Models trigger events when their data is updated.  Currently, models emit two events: added and removed.  For example:
 
 ```ruby
     model = Model.new
-
-    model._name.on('changed') { puts 'name changed' }
-    model._name = 'Ryan'
-    # => name changed
 
     model._items.on('added') { puts 'item added' }
     model._items << 1
@@ -695,7 +682,6 @@ or
 
 To find the control's views and optional controller, Volt will search the following (in order):
 
-
 | Section   | View File    | View Folder    | Component   |
 |-----------|--------------|----------------|-------------|
 | :{name}   |              |                |             |
@@ -831,6 +817,23 @@ To run Capybara tests, you need to specify a driver.  The following drivers are 
 3. IE - coming soon
 
 Chrome is not supported due to [this issue](https://code.google.com/p/chromedriver/issues/detail?id=887#makechanges) with ChromeDriver.  Feel free to go [here](https://code.google.com/p/chromedriver/issues/detail?id=887#makechanges) and pester the chromedriver team to fix it.
+
+# Volt Helpers
+
+## Logging
+
+Volt provides a helper for logging.  Calling ```Volt.logger``` returns an instance of the ruby logger.  See [here](http://www.ruby-doc.org/stdlib-2.1.3/libdoc/logger/rdoc/Logger.html) for more.
+
+```ruby
+Volt.logger.info("Some info...")
+```
+
+You can change the logger with:
+
+```ruby
+Volt.logger = Logger.new
+```
+
 
 ## Accessing DOM section in a controller
 

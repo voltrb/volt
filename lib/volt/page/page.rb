@@ -12,7 +12,7 @@ require 'volt/page/bindings/template_binding'
 require 'volt/page/bindings/component_binding'
 require 'volt/page/bindings/event_binding'
 require 'volt/page/template_renderer'
-require 'volt/page/reactive_template'
+require 'volt/page/string_template_renderer'
 require 'volt/page/document_events'
 require 'volt/page/sub_context'
 require 'volt/page/targets/dom_target'
@@ -26,26 +26,24 @@ require 'volt/router/routes'
 require 'volt/models/url'
 require 'volt/page/url_tracker'
 require 'volt/benchmark/benchmark'
-require 'volt/page/draw_cycle'
 require 'volt/page/tasks'
 
 
 
 class Page
-  attr_reader :url, :params, :page, :templates, :routes, :draw_cycle, :events
+  attr_reader :url, :params, :page, :templates, :routes, :events
 
   def initialize
     @model_classes = {}
 
     # Run the code to setup the page
-    @page = ReactiveValue.new(Model.new)
+    @page = Model.new
 
-    @url = ReactiveValue.new(URL.new)
+    @url = URL.new
     @params = @url.params
     @url_tracker = UrlTracker.new(self)
 
     @events = DocumentEvents.new
-    @draw_cycle = DrawCycle.new
 
     if RUBY_PLATFORM == 'opal'
       # Setup escape binding for console
@@ -65,25 +63,27 @@ class Page
     # Initialize tasks so we can get the reload message
     self.tasks if Volt.env.development?
 
-    channel.on('reconnected') do
-      @page._reconnected.cur = true
+    if Volt.client?
+      channel.on('reconnected') do
+        @page._reconnected = true
 
-      `setTimeout(function() {`
-        @page._reconnected.cur = false
-      `}, 2000);`
+        `setTimeout(function() {`
+          @page._reconnected = false
+        `}, 2000);`
+      end
     end
   end
 
   def flash
-    @flash ||= ReactiveValue.new(Model.new({}, persistor: Persistors::Flash))
+    @flash ||= Model.new({}, persistor: Persistors::Flash)
   end
 
   def store
-    @store ||= ReactiveValue.new(Model.new({}, persistor: Persistors::StoreFactory.new(tasks)))
+    @store ||= Model.new({}, persistor: Persistors::StoreFactory.new(tasks))
   end
 
   def local_store
-    @local_store ||= ReactiveValue.new(Model.new({}, persistor: Persistors::LocalStore))
+    @local_store ||= Model.new({}, persistor: Persistors::LocalStore)
   end
 
   def tasks
@@ -126,9 +126,9 @@ class Page
   def channel
     @channel ||= begin
       if Volt.client?
-        ReactiveValue.new(Channel.new)
+        Channel.new
       else
-        ReactiveValue.new(ChannelStub.new)
+        ChannelStub.new
       end
     end
   end
@@ -149,7 +149,7 @@ class Page
 
   def add_routes(&block)
     @routes = Routes.new.define(&block)
-    @url.cur.router = @routes
+    @url.router = @routes
   end
 
   def start
@@ -166,16 +166,14 @@ class Page
     # Setup main page template
     TemplateRenderer.new(self, DomTarget.new, main_controller, 'CONTENT', 'main/main/main/body')
 
-    # Setup title listener template
-    title_target = AttributeTarget.new
-    title_target.on('changed') do
-      title = title_target.to_html
-      `document.title = title;`
-    end
-    TemplateRenderer.new(self, title_target, main_controller, "main", "main/main/main/title")
+    # Setup title reactive template
+    @title_template = StringTemplateRender.new(self, main_controller, "main/main/main/title")
 
-    # TODO: this dom ready should really happen in the template renderer
-    main_controller.dom_ready if main_controller.respond_to?(:dom_ready)
+    # Watch for changes to the title template
+    Proc.new do
+      title = @title_template.html.gsub(/\n/, ' ')
+      `document.title = title;`
+    end.watch!
   end
 
   # When the page is reloaded from the backend, we store the $page.page, so we

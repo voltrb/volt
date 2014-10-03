@@ -1,30 +1,28 @@
 # The channel is the connection between the front end and the backend.
 
-require 'volt/reactive/events'
 require 'json'
+require 'volt/reactive/reactive_accessors'
+require 'volt/reactive/eventable'
 
 class Channel
-  include ReactiveTags
+  include ReactiveAccessors
+  include Eventable
 
-  attr_reader :status, :error, :reconnect_interval
+  reactive_accessor :connected, :status, :error, :reconnect_interval, :retry_count
 
   def initialize
     @socket = nil
-    @status = :opening
-    @connected = false
-    @error = nil
-    @retry_count = 0
+    self.status = :opening
+    self.connected = false
+    self.error = nil
+    self.retry_count = 0
     @queue = []
 
     connect!
   end
 
   def connected?
-    @connected
-  end
-
-  def retry_count
-    @retry_count
+    self.connected
   end
 
   def connect!
@@ -54,35 +52,23 @@ class Channel
     @queue.each do |message|
       send_message(message)
     end
-
-    trigger!('open')
-    trigger!('changed')
-    if old_status == :reconnecting
-      trigger!('reconnected')
-    end
   end
 
   def closed(error)
-    @status = :closed
-    @connected = false
-    @error = `error.reason`
-
-    trigger!('closed')
-    trigger!('changed')
+    self.status = :closed
+    self.connected = false
+    self.error = `error.reason`
 
     reconnect!
   end
 
   def reconnect!
-    @status = :reconnecting
-    @reconnect_interval ||= 0
-    @reconnect_interval += (2000 + rand(5000))
-    @retry_count += 1
+    self.status = :reconnecting
+    self.reconnect_interval ||= 0
+    self.reconnect_interval += (2000 + rand(5000))
+    self.retry_count += 1
 
-    # Trigger changed for reconnect interval
-    trigger!('changed')
-
-    interval = @reconnect_interval
+    interval = self.reconnect_interval
 
     %x{
       setTimeout(function() {
@@ -93,14 +79,12 @@ class Channel
 
   def message_received(message)
     message = JSON.parse(message)
-    trigger!('message', nil, *message)
+
+    trigger!('message', *message)
   end
 
-  tag_method(:send_message) do
-    destructive!
-  end
   def send_message(message)
-    if @status != :open
+    if self.status != :open
       @queue << message
     else
       # TODO: Temp: wrap message in an array, so we're sure its valid JSON
@@ -112,7 +96,7 @@ class Channel
   end
 
   def close!
-    @status = :closed
+    self.status = :closed
     %x{
       this.socket.close();
     }

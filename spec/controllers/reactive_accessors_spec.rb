@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'volt/controllers/reactive_accessors'
+require 'volt/reactive/reactive_accessors'
 
 class TestReactiveAccessors
   include ReactiveAccessors
@@ -8,12 +8,6 @@ class TestReactiveAccessors
 end
 
 describe ReactiveAccessors do
-  it "should return the same reactive value after each read" do
-    inst = TestReactiveAccessors.new
-
-    expect(inst._name.reactive_manager.object_id).to eq(inst._name.reactive_manager.object_id)
-  end
-
   it "should assign a reactive value" do
     inst = TestReactiveAccessors.new
 
@@ -24,19 +18,23 @@ describe ReactiveAccessors do
   it "should start nil" do
     inst = TestReactiveAccessors.new
 
-    expect(inst._name.cur).to eq(nil)
+    expect(inst._name).to eq(nil)
   end
 
-  it "should keep the same reactive value when reassigning" do
+  it 'should trigger changed when assigning a new value' do
     inst = TestReactiveAccessors.new
+    values = []
+
+    -> { values << inst._name }.watch!
+
+    expect(values).to eq([nil])
 
     inst._name = 'Ryan'
-    rv1_id = inst._name.reactive_manager.object_id
+    Computation.flush!
+    expect(values).to eq([nil,'Ryan'])
 
-    inst._name = 'Jim'
-    rv2_id = inst._name.reactive_manager.object_id
-
-    expect(rv1_id).to eq(rv2_id)
+    inst._name = 'Stout'
+    Computation.flush!
+    expect(values).to eq([nil,'Ryan','Stout'])
   end
-
 end

@@ -82,7 +82,7 @@ module Persistors
       return promise
     end
 
-    def event_added(event, scope_provider, first, first_for_event)
+    def event_added(event, first, first_for_event)
       if first_for_event && event == :changed
         ensure_setup
       end

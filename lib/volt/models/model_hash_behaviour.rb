@@ -2,18 +2,17 @@
 # Moving this into a module cleans up the main Model class for things that
 # make it behave like a model.
 module ModelHashBehaviour
-  def self.included(base)
-    # In modules, since we need to tag on the main class, we setup the
-    # tags with included.
-    base.tag_method(:delete) do
-      destructive!
-    end
 
-    base.tag_method(:clear) do
-      destructive!
-    end
+  def delete(name)
+    name = name.to_sym
+
+    value = attributes.delete(name)
+    @deps.delete(name)
+
+    @persistor.removed(name) if @persistor
+
+    return value
   end
-
 
   def nil?
     attributes.nil?
@@ -27,25 +26,12 @@ module ModelHashBehaviour
     attributes.true?
   end
 
-  def delete(name)
-    name = name.to_sym
-    __clear_element(name)
-    value = attributes.delete(name)
-    trigger_by_attribute!('changed', name)
-
-    @persistor.removed(name) if @persistor
-
-    return value
-  end
-
-
   def clear
     attributes.each_pair do |key,value|
-      __clear_element(key)
+      @deps.changed!(key)
     end
 
     attributes.clear
-    trigger!('changed')
 
     @persistor.removed(nil) if @persistor
   end

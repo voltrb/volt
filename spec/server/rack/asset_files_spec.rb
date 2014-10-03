@@ -19,7 +19,7 @@ if RUBY_PLATFORM != 'opal'
     it "should list all JS files" do
       main = AssetFiles.new("main", @component_paths)
 
-      expect(main.javascript_files(nil)).to eq(["/assets/js/jquery-2.0.3.js", "/assets/js/sockjs-0.3.4.min.js", "/assets/js/vertxbus.js", "/assets/js/bootstrap.js", "/assets/js/test2.js", "/assets/js/test3.js", "/assets/js/test1.js", "/assets/volt/page/page.js", "/components/main.js"])
+      expect(main.javascript_files(nil)).to eq(["/assets/js/jquery-2.0.3.js", "/assets/js/setImmediate.js", "/assets/js/sockjs-0.3.4.min.js", "/assets/js/vertxbus.js", "/assets/js/bootstrap.js", "/assets/js/test2.js", "/assets/js/test3.js", "/assets/js/test1.js", "/assets/volt/page/page.js", "/components/main.js"])
     end
   end
 end

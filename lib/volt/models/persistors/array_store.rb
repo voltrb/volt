@@ -17,28 +17,32 @@ module Persistors
     def initialize(model, tasks=nil)
       super
 
-      query = @model.options[:query]
-
-      @query = ReactiveValue.from_hash(query || {})
+      @query = @model.options[:query]
     end
 
-    def event_added(event, scope_provider, first, first_for_event)
+    def event_added(event, first, first_for_event)
       # First event, we load the data.
-      load_data if first
+      if first
+        @has_events = true
+        load_data
+      end
     end
 
     def event_removed(event, last, last_for_event)
       # Remove listener where there are no more events on this model
-      stop_listening if last
+      if last
+        @has_events = false
+        stop_listening
+      end
     end
 
     # Called when an event is removed and we no longer want to keep in
     # sync with the database.
-    def stop_listening
-      if @query_changed_listener
-        @query_changed_listener.remove
-        @query_changed_listener = nil
-      end
+    def stop_listening(stop_watching_query=true)
+      return if @has_events
+      return if @fetch_promises && @fetch_promises.size > 0
+
+      @query_computation.stop if @query_computation && stop_watching_query
 
       if @query_listener
         @query_listener.remove_store(self)
@@ -52,22 +56,21 @@ module Persistors
     def load_data
       # Don't load data from any queried
       if @state == :not_loaded || @state == :dirty
-        # puts "Load Data at #{@model.path.inspect} - query: #{@query.inspect}"# on #{@model.inspect}"
+        # puts "Load Data at #{@model.path.inspect} - query: #{@query.inspect} on #{self.inspect}"
         change_state_to :loading
 
-        @query_changed_listener.remove if @query_changed_listener
-        if @query.reactive?
-          # puts "SETUP REACTIVE QUERY LISTENER: #{@query.inspect}"
-          # Query might change, change the query when it does
-          @query_changed_listener = @query.on('changed') do
-            stop_listening
+        if @query.is_a?(Proc)
+          @query_computation = -> do
+            puts "Run Query Again"
+            stop_listening(false)
 
-            # Don't load again if all of the listeners are gone
-            load_data if @model.has_listeners?
-          end
+            change_state_to :loading
+
+            run_query(@model, @query.call)
+          end.watch!
+        else
+          run_query(@model, @query)
         end
-
-        run_query(@model, @query.deep_cur)
       end
     end
 
@@ -78,6 +81,9 @@ module Persistors
     end
 
     def run_query(model, query={})
+      @model.clear
+
+      # puts "Run Query: #{query.inspect}"
       collection = model.path.last
       # Scope to the parent
       if model.path.size > 1
@@ -98,10 +104,20 @@ module Persistors
       @query_listener.add_store(self)
     end
 
-    def find(query={})
-      model = Cursor.new([], @model.options.merge(:query => query))
+    # Find can take either a query object, or a block that returns a query object.  Use
+    # the block style if you need reactive updating queries
+    def find(query=nil, &block)
+      # Set a default query if there is no block
+      if block
+        if query
+          raise "Query should not be passed in to a find if a block is specified"
+        end
+        query = block
+      else
+        query ||= {}
+      end
 
-      return ReactiveValue.new(model)
+      return Cursor.new([], @model.options.merge(:query => query))
     end
 
     # Returns a promise that is resolved/rejected when the query is complete.  Any
@@ -130,7 +146,7 @@ module Persistors
       new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
 
       # Don't add if the model is already in the ArrayModel
-      if !@model.cur.array.find {|v| v['_id'] == data['_id'] }
+      if !@model.array.find {|v| v['_id'] == data['_id'] }
         # Find the existing model, or create one
         new_model = @@identity_map.find(data['_id']) { @model.new_model(data.symbolize_keys, new_options, :loaded) }
 
@@ -159,9 +175,9 @@ module Persistors
       @model.path[-1]
     end
 
-
     # When a model is added to this collection, we call its "changed"
     # method.  This should trigger a save.
+    # TODORW:
     def added(model, index)
       if model.persistor
         # Tell the persistor it was added

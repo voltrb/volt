@@ -1,7 +1,9 @@
-require 'volt/controllers/reactive_accessors'
+require 'volt/reactive/reactive_accessors'
 
 class ModelController
   include ReactiveAccessors
+
+  reactive_accessor :current_model
 
   def self.model(val)
     @default_model = val
@@ -10,24 +12,31 @@ class ModelController
   # Sets the current model on this controller
   def model=(val)
     # Start with a nil reactive value.
-    @model ||= ReactiveValue.new(Proc.new { nil })
+    self.current_model ||= Model.new
 
     if Symbol === val || String === val
       collections = [:page, :store, :params, :controller]
       if collections.include?(val.to_sym)
-        @model.cur = self.send(val).cur
+        self.current_model = self.send(val)
       else
         raise "#{val} is not the name of a valid model, choose from: #{collections.join(', ')}"
       end
     elsif val
-      @model.cur = val.cur
+      self.current_model = val
     else
       raise "model can not be #{val.inspect}"
     end
   end
 
   def model
-    @model
+    model = self.current_model
+
+    # If the model is a proc, call it now
+    if model.is_a?(Proc)
+      model = model.call
+    end
+
+    return model
   end
 
   def self.new(*args, &block)
@@ -40,11 +49,16 @@ class ModelController
     return inst
   end
 
+  attr_accessor :attrs
+
   def initialize(*args)
-    # Set the instance variable to match any passed in arguments
-    if args.size > 0
-      args[0].each_pair do |key, value|
-        instance_variable_set(:"@#{key}", value)
+    if args[0]
+      # Assign the first passed in argument to attrs
+      self.attrs = args[0]
+
+      # If a model attribute is passed in, we assign it directly
+      if attrs.respond_to?(:model)
+        self.model = attrs.locals[:model]
       end
     end
   end
@@ -87,10 +101,10 @@ class ModelController
   end
 
   def controller
-    @controller ||= ReactiveValue.new(Model.new)
+    @controller ||= Model.new
   end
 
   def method_missing(method_name, *args, &block)
-    return @model.send(method_name, *args, &block)
+    return model.send(method_name, *args, &block)
   end
 end

@@ -12,8 +12,8 @@ module ModelHelpers
   end
 
   # Pass to the persisotr
-  def event_added(event, scope_provider, first, first_for_event)
-    @persistor.event_added(event, scope_provider, first, first_for_event) if @persistor
+  def event_added(event, first, first_for_event)
+    @persistor.event_added(event, first, first_for_event) if @persistor
   end
 
   # Pass to the persistor

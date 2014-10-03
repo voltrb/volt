@@ -2,24 +2,23 @@ require 'volt/page/bindings/base_binding'
 
 class ContentBinding < BaseBinding
   def initialize(page, target, context, binding_name, getter)
+    # puts "New Content Binding: #{self.inspect}"
     super(page, target, context, binding_name)
 
-    # Find the source for the content binding
-    @value = value_from_getter(getter)
-
-    # Run the initial render
-    update
-
-    if @value.reactive?
-      @changed_listener = @value.on('changed') { update }
-    end
+    # Listen for changes
+    @computation = -> do
+      begin
+        update(@context.instance_eval(&getter))
+      rescue => e
+        Volt.logger.error("ContentBinding Error: #{e.inspect}")
+        update('')
+      end
+    end.watch!
   end
 
-  def update
-    value = @value.cur.or('')
-    if value.reactive?
-      puts "GOT CUR: #{value.inspect}"
-    end
+  def update(value)
+    # TODORW:
+    value = value.nil? ? '' : value
 
     # Exception values display the exception as a string
     value = value.to_s
@@ -30,10 +29,8 @@ class ContentBinding < BaseBinding
   end
 
   def remove
-    if @changed_listener
-      @changed_listener.remove
-      @changed_listener = nil
-    end
+    @computation.stop if @computation
+    @computation = nil
 
     super
   end

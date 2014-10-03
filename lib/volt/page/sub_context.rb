@@ -17,7 +17,13 @@ class SubContext
   def method_missing(method_name, *args, &block)
     method_name = method_name.to_s
     if @locals.has_key?(method_name)
-      return @locals[method_name]
+      obj = @locals[method_name]
+
+      # TODORW: Might get a normal proc, flag internal procs
+      if obj.is_a?(Proc)
+        obj = obj.call(*args)
+      end
+      return obj
     elsif @context
       return @context.send(method_name, *args, &block)
     end

@@ -1,9 +1,11 @@
 # The url class handles parsing and updating the url
+require 'volt/reactive/reactive_accessors'
+
 class URL
-  include ReactiveTags
+  include ReactiveAccessors
 
   # TODO: we need to make it so change events only trigger on changes
-  attr_reader :scheme, :host, :port, :path, :query, :params
+  reactive_accessor :scheme, :host, :port, :path, :query, :params, :fragment
   attr_accessor :router
 
   def initialize(router=nil)
@@ -13,13 +15,10 @@ class URL
 
   # Parse takes in a url and extracts each sections.
   # It also assigns and changes to the params.
-  tag_method(:parse) do
-    destructive!
-  end
   def parse(url)
     if url[0] == '#'
       # url only updates fragment
-      @fragment = url[1..-1]
+      self.fragment = url[1..-1]
       update!
     else
       host = `document.location.host`
@@ -37,41 +36,45 @@ class URL
       end
 
       matcher = url.match(/^(#{protocol[0..-2]})[:]\/\/([^\/]+)(.*)$/)
-      @scheme = matcher[1]
-      @host, @port = matcher[2].split(':')
-      @port ||= 80
+      self.scheme = matcher[1]
+      host, port = matcher[2].split(':')
+      port ||= 80
 
-      @path = matcher[3]
-      @path, @fragment = @path.split('#', 2)
-      @path, @query = @path.split('?', 2)
+      self.host = host
+      self.port = port
+
+      path = matcher[3]
+      path, fragment = path.split('#', 2)
+      path, query = path.split('?', 2)
+
+      self.path = path
+      self.fragment = fragment
+      self.query = query
 
       assign_query_hash_to_params
     end
 
     scroll
 
-    trigger_for_methods!('changed', :path)
-
     return true
   end
 
   # Full url rebuilds the url from it's constituent parts
   def full_url
-    if @port
-      host_with_port = "#{@host}:#{@port}"
+    if port
+      host_with_port = "#{host}:#{port}"
     else
-      host_with_port = @host
+      host_with_port = host
     end
 
-    path, params = @router.params_to_url(@params.deep_cur.to_h)
+    path, params = @router.params_to_url(@params.to_h)
 
-    new_url = "#{@scheme}://#{host_with_port}#{(path || @path).chomp('/')}"
+    new_url = "#{scheme}://#{host_with_port}#{(path || self.path).chomp('/')}"
 
     unless params.empty?
       new_url += '?'
       query_parts = []
       nested_params_hash(params).each_pair do |key,value|
-        value = value.cur
         # remove the _ from the front
         value = `encodeURI(value)`
         query_parts << "#{key}=#{value}"
@@ -80,7 +83,8 @@ class URL
       new_url += query_parts.join('&')
     end
 
-    new_url += '#' + @fragment if @fragment
+    frag = self.fragment
+    new_url += '#' + frag if frag.present?
 
     return new_url
   end
@@ -104,12 +108,13 @@ class URL
 
   def scroll
     if Volt.client?
-      if @fragment
+      frag = self.fragment
+      if frag
         # Scroll to anchor via http://www.w3.org/html/wg/drafts/html/master/browsers.html#scroll-to-fragid
         %x{
-          var anchor = $('#' + this.fragment);
+          var anchor = $('#' + frag);
           if (anchor.length == 0) {
-            anchor = $('*[name="' + this.fragment + '"]:first');
+            anchor = $('*[name="' + frag + '"]:first');
           }
           if (anchor && anchor.length > 0) {
             console.log('scroll to: ', anchor.offset().top);
@@ -134,10 +139,10 @@ class URL
       query_hash = self.query_hash
 
       # Get the params that are in the route
-      new_params = @router.url_to_params(@path)
+      new_params = @router.url_to_params(path)
 
       if new_params == false
-        raise "no routes match path: #{@path}"
+        raise "no routes match path: #{path}"
       end
 
       query_hash.merge!(new_params)
@@ -153,7 +158,7 @@ class URL
     def assign_from_old(params, new_params)
       queued_deletes = []
 
-      params.cur.attributes.each_pair do |name,old_val|
+      params.attributes.each_pair do |name,old_val|
         # If there is a new value, see if it has [name]
         new_val = new_params ? new_params[name] : nil
 
@@ -188,8 +193,9 @@ class URL
 
     def query_hash
       query_hash = {}
-      if @query
-        @query.split('&').reject {|v| v == '' }.each do |part|
+      qury = self.query
+      if qury
+        qury.split('&').reject {|v| v == '' }.each do |part|
           parts = part.split('=').reject {|v| v == '' }
 
           # Decode string

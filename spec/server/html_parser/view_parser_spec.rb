@@ -143,16 +143,7 @@ describe ViewParser do
 
     view = ViewParser.new(html, "main/main/main")
 
-    expect(view.templates).to eq({
-      "main/main/main/body" => {
-        "html" => "      <div id=\"id0\">\n      </div>\n",
-        "bindings" => {
-          "id0" => [
-            "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, \"class\", Proc.new { main_class }) }"
-          ]
-        }
-      }
-    })
+    expect(view.templates).to eq({"main/main/main/body"=>{"html"=>"      <div id=\"id0\">\n      </div>\n", "bindings"=>{"id0"=>["lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, \"class\", Proc.new { main_class }, Proc.new { |val| self.main_class=(val) }) }"]}}})
   end
 
   it "should parse multiple attribute bindings in a single attribute" do
@@ -179,7 +170,7 @@ describe ViewParser do
         "html" => "      <div id=\"id0\">\n      </div>\n",
         "bindings" => {
           "id0" => [
-            "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, \"class\", Proc.new { ReactiveTemplate.new(__p, __c, \"main/main/main/body/_rv1\") }) }"
+            "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, \"class\", Proc.new { StringTemplateRender.new(__p, __c, \"main/main/main/body/_rv1\") }) }"
           ]
         }
       }
@@ -273,16 +264,7 @@ describe ViewParser do
 
     view = ViewParser.new(html, "main/main/main")
 
-    expect(view.templates).to eq({
-      "main/main/main/body" => {
-        "html" => "    <textarea name=\"cool\" id=\"id1\"></textarea>\n",
-        "bindings" => {
-          "id1" => [
-            "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, \"value\", Proc.new { awesome }) }"
-          ]
-        }
-      }
-    })
+    expect(view.templates).to eq({"main/main/main/body"=>{"html"=>"    <textarea name=\"cool\" id=\"id1\"></textarea>\n", "bindings"=>{"id1"=>["lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, \"value\", Proc.new { awesome }, Proc.new { |val| self.awesome=(val) }) }"]}}})
   end
 
 end

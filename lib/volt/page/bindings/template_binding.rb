@@ -11,28 +11,10 @@ class TemplateBinding < BaseBinding
 
     @current_template = nil
 
-    # Find the source for the getter binding
-    @path, section, @options = value_from_getter(getter)
-
-    if section.is_a?(String)
-      # Render this as a section
-      @section = section
-    else
-      # Use the value passed in as the default arguments
-      @arguments = section
-    end
-
-    # Sometimes we want multiple template bindings to share the same controller (usually
-    # when displaying a :Title and a :Body), this instance tracks those.
-    if @options && (controller_group = @options[:controller_group])
-      @grouped_controller = GroupedControllers.new(controller_group)
-    end
+    @getter = getter
 
     # Run the initial render
-    update
-
-    @path_changed_listener = @path.on('changed') { queue_update } if @path.reactive?
-    @section_changed_listener = @section.on('changed') { queue_update } if @section && @section.reactive?
+    @computation = -> { update(*@context.instance_eval(&getter)) }.watch!
   end
 
   def setup_path(binding_in_path)
@@ -112,43 +94,88 @@ class TemplateBinding < BaseBinding
     return nil, nil
   end
 
-  # Called when the path changes.  If we are sharing a controller, clear the cached
-  # controller before we queue
-  def queue_update
-    @grouped_controller.clear if @grouped_controller
+  def update(path, section_or_arguments=nil, options={})
+    Computation.run_without_tracking do
+      # Remove existing template and call _removed
+      controller_send(:"#{@action}_removed") if @action && @controller
+      @current_template.remove if @current_template
 
-    super
+      @options = options
+
+      # A blank path needs to load a missing template, otherwise it tries to load
+      # the same template.
+      path = path.blank? ? '---missing---' : path
+
+      section = nil
+      @arguments = nil
+
+      if section_or_arguments.is_a?(String)
+        # Render this as a section
+        section = section_or_arguments
+      else
+        # Use the value passed in as the default arguments
+        @arguments = section_or_arguments
+      end
+
+      # Sometimes we want multiple template bindings to share the same controller (usually
+      # when displaying a :Title and a :Body), this instance tracks those.
+      if @options && (controller_group = @options[:controller_group])
+        @grouped_controller = GroupedControllers.new(controller_group)
+      else
+        clear_grouped_controller
+      end
+
+      full_path, controller_path = path_for_template(path, section)
+      render_template(full_path, controller_path)
+
+      queue_clear_grouped_controller
+    end
   end
 
-  def update
-    full_path, controller_path = path_for_template(@path.cur, @section.cur)
-
-    @current_template.remove if @current_template
-
-    if @arguments
-      # Load in any procs
-      @arguments.each_pair do |key,value|
-        if value.class == Proc
-          @arguments[key.gsub('-', '_')] = value.call
-        end
-      end
+  # On the next tick, we clear the grouped controller so that any changes to template paths
+  # will create a new controller and trigger the action.
+  def queue_clear_grouped_controller
+    if Volt.in_browser?
+      # In the browser, we want to keep a grouped controller around during a single run
+      # of the event loop.  To make that happen, we clear it on the next tick.
+      `setImmediate(function() {`
+        clear_grouped_controller
+      `})`
+    else
+      # For the backend, clear it immediately
+      clear_grouped_controller
     end
+  end
 
-    render_template(full_path, controller_path)
+  def clear_grouped_controller
+    if @grouped_controller
+      @grouped_controller.clear
+      @grouped_controller = nil
+    end
   end
 
   # The context for templates can be either a controller, or the original context.
   def render_template(full_path, controller_path)
-    args = @arguments ? [@arguments] : []
+    if @arguments
+      args = [SubContext.new(@arguments)]
+    else
+      args = []
+    end
 
     @controller = nil
 
     # Fetch grouped controllers if we're grouping
     @controller = @grouped_controller.get if @grouped_controller
 
-    # Otherwise, make a new controller
-    unless @controller
-      controller_class, action = get_controller(controller_path)
+    # The action to be called and rendered
+    @action = nil
+
+    if @controller
+      # Track that we're using the group controller
+      @grouped_controller.inc if @grouped_controller
+    else
+      # Otherwise, make a new controller
+      controller_class, @action = get_controller(controller_path)
 
       if controller_class
         # Setup the controller
@@ -158,7 +185,7 @@ class TemplateBinding < BaseBinding
       end
 
       # Trigger the action
-      @controller.send(action) if @controller.respond_to?(action)
+      controller_send(@action) if @action
 
       # Track the grouped controller
       @grouped_controller.set(@controller) if @grouped_controller
@@ -177,24 +204,12 @@ class TemplateBinding < BaseBinding
         @controller.section = @current_template.dom_section
       end
 
-      if @controller.respond_to?(:dom_ready)
-        @controller.dom_ready
-      end
+      controller_send(:"#{@action}_ready") if @action
     end
   end
 
   def remove
-    @grouped_controller.clear if @grouped_controller
-
-    if @path_changed_listener
-      @path_changed_listener.remove
-      @path_changed_listener = nil
-    end
-
-    if @section_changed_listener
-      @section_changed_listener.remove
-      @section_changed_listener = nil
-    end
+    clear_grouped_controller
 
     if @current_template
       # Remove the template if one has been rendered, when the template binding is
@@ -205,16 +220,19 @@ class TemplateBinding < BaseBinding
     super
 
     if @controller
-      # Let the controller know we removed
-      if @controller.respond_to?(:dom_removed)
-        @controller.dom_removed
-      end
+      controller_send(:"#{@action}_removed") if @action
 
       @controller = nil
     end
   end
 
   private
+    # Sends the action to the controller if it exists
+    def controller_send(action_name)
+      if @controller.respond_to?(action_name)
+        @controller.send(action_name)
+      end
+    end
 
     # Fetch the controller class
     def get_controller(controller_path)

@@ -53,11 +53,31 @@ module AttributeScope
     end
   end
 
+  # TODO: We should use a real parser for this
+  def getter_to_setter(getter)
+    getter = getter.strip
+
+    # Convert a getter into a setter
+    if getter.index('.') || getter.index('@')
+      prefix = ''
+    else
+      prefix = 'self.'
+    end
+
+    return "#{prefix}#{getter}=(val)"
+  end
+
   # Add an attribute binding on the tag, bind directly to the getter in the binding
   def add_single_attribute(id, attribute_name, parts)
     getter = parts[0][1..-2]
 
-    save_binding(id, "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, #{attribute_name.inspect}, Proc.new { #{getter} }) }")
+    # if getter.index('@')
+    #   raise "Bindings currently do not support instance variables"
+    # end
+
+    setter = getter_to_setter(getter)
+
+    save_binding(id, "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, #{attribute_name.inspect}, Proc.new { #{getter} }, Proc.new { |val| #{setter} }) }")
   end
 
 
@@ -74,12 +94,12 @@ module AttributeScope
       end
     end
 
-    reactive_template_path = add_reactive_template(content)
+    string_template_renderer_path = add_string_template_renderer(content)
 
-    save_binding(id, "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, #{attribute_name.inspect}, Proc.new { ReactiveTemplate.new(__p, __c, #{reactive_template_path.inspect}) }) }")
+    save_binding(id, "lambda { |__p, __t, __c, __id| AttributeBinding.new(__p, __t, __c, __id, #{attribute_name.inspect}, Proc.new { StringTemplateRender.new(__p, __c, #{string_template_renderer_path.inspect}) }) }")
   end
 
-  def add_reactive_template(content)
+  def add_string_template_renderer(content)
     path = @path + "/_rv#{@binding_number}"
     new_handler = ViewHandler.new(path, false)
     @binding_number += 1

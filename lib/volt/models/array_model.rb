@@ -1,3 +1,4 @@
+require 'volt/reactive/reactive_array'
 require 'volt/models/model_wrapper'
 require 'volt/models/model_helpers'
 require 'volt/models/model_state'
@@ -36,21 +37,14 @@ class ArrayModel < ReactiveArray
     @persistor.loaded if @persistor
   end
 
-  tag_method(:find) do
-    destructive!
-    pass_reactive!
-  end
-  def find(*args)
+  def find(*args, &block)
     if @persistor
-      return @persistor.find(*args)
+      return @persistor.find(*args, &block)
     else
       raise "this model's persistance layer does not support find, try using store"
     end
   end
 
-  tag_method(:then) do
-    destructive!
-  end
   def then(*args, &block)
     if @persistor
       return @persistor.then(*args, &block)
@@ -65,9 +59,10 @@ class ArrayModel < ReactiveArray
 
   # Make sure it gets wrapped
   def <<(model)
-    if model.cur.is_a?(Model)
+    # TODORW: handle changes
+    if model.is_a?(Model)
       # Set the new path
-      model.cur.options = @options.merge(path: @options[:path] + [:[]])
+      model.options = @options.merge(path: @options[:path] + [:[]])
     else
       model = wrap_values([model]).first
     end
@@ -117,12 +112,9 @@ class ArrayModel < ReactiveArray
     end
 
     # Otherwise inspect normally
-    super
+    return super
   end
 
-  tag_method(:buffer) do
-    destructive!
-  end
   def buffer
     model_path = options[:path] + [:[]]
     model_klass = class_at_path(model_path)
@@ -130,7 +122,7 @@ class ArrayModel < ReactiveArray
     new_options = options.merge(path: model_path, save_to: self).reject {|k,_| k.to_sym == :persistor }
     model = model_klass.new({}, new_options)
 
-    return ReactiveValue.new(model)
+    return model
   end
 
   private

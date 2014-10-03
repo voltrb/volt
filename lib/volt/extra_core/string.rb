@@ -23,6 +23,10 @@ class String
     Inflector.singularize(self)
   end
 
+  def titleize
+    self.gsub('_', ' ').split(' ').map {|w| w.capitalize }.join(' ')
+  end
+
   def plural?
     # TODO: Temp implementation
     self.pluralize == self

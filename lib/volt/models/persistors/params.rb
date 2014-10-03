@@ -20,7 +20,11 @@ module Persistors
     end
 
     def run_update
-      $page.params.trigger!('child_changed') if Volt.client?
+      # TODORW:
+      # $page.params.trigger!('child_changed') if Volt.client?
+      if Volt.client?
+        $page.url.update!
+      end
     end
   end
 end

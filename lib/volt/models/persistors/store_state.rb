@@ -7,7 +7,10 @@ module StoreState
   end
 
   def state
-    @state
+    @state_dep ||= Dependency.new
+    @state_dep.depend
+
+    return @state
   end
 
   # Called from the QueryListener when the data is loaded
@@ -18,7 +21,7 @@ module StoreState
     # Trigger changed on the 'state' method
     unless skip_trigger
       if old_state != @state
-        @model.trigger_for_methods!('changed', :state, :loaded?)
+        @state_dep.changed! if @state_dep
       end
     end
 
@@ -26,6 +29,8 @@ module StoreState
       # Trigger each waiting fetch
       @fetch_promises.compact.each {|fp| fp.resolve(@model) }
       @fetch_promises = nil
+
+      stop_listening
     end
   end
 

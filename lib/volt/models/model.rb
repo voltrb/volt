@@ -1,42 +1,34 @@
 require 'volt/models/model_wrapper'
 require 'volt/models/array_model'
 require 'volt/models/model_helpers'
-require 'volt/reactive/object_tracking'
 require 'volt/models/model_hash_behaviour'
 require 'volt/models/validations'
 require 'volt/models/model_state'
-
+require 'volt/reactive/reactive_hash'
 
 class NilMethodCall < NoMethodError
-  def true?
-    false
-  end
-
-  def false?
-    true
-  end
 end
 
+
 class Model
-  include ReactiveTags
   include ModelWrapper
-  include ObjectTracking
   include ModelHelpers
   include ModelHashBehaviour
   include Validations
   include ModelState
 
-  attr_accessor :attributes
+  attr_reader :attributes
   attr_reader :parent, :path, :persistor, :options
 
   def initialize(attributes={}, options={}, initial_state=nil)
+    @deps = HashDependency.new
     self.options = options
 
     self.send(:attributes=, attributes, true)
 
     @cache = {}
 
-    # Models stat in a loaded state since they are normally setup from an
+    # Models start in a loaded state since they are normally setup from an
     # ArrayModel, which will have the data when they get added.
     @state = :loaded
 
@@ -56,8 +48,11 @@ class Model
   def attributes=(attrs, initial_setup=false)
     @attributes = wrap_values(attrs)
 
+    # Trigger and change all
+    @deps.changed_all!
+    @deps = HashDependency.new
+
     unless initial_setup
-      trigger!('changed')
 
       # Let the persistor know something changed
       if @persistor
@@ -86,11 +81,6 @@ class Model
   end
 
 
-  tag_all_methods do
-    pass_reactive! do |method_name|
-      method_name[0] == '_' && method_name[-1] == '='
-    end
-  end
   def method_missing(method_name, *args, &block)
     if method_name[0] == '_'
       if method_name[-1] == '='
@@ -116,10 +106,9 @@ class Model
     attribute_name = method_name[0..-2].to_sym
 
     value = args[0]
-    __assign_element(attribute_name, value)
 
     attributes[attribute_name] = wrap_value(value, [attribute_name])
-    trigger_by_attribute!('changed', attribute_name)
+    @deps.changed!(attribute_name)
 
     # Let the persistor know something changed
     @persistor.changed(attribute_name) if @persistor
@@ -144,6 +133,9 @@ class Model
       # Also check @cache
       value ||= (@cache && @cache[method_name])
 
+      # Track dependency
+      @deps.depend(method_name)
+
       if value
         # key was in attributes or cache
         return value
@@ -162,9 +154,14 @@ class Model
   # Get a new model, make it easy to override
   def read_new_model(method_name)
     if @persistor && @persistor.respond_to?(:read_new_model)
-      @persistor.read_new_model(method_name)
+      return @persistor.read_new_model(method_name)
     else
-      return new_model(nil, @options.merge(parent: self, path: path + [method_name]))
+      opts = @options.merge(parent: self, path: path + [method_name])
+      if method_name.plural?
+        return new_array_model([], opts)
+      else
+        return new_model(nil, opts)
+      end
     end
   end
 
@@ -225,9 +222,6 @@ class Model
     end
   end
 
-  tag_method(:<<) do
-    pass_reactive!
-  end
   # Initialize an empty array and append to it
   def <<(value)
     if @parent
@@ -249,14 +243,20 @@ class Model
     # Add the new item
     result << value
 
-    trigger!('added', nil, 0)
-    trigger!('changed')
+    # TODORW:
+    # trigger!('added', nil, 0)
+    # trigger!('changed')
 
     return nil
   end
 
   def inspect
-    "<#{self.class.to_s}:#{object_id} #{attributes.inspect}>"
+    str = nil
+    Computation.run_without_tracking do
+      str = "<#{self.class.to_s}:#{object_id} #{attributes.inspect}>"
+    end
+
+    return str
   end
 
   def deep_cur
@@ -294,7 +294,6 @@ class Model
       self.class.validations.keys.each do |key|
         mark_field!(key.to_sym)
       end
-      trigger_for_methods!('changed', :errors, :marked_errors)
 
       return Promise.new.reject(errors)
     end
@@ -302,12 +301,15 @@ class Model
 
 
   # Returns a buffered version of the model
-  tag_method(:buffer) do
-    destructive!
-  end
   def buffer
     model_path = options[:path]
-    model_klass = class_at_path(model_path)
+
+    # When we grab a buffer off of a plual class (subcollection), we get it as a model.
+    if model_path.last.plural? && model_path[-1] != :[]
+      model_klass = class_at_path(model_path + [:[]])
+    else
+      model_klass = class_at_path(model_path)
+    end
 
     new_options = options.merge(path: model_path, save_to: self).reject {|k,_| k.to_sym == :persistor }
     model = model_klass.new({}, new_options, :loading)
@@ -320,36 +322,14 @@ class Model
       end
     end
 
-    return ReactiveValue.new(model)
+    return model
   end
 
 
   private
-  def setup_buffer(model)
-    model.attributes = self.attributes
-    model.change_state_to(:loaded)
-  end
-
-    # Clear the previous value and assign a new one
-    def __assign_element(key, value)
-      __clear_element(key)
-      __track_element(key, value)
-    end
-
-    # TODO: Somewhat duplicated from ReactiveArray
-    def __clear_element(key)
-      # Cleanup any tracking on an index
-      # TODO: is this send a security risk?
-      if @reactive_element_listeners && @reactive_element_listeners[key]
-        @reactive_element_listeners[key].remove
-        @reactive_element_listeners.delete(key)
-      end
-    end
-
-    def __track_element(key, value)
-      __setup_tracking(key, value) do |event, key, args|
-        trigger_by_attribute!(event, key, *args)
-      end
+    def setup_buffer(model)
+      model.attributes = self.attributes
+      model.change_state_to(:loaded)
     end
 
     # Takes the persistor if there is one and

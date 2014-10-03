@@ -6,7 +6,8 @@ class Tasks
     @callback_id = 0
     @callbacks = {}
 
-    page.channel.on('message') do |_, *args|
+    # TODORW: ...
+    page.channel.on('message') do |*args|
       received_message(*args)
     end
   end
@@ -62,7 +63,7 @@ class Tasks
 
   def reload
     # Stash the current page value
-    value = JSON.dump($page.page.cur.to_h.reject {|k,v| v.reactive? })
+    value = JSON.dump($page.page.to_h)
 
     # If this browser supports session storage, store the page, so it will
     # be in the same state when we reload.

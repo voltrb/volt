@@ -36,18 +36,4 @@ class BaseBinding
   def remove_anchors
     @dom_section.remove_anchors if @dom_section
   end
-
-  def queue_update
-    if Volt.server?
-      # Run right away
-      update
-    else
-      @page.draw_cycle.queue(self)
-    end
-  end
-
-  def value_from_getter(getter)
-    # Evaluate the getter proc in the context
-    return @context.instance_eval(&getter)
-  end
 end

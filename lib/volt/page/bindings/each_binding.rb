@@ -7,40 +7,57 @@ class EachBinding < BaseBinding
     @item_name = variable_name
     @template_name = template_name
 
-    # Find the source for the content binding
-    @value = value_from_getter(getter)
-
     @templates = []
 
-    # Run the initial render
-    # update
-    reload
+    @getter = getter
 
-    @added_listener = @value.on('added') { |_, position, item| item_added(position) }
-    @changed_listener = @value.on('changed') { reload }
-    @removed_listener = @value.on('removed') { |_, position| item_removed(position) }
+    # Listen for changes
+    @computation = -> { reload }.watch!
   end
 
   # When a changed event happens, we update to the new size.
   def reload
-    # Adjust to the new size
-    values = current_values
-    templates_size = @templates.size
-    values_size = values.size
+    begin
+      value = @context.instance_eval(&@getter)
+    rescue => e
+      Volt.logger.error("EachBinding Error: #{e.inspect}")
+      value = []
+    end
 
-    if templates_size < values_size
-      (templates_size).upto(values_size-1) do |index|
-        item_added(index)
+    # Since we're checking things like size, we don't want this to be re-triggered on a
+    # size change, so we run without tracking.
+    Computation.run_without_tracking do
+      # puts "RELOAD:-------------- #{value.inspect}"
+      # Adjust to the new size
+      values = current_values(value)
+      @value = values
+
+      @added_listener.remove if @added_listener
+      @removed_listener.remove if @removed_listener
+
+      if @value.respond_to?(:on)
+        @added_listener = @value.on('added') { |position| item_added(position) }
+        @removed_listener = @value.on('removed') { |position| item_removed(position) }
       end
-    elsif templates_size > values_size
-      (templates_size-1).downto(values_size) do |index|
+
+      templates_size = @templates.size
+      values_size = values.size
+
+      # Start over, re-create all nodes
+      (templates_size-1).downto(0) do |index|
         item_removed(index)
+      end
+      0.upto(values_size-1) do |index|
+        item_added(index)
       end
     end
   end
 
   def item_removed(position)
-    position = position.cur
+    # Remove dependency
+    @templates[position].context.locals[:index_dependency].remove
+
+    # puts "REMOVE AT: #{position.inspect} - #{@templates[position].inspect} - #{@templates.inspect}"
     @templates[position].remove_anchors
     @templates[position].remove
     @templates.delete_at(position)
@@ -50,7 +67,6 @@ class EachBinding < BaseBinding
   end
 
   def item_added(position)
-    # ObjectTracker.enable_cache
     binding_name = @@binding_number
     @@binding_number += 1
 
@@ -62,15 +78,28 @@ class EachBinding < BaseBinding
       dom_section.insert_anchor_before(binding_name, @templates[position].binding_name)
     end
 
-    index = ReactiveValue.new(position)
-    value = @value[index]
+    # TODORW: :parent => @value may change
+    item_context = SubContext.new({:_index_value => position, :parent => @value}, @context)
+    item_context.locals[@item_name.to_sym] = Proc.new { @value[item_context.locals[:_index_value]] }
 
-    item_context = SubContext.new({@item_name => value, :index => index, :parent => @value}, @context)
+    position_dependency = Dependency.new
+    item_context.locals[:index_dependency] = position_dependency
+
+    # Get and set index
+    item_context.locals[:index=] = Proc.new do |val|
+      position_dependency.changed!
+      item_context.locals[:_index_value] = val
+    end
+
+    item_context.locals[:index] = Proc.new do
+      position_dependency.depend
+      item_context.locals[:_index_value]
+    end
 
     item_template = TemplateRenderer.new(@page, @target, item_context, binding_name, @template_name)
     @templates.insert(position, item_template)
 
-    # update_indexes_after(position)
+    update_indexes_after(position)
   end
 
   # When items are added or removed in the middle of the list, we need
@@ -78,18 +107,15 @@ class EachBinding < BaseBinding
   def update_indexes_after(start_index)
     size = @templates.size
     if size > 0
-      puts @templates.inspect
       start_index.upto(size-1) do |index|
-        @templates[index].context.locals[:index].cur = index
+        @templates[index].context.locals[:index=].call(index)
       end
     end
   end
 
-  def current_values
-    values = @value.cur
-
+  def current_values(values)
     return [] if values.is_a?(Model) || values.is_a?(Exception)
-    values = values.attributes unless values.is_a?(ReactiveArray)
+    values = values.attributes if values.respond_to?(:attributes)
 
     return values
   end
@@ -97,17 +123,24 @@ class EachBinding < BaseBinding
 
   # When this each_binding is removed, cleanup.
   def remove
+    @computation.stop
+    @computation = nil
+
+    # Clear value
+    @value = nil
+
     @added_listener.remove
     @added_listener = nil
-
-    @changed_listener.remove
-    @changed_listener = nil
 
     @removed_listener.remove
     @removed_listener = nil
 
     if @templates
-      @templates.compact.each(&:remove)
+      template_count = @templates.size
+      template_count.times do |index|
+        item_removed(template_count - index - 1)
+      end
+      # @templates.compact.each(&:remove)
       @templates = nil
     end
 
