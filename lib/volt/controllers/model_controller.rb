@@ -49,16 +49,16 @@ class ModelController
     return inst
   end
 
-  attr_accessor :data
+  attr_accessor :attrs
 
   def initialize(*args)
     if args[0]
-      # Assign the first passed in argument to data
-      self.data = args[0]
+      # Assign the first passed in argument to attrs
+      self.attrs = args[0]
 
       # If a model attribute is passed in, we assign it directly
-      if data.respond_to?(:model)
-        self.model = data.locals[:model]
+      if attrs.respond_to?(:model)
+        self.model = attrs.locals[:model]
       end
     end
   end

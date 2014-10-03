@@ -27,7 +27,7 @@ class EachBinding < BaseBinding
     # Since we're checking things like size, we don't want this to be re-triggered on a
     # size change, so we run without tracking.
     Computation.run_without_tracking do
-      # puts "RELOAD:-------------- #{self.inspect}"
+      puts "RELOAD:-------------- #{value.inspect}"
       # Adjust to the new size
       values = current_values(value)
       @value = values
@@ -43,14 +43,12 @@ class EachBinding < BaseBinding
       templates_size = @templates.size
       values_size = values.size
 
-      if templates_size < values_size
-        (templates_size).upto(values_size-1) do |index|
-          item_added(index)
-        end
-      elsif templates_size > values_size
-        (templates_size-1).downto(values_size) do |index|
-          item_removed(index)
-        end
+      # Start over, re-create all nodes
+      (templates_size-1).downto(0) do |index|
+        item_removed(index)
+      end
+      0.upto(values_size-1) do |index|
+        item_added(index)
       end
     end
   end

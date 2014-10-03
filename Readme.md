@@ -301,7 +301,19 @@ Radio buttons bind to a checked state as well, except instead of setting the val
 
 When a radio button is checked, whatever checked is bound to is set to the field's value.  When the checked binding value is changed, any radio buttons where the binding's value matches the fields value are checked.  NOTE: This seems to be the most useful behaviour for radio buttons.
 
--- TODO: select boxes
+Select boxes can be bound to a value (while not technically a property, this is another convient behavior we add).
+
+```html
+  <select value="{_rating}">
+    <option value="1">*</option>
+    <option value="2">**</option>
+    <option value="3">***</option>
+    <option value="4">****</option>
+    <option value="5">*****</option>
+  </select>
+```
+
+When the selected option of the select above changes, ```_rating``` is changed to match.  When ```_rating``` is changed, the selected value is changed to the first option with a matching value.  If no matching values are found, the select box is unselected.
 
 If you have a controller at app/home/controller/index_controller.rb, and a view at app/home/views/index/index.html, all methods called are called on the controller.
 
