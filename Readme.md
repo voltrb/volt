@@ -71,8 +71,8 @@ You can access the Volt console with:
 
 1. [Getting Help](#getting-help)
 2. [Rendering](#rendering)
-  1. [Reactive Values](#reactive-values)
-    1. [ReactiveValue Gotchas](#reactivevalue-gotchas)
+  1. [States and Computations](#states-and-computations)
+  1. [Computations](#states-and-computations)
 3. [Views](#views)
   1. [Bindings](#bindings)
     1. [Content Binding](#content-binding)
@@ -82,9 +82,8 @@ You can access the Volt console with:
     5. [Escaping](#escaping)
 4. [Models](#models)
   1. [Provided Collections](#provided-collections)
-  2. [Reactive Models](#reactive-models)
-  3. [Model Events](#model-events)
-  4. [Automatic Model Conversion](#automatic-model-conversion)
+  2. [ArrayModel Events](#arraymodel-events)
+  3. [Automatic Model Conversion](#automatic-model-conversion)
 5. [Controllers](#controllers)
 6. [Tasks](#tasks)
 7. [Components](#components)
@@ -366,7 +365,7 @@ You can also append to a model if it's not defined yet.  In Volt models, plural 
 ArrayModels can be appended to and accessed just like regular arrays.
 
 
-### Nil Models: .nil?, .or, and .and
+### Nil Models
 
 As a convience, calling something like ```page._info``` returns what's called a NilModel (assuming it isn't already initialized).  NilModels are place holders for future possible Models.  NilModels allow us to bind deeply nested values without initializing any intermediate values.
 
@@ -398,6 +397,8 @@ Simply use:
 ```
 
 `#and` works the same way as &&.  #and and #or let you easily deal with default values involving NilModels.
+
+-- TODO: Document .true? / .false?
 
 
 ## Provided Collections

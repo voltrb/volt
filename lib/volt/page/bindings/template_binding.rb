@@ -204,14 +204,11 @@ class TemplateBinding < BaseBinding
         @controller.section = @current_template.dom_section
       end
 
-      if @action
-        controller_send(:"#{@action}_ready")
-      end
+      controller_send(:"#{@action}_ready") if @action
     end
   end
 
   def remove
-    puts "remove--#{@action}"
     clear_grouped_controller
 
     if @current_template
