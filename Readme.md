@@ -15,6 +15,7 @@ Instead of syncing data between the client and server via HTTP, Volt uses a pers
 Pages HTML is written in a handlebars-like template language.  Volt uses data flow/reactive programming to automatically and intelligently propagate changes to the DOM (or any other code wanting to know when a value updates).  When something in the DOM changes, Volt intelligently updates only the nodes that need to be changed.
 
 See some demo videos here:
+** Note: These videos are outdated, new videos coming tomorrow.
  - [Volt Todos Example](https://www.youtube.com/watch?v=6ZIvs0oKnYs)
  - [Build a Blog with Volt](https://www.youtube.com/watch?v=c478sMlhx1o)
  - [Reactive Values in Volt](https://www.youtube.com/watch?v=yZIQ-2irY-Q)
@@ -117,13 +118,13 @@ When a user interacts with a web page, typically we want to do two things:
 1. Change application state
 2. Update the DOM
 
-For example when a user clicks to add a new todo item to a todo list, we might create a JavaScript object to represent the todo item, then add an item to the list's DOM.  A lot of work needs to be done to make sure that the JavaScript object and the DOM always stay in sync.
+For example when a user clicks to add a new todo item to a todo list, we might create an object to represent the todo item, then add an item to the list's DOM.  A lot of work needs to be done to make sure that the object and the DOM always stay in sync.
 
-The idea of "reactive programming" has been used to simplify maintaining the DOM.  The idea is instead of having event handlers that manage a model (or JavaScript object) and manage the DOM, we have event handlers that manage reactive data models.  We describe our DOM layer in a declarative way so that it automatically knows how to render our data models.
+The idea of "reactive programming" can be used to simplify maintaining the DOM.  Instead of having event handlers that manage a model and manage the DOM, we have event handlers that manage reactive data models.  We describe our DOM layer in a declarative way so that it automatically knows how to render our data models.
 
 ## State and Computations
 
-Web applications center around maintaining state.  Many events can trigger changes to a state.  Page interaction like entering text into form elements, clicking button, links, scrolling, etc.. can change the state of the page.  In the past, each page interaction event would manually change any state stored on a page.
+Web applications center around maintaining state.  Many events can trigger changes to a state.  Page interaction like entering text into form elements, clicking a button, links, scrolling, etc.. can all change the state of the app.  In the past, each page interaction event would manually change any state stored on a page.
 
 To simplify managing application state, all application state is kept in models that can optionally be persisted in different locations.  By centralizing the application state, we reduce the amount of complex code needed to update a page.  We can then build our page's html declaratively.  The relationship to the page's models' are bound using function and method calls.
 
@@ -131,7 +132,7 @@ We want our DOM to automatically update when our model data changes.  To make th
 
 ### Computations
 
-Lets take a look at this in practice.  We'll use the ```page``` collection as an example.  (You'll see more on it later)
+Lets take a look at this in practice.  We'll use the ```page``` collection as an example.  (You'll see more on collections later)
 
 First, we setup a computation watch.  Computations are built by calling .watch! on a Proc.  Here we'll use the ruby 1.9 proc shorthand syntax ```-> { ... }``` It will run once, then run again each time the data in page._name changes.
 ```ruby
@@ -142,7 +143,7 @@ First, we setup a computation watch.  Computations are built by calling .watch! 
     # => Jimmy
 ```
 
-Each time page._name is assigned to a new value, the computation is run again.  We can also call anything in the Proc and it will still call again when any data is changed.
+Each time page._name is assigned to a new value, the computation is run again.  A re-run of the computation will be triggered when any data accessed in the previous run is changed.  This lets us access data through methods and still have watches re-triggered.
 
 ```ruby
     page._first = 'Ryan'
