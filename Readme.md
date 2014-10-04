@@ -72,19 +72,28 @@ You can access the Volt console with:
 1. [Getting Help](#getting-help)
 2. [Rendering](#rendering)
   1. [States and Computations](#state-and-computations)
-  1. [Computations](#computations)
+    1. [Computations](#computations)
+  2. [Dependencies](#dependencies)
 3. [Views](#views)
   1. [Bindings](#bindings)
     1. [Content Binding](#content-binding)
     2. [If Binding](#if-binding)
     3. [Each Binding](#each-binding)
     4. [Attribute Bindings](#attribute-bindings)
-    5. [Escaping](#escaping)
+  2. [Escaping](#escaping)
 4. [Models](#models)
-  1. [Provided Collections](#provided-collections)
-  2. [ArrayModel Events](#arraymodel-events)
-  3. [Automatic Model Conversion](#automatic-model-conversion)
+  1. [Nil Models](#nil-models)
+  2. [Provided Collections](#provided-collections)
+  3. [Store Collection](#store-collection)
+  4. [Sub Collections](#sub-collections)
+  5. [Model Classes](#model-classes)
+  6. [Buffers](#buffers)
+  7. [Validations](#validations)
+  8. [Model State](#model-state)
+  9. [ArrayModel Events](#arraymodel-events)
+  10. [Automatic Model Conversion](#automatic-model-conversion)
 5. [Controllers](#controllers)
+  1. [Reactive Accessors](#reactive-accessors)
 6. [Tasks](#tasks)
 7. [Components](#components)
   1. [Dependencies](#dependencies)
@@ -97,9 +106,11 @@ You can access the Volt console with:
 9. [Routes](#routes)
   1. [Routes file](#routes-file)
 10. [Testing](#testing)
-11. [Volt Helpers](#volt-helpers)
+11. [Debugging](#debugging)
+12. [Volt Helpers](#volt-helpers)
   1. [Logging](#logging)
   2. [App Configuration](#app-configuration)
+13. [Contributing](#contributing)
 
 # Getting Help
 
@@ -270,7 +281,7 @@ You can do {index + 1} to correct the zero offset.
 
 When items are removed or added to the array, the #each binding automatically and intelligently adds or removes the items from/to the DOM.
 
-## Attribute Bindings
+### Attribute Bindings
 
 Bindings can also be placed inside of attributes.
 
@@ -327,17 +338,19 @@ When you need to use { and } outside of bindings, anything in a triple mustache 
 
 # Models
 
-Volt's concept of a model is slightly different from many frameworks where a model is the name for the ORM to the database.  In Volt a model is a class where you can store data easily.  Models can be created with a "Persistor", which is responsible for storing the data in the model.  Models created without a persistor, simply store the data in the classes instance.  Lets first see how to use a model.
+Volt's concept of a model is slightly different from many frameworks where a model is the name for the ORM to the database.  In Volt a model is a class where you can store data easily.  Models can be created with a "Persistor", which is responsible for storing the data in the model somewhere.  Models created without a persistor, simply store the data in the classes instance.  Lets first see how to use a model.
 
-Volt comes with many built-in models; one is called `page`.  If you call `#page` on a controller, you will get access to the model.  Models provided by Volt are automatically wrapped in a ReactiveValue so update events can be tracked.
+Volt comes with many built-in models; one is called `page`.  If you call `#page` on a controller, you will get access to the model.
 
 ```ruby
     page._name = 'Ryan'
     page._name
-    # => @'Ryan'
+    # => 'Ryan'
 ```
 
-Models act like a hash that you can access with getters and setters that start with an _ .  If an underscore method is called that hasn't yet been assigned, you will get back a "nil model".  Prefixing with an underscore makes sure we don't accidentally try to call a method that doesn't exist and get back nil model instead of raising an exception.  There is no need to define which fields a model has. Fields behave similarly to a hash, but with a different access and assignment syntax.
+Models act like a hash that you can access with getters and setters that start with an underscore.  If an attribute is accessed that hasn't yet been assigned, you will get back a "nil model".  Prefixing with an underscore makes sure we don't accidentally try to call a method that doesn't exist and get back nil model instead of raising an exception. Fields behave similarly to a hash, but with a different access and assignment syntax.
+
+  # TODO: Add docs on fields in classes
 
 Models also let you nest data without creating the intermediate models:
 
@@ -350,23 +363,28 @@ Models also let you nest data without creating the intermediate models:
     # => @#<Model:_settings {:_color=>"blue"}>
 ```
 
-Nested data is automatically setup when assigned.  In this case, page._settings is a model that is part of the page model.
+Nested data is automatically setup when assigned.  In this case, page._settings is a model that is part of the page model.  This allows nested models to be bound to a binding without the need to setup the model before use.
 
-You can also append to a model if it's not defined yet.  In Volt models, plural properties are assumed to contain arrays (or more specifically, ArrayModels).
+In Volt models, plural properties return an ArrayModel instance.  ArrayModels behave the same way as normal arrays.  You can add/remove items to the array with normal array methods (#<<, push, append, delete, delete_at, etc...)
 
 ```ruby
-    page._items << 'item 1'
     page._items
-    # => @#<ArrayModel ["item 1", "item 2"]>
+    # #<ArrayModel:70303686333720 []>
+
+    page._items << {_name: 'Item 1'}
+
+    page._items
+    # #<ArrayModel:70303686333720 [<Model:70303682055800 {:_name=>"Item 1"}>]>
+
+    page._items.size
+    # => 1
 
     page._items[0]
-    # => @"item 1"
+    # => <Model:70303682055800 {:_name=>"Item 1"}>
 ```
 
-ArrayModels can be appended to and accessed just like regular arrays.
 
-
-### Nil Models
+## Nil Models
 
 As a convience, calling something like ```page._info``` returns what's called a NilModel (assuming it isn't already initialized).  NilModels are place holders for future possible Models.  NilModels allow us to bind deeply nested values without initializing any intermediate values.
 
@@ -416,6 +434,160 @@ Above, I mentioned that Volt comes with many default collection models accessibl
 | controller  | a model for the current controller                                        |
 
 **more storage locations are planned**
+
+## Store Collection
+
+The store collection backs data in the data store.  Currently the only supported data store is Mongo. (More coming soon, RethinkDb will probably be next)  You can use store very similar to the other collections.
+
+In Volt you can access ```store``` on the front-end and the back-end.  Data will automatically be synced between the front-end and the backend.  Any changes to the data in store will be reflected on any clients using the data (unless a [buffer](#buffer) is in use - see below).
+
+```ruby
+    store._items << {_name: 'Item 1'}
+
+    store._items[0]
+    # => <Model:70303681865560 {:_name=>"Item 1", :_id=>"e6029396916ed3a4fde84605"}>
+```
+
+Inserting into ```store._items``` will create a ```_items``` table and insert the model into it.  An pseudo-unique _id will be automatically generated.
+
+Currently one difference between ```store``` and other collections is ```store``` does not store properties directly.  Only ArrayModels are allowed directly on ```store```
+
+```ruby
+    store._something = 'yes'
+    # => won't be saved at the moment
+```
+
+Note: We're planning to add support for direct ```store``` properties.
+
+## Sub Collections
+
+Models can be nested on ```store```
+
+```ruby
+    store._states << {_name: 'Montana'}
+    montana = store._states[0]
+
+    montana._cities << {_name: 'Bozeman'}
+    montana._cities << {_name: 'Helena'}
+
+    store._states << {_name: 'Idaho'}
+    idaho = store._states[1]
+
+    idaho._cities << {_name: 'Boise'}
+    idaho._cities << {_name: 'Twin Falls'}
+
+    store._states
+    # #<ArrayModel:70129010999880 [<Model:70129010999460 {:_name=>"Montana", :_id=>"e3aa44651ff2e705b8f8319e"}>, <Model:70128997554160 {:_name=>"Montana", :_id=>"9aaf6d2519d654878c6e60c9"}>, <Model:70128997073860 {:_name=>"Idaho", :_id=>"5238883482985760e4cb2341"}>, <Model:70128997554160 {:_name=>"Montana", :_id=>"9aaf6d2519d654878c6e60c9"}>, <Model:70128997073860 {:_name=>"Idaho", :_id=>"5238883482985760e4cb2341"}>]>
+```
+
+You can also create a Model first and then insert it.
+
+```ruby
+    montana = Model.new({_name: 'Montana'})
+
+    montana._cities << {_name: 'Bozeman'}
+    montana._cities << {_name: 'Helena'}
+
+    store._states << montana
+```
+
+## Model Classes
+
+By default all collections use the Model class by default.
+
+```ruby
+    page._info.class
+    # => Model
+```
+
+You can provide classes that will be loaded in place of the standard model class.  You can place these in any app/{component}/models folder.  For example, you could add ```app/main/info.rb```  Model classes should inherit from ```Model```
+
+```ruby
+    class Info < Model
+    end
+```
+
+Now when you access any sub-collection called ```_info```, it will load as an instance of ```Info```
+
+```ruby
+    page._info.class
+    # => Info
+```
+
+This lets you set custom methods and validations within collections.
+
+## Buffers
+
+Because the store collection is automatically synced to the backend, any change to a model's property will result in all other clients seeing the change immediately.  Often this is not the desired behavior.  To facilitate building [CRUD](http://en.wikipedia.org/wiki/Create,_read,_update_and_delete) apps, Volt provides the concept of a "buffer".  A buffer can be created from one model and will not save data back to its backing model until .save! is called on it.  This lets you create a form thats not saved until a submit button is pressed.
+
+```ruby
+    store._items << {_name: 'Item 1'}
+
+    item1 = store._items[0]
+
+    item1_buffer = item1.buffer
+
+    item1_buffer._name = 'Updated Item 1'
+    item1_buffer._name
+    # => 'Updated Item 1'
+
+    item1._name
+    # => 'Item 1'
+
+    item1_buffer.save!
+
+    item1_buffer._name
+    # => 'Updated Item 1'
+
+    item1._name
+    # => 'Updated Item 1'
+```
+
+```#save!``` on buffer also returns a [promise](http://opalrb.org/blog/2014/05/07/promises-in-opal/) that will resolve when the data has been saved back to the server.
+
+```ruby
+    item1_buffer.save!.then do
+      puts "Item 1 saved"
+    end.fail do |err|
+      puts "Unable to save because #{err}"
+    end
+```
+
+Calling .buffer on an existing model will return a buffer for that model instance.  If you call .buffer on an ArrayModel (plural sub-collection), you will get a buffer for a new item in that collection.  Calling .save! will then add the item to that sub-collection as if you had done << to push the item into the collection.
+
+## Validations
+
+Within a model class, you can setup validations.  Validations let you restrict the types of data that can be stored in a model.  Validations are mostly useful for the ```store``` collection, though they can be used elsewhere.
+
+At the moment we only have two validations implemented (length and presence).  Though a lot more will be coming.
+
+```ruby
+    class Info < Model
+      validate :_name, length: 5
+      validate :_state, presence: true
+    end
+```
+
+When calling save on a model with validations, the following occurs:
+
+1. Client side validations are run; if they fail, the promise from ```save!``` is rejected with the error object.
+2. The data is sent to the server and client and server side validations are run on the server; any failures are returned and the promise is rejected on the front-end (with the error object)
+    - re-running the validations on the server side makes sure that no data can be saved that doesn't pass the validations
+3. If all validations pass, the data is saved to the database and the promise resolved on the client.
+4. The data is synced to all other clients.
+
+
+## Model State
+
+**Work in progress**
+
+| state       | events bound | description                                                  |
+|-------------|--------------|--------------------------------------------------------------|
+| not_loaded  | no           | no events and no one has accessed the data in the model      |
+| loading     | maybe        | someone either accessed the data or bound an event           |
+| loaded      | yes          | data is loaded and there is an event bound                   |
+| dirty       | no           | data was either accessed without binding an event, or an event was bound, but later unbound. |
+
 
 ## ArrayModel Events
 
@@ -781,16 +953,7 @@ If ```params._view``` were 'todos' and ```params._index``` were not nil, the rou
 
 Routes are matched top to bottom in a routes file.
 
-## Debugging
-
-An in browser irb is in the works.  We also have source maps support, but they are currently disabled by default.  To enable them run:
-
-    MAPS=true volt s
-
-This feature is disabled by default because (due to the volume of pages rendered) it slows down page rendering. We're working with the opal and sprockets teams to make it so everything is still served in one big source maps file (which would show the files as they originated on disk)
-
-
-## Channel
+# Channel
 
 Controllers provide a `#channel` method, that you can use to get the status of the connection to the backend.  Channel is provided in a ReactiveValue, and when the status changes, the changed events are triggered.  It provides the following:
 
@@ -821,6 +984,14 @@ To run Capybara tests, you need to specify a driver.  The following drivers are 
 3. IE - coming soon
 
 Chrome is not supported due to [this issue](https://code.google.com/p/chromedriver/issues/detail?id=887#makechanges) with ChromeDriver.  Feel free to go [here](https://code.google.com/p/chromedriver/issues/detail?id=887#makechanges) and pester the chromedriver team to fix it.
+
+# Debugging
+
+An in browser irb is in the works.  We also have source maps support, but they are currently disabled by default.  To enable them run:
+
+    MAPS=true volt s
+
+This feature is disabled by default because (due to the volume of pages rendered) it slows down page rendering. We're working with the opal and sprockets teams to make it so everything is still served in one big source maps file (which would show the files as they originated on disk)
 
 # Volt Helpers
 
@@ -858,24 +1029,6 @@ Volt does its best to start with useful defaults.  You can configure things like
 ## Accessing DOM section in a controller
 
 TODO
-
-
-# Data Store
-
-Volt provides a data store collection on the front-end and the back-end.  In store, all plural names are assumed to be collections (like an array), and all singular are assumed to be a model (like a hash).
-
-```ruby
-store._things
-```
-
-**Work in progress**
-
-| state       | events bound | description                                                  |
-|-------------|--------------|--------------------------------------------------------------|
-| not_loaded  | no           | no events and no one has accessed the data in the model      |
-| loading     | maybe        | someone either accessed the data or bound an event           |
-| loaded      | yes          | data is loaded and there is an event bound                   |
-| dirty       | no           | data was either accessed without binding an event, or an event was bound, but later unbound. |
 
 # Contributing
 
