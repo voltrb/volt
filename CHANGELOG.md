@@ -1,4 +1,8 @@
-# 0.0.8 - Oct 3, 2014
+# 0.8.4 - Oct 4, 2014
+
+  - Added configuration for databases.
+
+# 0.8.0 - Oct 3, 2014
 
   - Major change: After a bunch of research and effort, we have decided to change the way the reactive core works.  Previously, all objects that maybe changed would be wrapped in a ReactiveValue object that could be updated using ```.cur=``` and accessed using ```.cur```  This had many advantages, but resulted in very complex framework code.  It also had a few problems, mainly that reactive value's (sometimes) needed to be unwrapped when passed to code that wasn't aware of reactivity.  Our goal is transparent reactivity.  Taking infuence from meteor.js, we have switched to a simpler reactive model.  See the Readme for details of the new reactive system.  The new system has a few advantages.  Mainly, you can for the most part write code that is reactive and it will just work.
   - Radio button support has been added, see README.md
