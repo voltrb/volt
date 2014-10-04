@@ -31,7 +31,7 @@ require 'volt/page/tasks'
 
 
 class Page
-  attr_reader :url, :params, :page, :templates, :routes, :events
+  attr_reader :url, :params, :page, :templates, :routes, :events, :model_classes
 
   def initialize
     @model_classes = {}
@@ -138,7 +138,7 @@ class Page
   end
 
   def add_model(model_name)
-    @model_classes[["*", "_#{model_name}"]] = Object.const_get(model_name.camelize)
+    @model_classes[model_name] = Object.const_get(model_name.camelize)
   end
 
   def add_template(name, template, bindings)

@@ -31,7 +31,7 @@ module Persistors
       root_model.persistor.save_all
     end
 
-    def loaded
+    def loaded(initial_state=nil)
       # When the main model is first loaded, we pull in the data from the
       # store if it exists
       if @model.path == []

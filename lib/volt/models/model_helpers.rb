@@ -1,5 +1,4 @@
 # A place for things shared between an ArrayModel and a Model
-
 module ModelHelpers
   def deep_unwrap(value)
     if value.is_a?(Model)
@@ -23,16 +22,16 @@ module ModelHelpers
 
   # Gets the class for a model at the specified path.
   def class_at_path(path)
-    if path && path.last == :[]
+    if path
       begin
-        # TODO: SECURITY on the back-end we need to check that the model class we're loading
-        # is coming from the models folder.
-
         # remove the _ and then singularize
-        klass_name = path[-2][1..-1].singularize.camelize
+        if path.last == :[]
+          klass_name = path[-2][1..-1].singularize.camelize
+        else
+          klass_name = path[-1][1..-1].singularize.camelize
+        end
 
-        klass_name = klass_name.camelize
-        klass = Object.send(:const_get, klass_name.to_sym)
+        klass = $page.model_classes[klass_name] || Model
       rescue NameError => e
         # Ignore exception, just means the model isn't defined
         klass = Model

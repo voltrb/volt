@@ -1,11 +1,13 @@
+require 'spec_helper'
 require 'volt/models'
-require 'volt/reactive/dependency'
-require 'volt/reactive/computation'
 
 
 class TestItem < Model
-
 end
+
+class Item < Model
+end
+
 
 describe Model do
 
@@ -411,6 +413,24 @@ describe Model do
       persistor = double('persistor')
       expect(persistor).to receive(:new)
       @model = Model.new(nil, persistor: persistor)
+    end
+  end
+
+  if RUBY_PLATFORM != 'opal'
+    describe "class loading" do
+      it 'should load classes for models' do
+        $page = Page.new
+        $page.add_model('Item')
+
+        @model = Model.new
+
+        # Should return a buffer of the right type
+        expect(@model._items.buffer.class).to eq(Item)
+
+        # Should insert as the right type
+        @model._items << {_name: 'Item 1'}
+        expect(@model._items[0].class).to eq(Item)
+      end
     end
   end
 end
