@@ -34,5 +34,9 @@ class Volt
     def inspect
       @env.inspect
     end
+
+    def to_s
+      @env
+    end
   end
 end

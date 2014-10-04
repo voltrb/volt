@@ -2,8 +2,7 @@ require 'mongo'
 
 class DataStore
   def initialize
-    @@mongo_db ||= Mongo::MongoClient.new("localhost", 27017)
-    @@db ||= @@mongo_db.db("development")
+    @@db = Volt::DataStore.fetch
   end
 
   def query(collection, query)

@@ -8,7 +8,7 @@
         <:nav href="/" text="Home" />
         <:nav href="/about" text="About" />
       </ul>
-      <h3 class="text-muted">Project name</h3>
+      <h3 class="text-muted"><%= config[:name].titleize %></h3>
     </div>
 
     <:volt:notices />

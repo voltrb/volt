@@ -2,6 +2,11 @@ require 'volt/volt/environment'
 require 'volt/extra_core/extra_core'
 require 'volt/reactive/computation'
 require 'volt/reactive/dependency'
+if RUBY_PLATFORM == 'opal'
+else
+  require 'volt/config'
+  require 'volt/data_stores/data_store'
+end
 
 class Volt
   if RUBY_PLATFORM == 'opal'
@@ -45,4 +50,5 @@ class Volt
   def self.in_browser?
     @@in_browser
   end
+
 end

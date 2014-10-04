@@ -80,9 +80,11 @@ class Server
     @app = Rack::Builder.new
 
     # Should only be used in production
-    # @app.use Rack::Deflater
+    if Volt.config.deflate
+      @app.use Rack::Deflater
+      @app.use Rack::Chunked
+    end
 
-    # @app.use Rack::Chunked
     @app.use Rack::ContentLength
 
     @app.use Rack::KeepAlive
