@@ -480,15 +480,18 @@ To convert a Model or an ArrayModel back to a normal hash, call .to_h or .to_a r
     user = Model.new
     user._name = 'Ryan'
     user._profiles = {
-      twitter: 'http://www.twitter.com/ryanstout',
-      dribbble: 'http://dribbble.com/ryanstout'
+      _twitter: 'http://www.twitter.com/ryanstout',
+      _dribbble: 'http://dribbble.com/ryanstout'
     }
 
     user._profiles.to_h
-    # => {twitter: 'http://www.twitter.com/ryanstout', dribbble: 'http://dribbble.com/ryanstout'}
+    # => {_twitter: 'http://www.twitter.com/ryanstout', _dribbble: 'http://dribbble.com/ryanstout'}
 
     items = ArrayModel.new([1,2,3,4])
-    items
+    # => #<ArrayModel:70226521081980 [1, 2, 3, 4]>
+
+    items.to_a
+    # => [1,2,3,4]
 ```
 
 You can get a normal array again by calling .to_a on an ArrayModel.
