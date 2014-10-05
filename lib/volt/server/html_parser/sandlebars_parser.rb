@@ -82,11 +82,12 @@ class SandlebarsParser
         end
 
         text(@html[1])
-      elsif (binding = @html.scan(/\{/))
+      elsif (binding = @html.scan(/\{\{/))
         # We are in text mode and matched the start of a binding
         start_binding
-      elsif (text = @html.scan(/(?:[^\<\{]+)/))
+      elsif (text = @html.scan(/.*?(?=(\<|\{\{))+/))
         # matched text up until the next html tag
+        puts "TEXT: #{text}"
         text(text)
       else
         # Nothing left
@@ -106,9 +107,9 @@ class SandlebarsParser
     binding = ''
     open_count = 1
 
-    # scan until we reach a { or }
+    # scan until we reach a {{ or }}
     loop do
-      binding << @html.scan_until(/([\{\}\n]|\Z)/)
+      binding << @html.scan_until(/((\{\{|\}\}|\n)|\Z)/)
 
       match = @html[1]
       if match == '}'
