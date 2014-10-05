@@ -20,33 +20,39 @@ class ViewScope
   end
 
   def add_binding(content)
-    case content[0]
-    when '#'
-  		command, *content = content.split(/ /)
-  		content = content.join(' ')
+    content = content.strip
+    index = content.index(/[ \(]/)
+    if index
+      first_symbol = content[0...index]
+      args = content[index..-1]
 
-      case command
-      when '#if'
-        add_if(content)
-      when '#elsif'
-        add_else(content)
-      when '#else'
-        if content.blank?
+      case first_symbol
+      when 'if'
+        add_if(args)
+      when 'elsif'
+        add_else(args)
+      when 'else'
+        if args.blank?
           add_else(nil)
         else
-          raise "#else does not take a conditional #{content} was provided."
+          raise "else does not take a conditional, #{content} was provided."
         end
-      when '#each'
-        add_each(content)
-      when '#template'
-        add_template(content)
+      when 'template'
+        add_template(args)
+      else
+        if content =~ /.each\s+do\s+\|/
+          add_each(content)
+        else
+          add_content_binding(content)
+        end
       end
-    when '/'
-      # close binding
-      close_scope
     else
-      # content
-      add_content_binding(content)
+      if content == 'end'
+        # Close the binding
+        close_scope
+      else
+        add_content_binding(content)
+      end
     end
   end
 
@@ -71,6 +77,9 @@ class ViewScope
   end
 
   def add_template(content)
+    # Strip ( and ) from the outsides
+    content = content.gsub(/^\s*\(/, '').gsub(/\)\s*$/, '')
+
     @handler.html << "<!-- $#{@binding_number} --><!-- $/#{@binding_number} -->"
     save_binding(@binding_number, "lambda { |__p, __t, __c, __id| TemplateBinding.new(__p, __t, __c, __id, #{@path.inspect}, Proc.new { [#{content}] }) }")
 
