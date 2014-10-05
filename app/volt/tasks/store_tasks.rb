@@ -3,14 +3,12 @@ require 'query_tasks'
 
 class StoreTasks
   def initialize(channel=nil, dispatcher=nil)
-    @@db = Volt::DataStore.fetch
-
     @channel = channel
     @dispatcher = dispatcher
   end
 
   def db
-    @@db
+    @@db ||= Volt::DataStore.fetch
   end
 
   def model_errors(collection, data)
@@ -43,14 +41,14 @@ class StoreTasks
       # TODO: Seems mongo is dumb and doesn't let you upsert with custom id's
       begin
         # data['_id'] = BSON::ObjectId('_id') if data['_id']
-        @@db[collection].insert(data)
+        db[collection].insert(data)
       rescue Mongo::OperationFailure => error
         # Really mongo client?
         if error.message[/^11000[:]/]
           # Update because the id already exists
           update_data = data.dup
           update_data.delete(:_id)
-          @@db[collection].update({:_id => id}, update_data)
+          db[collection].update({:_id => id}, update_data)
         else
           return {:error => error.message}
         end
@@ -64,7 +62,7 @@ class StoreTasks
   end
 
   def delete(collection, id)
-    @@db[collection].remove('_id' => id)
+    db[collection].remove('_id' => id)
 
     QueryTasks.live_query_pool.updated_collection(collection, @channel)
   end

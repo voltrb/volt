@@ -19,7 +19,7 @@ class Dispatcher
         error = nil
       rescue => e
         # TODO: Log these errors better
-        puts "ERROR: #{e.inspect}"
+        puts e.inspect
         puts e.backtrace
         result = nil
         error = e

@@ -2,7 +2,10 @@ require 'mongo'
 
 class DataStore
   def initialize
-    @@db = Volt::DataStore.fetch
+  end
+
+  def db
+    @@db ||= Volt::DataStore.fetch
   end
 
   def query(collection, query)
@@ -13,6 +16,6 @@ class DataStore
       end
     end
 
-    @@db[collection].find(query).to_a
+    db[collection].find(query).to_a
   end
 end
