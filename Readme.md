@@ -328,6 +328,14 @@ When the selected option of the select above changes, ```_rating``` is changed t
 
 If you have a controller at app/home/controller/index_controller.rb, and a view at app/home/views/index/index.html, all methods called are called on the controller.
 
+### Template Bindings
+
+All views/*.html files are templates that can be rendered inside of other views using the template binding.
+
+```html
+    {#template "header"}
+```
+
 ## Escaping
 
 When you need to use { and } outside of bindings, anything in a triple mustache will be escaped and not processed as a binding:
@@ -693,6 +701,8 @@ A controller can be any class in Volt, however it is common to have that class i
     end
 ```
 
+When a model is set, any missing methods will be proxied to the model.  This lets you bind within the views without prefixing the model object every time.  It also lets you change out the current model and have the views update automatically.
+
 In methods, the `#model` method returns the current model.
 
 See the [provided collections](#provided-collections) section for a list of the available collection models.
@@ -905,7 +915,7 @@ Once the view file for the control or template is found, it will look for a matc
 
 # Control Arguments/Attributes
 
-Like other html tags, controls can be passed attributes.  These are then converted into a hash and passed as the first argument to the initialize method on the controller.  The standard ModelController's initialize will then assign each key/value in the attributes hash as instance values.  This makes it easy to access attributes passed in.
+Like other html tags, controls can be passed attributes.  These are then converted into an object that is passed as the first argument to the initialize method on the controller.  The standard ModelController's initialize will then assign the object to the attrs property which can be accessed with ```#attrs```  This makes it easy to access attributes passed in.
 
 ```html
 
@@ -918,10 +928,27 @@ Like other html tags, controls can be passed attributes.  These are then convert
   </ul>
 
 <:Todo>
-  <li>{@name}</li>
-
+  <li>{attrs.name}</li>
 ```
 
+Instead of passing in individual attributes, you can also pass in a Model object with the "model" attribute and it will be set as the model for the controller.
+
+```html
+<:Body>
+  <ul>
+    {#each _todos as todo}
+      <:todo model="{todo}" />
+    {/}
+  </ul>
+
+<:Todo>
+  <li>
+    {_name} -
+    {#if _complete}
+      Complete
+    {/}
+  </li>
+```
 
 # Routes
 
