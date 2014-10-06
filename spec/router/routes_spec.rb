@@ -19,8 +19,8 @@ describe Routes do
 
   it "should setup indiect routes" do
     routes do
-      get '/blog/{_id}/edit', _view: 'blog/edit'
-      get '/blog/{_id}', _view: 'blog/show'
+      get '/blog/{{ _id }}/edit', _view: 'blog/edit'
+      get '/blog/{{ _id }}', _view: 'blog/show'
     end
 
     indirect_routes = @routes.instance_variable_get(:@indirect_routes)
@@ -41,11 +41,11 @@ describe Routes do
   it "should match routes" do
     routes do
       get "/blog", _view: 'blog'
-      get '/blog/{_id}', _view: 'blog/show'
-      get '/blog/{_id}/draft', _view: 'blog/draft', _action: 'draft'
-      get '/blog/{_id}/edit', _view: 'blog/edit'
-      get '/blog/tags/{_tag}', _view: 'blog/tag'
-      get '/login/{_name}/user/{_id}', _view: 'login', _action: 'user'
+      get '/blog/{{ _id }}', _view: 'blog/show'
+      get '/blog/{{ _id }}/draft', _view: 'blog/draft', _action: 'draft'
+      get '/blog/{{ _id }}/edit', _view: 'blog/edit'
+      get '/blog/tags/{{ _tag }}', _view: 'blog/tag'
+      get '/login/{{ _name }}/user/{{ _id }}', _view: 'login', _action: 'user'
     end
 
     params = @routes.url_to_params('/blog')
@@ -74,10 +74,10 @@ describe Routes do
   it "should setup param matchers" do
     routes do
       get "/blog", _view: 'blog'
-      get '/blog/{_id}', _view: 'blog/show'
-      get '/blog/{_id}/edit', _view: 'blog/edit'
-      get '/blog/tags/{_tag}', _view: 'blog/tag'
-      get '/login/{_name}/user/{_id}', _view: 'login', _action: 'user'
+      get '/blog/{{ _id }}', _view: 'blog/show'
+      get '/blog/{{ _id }}/edit', _view: 'blog/edit'
+      get '/blog/tags/{{ _tag }}', _view: 'blog/tag'
+      get '/login/{{ _name }}/user/{{ _id }}', _view: 'login', _action: 'user'
     end
 
     param_matches = @routes.instance_variable_get(:@param_matches)
@@ -94,10 +94,10 @@ describe Routes do
   it "should go from params to url" do
     routes do
       get "/blog", _view: 'blog'
-      get '/blog/{_id}', _view: 'blog/show'
-      get '/blog/{_id}/edit', _view: 'blog/edit'
-      get '/blog/tags/{_tag}', _view: 'blog/tag'
-      get '/login/{_name}/user/{_id}', _view: 'login', _action: 'user'
+      get '/blog/{{ _id }}', _view: 'blog/show'
+      get '/blog/{{ _id }}/edit', _view: 'blog/edit'
+      get '/blog/tags/{{ _tag }}', _view: 'blog/tag'
+      get '/login/{{ _name }}/user/{{ _id }}', _view: 'login', _action: 'user'
     end
 
     url, params = @routes.params_to_url({_view: 'blog/show', _id: '55'})
@@ -162,7 +162,7 @@ describe Routes do
 
     routes do
       get '/', _controller: 'index'
-      get '/blog/{_id}', _controller: 'blog'
+      get '/blog/{{ _id }}', _controller: 'blog'
     end
 
     params = @routes.url_to_params('/blog/20')

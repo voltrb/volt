@@ -213,52 +213,52 @@ Sections help you split up different parts of the same content (title and body u
 
 ## Bindings
 
-Once you understand the basics of ReactiveValues, we can discuss bindings. In Volt, you code your views in a handlebars like template language.  Volt provides several bindings, which handle rendering of something for you. Content bindings are anything inbetween { and }.
+In Volt, you code your views in a handlebars like template language.  Volt provides several bindings, which handle rendering of something for you. Content bindings are anything inbetween {{ and }}.
 
 ### Content binding
 
 The most basic binding is a content binding:
 
 ```html
-    <p>{some_method}<p>
+    <p>{{ some_method }}<p>
 ```
 
-The content binding runs the Ruby code between { and }, then renders the return value.  If the returned value is a ReactiveValue, it will update the value updated whenever a 'changed' event is triggered on the reactive value.
+The content binding runs the Ruby code between {{ and }}, then renders the return value.  Any time the data a content binding relies on changes, the binding will run again and update the text
 
 ### If binding
 
 An if binding lets you provide basic flow control.
 
 ```html
-    {#if _some_check?}
+    {{ if _some_check? }}
       <p>render this</p>
-    {/}
+    {{ end }}
 ```
 
-Blocks are closed with a {/}
+Blocks are closed with a {{ end }}
 
 When the if binding is rendered, it will run the ruby code after #if.  If the code is true it will render the code below.  Again, if the returned value is reactive, it will update as that value changes.
 
 If bindings can also have #elsif and #else blocks.
 
 ```html
-    {#if _condition_1?}
+    {{ if _condition_1? }}
       <p>condition 1 true</p>
-    {#elsif _condition_2?}
+    {{ elsif _condition_2? }}
       <p>condition 2 true</p>
-    {#else}
+    {{ else }}
       <p>neither true</p>
-    {/}
+    {{ end }}
 ```
 
 ### Each binding
 
-For iteration over objects, the each binding is provided.
+For iteration over objects, you can use .each
 
 ```html
-    {#each _items as item}
-      <p>{item}</p>
-    {/}
+    {{ _items.each do |item| }}
+      <p>{{ item }}</p>
+    {{ end }}
 ```
 
 Above, if _items were an array, the block would be rendered for each item, setting 'item' to the value of the array element.
@@ -266,9 +266,9 @@ Above, if _items were an array, the block would be rendered for each item, setti
 You can also access the position of the item in the array with the #index method.
 
 ```html
-    {#each _items as item}
-      <p>{index}. {item}</p>
-    {/}
+    {{ each _items as item }}
+      <p>{{ index }}. {{ item }}</p>
+    {{ end }}
 ```
 
 For the array: ['one', 'two', 'three'] this would print:
@@ -277,7 +277,7 @@ For the array: ['one', 'two', 'three'] this would print:
     1. two
     2. three
 
-You can do {index + 1} to correct the zero offset.
+You can do {{ index + 1 }} to correct the zero offset.
 
 When items are removed or added to the array, the #each binding automatically and intelligently adds or removes the items from/to the DOM.
 
@@ -286,19 +286,19 @@ When items are removed or added to the array, the #each binding automatically an
 Bindings can also be placed inside of attributes.
 
 ```html
-    <p class="{#if _is_cool?}cool{/}">Text</p>
+    <p class="{{ if _is_cool? }}cool{{ end }}">Text</p>
 ```
 
 There are some special features provided to make elements work as "two way bindings":
 
 ```html
-    <input type="text" value="{_name}" />
+    <input type="text" value="{{ _name }}" />
 ```
 
 In the example above, if _name changes, the field will update, and if the field is updated, _name will be changed:
 
 ```html
-    <input type="checkbox" checked="{_checked}" />
+    <input type="checkbox" checked="{{ _checked }}" />
 ```
 
 If the value of a checked attribute is true, the checkbox will be shown checked. If it's checked or unchecked, the value will be updated to true or false.
@@ -306,8 +306,8 @@ If the value of a checked attribute is true, the checkbox will be shown checked.
 Radio buttons bind to a checked state as well, except instead of setting the value to true or false, they set it to a supplied field value.
 
 ```html
-    <input type="radio" checked="{_radio}" value="one" />
-    <input type="radio" checked="{_radio}" value="two" />
+    <input type="radio" checked="{{ _radio }}" value="one" />
+    <input type="radio" checked="{{ _radio }}" value="two" />
 ```
 
 When a radio button is checked, whatever checked is bound to is set to the field's value.  When the checked binding value is changed, any radio buttons where the binding's value matches the fields value are checked.  NOTE: This seems to be the most useful behaviour for radio buttons.
@@ -315,7 +315,7 @@ When a radio button is checked, whatever checked is bound to is set to the field
 Select boxes can be bound to a value (while not technically a property, this is another convient behavior we add).
 
 ```html
-  <select value="{_rating}">
+  <select value="{{ _rating }}">
     <option value="1">*</option>
     <option value="2">**</option>
     <option value="3">***</option>
@@ -333,15 +333,15 @@ If you have a controller at app/home/controller/index_controller.rb, and a view 
 All views/*.html files are templates that can be rendered inside of other views using the template binding.
 
 ```html
-    {#template "header"}
+    {{ template "header" }}
 ```
 
 ## Escaping
 
-When you need to use { and } outside of bindings, anything in a triple mustache will be escaped and not processed as a binding:
+When you need to use {{ and }} outside of bindings, anything in a triple mustache will be escaped and not processed as a binding:
 
 ```html
-    {{{ bindings look like: {this}  }}}
+    {{{ bindings look like: {{this}}  }}}
 ```
 
 # Models
@@ -711,7 +711,7 @@ You can also provide your own object to model.
 
 In the example above, any methods not defined on the TodosController will fall through to the provided model.  All views in views/{controller_name} will have this controller as the target for any Ruby run in their bindings.  This means that calls on self (implicit or with self.) will have the model as their target (after calling through the controller).  This lets you add methods to the controller to control how the model is handled, or provide extra methods to the views.
 
-Volt is more similar to an MVVM architecture than an MVC architecture.  Instead of the controllers passing data off to the views, the controllers are the context for the views.  When using a ModelController, the controller automatically forwards all methods it does not handle to the model.  This is convenient since you can set a model in the controller and then access its properties directly with methods in bindings.  This lets you do something like ```{_name}``` instead of something like ```{@model._name}```
+Volt is more similar to an MVVM architecture than an MVC architecture.  Instead of the controllers passing data off to the views, the controllers are the context for the views.  When using a ModelController, the controller automatically forwards all methods it does not handle to the model.  This is convenient since you can set a model in the controller and then access its properties directly with methods in bindings.  This lets you do something like ```{{ _name }}``` instead of something like ```{{ @model._name }}```
 
 Controllers in the app/home component do not need to be namespaced, all other components should namespace controllers like so:
 
@@ -922,13 +922,13 @@ Like other html tags, controls can be passed attributes.  These are then convert
 <:Body>
 
   <ul>
-    {#each _todos as todo}
-      <:todo name="{todo._name}" />
-    {/}
+    {{ _todos.each do |todo| }}
+      <:todo name="{{ todo._name }}" />
+    {{ end }}
   </ul>
 
 <:Todo>
-  <li>{attrs.name}</li>
+  <li>{{ attrs.name }}</li>
 ```
 
 Instead of passing in individual attributes, you can also pass in a Model object with the "model" attribute and it will be set as the model for the controller.
@@ -936,17 +936,17 @@ Instead of passing in individual attributes, you can also pass in a Model object
 ```html
 <:Body>
   <ul>
-    {#each _todos as todo}
-      <:todo model="{todo}" />
-    {/}
+    {{ _todos.each do |todo| }}
+      <:todo model="{{ todo }}" />
+    {{ end }}
   </ul>
 
 <:Todo>
   <li>
-    {_name} -
-    {#if _complete}
+    {{ _name }} -
+    {{ if _complete }}
       Complete
-    {/}
+    {{ end }}
   </li>
 ```
 
@@ -971,7 +971,7 @@ When the params are changed, the URL will be set to the path for the route whose
 Route paths can also contain variables similar to bindings:
 
 ```ruby
-    get "/todos/{_index}", _view: 'todos'
+    get "/todos/{{ _index }}", _view: 'todos'
 ```
 
 In the case above, if any URL matches /todos/*, (where * is anything but a slash), it will be the active route. ```params._view``` would be set to 'todos', and ```params._index``` would be set to the value in the path.

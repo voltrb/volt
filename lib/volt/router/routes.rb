@@ -157,7 +157,7 @@ class Routes
 
       parts.each_with_index do |part, index|
         if has_binding?(part)
-          params[part[1..-2].to_sym] = index
+          params[part[2...-2].strip.to_sym] = index
 
           # Set the part to be '*' (anything matcher)
           part = '*'
@@ -178,7 +178,7 @@ class Routes
         if has_binding?(part)
           # Setup a nil param that can match anything, but gets
           # assigned into the url
-          params[part[1..-2].to_sym] = nil
+          params[part[2...-2].strip.to_sym] = nil
         end
       end
 
@@ -197,7 +197,7 @@ class Routes
         url = parts.map do |part|
           val = if has_binding?(part)
             # Get the
-            binding = part[1..-2].to_sym
+            binding = part[2...-2].strip.to_sym
             input_params.delete(binding)
           else
             part
@@ -254,7 +254,7 @@ class Routes
 
     # Check if a string has a binding in it
     def has_binding?(string)
-      string.index('{') && string.index('}')
+      string.index('{{') && string.index('}}')
     end
 
 end
