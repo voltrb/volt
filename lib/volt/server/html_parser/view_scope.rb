@@ -121,7 +121,7 @@ class ViewScope
           # Multiple bindings
         elsif parts.size == 1 && binding_count == 1
           # A single binding
-          getter = value[1..-2]
+          getter = value[2...-2].strip
           data_hash << "#{name.inspect} => Proc.new { #{getter} }"
 
           setter = getter_to_setter(getter)

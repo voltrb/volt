@@ -138,7 +138,8 @@ class Page
   end
 
   def add_model(model_name)
-    @model_classes[model_name] = Object.const_get(model_name.camelize)
+    model_name = model_name.camelize
+    @model_classes[model_name] = Object.const_get(model_name)
   end
 
   def add_template(name, template, bindings)
