@@ -192,5 +192,15 @@ if ENV['BROWSER']
         end
       end
     end
+
+    describe "content escaping" do
+      it 'should escape in a tripple stash' do
+        visit '/'
+
+        click_link 'Bindings'
+
+        expect(find('#escapeContent')).to have_content('this is {{escaped}}')
+      end
+    end
   end
 end

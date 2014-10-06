@@ -1,3 +1,8 @@
+# 0.8.6 - Oct 5, 2014
+
+  - Major changes to the templating system (to address common concerns and make things simpler).
+      1. All binding now takes place between {{ and }} instead of { and } (double stash instead of single stash)  Escaping is still with a tripple stash {{{ escap{{ed}} }}}  => escap{{ed}}
+
 # 0.8.4 - Oct 4, 2014
 
   - Added configuration for databases.
