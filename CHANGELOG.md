@@ -1,15 +1,14 @@
 # 0.8.6 - Oct 5, 2014
 
   - Major changes to the templating system (to address common concerns and make things simpler).
-      1. All binding now takes place between {{ and }} instead of { and } (double stash instead of single stash)  Escaping is still with a tripple stash {{{ escap{{ed}} }}}  => escap{{ed}}
+      1. All binding now takes place between ```{{ and }}``` instead of ```{ and }``` (double stash instead of single stash)  Escaping is still with a tripple stash ```{{{ escap{{ed}} }}}```  => escap{{ed}}
       2. Bindings can now be (almost) any ruby code.  No more #'s at the beginning.  Blocks are now closed with {{ end }}
-            If's are now: {{ if _something }} ... {{ elsif _other }} .. {{ else }} .. {{ end }}
-            Each's are now: {{ _items.each do |item| }} ... {{ end }}
-            Template bindings are now: {{ template "path" }} (along with other options)
-
+            If's are now: ```{{ if _something }}``` ... ```{{ elsif _other }}``` .. ```{{ else }}``` .. ```{{ end }}```
+            Each's are now: ```{{ _items.each do |item| }}``` ... ```{{ end }}```
+            Template bindings are now: ```{{ template "path" }}``` (along with other options)
             Each should use do notation not brackets.  Also, .each is not actually called, the binding is parsed and converted into a EachBinding.  Other Eneumerable methods do not work at this time, only each.  (more coming soon)
       3. Bindings in routes now use double stashes as well get '/products/{{ _name }}/info'
-      4. To help clean things up, we reccomend spaces between {{ and }}
+      4. To help clean things up, we reccomend spaces between ```{{``` and ```}}```
 
 
 # 0.8.4 - Oct 4, 2014
