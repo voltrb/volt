@@ -5,7 +5,7 @@ require 'volt/server/html_parser/view_parser'
 
 describe ViewParser do
   it "should parse content bindings" do
-    html = "<p>Some {content} binding, {name}</p>"
+    html = "<p>Some {{ content }} binding, {{ name }}</p>"
 
     view = ViewParser.new(html, "main/main/main")
 
@@ -24,13 +24,13 @@ describe ViewParser do
     html = <<-END
     <p>
       Some
-      {#if showing == :text}
+      {{ if showing == :text }}
         text
-      {#elsif showing == :button}
+      {{ elsif showing == :button }}
         <button>Button</button>
-      {#else}
+      {{ else }}
         <a href="">link</a>
-      {/}
+      {{ end }}
     </p>
     END
 
@@ -63,13 +63,13 @@ describe ViewParser do
     html = <<-END
     <p>
       Some
-      {#if showing == :text}
-        {#if sub_item}
+      {{ if showing == :text }}
+        {{ if sub_item }}
           sub item text
-        {/}
-      {#else}
+        {{ end }}
+      {{ else }}
         other
-      {/}
+      {{ end }}
     </p>
     END
 
@@ -105,9 +105,9 @@ describe ViewParser do
   it "should parse each bindings" do
     html = <<-END
       <div class="main">
-        {#each _items as item}
-          <p>{item}</p>
-        {/}
+        {{ _items.each do |item| }}
+          <p>{{ item }}</p>
+        {{ end }}
       </div>
     END
 
@@ -137,7 +137,7 @@ describe ViewParser do
 
   it "should parse a single attribute binding" do
     html = <<-END
-      <div class="{main_class}">
+      <div class="{{ main_class }}">
       </div>
     END
 
@@ -148,7 +148,7 @@ describe ViewParser do
 
   it "should parse multiple attribute bindings in a single attribute" do
     html = <<-END
-      <div class="start {main_class} {awesome_class} string">
+      <div class="start {{ main_class }} {{ awesome_class }} string">
       </div>
     END
 
@@ -179,7 +179,7 @@ describe ViewParser do
 
   it "should parse a template" do
     html = <<-END
-    {#template "/home/temp/path"}
+    {{ template "/home/temp/path" }}
     END
 
     view = ViewParser.new(html, "main/main/main")
@@ -259,7 +259,7 @@ describe ViewParser do
 
   it "should setup bindings for textarea values" do
     html = <<-END
-    <textarea name="cool">{awesome}</textarea>
+    <textarea name="cool">{{ awesome }}</textarea>
     END
 
     view = ViewParser.new(html, "main/main/main")

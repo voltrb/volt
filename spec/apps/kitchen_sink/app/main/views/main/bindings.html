@@ -4,32 +4,31 @@
 <:Body>
   <h1>Bindings</h1>
 
-
   <h2>Text</h2>
   <table class="table">
     <tr>
       <td>Page</td>
-      <td><input type="text" id="pageName1" value="{page._name}"></td>
-      <td><input type="text" id="pageName2" value="{page._name}"></td>
-      <td id="pageName3">{page._name}</td>
+      <td><input type="text" id="pageName1" value="{{ page._name }}"></td>
+      <td><input type="text" id="pageName2" value="{{ page._name }}"></td>
+      <td id="pageName3">{{ page._name }}</td>
     </tr>
     <tr>
       <td>Params</td>
-      <td><input type="text" id="paramsName1" value="{params._name}"></td>
-      <td><input type="text" id="paramsName2" value="{params._name}"></td>
-      <td id="paramsName3">{params._name}</td>
+      <td><input type="text" id="paramsName1" value="{{ params._name }}"></td>
+      <td><input type="text" id="paramsName2" value="{{ params._name }}"></td>
+      <td id="paramsName3">{{ params._name }}</td>
     </tr>
     <tr>
       <td>Routes</td>
-      <td><input type="text" id="routesName1" value="{params._route_test}"></td>
-      <td><input type="text" id="routesName2" value="{params._route_test}"></td>
-      <td id="routesName3">{params._route_test}</td>
+      <td><input type="text" id="routesName1" value="{{ params._route_test }}"></td>
+      <td><input type="text" id="routesName2" value="{{ params._route_test }}"></td>
+      <td id="routesName3">{{ params._route_test }}</td>
     </tr>
     <tr>
       <td>Local Store</td>
-      <td><input type="text" id="localstoreName1" value="{local_store._name}"></td>
-      <td><input type="text" id="localstoreName2" value="{local_store._name}"></td>
-      <td id="localstoreName3">{local_store._name}</td>
+      <td><input type="text" id="localstoreName1" value="{{ local_store._name }}"></td>
+      <td><input type="text" id="localstoreName2" value="{{ local_store._name }}"></td>
+      <td id="localstoreName3">{{ local_store._name }}</td>
     </tr>
   </table>
 
@@ -38,15 +37,15 @@
   <table class="table">
     <tr>
       <td>Page</td>
-      <td><input type="checkbox" id="pageCheck1" checked="{page._check}" /></td>
-      <td><input type="checkbox" id="pageCheck2" checked="{page._check}" /></td>
-      <td id="pageCheck3">{page._check}</td>
+      <td><input type="checkbox" id="pageCheck1" checked="{{ page._check }}" /></td>
+      <td><input type="checkbox" id="pageCheck2" checked="{{ page._check }}" /></td>
+      <td id="pageCheck3">{{ page._check }}</td>
     </tr>
     <tr>
       <td>Params</td>
-      <td><input type="checkbox" id="paramsCheck1" checked="{params._check}" /></td>
-      <td><input type="checkbox" id="paramsCheck2" checked="{params._check}" /></td>
-      <td id="paramsCheck3">{params._check}</td>
+      <td><input type="checkbox" id="paramsCheck1" checked="{{ params._check }}" /></td>
+      <td><input type="checkbox" id="paramsCheck2" checked="{{ params._check }}" /></td>
+      <td id="paramsCheck3">{{ params._check }}</td>
     </tr>
   </table>
 
@@ -55,14 +54,14 @@
   <table class="table">
     <tr>
       <td>Page</td>
-      <td><input type="radio" id="pageRadio1" checked="{page._radio}" value="one" /></td>
-      <td><input type="radio" id="pageRadio2" checked="{page._radio}" value="two" /></td>
-      <td id="pageRadio3">{page._radio}</td>
+      <td><input type="radio" id="pageRadio1" checked="{{ page._radio }}" value="one" /></td>
+      <td><input type="radio" id="pageRadio2" checked="{{ page._radio }}" value="two" /></td>
+      <td id="pageRadio3">{{ page._radio }}</td>
     </tr>
     <tr>
       <td></td>
-      <td><input type="radio" checked="{page._radio}" value="one" /></td>
-      <td><input type="radio" checked="{page._radio}" value="two" /></td>
+      <td><input type="radio" checked="{{ page._radio }}" value="one" /></td>
+      <td><input type="radio" checked="{{ page._radio }}" value="two" /></td>
       <td></td>
     </tr>
   </table>
@@ -72,16 +71,16 @@
     <tr>
       <td>Page</td>
       <td>
-        <select id="pageSelect1" value="{page._select}">
+        <select id="pageSelect1" value="{{ page._select }}">
           <option value="one">One</option>
           <option value="two">Two</option>
           <option value="three">Three</option>
         </select>
       </td>
       <td>
-        <input type="text" id="pageSelect2" value="{page._select}" />
+        <input type="text" id="pageSelect2" value="{{ page._select }}" />
       </td>
-      <td id="pageSelect3">{page._select}</td>
+      <td id="pageSelect3">{{ page._select }}</td>
     </tr>
   </table>
 
@@ -90,9 +89,9 @@
   <table class="table">
     <tr>
       <td>Page</td>
-      <td><textarea id="textareaName1">{page._textarea_name}</textarea></td>
-      <td><textarea id="textareaName2">{page._textarea_name}</textarea></td>
-      <td id="textareaName3">{page._textarea_name}</td>
+      <td><textarea id="textareaName1">{{ page._textarea_name }}</textarea></td>
+      <td><textarea id="textareaName2">{{ page._textarea_name }}</textarea></td>
+      <td id="textareaName3">{{ page._textarea_name }}</td>
     </tr>
   </table>
 
@@ -100,17 +99,17 @@
   <table class="table">
     <tr>
       <td>Path</td>
-      <td id="urlPath">{url.path}</td>
+      <td id="urlPath">{{ url.path }}</td>
     </tr>
     <tr>
       <td>Query</td>
-      <td id="urlPath">{url.query}</td>
-      <td><input type="text" value="{url.query}" /></td>
+      <td id="urlPath">{{ url.query }}</td>
+      <td><input type="text" value="{{ url.query }}" /></td>
     </tr>
     <tr>
       <td>Fragment</td>
-      <td id="urlPath">{url.fragment}</td>
-      <td><input type="text" value="{url.fragment}" /></td>
+      <td id="urlPath">{{ url.fragment }}</td>
+      <td><input type="text" value="{{ url.fragment }}" /></td>
     </tr>
   </table>
 

@@ -1,5 +1,6 @@
 if RUBY_PLATFORM == 'opal'
 else
+require 'spec_helper'
 require 'benchmark'
 require 'volt/server/html_parser/sandlebars_parser'
 
@@ -103,21 +104,21 @@ describe SandlebarsParser do
   end
 
   it "should raise an exception on an unclosed binding at the end of the document" do
-    html = "<p>testing with {nested"
+    html = "<p>testing with {{nested"
 
     handler = HTMLHandler.new
     expect { SandlebarsParser.new(html, handler) }.to raise_error(HTMLParseError)
   end
 
   it "should raise an exception on an unclosed binding" do
-    html = "<p>testing with {nested </p>\n<p>ok</p>"
+    html = "<p>testing with {{nested </p>\n<p>ok</p>"
 
     handler = HTMLHandler.new
     expect { SandlebarsParser.new(html, handler) }.to raise_error(HTMLParseError)
   end
 
   it "should report the line number" do
-    html = "\n\n<p>some paragraph</p>\n\n<p>testing with {nested </p>\n<p>ok</p>"
+    html = "\n\n<p>some paragraph</p>\n\n<p>testing with {{nested </p>\n<p>ok</p>"
 
     handler = HTMLHandler.new
     expect { SandlebarsParser.new(html, handler) }.to raise_error(HTMLParseError, "unclosed binding: {nested </p> on line: 5")

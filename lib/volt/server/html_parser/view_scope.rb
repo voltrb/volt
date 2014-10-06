@@ -24,7 +24,7 @@ class ViewScope
     index = content.index(/[ \(]/)
     if index
       first_symbol = content[0...index]
-      args = content[index..-1]
+      args = content[index..-1].strip
 
       case first_symbol
       when 'if'
@@ -47,9 +47,12 @@ class ViewScope
         end
       end
     else
-      if content == 'end'
+      case content
+      when 'end'
         # Close the binding
         close_scope
+      when 'else'
+        add_else(nil)
       else
         add_content_binding(content)
       end
@@ -78,7 +81,7 @@ class ViewScope
 
   def add_template(content)
     # Strip ( and ) from the outsides
-    content = content.gsub(/^\s*\(/, '').gsub(/\)\s*$/, '')
+    content = content.strip.gsub(/^\(/, '').gsub(/\)$/, '')
 
     @handler.html << "<!-- $#{@binding_number} --><!-- $/#{@binding_number} -->"
     save_binding(@binding_number, "lambda { |__p, __t, __c, __id| TemplateBinding.new(__p, __t, __c, __id, #{@path.inspect}, Proc.new { [#{content}] }) }")

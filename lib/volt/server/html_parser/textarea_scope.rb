@@ -6,7 +6,7 @@ class TextareaScope < ViewScope
   end
 
   def add_binding(content)
-    @html << "{#{content}}"
+    @html << "{{#{content}}}"
   end
 
   def close_scope(pop=true)
@@ -15,7 +15,7 @@ class TextareaScope < ViewScope
 
     attributes = @attributes
 
-    if @html[/\{[^\}]+\}/]
+    if @html[/\{\{[^\}]+\}\}/]
       # If the html inside the textarea has a binding, process it as
       # a value attribute.
       attributes['value'] = @html

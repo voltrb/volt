@@ -32,8 +32,8 @@ module AttributeScope
   end
 
   def process_attribute(tag_name, attributes, attribute_name, value)
-    parts = value.split(/(\{[^\}]+\})/).reject(&:blank?)
-    binding_count = parts.count {|p| p[0] == '{' && p[-1] == '}'}
+    parts = value.split(/(\{\{[^\}]+\}\})/).reject(&:blank?)
+    binding_count = parts.count {|p| p[0] == '{' && p[1] == '{' && p[-2] == '}' && p[-1] == '}'}
 
     # if this attribute has bindings
     if binding_count > 0
@@ -69,7 +69,7 @@ module AttributeScope
 
   # Add an attribute binding on the tag, bind directly to the getter in the binding
   def add_single_attribute(id, attribute_name, parts)
-    getter = parts[0][1..-2]
+    getter = parts[0][2...-2].strip
 
     # if getter.index('@')
     #   raise "Bindings currently do not support instance variables"

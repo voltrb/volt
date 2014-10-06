@@ -1,5 +1,5 @@
 <:Title>
-  {#template main_path, "title", {controller_group: 'main'}} - KitchenSink
+  {{ template main_path, "title", {controller_group: 'main'} }} - KitchenSink
 
 <:Body>
   <div class="container">
@@ -14,7 +14,7 @@
 
     <:volt:notices />
 
-    {#template main_path, 'body', {controller_group: 'main'}}
+    {{ template main_path, 'body', {controller_group: 'main'} }}
 
     <div class="footer">
       <p>&copy; Company 2014</p>
@@ -23,7 +23,7 @@
   </div>
 
 <:Nav>
-  <li class="{#if url.path.split('/')[1] == attrs.href.split('/')[1]}active{/}">
-    <a href="{attrs.href}">{attrs.text}</a>
+  <li class="{{ if url.path.split('/')[1] == attrs.href.split('/')[1] }}active{{ end }}">
+    <a href="{{ attrs.href }}">{{ attrs.text }}</a>
   </li>
 
