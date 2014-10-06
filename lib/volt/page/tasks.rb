@@ -6,7 +6,6 @@ class Tasks
     @callback_id = 0
     @callbacks = {}
 
-    # TODORW: ...
     page.channel.on('message') do |*args|
       received_message(*args)
     end

@@ -6,8 +6,7 @@ class Object
     Hash[instance_variables.map { |name| [name[1..-1], instance_variable_get(name)] }]
   end
 
-  # Provides the same functionality as ||, but since ReactiveValue's only
-  # work with method calls, we provide .or as a convience.
+  # Provides the same functionality as ||, but treats a nil model as falsy
   def or(other)
     if self && !self.nil?
       return self
@@ -16,8 +15,7 @@ class Object
     end
   end
 
-  # Provides the same functionality as &&, but since ReactiveValue's only
-  # work with method calls, we provide .and as a convience
+  # Provides the same functionality as &&, treats a nil model as falsy
   def and(other)
     if self && !self.nil?
       return other

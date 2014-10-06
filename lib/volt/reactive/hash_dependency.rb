@@ -12,7 +12,6 @@ class HashDependency
   end
 
   def delete(key)
-    # TODORW: should this .remove
     dep = @hash_depedencies[key]
 
     if dep

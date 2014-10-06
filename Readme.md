@@ -727,15 +727,15 @@ Here "auth" would be the component name.
 
 ## Reactive Accessors
 
-The default ModelController proxies any missing methods to its model.  Since models are wrapped in ReactiveValues, they return ReactiveValues by default.  Sometimes you need to store additional data reactively in the controller outside of the model.  (Though often you may want to condier doing another control/controller).  In this case, you can add a ```reactive_accessor```.  These behave just like ```attr_accessor``` except the values assigned and returned are wrapped in a ReactiveValue.  Updates update the existing ReactiveValue.
+The default ModelController proxies any missing methods to its model.  Sometimes you need to store additional data reactively in the controller outside of the model.  (Though often you may want to condier doing another control/controller).  In this case, you can add a ```reactive_accessor```.  These behave just like ```attr_accessor``` except the values assigned and returned are tracked for any Computations.
 
 ```ruby
   class Contacts < ModelController
-    reactive_accessor :_query
+    reactive_accessor :query
   end
 ```
 
-Now from the view we can bind to _query while also changing in and out the model.  You can also use ```reactive_reader``` and ```reactive_writer```
+Now from the view we can bind to query while also changing in and out the model.  You can also use ```reactive_reader``` and ```reactive_writer```  When query is accessed it tracks that it was accessed and will any Computations when it changes.
 
 # Tasks
 
@@ -982,7 +982,7 @@ Routes are matched top to bottom in a routes file.
 
 # Channel
 
-Controllers provide a `#channel` method, that you can use to get the status of the connection to the backend.  Channel is provided in a ReactiveValue, and when the status changes, the changed events are triggered.  It provides the following:
+Controllers provide a `#channel` method, that you can use to get the status of the connection to the backend.  Channel's access methods are reactive and when the status changes, the watching computations will be re-triggered.  It provides the following:
 
 | method      | description                                               |
 |-------------|-----------------------------------------------------------|

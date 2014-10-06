@@ -88,7 +88,7 @@ module AttributeScope
         if tag_name == 'textarea'
           raise "The content of text area's can not be bound to multiple bindings."
         else
-          # Multiple ReactiveValue's can not be passed to value or checked attributes.
+          # Multiple values can not be passed to value or checked attributes.
           raise "Multiple bindings can not be passed to a #{attribute_name} binding."
         end
       end

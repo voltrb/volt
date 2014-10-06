@@ -173,7 +173,7 @@ class Model
     rescue => e
       result = e
 
-      # Cleanup backtrace around ReactiveValue's
+      # Cleanup backtrace
       # TODO: this could be better
       result.backtrace.reject! {|line| line['lib/models/model.rb'] || line['lib/models/live_value.rb'] }
     end
@@ -242,10 +242,6 @@ class Model
 
     # Add the new item
     result << value
-
-    # TODORW:
-    # trigger!('added', nil, 0)
-    # trigger!('changed')
 
     return nil
   end

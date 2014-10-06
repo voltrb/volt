@@ -17,8 +17,7 @@ class ContentBinding < BaseBinding
   end
 
   def update(value)
-    # TODORW:
-    value = value.nil? ? '' : value
+    value = value.or('')
 
     # Exception values display the exception as a string
     value = value.to_s

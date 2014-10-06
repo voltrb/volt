@@ -177,7 +177,6 @@ module Persistors
 
     # When a model is added to this collection, we call its "changed"
     # method.  This should trigger a save.
-    # TODORW:
     def added(model, index)
       if model.persistor
         # Tell the persistor it was added

@@ -6,11 +6,6 @@ class UrlTracker
     @page = page
 
     if Volt.client?
-      # TODORW:
-      # page.params.on('child_changed') do
-      #   @page.url.update!
-      # end
-
       that = self
 
       # Setup popstate on the dom ready event.  Prevents an extra
