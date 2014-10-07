@@ -447,7 +447,7 @@ Above, I mentioned that Volt comes with many default collection models accessibl
 
 The store collection backs data in the data store.  Currently the only supported data store is Mongo. (More coming soon, RethinkDb will probably be next)  You can use store very similar to the other collections.
 
-In Volt you can access ```store``` on the front-end and the back-end.  Data will automatically be synced between the front-end and the backend.  Any changes to the data in store will be reflected on any clients using the data (unless a [buffer](#buffer) is in use - see below).
+In Volt you can access ```store``` on the front-end and the back-end.  Data will automatically be synced between the front-end and the backend.  Any changes to the data in store will be reflected on any clients using the data (unless a [buffer](#buffers) is in use - see below).
 
 ```ruby
     store._items << {_name: 'Item 1'}
