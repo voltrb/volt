@@ -11,6 +11,10 @@ class Volt
     # Run the app config to load all users config files
     Volt.run_files_in_config_folder
 
+    if Volt.server?
+      $page = Page.new
+    end
+
     component_paths = ComponentPaths.new(app_path)
     component_paths.require_in_components
 

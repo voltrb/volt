@@ -38,6 +38,6 @@ class Console
     # start a REPL session
     # Pry.start
 
-    Page.new.pry
+    $page.pry
   end
 end
