@@ -4,6 +4,7 @@ if RUBY_PLATFORM == 'opal'
 end
 require 'volt/models'
 require 'volt/controllers/model_controller'
+require 'volt/tasks/task_handler'
 require 'volt/page/bindings/attribute_binding'
 require 'volt/page/bindings/content_binding'
 require 'volt/page/bindings/each_binding'
