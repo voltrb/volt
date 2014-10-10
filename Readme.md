@@ -756,7 +756,7 @@ Sometimes you need to explicitly execute some code on the server. Volt solves th
     end
 ```
 
-To invoke a task from a controller use ```tasks.call```.
+To invoke a task from a controller use ```tasks.call``` which will return a promise.
 
 ```ruby
     class Contacts < ModelController
