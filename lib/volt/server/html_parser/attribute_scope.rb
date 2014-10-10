@@ -89,7 +89,7 @@ module AttributeScope
           raise "The content of text area's can not be bound to multiple bindings."
         else
           # Multiple values can not be passed to value or checked attributes.
-          raise "Multiple bindings can not be passed to a #{attribute_name} binding."
+          raise "Multiple bindings can not be passed to a #{attribute_name} binding: #{parts.inspect}"
         end
       end
     end
