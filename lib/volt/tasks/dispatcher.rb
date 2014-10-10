@@ -5,14 +5,10 @@ class Dispatcher
   def dispatch(channel, message)
     callback_id, class_name, method_name, *args = message
 
-    # TODO: Think about security?
-    if class_name[/Tasks$/] && !class_name['::']
-      # TODO: Improve error on a class we don't have
-      require(class_name.underscore)
+    # Get the class
+    klass = Object.send(:const_get, class_name)
 
-      # Get the class
-      klass = Object.send(:const_get, class_name)
-
+    if klass.ancestors.include?(TaskHandler)
       # Init and send the method
       begin
         result = klass.new(channel, self).send(method_name, *args)

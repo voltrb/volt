@@ -69,7 +69,7 @@ module Persistors
           puts "Attempting to save model directly on store."
           raise "Attempting to save model directly on store."
         else
-          @tasks.call('StoreTasks', 'save', collection, self_attributes) do |errors|
+          StoreTasks.save(collection, self_attributes) do |errors|
             if errors.size == 0
               promise.resolve
             else

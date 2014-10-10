@@ -27,6 +27,9 @@ require 'volt/models/url'
 require 'volt/page/url_tracker'
 require 'volt/benchmark/benchmark'
 require 'volt/page/tasks'
+if RUBY_PLATFORM == 'opal'
+  require 'volt/page/task_handler'
+end
 
 
 

@@ -739,37 +739,34 @@ Now from the view we can bind to query while also changing in and out the model.
 
 # Tasks
 
-Sometimes you need to explicitly execute some code on the server. Volt solves this problem through *tasks*. You can define your own tasks by dropping a class into your component's ```tasks``` folder.
+Sometimes you need to explicitly execute some code on the server. Volt solves this problem through *tasks*. You can define your own tasks by inheriting from ```TaskHandler```. Task handlers within your component's ```tasks``` folder will be automatically required.
 
 ```ruby
     # app/main/tasks/logging_tasks.rb
 
-    class LoggingTasks
-        def initialize(channel=nil, dispatcher=nil)
-            @channel = channel
-            @dispatcher = dispatcher
-        end
-
+    class LoggingTasks < TaskHandler
         def log(message)
             puts message
         end
     end
 ```
 
-To invoke a task from a controller use ```tasks.call``` which will return a promise.
+Volt will automatically generate wrappers for you on the client side which will return a promise.
+
+*Note that the classes on the server side use instance methods while the wrapper classes represent those methods as class methods!*
 
 ```ruby
     class Contacts < ModelController
         def hello
-            tasks.call('LoggingTasks', 'log', 'Hello World!')
+            promise = LoggingTasks.log('Hello World!')
         end
     end
 ```
 
-You can also pass a block to ```tasks.call``` that will receive the return value of your task as soon as it's done.
+You can also pass a block that will receive the return value of your task as soon as it's done.
 
 ```ruby
-    tasks.call('MathTasks', 'add', 23, 5) do |result|
+    MathTasks.add(23, 5) do |result|
         # result should be 28
         alert result
     end

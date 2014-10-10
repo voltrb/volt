@@ -193,7 +193,7 @@ module Persistors
       if defined?($loading_models) && $loading_models
         return
       else
-        @tasks.call('StoreTasks', 'delete', channel_name, model.attributes[:_id])
+        StoreTasks.delete(channel_name, model.attributes[:_id])
       end
     end
 
