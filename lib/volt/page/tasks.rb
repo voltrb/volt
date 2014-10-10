@@ -11,12 +11,12 @@ class Tasks
     end
   end
 
-  def call(class_name, method_name, *args, &callback)
+  def call(class_name, method_name, *args)
     promise_id = @promise_id
     @promise_id += 1
 
     # Track the callback
-    promise = Promise.new(callback)
+    promise = Promise.new
     @promises[promise_id] = promise
 
     # TODO: Timeout on these callbacks

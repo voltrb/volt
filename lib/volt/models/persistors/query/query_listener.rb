@@ -15,7 +15,7 @@ class QueryListener
 
   def add_listener
     @listening = true
-    QueryTasks.add_listener(@collection, @query) do |results, errors|
+    QueryTasks.add_listener(@collection, @query).then do |results, errors|
       # When the initial data comes back, add it into the stores.
       @stores.dup.each do |store|
         # Clear if there are existing items
