@@ -24,9 +24,8 @@ class Model
     @deps = HashDependency.new
     self.options = options
 
-    self.send(:attributes=, attributes, true)
-
     @cache = {}
+    self.send(:attributes=, attributes, true)
 
     # Models start in a loaded state since they are normally setup from an
     # ArrayModel, which will have the data when they get added.
@@ -46,7 +45,18 @@ class Model
 
   # Assign multiple attributes as a hash, directly.
   def attributes=(attrs, initial_setup=false)
-    @attributes = wrap_values(attrs)
+    @attributes = {}
+
+    attrs = wrap_values(attrs)
+
+    if attrs
+      # Assign each attribute using setters
+      attrs.each_pair do |key, value|
+        self.send(:"#{key}=", value)
+      end
+    else
+      @attributes = attrs
+    end
 
     # Trigger and change all
     @deps.changed_all!
@@ -90,10 +100,13 @@ class Model
         read_attribute(method_name)
       end
     else
-      # Call method directly on attributes.  (since they are
-      # not using _ )
-      attributes.send(method_name, *args, &block)
+      # Call on parent
+      super
     end
+  end
+
+  def [](key)
+    attributes[key]
   end
 
   # Do the assignment to a model and trigger a changed event
@@ -108,6 +121,7 @@ class Model
     value = args[0]
 
     attributes[attribute_name] = wrap_value(value, [attribute_name])
+
     @deps.changed!(attribute_name)
 
     # Let the persistor know something changed
