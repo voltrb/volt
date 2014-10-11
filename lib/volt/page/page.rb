@@ -189,9 +189,7 @@ class Page
           `sessionStorage.removeItem('___page');`
 
           JSON.parse(page_obj_str).each_pair do |key, value|
-            puts "RESTORE"
-            self.page.send(:"#{key}=", value)
-            puts "END"
+            self.page.send(:"_#{key}=", value)
           end
         `}`
       end

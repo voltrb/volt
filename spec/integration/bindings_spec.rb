@@ -188,7 +188,7 @@ if ENV['BROWSER']
         expect(find('#paramsCheck3')).to have_content('')
 
         if ENV['BROWSER'] != 'phantom'
-          expect(current_url).to match(/\/bindings[?]check[=]false$/)
+          expect(current_url).to match(/\/bindings$/)
         end
       end
     end

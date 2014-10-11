@@ -100,16 +100,16 @@ describe Routes do
       get '/login/{{ _name }}/user/{{ _id }}', _view: 'login', _action: 'user'
     end
 
-    url, params = @routes.params_to_url({_view: 'blog/show', _id: '55'})
+    url, params = @routes.params_to_url({view: 'blog/show', id: '55'})
     expect(url).to eq('/blog/55')
     expect(params).to eq({})
 
 
-    url, params = @routes.params_to_url({_view: 'blog/edit', _id: '100'})
+    url, params = @routes.params_to_url({view: 'blog/edit', id: '100'})
     expect(url).to eq('/blog/100/edit')
     expect(params).to eq({})
 
-    url, params = @routes.params_to_url({_view: 'blog/edit', _id: '100', _other: 'should_pass'})
+    url, params = @routes.params_to_url({view: 'blog/edit', id: '100', other: 'should_pass'})
     expect(url).to eq('/blog/100/edit')
     expect(params).to eq({_other: 'should_pass'})
   end
@@ -148,13 +148,13 @@ describe Routes do
     params._index = '5'
 
     routes do
-      get '/', controller: 'index'
-      get '/blog', controller: 'blog'
+      get '/', _controller: 'index'
+      get '/blog', _controller: 'blog'
     end
 
-    path, cleaned_params = @routes.params_to_url(params)
+    path, cleaned_params = @routes.params_to_url(params.to_h)
     expect(path).to eq('/blog')
-    expect(cleaned_params).to eq({index: '5'})
+    expect(cleaned_params).to eq({_index: '5'})
   end
 
   it "should handle routes with bindings in them" do
