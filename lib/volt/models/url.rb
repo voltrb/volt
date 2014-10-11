@@ -69,6 +69,8 @@ class URL
 
     path, params = @router.params_to_url(@params.to_h)
 
+    self.path = path if path
+
     new_url = "#{scheme}://#{host_with_port}#{(path || self.path).chomp('/')}"
 
     params_str = ''
@@ -81,12 +83,16 @@ class URL
       end
 
       if query_parts.size > 0
-        new_url += '?' + query_parts.join('&')
+        self.query = query_parts.join('&')
+        new_url += '?' + self.query
       end
     end
 
     frag = self.fragment
-    new_url += '#' + frag if frag.present?
+    if frag.present?
+      self.fragment = frag
+      new_url += '#' + frag
+    end
 
     return new_url
   end
