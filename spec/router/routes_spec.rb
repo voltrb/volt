@@ -148,13 +148,13 @@ describe Routes do
     params._index = '5'
 
     routes do
-      get '/', _controller: 'index'
-      get '/blog', _controller: 'blog'
+      get '/', controller: 'index'
+      get '/blog', controller: 'blog'
     end
 
     path, cleaned_params = @routes.params_to_url(params)
     expect(path).to eq('/blog')
-    expect(cleaned_params).to eq({_index: '5'})
+    expect(cleaned_params).to eq({index: '5'})
   end
 
   it "should handle routes with bindings in them" do

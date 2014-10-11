@@ -32,12 +32,12 @@ class QueryTasks < TaskHandler
       error = {:error => exception.message}
     end
 
-    return initial_data, error
+    return [initial_data, error]
   end
 
   def initial_data
     data = live_query.initial_data
-    data['_id'] = data['_id'].to_s
+    data[:_id] = data[:_id].to_s
 
     return data
   end

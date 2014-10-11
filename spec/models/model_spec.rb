@@ -275,13 +275,13 @@ describe Model do
   describe "paths" do
     it "should store the path" do
       a = Model.new
-      expect(a._test.path).to eq([:_test])
+      expect(a._test.path).to eq([:test])
       a._test = {_name: 'Yes'}
-      expect(a._test.path).to eq([:_test])
+      expect(a._test.path).to eq([:test])
 
       a._items << {_name: 'Yes'}
-      expect(a._items.path).to eq([:_items])
-      expect(a._items[0].path).to eq([:_items, :[]])
+      expect(a._items.path).to eq([:items])
+      expect(a._items[0].path).to eq([:items, :[]])
     end
 
     it "should store the paths when assigned" do
@@ -289,8 +289,8 @@ describe Model do
 
       a._items = [{_name: 'Cool'}]
 
-      expect(a._items.path).to eq([:_items])
-      expect(a._items[0].path).to eq([:_items, :[]])
+      expect(a._items.path).to eq([:items])
+      expect(a._items[0].path).to eq([:items, :[]])
     end
 
     it "should handle nested paths" do
@@ -298,8 +298,8 @@ describe Model do
 
       a._items << {_name: 'Cool', _lists: [{_name: 'One'}, {_name: 'Two'}]}
 
-      expect(a._items[0]._lists.path).to eq([:_items, :[], :_lists])
-      expect(a._items[0]._lists[1].path).to eq([:_items, :[], :_lists, :[]])
+      expect(a._items[0]._lists.path).to eq([:items, :[], :lists])
+      expect(a._items[0]._lists[1].path).to eq([:items, :[], :lists, :[]])
     end
 
     it "should trigger added when added" do
@@ -391,13 +391,13 @@ describe Model do
 
     it "should set the model path for a sub array" do
       @model._items << {_name: 'Bob'}
-      expect(@model._items.path).to eq([:_items])
-      expect(@model._items[0].path).to eq([:_items, :[]])
+      expect(@model._items.path).to eq([:items])
+      expect(@model._items[0].path).to eq([:items, :[]])
     end
 
     it "should set the model path for sub sub arrays" do
       @model._lists << {_name: 'List 1', _items: []}
-      expect(@model._lists[0]._items.path).to eq([:_lists, :[], :_items])
+      expect(@model._lists[0]._items.path).to eq([:lists, :[], :items])
     end
 
     it "should update the path when added from a model instance to a collection" do

@@ -10,7 +10,6 @@ class ArrayModel < ReactiveArray
 
   attr_reader :parent, :path, :persistor, :options, :array
 
-
   # For many methods, we want to call load data as soon as the model is interacted
   # with, so we proxy the method, then call super.
   def self.proxy_with_load_data(*method_names)

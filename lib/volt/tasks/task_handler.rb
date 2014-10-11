@@ -30,7 +30,8 @@ class TaskHandler
 
         promise.resolve(result)
       rescue => e
-        puts "ERROR: #{e.inspect}"
+        puts "Task Error: #{e.inspect}"
+        puts e.backtrace
         promise.reject(e)
       end
 

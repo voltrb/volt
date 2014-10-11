@@ -26,9 +26,9 @@ module ModelHelpers
       begin
         # remove the _ and then singularize
         if path.last == :[]
-          klass_name = path[-2][1..-1].singularize.camelize
+          klass_name = path[-2][0..-1].singularize.camelize
         else
-          klass_name = path[-1][1..-1].singularize.camelize
+          klass_name = path[-1][0..-1].singularize.camelize
         end
 
         klass = $page.model_classes[klass_name] || Model

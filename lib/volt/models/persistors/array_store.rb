@@ -83,7 +83,6 @@ module Persistors
     def run_query(model, query={})
       @model.clear
 
-      # puts "Run Query: #{query.inspect}"
       collection = model.path.last
       # Scope to the parent
       if model.path.size > 1
@@ -107,6 +106,7 @@ module Persistors
     # Find can take either a query object, or a block that returns a query object.  Use
     # the block style if you need reactive updating queries
     def find(query=nil, &block)
+      puts "FIND: #{query.inspect}"
       # Set a default query if there is no block
       if block
         if query
@@ -146,9 +146,14 @@ module Persistors
       new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
 
       # Don't add if the model is already in the ArrayModel
-      if !@model.array.find {|v| v['_id'] == data['_id'] }
+      if !@model.array.find {|v| v['_id'] == data[:_id] }
+        # Convert to underscores for assignment
+        underscore_values = data.each_with_object({}) do |(k,v), obj|
+          obj[:"_#{k}"] = v
+        end
+
         # Find the existing model, or create one
-        new_model = @@identity_map.find(data['_id']) { @model.new_model(data.symbolize_keys, new_options, :loaded) }
+        new_model = @@identity_map.find(data[:_id]) { @model.new_model(underscore_values, new_options, :loaded) }
 
         @model.insert(index, new_model)
       end

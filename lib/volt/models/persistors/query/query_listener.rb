@@ -15,19 +15,22 @@ class QueryListener
 
   def add_listener
     @listening = true
-    QueryTasks.add_listener(@collection, @query).then do |results, errors|
+    QueryTasks.add_listener(@collection, @query).then do |ret|
+      results, errors = ret
+
       # When the initial data comes back, add it into the stores.
       @stores.dup.each do |store|
         # Clear if there are existing items
         store.model.clear if store.model.size > 0
 
         results.each do |index, data|
-          # puts "ADD: #{index} - #{data.inspect}"
           store.add(index, data)
         end
 
         store.change_state_to(:loaded)
       end
+    end.fail do |err|
+      puts "Err: #{err.inspect}"
     end
   end
 

@@ -24,7 +24,6 @@ class Model
     @deps = HashDependency.new
     self.options = options
 
-    @cache = {}
     self.send(:attributes=, attributes, true)
 
     # Models start in a loaded state since they are normally setup from an
@@ -32,6 +31,15 @@ class Model
     @state = :loaded
 
     @persistor.loaded(initial_state) if @persistor
+  end
+
+  # the id is stored in a field named _id, so we setup _id to proxy to this
+  def _id
+    @attributes && @attributes[:_id]
+  end
+
+  def _id=(val)
+    self.__id = val
   end
 
   # Update the options
@@ -111,16 +119,13 @@ class Model
 
   # Do the assignment to a model and trigger a changed event
   def assign_attribute(method_name, *args, &block)
-    # Free any cached value
-    free(method_name)
-
     self.expand!
     # Assign, without the =
-    attribute_name = method_name[0..-2].to_sym
+    attribute_name = method_name[1..-2].to_sym
 
     value = args[0]
 
-    attributes[attribute_name] = wrap_value(value, [attribute_name])
+    @attributes[attribute_name] = wrap_value(value, [attribute_name])
 
     @deps.changed!(attribute_name)
 
@@ -136,29 +141,26 @@ class Model
     # Reading an attribute, we may get back a nil model.
     method_name = method_name.to_sym
 
-    if method_name[0] != '_' && attributes == nil
+    if method_name[0] != '_' && @attributes == nil
       # The method we are calling is on a nil model, return a wrapped
       # exception.
       return return_undefined_method(method_name)
     else
+      attr_name = method_name[1..-1].to_sym
       # See if the value is in attributes
-      value = (attributes && attributes[method_name])
-
-      # Also check @cache
-      value ||= (@cache && @cache[method_name])
+      value = (@attributes && @attributes[attr_name])
 
       # Track dependency
-      @deps.depend(method_name)
+      @deps.depend(attr_name)
 
       if value
         # key was in attributes or cache
         return value
       else
-        # Cache the value, will be removed when expanded or something
-        # is assigned over it.
         # TODO: implement a timed out cache flusing
-        new_model = read_new_model(method_name)
-        @cache[method_name] = new_model
+        new_model = read_new_model(attr_name)
+        @attributes ||= {}
+        @attributes[attr_name] = new_model
 
         return new_model
       end
@@ -216,11 +218,6 @@ class Model
       # they should all trigger
       !method_name || method_name[0] != '_' || (method_name == attribute.to_sym && args.size == 0)
     end
-  end
-
-  # Removes an item from the cache
-  def free(name)
-    @cache.delete(name)
   end
 
   # If this model is nil, it makes it into a hash model, then

@@ -28,8 +28,7 @@ class StoreTasks < TaskHandler
   end
 
   def save(collection, data)
-    data = data.symbolize_keys
-
+    puts "COLLECTION: #{collection.inspect} - #{data.inspect}"
     errors = model_errors(collection, data)
 
     if errors.size == 0
