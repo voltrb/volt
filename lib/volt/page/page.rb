@@ -138,7 +138,7 @@ class Page
   end
 
   def add_model(model_name)
-    model_name = model_name.camelize
+    model_name = model_name.camelize.to_sym
     @model_classes[model_name] = Object.const_get(model_name)
   end
 

@@ -18,7 +18,7 @@ module ModelWrapper
     elsif values.is_a?(Hash)
       pairs = values.map do |k,v|
         # TODO: We should be able to move wrapping into the method_missing on model
-        path = lookup + [k[1..-1].to_sym]
+        path = lookup + [k.to_sym]
 
         [k, wrap_value(v,path)]
       end

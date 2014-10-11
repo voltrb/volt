@@ -146,14 +146,8 @@ module Persistors
 
       # Don't add if the model is already in the ArrayModel
       if !@model.array.find {|v| v['_id'] == data[:_id] }
-        # Convert to underscores for assignment
-        puts "ADD : #{data.inspect}"
-        underscore_values = data.each_with_object({}) do |(k,v), obj|
-          obj[:"_#{k}"] = v
-        end
-
         # Find the existing model, or create one
-        new_model = @@identity_map.find(data[:_id]) { @model.new_model(underscore_values, new_options, :loaded) }
+        new_model = @@identity_map.find(data[:_id]) { @model.new_model(data, new_options, :loaded) }
 
         @model.insert(index, new_model)
       end

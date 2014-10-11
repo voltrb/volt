@@ -71,7 +71,7 @@ module Persistors
         else
           StoreTasks.save(collection, self_attributes).then do |errors|
             if errors.size == 0
-              promise.resolve
+              promise.resolve(nil)
             else
               promise.reject(errors)
             end

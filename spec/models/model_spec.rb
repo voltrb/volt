@@ -178,8 +178,8 @@ describe Model do
   it "should add doubly nested arrays" do
     model = Model.new
 
-    model._items << {_name: 'Cool', _lists: []}
-    model._items[0]._lists << {_name: 'worked'}
+    model._items << {name: 'Cool', lists: []}
+    model._items[0]._lists << {name: 'worked'}
     expect(model._items[0]._lists[0]._name).to eq('worked')
   end
 
@@ -202,7 +202,7 @@ describe Model do
     a = Model.new
 
     count = 0
-    -> { a._blue && a._blue.respond_to?(:_green) && a._blue._green ; count += 1 }.watch!
+    -> { a._blue && a._blue.respond_to?(:green) && a._blue._green ; count += 1 }.watch!
     expect(count).to eq(1)
 
     a._blue._green = 5
@@ -215,7 +215,7 @@ describe Model do
     Computation.flush!
     expect(count).to eq(3)
 
-    a._blue = {_green: 50}
+    a._blue = {green: 50}
     expect(a._blue._green).to eq(50)
     Computation.flush!
     expect(count).to eq(4)
@@ -240,7 +240,7 @@ describe Model do
   it "should let you append nested hashes" do
     a = Model.new
 
-    a._items << {_name: {_text: 'Name'}}
+    a._items << {name: {text: 'Name'}}
 
     expect(a._items[0]._name._text).to eq('Name')
   end
@@ -296,7 +296,7 @@ describe Model do
     it "should handle nested paths" do
       a = Model.new
 
-      a._items << {_name: 'Cool', _lists: [{_name: 'One'}, {_name: 'Two'}]}
+      a._items << {name: 'Cool', lists: [{name: 'One'}, {name: 'Two'}]}
 
       expect(a._items[0]._lists.path).to eq([:items, :[], :lists])
       expect(a._items[0]._lists[1].path).to eq([:items, :[], :lists, :[]])
@@ -337,9 +337,9 @@ describe Model do
   it "should delete from an ArrayModel" do
     array = ArrayModel.new([])
 
-    array << {_name: 'One'}
-    array << {_name: 'Two'}
-    array << {_name: 'Three'}
+    array << {name: 'One'}
+    array << {name: 'Two'}
+    array << {name: 'Three'}
 
     expect(array.size).to eq(3)
 
@@ -362,8 +362,8 @@ describe Model do
 
   it "should convert to a hash, and unwrap all of the way down" do
     a = Model.new
-    a._items << {_name: 'Test1', _other: {_time: 'Now'}}
-    a._items << {_name: 'Test2', _other: {_time: 'Later'}}
+    a._items << {name: 'Test1', other: {time: 'Now'}}
+    a._items << {name: 'Test2', other: {time: 'Later'}}
 
     item1 = a._items[0].to_h
     expect(item1[:name]).to eq('Test1')

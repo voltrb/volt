@@ -8,7 +8,7 @@ describe Persistors::Params do
 
     expect(a._test._cool.persistor.class).to eq(Persistors::Params)
 
-    a._items << {_name: 'Test'}
+    a._items << {name: 'Test'}
 
     expect(a._items.persistor.class).to eq(Persistors::Params)
     expect(a._items[0].persistor.class).to eq(Persistors::Params)

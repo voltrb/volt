@@ -60,8 +60,13 @@ class Model
     if attrs
       # Assign each attribute using setters
       attrs.each_pair do |key, value|
-        puts "ASSIGN: #{key} - #{value}"
-        self.send(:"#{key}=", value)
+        if self.respond_to?(key)
+          # If a method without an underscore is defined, call that.
+          self.send(:"#{key}=", value)
+        else
+          # Otherwise, use the _ version
+          self.send(:"_#{key}=", value)
+        end
       end
     else
       @attributes = attrs

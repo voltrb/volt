@@ -26,10 +26,12 @@ module ModelHelpers
       begin
         # remove the _ and then singularize
         if path.last == :[]
-          klass_name = path[-2][0..-1].singularize.camelize
+          index = -2
         else
-          klass_name = path[-1][0..-1].singularize.camelize
+          index = -1
         end
+
+        klass_name = path[index].singularize.camelize
 
         klass = $page.model_classes[klass_name] || Model
       rescue NameError => e
