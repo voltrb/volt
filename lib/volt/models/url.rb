@@ -77,13 +77,11 @@ class URL
       nested_params_hash(params).each_pair do |key,value|
         # remove the _ from the front
         value = `encodeURI(value)`
-        query_parts << "#{key}=#{value}"
+        query_parts << "#{key[1..-1]}=#{value}"
       end
 
       new_url += query_parts.join('&')
     end
-
-    puts "new_url: #{new_url.inspect}"
 
     frag = self.fragment
     new_url += '#' + frag if frag.present?
@@ -143,8 +141,6 @@ class URL
       # Get the params that are in the route
       new_params = @router.url_to_params(path)
 
-      puts "NEW PARAMS: #{new_params}"
-
       if new_params == false
         raise "no routes match path: #{path}"
       end
@@ -174,7 +170,6 @@ class URL
         else
           # assign value
           if old_val != new_val
-            puts "ASSIGN1: #{name}"
             params.send(:"#{name}=", new_val)
           end
           new_params.delete(name)
@@ -188,11 +183,9 @@ class URL
     def assign_new(params, new_params)
       new_params.each_pair do |name, value|
         if value.is_a?(Hash)
-          puts "ASSIGN3: #{name}"
           assign_new(params.send(name), value)
         else
           # assign
-          puts "ASSIGN2: #{name}"
           params.send(:"#{name}=", value)
         end
       end

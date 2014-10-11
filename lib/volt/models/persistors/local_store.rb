@@ -41,7 +41,7 @@ module Persistors
 
           @loading_data = true
           root_attributes.each_pair do |key, value|
-            @model.send(:"#{key}=", value)
+            @model.send(:"_#{key}=", value)
           end
           @loading_data = nil
         end
