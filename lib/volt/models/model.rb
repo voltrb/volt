@@ -60,6 +60,7 @@ class Model
     if attrs
       # Assign each attribute using setters
       attrs.each_pair do |key, value|
+        puts "ASSIGN: #{key} - #{value}"
         self.send(:"#{key}=", value)
       end
     else
