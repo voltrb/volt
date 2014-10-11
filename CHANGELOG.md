@@ -1,3 +1,7 @@
+#
+  - url.query, url.fragment, url.path all update reactively now.
+
+
 # 0.8.6 - Oct 5, 2014
 
   - Major changes to the templating system (to address common concerns and make things simpler).

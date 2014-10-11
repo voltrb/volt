@@ -28,6 +28,7 @@ class StoreTasks < TaskHandler
   end
 
   def save(collection, data)
+    data = data.symbolize_keys
     puts "COLLECTION: #{collection.inspect} - #{data.inspect}"
     errors = model_errors(collection, data)
 
@@ -39,6 +40,7 @@ class StoreTasks < TaskHandler
       # TODO: Seems mongo is dumb and doesn't let you upsert with custom id's
       begin
         # data['_id'] = BSON::ObjectId('_id') if data['_id']
+        puts "INSERT: #{data.inspect}"
         db[collection].insert(data)
       rescue Mongo::OperationFailure => error
         # Really mongo client?
@@ -46,6 +48,7 @@ class StoreTasks < TaskHandler
           # Update because the id already exists
           update_data = data.dup
           update_data.delete(:_id)
+          puts "UPDATE DATA: #{update_data.inspect} - #{id.inspect}"
           db[collection].update({:_id => id}, update_data)
         else
           return {:error => error.message}

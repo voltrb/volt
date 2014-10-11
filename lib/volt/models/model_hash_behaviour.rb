@@ -40,6 +40,10 @@ module ModelHashBehaviour
     @persistor.removed(nil) if @persistor
   end
 
+  def each_with_object(*args, &block)
+    return (@attributes || {}).each_with_object(*args, &block)
+  end
+
 
   # Convert the model to a hash all of the way down.
   def to_h

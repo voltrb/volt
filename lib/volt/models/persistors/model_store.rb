@@ -114,7 +114,6 @@ module Persistors
       end
 
       def collection
-        puts "PATH: #{@model.path}"
         @model.path[-2]
       end
 

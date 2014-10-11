@@ -106,7 +106,6 @@ module Persistors
     # Find can take either a query object, or a block that returns a query object.  Use
     # the block style if you need reactive updating queries
     def find(query=nil, &block)
-      puts "FIND: #{query.inspect}"
       # Set a default query if there is no block
       if block
         if query
@@ -148,6 +147,7 @@ module Persistors
       # Don't add if the model is already in the ArrayModel
       if !@model.array.find {|v| v['_id'] == data[:_id] }
         # Convert to underscores for assignment
+        puts "ADD : #{data.inspect}"
         underscore_values = data.each_with_object({}) do |(k,v), obj|
           obj[:"_#{k}"] = v
         end
