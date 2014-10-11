@@ -83,6 +83,8 @@ class URL
       new_url += query_parts.join('&')
     end
 
+    puts "new_url: #{new_url.inspect}"
+
     frag = self.fragment
     new_url += '#' + frag if frag.present?
 
@@ -141,6 +143,8 @@ class URL
       # Get the params that are in the route
       new_params = @router.url_to_params(path)
 
+      puts "NEW PARAMS: #{new_params}"
+
       if new_params == false
         raise "no routes match path: #{path}"
       end
@@ -170,6 +174,7 @@ class URL
         else
           # assign value
           if old_val != new_val
+            puts "ASSIGN1: #{name}"
             params.send(:"#{name}=", new_val)
           end
           new_params.delete(name)
@@ -183,9 +188,11 @@ class URL
     def assign_new(params, new_params)
       new_params.each_pair do |name, value|
         if value.is_a?(Hash)
+          puts "ASSIGN3: #{name}"
           assign_new(params.send(name), value)
         else
           # assign
+          puts "ASSIGN2: #{name}"
           params.send(:"#{name}=", value)
         end
       end
@@ -231,7 +238,7 @@ class URL
     def query_key(path)
       i = 0
       path.map do |v|
-        v = v[1..-1]
+        # v = v[1..-1]
         i += 1
         if i != 1
           "[#{v}]"
@@ -245,11 +252,13 @@ class URL
       results = {}
 
       params.each_pair do |key,value|
-        if value.respond_to?(:persistor) && value.persistor && value.persistor.is_a?(Persistors::Params)
-          # TODO: Should be a param
-          results.merge!(nested_params_hash(value, path + [key]))
-        else
-          results[query_key(path + [key])] = value
+        unless value.nil?
+          if value.respond_to?(:persistor) && value.persistor && value.persistor.is_a?(Persistors::Params)
+            # TODO: Should be a param
+            results.merge!(nested_params_hash(value, path + [key]))
+          else
+            results[query_key(path + [key])] = value
+          end
         end
       end
 

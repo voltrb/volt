@@ -18,6 +18,10 @@ module ModelHashBehaviour
     attributes.nil?
   end
 
+  def empty?
+    !attributes || attributes.size == 0
+  end
+
   def false?
     attributes.false?
   end
@@ -40,11 +44,15 @@ module ModelHashBehaviour
   # Convert the model to a hash all of the way down.
   def to_h
     hash = {}
-    attributes.each_pair do |key, value|
-      hash[key] = deep_unwrap(value)
-    end
+    if empty?
+      return nil
+    else
+      attributes.each_pair do |key, value|
+        hash[key] = deep_unwrap(value)
+      end
 
-    return hash
+      return hash
+    end
   end
 
 end
