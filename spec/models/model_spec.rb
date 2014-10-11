@@ -232,7 +232,7 @@ describe Model do
     Computation.flush!
     expect(count).to eq(2)
 
-    a.delete(:_blue)
+    a.delete(:blue)
     Computation.flush!
     expect(count).to eq(3)
   end
@@ -248,13 +248,13 @@ describe Model do
 
   it "should not call added too many times" do
     a = Model.new
-    a._list << 1
+    a._lists << 1
 
     count = 0
-    a._list.on('added') { count += 1 }
+    a._lists.on('added') { count += 1 }
     expect(count).to eq(0)
 
-    a._list << 2
+    a._lists << 2
     expect(count).to eq(1)
   end
 
@@ -366,14 +366,14 @@ describe Model do
     a._items << {_name: 'Test2', _other: {_time: 'Later'}}
 
     item1 = a._items[0].to_h
-    expect(item1[:_name]).to eq('Test1')
-    expect(item1[:_other][:_time]).to eq('Now')
+    expect(item1[:name]).to eq('Test1')
+    expect(item1[:other][:time]).to eq('Now')
 
     all_items = a._items.to_a
 
     a = [
-      {:_name => "Test1", :_other => {:_time => "Now"}},
-      {:_name => "Test2", :_other => {:_time => "Later"}}
+      {:name => "Test1", :other => {:time => "Now"}},
+      {:name => "Test2", :other => {:time => "Later"}}
     ]
     expect(all_items).to eq(a)
   end
@@ -386,7 +386,7 @@ describe Model do
 
     it "should set the model path" do
       @model._object._name = 'Test'
-      expect(@model._object.path).to eq([:_object])
+      expect(@model._object.path).to eq([:object])
     end
 
     it "should set the model path for a sub array" do
@@ -404,7 +404,7 @@ describe Model do
       test_item = TestItem.new
 
       @model._items << test_item
-      expect(@model._items[0].path).to eq([:_items, :[]])
+      expect(@model._items[0].path).to eq([:items, :[]])
     end
   end
 

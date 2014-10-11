@@ -228,7 +228,7 @@ class Model
       if @parent
         @parent.expand!
 
-        @parent.send(:"#{@path.last}=", self)
+        @parent.send(:"_#{@path.last}=", self)
       end
     end
   end
