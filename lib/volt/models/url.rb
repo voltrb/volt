@@ -71,8 +71,8 @@ class URL
 
     new_url = "#{scheme}://#{host_with_port}#{(path || self.path).chomp('/')}"
 
+    params_str = ''
     unless params.empty?
-      new_url += '?'
       query_parts = []
       nested_params_hash(params).each_pair do |key,value|
         # remove the _ from the front
@@ -80,7 +80,9 @@ class URL
         query_parts << "#{key[1..-1]}=#{value}"
       end
 
-      new_url += query_parts.join('&')
+      if query_parts.size > 0
+        new_url += '?' + query_parts.join('&')
+      end
     end
 
     frag = self.fragment
