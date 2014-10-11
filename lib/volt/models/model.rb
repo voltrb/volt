@@ -58,6 +58,10 @@ class Model
     attrs = wrap_values(attrs)
 
     if attrs
+      # Assign id first
+      id = attrs.delete(:_id)
+      self._id = id if id
+
       # Assign each attribute using setters
       attrs.each_pair do |key, value|
         if self.respond_to?(key)
@@ -117,10 +121,6 @@ class Model
       # Call on parent
       super
     end
-  end
-
-  def [](key)
-    attributes[key]
   end
 
   # Do the assignment to a model and trigger a changed event
@@ -281,7 +281,7 @@ class Model
       if save_to
         if save_to.is_a?(ArrayModel)
           # Add to the collection
-          new_model = save_to.append(self.attributes)
+          new_model = save_to << self.attributes
 
           # Set the buffer's id to track the main model's id
           self.attributes[:_id] = new_model._id

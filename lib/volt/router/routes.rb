@@ -81,7 +81,7 @@ class Routes
 
     @param_matches.each do |param_matcher|
       # TODO: Maybe a deep dup?
-      result, new_params = check_params_match(test_params, param_matcher[0])
+      result, new_params = check_params_match(test_params.dup, param_matcher[0])
 
       if result
         return param_matcher[1].call(new_params)

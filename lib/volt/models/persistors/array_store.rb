@@ -142,12 +142,13 @@ module Persistors
     def add(index, data)
       $loading_models = true
 
-      new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
-
       # Don't add if the model is already in the ArrayModel
-      if !@model.array.find {|v| v['_id'] == data[:_id] }
+      if !@model.array.find {|v| v._id == data[:_id] }
         # Find the existing model, or create one
-        new_model = @@identity_map.find(data[:_id]) { @model.new_model(data, new_options, :loaded) }
+        new_model = @@identity_map.find(data[:_id]) do
+          new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
+          @model.new_model(data, new_options, :loaded)
+        end
 
         @model.insert(index, new_model)
       end

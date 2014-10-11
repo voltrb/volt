@@ -29,7 +29,6 @@ class StoreTasks < TaskHandler
 
   def save(collection, data)
     data = data.symbolize_keys
-    puts "COLLECTION: #{collection.inspect} - #{data.inspect}"
     errors = model_errors(collection, data)
 
     if errors.size == 0
@@ -40,8 +39,8 @@ class StoreTasks < TaskHandler
       # TODO: Seems mongo is dumb and doesn't let you upsert with custom id's
       begin
         # data['_id'] = BSON::ObjectId('_id') if data['_id']
-        puts "INSERT: #{data.inspect}"
         db[collection].insert(data)
+        puts "INSERT: #{data.inspect}"
       rescue Mongo::OperationFailure => error
         # Really mongo client?
         if error.message[/^11000[:]/]
