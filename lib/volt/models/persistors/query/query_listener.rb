@@ -42,7 +42,7 @@ class QueryListener
       # copy the data from the existing model.
       store.model.clear
       @stores.first.model.each_with_index do |item, index|
-        store.add(index, item)
+        store.add(index, item.to_h)
       end
     else
       # First time we've added a store, setup the listener and get

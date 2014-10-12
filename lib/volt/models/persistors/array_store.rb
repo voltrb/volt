@@ -61,10 +61,11 @@ module Persistors
 
         if @query.is_a?(Proc)
           @query_computation = -> do
-            puts "Run Query Again"
             stop_listening(false)
 
             change_state_to :loading
+
+            new_query = @query.call
 
             run_query(@model, @query.call)
           end.watch!
@@ -142,10 +143,12 @@ module Persistors
     def add(index, data)
       $loading_models = true
 
+      data_id = data[:_id]
+
       # Don't add if the model is already in the ArrayModel
-      if !@model.array.find {|v| v._id == data[:_id] }
+      if !@model.array.find {|v| v._id == data_id }
         # Find the existing model, or create one
-        new_model = @@identity_map.find(data[:_id]) do
+        new_model = @@identity_map.find(data_id) do
           new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
           @model.new_model(data, new_options, :loaded)
         end
