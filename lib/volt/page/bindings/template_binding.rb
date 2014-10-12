@@ -14,7 +14,13 @@ class TemplateBinding < BaseBinding
     @getter = getter
 
     # Run the initial render
-    @computation = -> { update(*@context.instance_eval(&getter)) }.watch!
+    @computation = -> do
+      # Don't try to render if this has been removed
+      if @context
+        # Render
+        update(*@context.instance_eval(&getter))
+      end
+    end.watch!
   end
 
   def setup_path(binding_in_path)

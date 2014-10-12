@@ -48,6 +48,9 @@ class SocketConnectionHandler < SockJS::Session
       send(str)
     rescue MetaState::WrongStateError => e
       puts "Tried to send to closed connection: #{e.inspect}"
+
+      # Mark this channel as closed
+      closed
     end
   end
 
