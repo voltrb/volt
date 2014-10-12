@@ -1,5 +1,12 @@
 #
   - url.query, url.fragment, url.path all update reactively now.
+  - MAJOR CHANGE: Previously all tables and fields were created with _'s as their name prefixes.  The underscores have been removed from everywhere.  The only place you use underscores is when you want to access fields without creating setters and getters.  Now when you do: ```model._name = 'Something'```, your setting the ```name``` attribute on the model.  When you do: ```model._name```, your fetching the ```name``` attribute.  If you insert a hash into a collection, you no longer use underscores:
+
+  ```ruby
+    store._items << {name: 'Item 1'}
+  ```
+
+    For the moment, continue using underscores in routes.
 
 
 # 0.8.6 - Oct 5, 2014

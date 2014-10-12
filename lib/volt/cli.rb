@@ -1,5 +1,6 @@
 require 'bundler/setup'
 require 'thor'
+require 'volt/extra_core/extra_core'
 
 class CLI < Thor
   include Thor::Actions
@@ -75,6 +76,14 @@ class CLI < Thor
     require 'volt/cli/new_gem'
 
     NewGem.new(self, name, options)
+  end
+
+  desc "model NAME COMPONENT", "Creates a model named NAME in the component named COMPONENT"
+  method_option :name, :type => :string, :banner => "The name of the model."
+  method_option :component, :type => :string, :default => 'main', :banner => "The component the model should be created in.", :required => false
+  def model(name, component='main')
+    output_file = Dir.pwd + "/app/#{component.underscore}/models/#{name.underscore.singularize}.rb"
+    template("model/model.rb.tt", output_file, {model_name: name.camelize.singularize})
   end
 
   def self.source_root

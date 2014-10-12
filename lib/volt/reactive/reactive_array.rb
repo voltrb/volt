@@ -39,6 +39,34 @@ class ReactiveArray# < Array
     end
   end
 
+  def select
+    result = []
+    size.times do |index|
+      val = self[index]
+      if yield(val).true?
+        result << val
+      end
+    end
+
+    return result
+  end
+
+  def any?
+    if block_given?
+      size.times do |index|
+        val = self[index]
+
+        if yield(val).true?
+          return true
+        end
+      end
+
+      return false
+    else
+      return @array.any?
+    end
+  end
+
   # TODO: Handle a range
   def [](index)
     # Handle a negative index

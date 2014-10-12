@@ -3,12 +3,20 @@ require 'volt/extra_core/inflector'
 class String
   # TODO: replace with better implementations
   # NOTE: strings are currently immutable in Opal, so no ! methods
+
+  # Turns a string into the camel case version.  If it is already camel case, it should
+  # return the same string.
   def camelize
-    self.split("_").map {|s| s.capitalize }.join("")
+    new_str = self.gsub(/_[a-z]/) { |a| a[1].upcase }
+    new_str = new_str[0].capitalize + new_str[1..-1]
+
+    return new_str
   end
 
+  # Returns the underscore version of a string.  If it is already underscore, it should
+  # return the same string.
   def underscore
-    self.scan(/[A-Z][a-z]*/).join("_").downcase
+    self.gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').gsub(/([a-z\d])([A-Z])/,'\1_\2').downcase
   end
 
   def dasherize
