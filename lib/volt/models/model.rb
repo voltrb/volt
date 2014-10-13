@@ -64,7 +64,7 @@ class Model
 
       # Assign each attribute using setters
       attrs.each_pair do |key, value|
-        if self.respond_to?(key)
+        if self.respond_to?(:"#{key}=")
           # If a method without an underscore is defined, call that.
           self.send(:"#{key}=", value)
         else
