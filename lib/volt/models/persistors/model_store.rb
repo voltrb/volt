@@ -96,7 +96,7 @@ module Persistors
       if model
         data.each_pair do |key, value|
           if key != :_id
-            model.send(:"#{key}=", value)
+            model.send(:"_#{key}=", value)
           end
         end
       end
