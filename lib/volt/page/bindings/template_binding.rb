@@ -11,8 +11,6 @@ class TemplateBinding < BaseBinding
 
     @current_template = nil
 
-    @getter = getter
-
     # Run the initial render
     @computation = -> do
       # Don't try to render if this has been removed
