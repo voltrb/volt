@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "thor", "~> 0.18.0"
+  spec.add_dependency "thor", "~> 0.19.0"
   spec.add_dependency "pry", "~> 0.9.12.0"
   spec.add_dependency "rack", "~> 1.5.0"
   spec.add_dependency "sprockets-sass", "~> 1.0.0"
