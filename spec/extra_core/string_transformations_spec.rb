@@ -1,6 +1,6 @@
 # encoding: utf-8
-require_relative 'string_transformation_test_cases'
 require 'spec_helper'
+require 'extra_core/string_transformation_test_cases'
 require 'volt/extra_core/string'
 
 describe "#camelize" do
