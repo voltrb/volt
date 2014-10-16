@@ -6,9 +6,9 @@ class String
 
   # Turns a string into the camel case version.  If it is already camel case, it should
   # return the same string.
-  def camelize
+  def camelize(first_letter = :upper)
     new_str = self.gsub(/_[a-z]/) { |a| a[1].upcase }
-    new_str = new_str[0].capitalize + new_str[1..-1]
+    new_str = new_str[0].capitalize + new_str[1..-1] if first_letter == :upper
 
     return new_str
   end
