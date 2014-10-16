@@ -38,10 +38,9 @@ class URL
       matcher = url.match(/^(#{protocol[0..-2]})[:]\/\/([^\/]+)(.*)$/)
       self.scheme = matcher[1]
       host, port = matcher[2].split(':')
-      port ||= 80
 
       self.host = host
-      self.port = port
+      self.port = (port || 80).to_i
 
       path = matcher[3]
       path, fragment = path.split('#', 2)
@@ -61,7 +60,7 @@ class URL
 
   # Full url rebuilds the url from it's constituent parts
   def full_url
-    if port
+    if port && port != 80
       host_with_port = "#{host}:#{port}"
     else
       host_with_port = host
