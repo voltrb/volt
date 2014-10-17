@@ -163,7 +163,6 @@ class Model
         # key was in attributes or cache
         return value
       else
-        # TODO: implement a timed out cache flusing
         new_model = read_new_model(attr_name)
         @attributes ||= {}
         @attributes[attr_name] = new_model

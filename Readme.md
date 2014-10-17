@@ -1,5 +1,5 @@
 [![Gem Version](https://badge.fury.io/rb/volt.svg)](http://badge.fury.io/rb/volt)
-[![Code Climate](http://img.shields.io/codeclimate/github/voltrb/volt.svg)](https://codeclimate.com/github/voltrb/volt)
+[![Code Climate](https://codeclimate.com/github/voltrb/volt/badges/gpa.svg)](https://codeclimate.com/github/voltrb/volt)
 [![Build Status](http://img.shields.io/travis/voltrb/volt/master.svg)](https://travis-ci.org/voltrb/volt)
 [![Inline docs](http://inch-ci.org/github/voltrb/volt.svg?branch=master)](http://inch-ci.org/github/voltrb/volt)
 [![Volt Chat](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/voltrb/volt)
