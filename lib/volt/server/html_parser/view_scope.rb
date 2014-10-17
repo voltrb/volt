@@ -112,8 +112,7 @@ class ViewScope
 
     data_hash = []
     attributes.each_pair do |name, value|
-      parts = value.split(/(\{\{[^\}]+\}\})/).reject(&:blank?)
-      binding_count = parts.count {|p| p[0] == '{' && p[1] == '{' && p[-2] == '}' && p[-1] == '}'}
+      parts, binding_count = binding_parts_and_count(value)
 
       # if this attribute has bindings
       if binding_count > 0

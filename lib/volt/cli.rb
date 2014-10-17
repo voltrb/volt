@@ -59,13 +59,6 @@ class CLI < Thor
 
       Thin::Runner.new(args).run!
     end
-
-    # require 'volt/server'
-    #
-    # EM.run do
-    #   thin = Rack::Handler.get("thin")
-    #   thin.run(Server.new.app, Port: 3000)
-    # end
   end
 
   desc "gem GEM", "Creates a component gem where you can share a component"

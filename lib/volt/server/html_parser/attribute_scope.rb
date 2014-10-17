@@ -31,9 +31,17 @@ module AttributeScope
     save_binding(id, "lambda { |__p, __t, __c, __id| EventBinding.new(__p, __t, __c, __id, #{event.inspect}, Proc.new {|event| #{value} })}")
   end
 
-  def process_attribute(tag_name, attributes, attribute_name, value)
+  # Takes a string and splits on bindings, returns the string split on bindings
+  # and the number of bindings.
+  def binding_parts_and_count(value)
     parts = value.split(/(\{\{[^\}]+\}\})/).reject(&:blank?)
     binding_count = parts.count {|p| p[0] == '{' && p[1] == '{' && p[-2] == '}' && p[-1] == '}'}
+
+    return parts, binding_count
+  end
+
+  def process_attribute(tag_name, attributes, attribute_name, value)
+    parts, binding_count = binding_parts_and_count(value)
 
     # if this attribute has bindings
     if binding_count > 0
