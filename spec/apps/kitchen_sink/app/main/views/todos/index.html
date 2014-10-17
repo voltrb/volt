@@ -1,0 +1,22 @@
+<:Title>
+  Todos
+
+<:Body>
+  <h1>Todos Example</h1>
+
+  <table id="todos-table" class="table">
+    {{ _todos.each do |todo| }}
+      <tr>
+        <td><input type="checkbox" checked="{{ todo._completed }}"></td>
+        <td class="name {{ if todo._completed }}complete{{ end }}">{{todo._name}}</td>
+        <td><button e-click="remove_todo(todo)">X</button></td>
+      </tr>
+    {{ end }}
+  </table>
+
+  <form e-submit="add_todo" role="form">
+    <div class="form-group">
+       <label>Todo</label>
+       <input class="form-control" id="newtodo" type="text" value="{{ page._new_todo }}" />
+    </div>
+  </form>
