@@ -10,4 +10,8 @@ class TodosController < ModelController
     self._todos.delete(todo)
   end
 
+  def completed
+    self._todos.count {|t| t._completed }
+  end
+
 end

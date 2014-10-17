@@ -4,6 +4,8 @@
 <:Body>
   <h1>Todos Example</h1>
 
+  <div id="count">{{ completed }} of {{ _todos.size }}</div>
+
   <table id="todos-table" class="table">
     {{ _todos.each do |todo| }}
       <tr>
