@@ -1,3 +1,7 @@
+# 0.8.15 - Oct 18, 2014
+
+  - MAJOR CHANGE: everything volt related now is under the Volt module.  The only change apps need to think about is inheriting from ```Volt::ModelController``` and ```Volt::Model```  Also, config.ru needs to use ```Volt::Server``` instead of ```Server```.
+
 # 0.8.10 - Oct 12, 2014
   - url.query, url.fragment, url.path all update reactively now.
   - MAJOR CHANGE: Previously all tables and fields were created with _'s as their name prefixes.  The underscores have been removed from everywhere.  The only place you use underscores is when you want to access fields without creating setters and getters.  Now when you do: ```model._name = 'Something'```, your setting the ```name``` attribute on the model.  When you do: ```model._name```, your fetching the ```name``` attribute.  If you insert a hash into a collection, you no longer use underscores:
