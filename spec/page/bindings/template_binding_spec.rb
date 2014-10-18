@@ -3,18 +3,17 @@ require 'volt/page/bindings/template_binding'
 
 # Setup page stub
 
-class Page
+class Volt::Page
   attr_accessor :templates
 end
 
-
-describe TemplateBinding do
+describe Volt::TemplateBinding do
   before do
-    @page = double('page')
+    @page = double('volt/page')
     expect(@page).to receive(:templates).at_least(1).times { @templates }
 
     # TODO: We should decouple things so we don't need to allocate
-    @template_binding = TemplateBinding.allocate
+    @template_binding = Volt::TemplateBinding.allocate
     @template_binding.instance_variable_set('@page', @page)
     @template_binding.setup_path('main/main/main')
   end

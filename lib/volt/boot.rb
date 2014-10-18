@@ -6,7 +6,7 @@ else
   require 'volt/page/page'
 end
 
-class Volt
+module Volt
   def self.boot(app_path)
     # Run the app config to load all users config files
     Volt.run_files_in_config_folder

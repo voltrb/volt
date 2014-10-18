@@ -1,4 +1,4 @@
-class Volt
+module Volt
   class NoticesController < ModelController
     model :page
 

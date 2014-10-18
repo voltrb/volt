@@ -1,4 +1,4 @@
-class TodosController < ModelController
+class TodosController < Volt::ModelController
   model :page
 
   def add_todo

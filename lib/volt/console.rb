@@ -13,31 +13,32 @@ class Pry
     end
 
     # Automatically flush after each line
-    Computation.flush!
+    Volt::Computation.flush!
   end
 end
 
+module Volt
+  class Console
+    def self.start
+      require 'pry'
 
-class Console
-  def self.start
-    require 'pry'
+      $LOAD_PATH << 'lib'
+      ENV['SERVER'] = 'true'
 
-    $LOAD_PATH << 'lib'
-    ENV['SERVER'] = 'true'
+      require 'volt'
+      require 'volt/boot'
+      require 'volt/server/socket_connection_handler_stub'
 
-    require 'volt'
-    require 'volt/boot'
-    require 'volt/server/socket_connection_handler_stub'
+      SocketConnectionHandlerStub.dispatcher = Dispatcher.new
 
-    SocketConnectionHandlerStub.dispatcher = Dispatcher.new
+      Volt.boot(Dir.pwd)
 
-    Volt.boot(Dir.pwd)
+      Pry.config.prompt_name = 'volt'
 
-    Pry.config.prompt_name = 'volt'
+      # start a REPL session
+      # Pry.start
 
-    # start a REPL session
-    # Pry.start
-
-    $page.pry
+      $page.pry
+    end
   end
 end

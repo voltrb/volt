@@ -1,5 +1,5 @@
 require 'spec_helper'
 
-describe Dependency do
+describe Volt::Dependency do
 
 end

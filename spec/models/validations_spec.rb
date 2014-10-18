@@ -1,13 +1,13 @@
 require 'volt/models'
 
-class TestModel < Model
+class TestModel < Volt::Model
   validate :_name, length: 4
   validate :_description, length: {message: 'needs to be longer', length: 50}
   validate :_username, presence: true
 end
 
 
-describe Model do
+describe Volt::Model do
   it "should validate the name" do
     expect(TestModel.new.errors).to eq(
       {

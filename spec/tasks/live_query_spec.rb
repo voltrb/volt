@@ -5,8 +5,8 @@ if RUBY_PLATFORM != 'opal'
     end
 
     it "should run a query" do
-      pool = double('pool')
-      data_store = double('data store')
+      pool = double('volt/pool')
+      data_store = double('volt/data store')
 
       expect(data_store).to receive(:query).with('_items', {}).and_return([
         {'_id' => 0, '_name' => 'one'}

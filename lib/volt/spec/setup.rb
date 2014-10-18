@@ -1,4 +1,4 @@
-class Volt
+module Volt
   def self.spec_setup(app_path='.')
     if RUBY_PLATFORM == 'opal'
       require 'volt'
@@ -32,7 +32,7 @@ class Volt
           Capybara.default_driver = :poltergeist
         elsif ENV['BROWSER'] == 'chrome'
           Capybara.register_driver :chrome do |app|
-            Capybara::Selenium::Driver.new(app, :browser => :chrome)
+            Capybara::Selenium::Driver.new(app, browser: :chrome)
           end
 
           Capybara.default_driver = :chrome

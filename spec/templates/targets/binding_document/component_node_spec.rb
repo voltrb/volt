@@ -1,12 +1,12 @@
 require 'volt/page/targets/binding_document/component_node'
 
-describe ComponentNode do
+describe Volt::ComponentNode do
   before do
     html = <<-END
     <!-- $0 -->Before  <!-- $1 -->Inside<!-- $/1 -->  After<!-- $/0 -->
     END
 
-    @component = ComponentNode.new
+    @component = Volt::ComponentNode.new
     @component.html = html
   end
 

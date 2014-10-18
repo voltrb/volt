@@ -27,45 +27,47 @@ class Set
   end
 end
 
-class Dependency
-  def initialize
-    @dependencies = Set.new
-  end
+module Volt
+  class Dependency
+    def initialize
+      @dependencies = Set.new
+    end
 
-  def depend
-    # If there is no @dependencies, don't depend because it has been removed
-    return unless @dependencies
+    def depend
+      # If there is no @dependencies, don't depend because it has been removed
+      return unless @dependencies
 
-    current = Computation.current
-    if current
-      added = @dependencies.add?(current)
+      current = Computation.current
+      if current
+        added = @dependencies.add?(current)
 
-      if added
-        # puts "Added #{self.inspect} to #{current.inspect}"
-        current.on_invalidate do
-          # If @dependencies is nil, this Dependency has been removed
-          @dependencies.delete(current) if @dependencies
+        if added
+          # puts "Added #{self.inspect} to #{current.inspect}"
+          current.on_invalidate do
+            # If @dependencies is nil, this Dependency has been removed
+            @dependencies.delete(current) if @dependencies
+          end
         end
       end
     end
-  end
 
-  def changed!
-    deps = @dependencies
+    def changed!
+      deps = @dependencies
 
-    # If no deps, dependency has been removed
-    return unless deps
+      # If no deps, dependency has been removed
+      return unless deps
 
-    @dependencies = Set.new
+      @dependencies = Set.new
 
-    deps.each do |dep|
-      dep.invalidate!
+      deps.each do |dep|
+        dep.invalidate!
+      end
     end
-  end
 
-  # Called when a dependency is no longer needed
-  def remove
-    changed!
-    @dependencies = nil
+    # Called when a dependency is no longer needed
+    def remove
+      changed!
+      @dependencies = nil
+    end
   end
 end

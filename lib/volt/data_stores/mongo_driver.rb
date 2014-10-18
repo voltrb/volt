@@ -1,6 +1,6 @@
 require 'mongo'
 
-class Volt
+module Volt
   class DataStore
     class MongoDriver
       def self.fetch

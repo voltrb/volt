@@ -1,34 +1,37 @@
-class CLI
+module Volt
+  class CLI
 
-  desc "precompile", "precompile all application assets"
-  def precompile
-    compile
-  end
+    desc "precompile", "precompile all application assets"
 
-  desc "watch", "compiles the project to /compiled when a file changes"
-  def watch
-    require 'listen'
-
-    listener = Listen.to('app') do |modified, added, removed|
+    def precompile
       compile
     end
 
-    listener.start # non-blocking
+    desc "watch", "compiles the project to /compiled when a file changes"
 
-    Signal.trap("SIGINT") do
-      listener.stop
+    def watch
+      require 'listen'
+
+      listener = Listen.to('app') do |modified, added, removed|
+        compile
+      end
+
+      listener.start # non-blocking
+
+      Signal.trap("SIGINT") do
+        listener.stop
+      end
+
+      compile
+
+      begin
+        sleep
+      rescue ThreadError => e
+        # ignore, breaks out on sigint
+      end
     end
 
-    compile
-
-    begin
-      sleep
-    rescue ThreadError => e
-      # ignore, breaks out on sigint
-    end
-  end
-
-  private
+    private
     def compile
       print "compiling project..."
       require 'fileutils'
@@ -41,14 +44,14 @@ class CLI
       require 'volt/server/component_handler'
 
       @root_path ||= Dir.pwd
-      Volt.root = @root_path
+      Volt.root  = @root_path
 
       @app_path = File.expand_path(File.join(@root_path, "app"))
 
-      @component_paths = ComponentPaths.new(@root_path)
-      @app = Rack::Builder.new
-      @opal_files = OpalFiles.new(@app, @app_path, @component_paths)
-      @index_files = IndexFiles.new(@app, @component_paths, @opal_files)
+      @component_paths   = ComponentPaths.new(@root_path)
+      @app               = Rack::Builder.new
+      @opal_files        = OpalFiles.new(@app, @app_path, @component_paths)
+      @index_files       = IndexFiles.new(@app, @component_paths, @opal_files)
       @component_handler = ComponentHandler.new(@component_paths)
 
       write_component_js
@@ -112,4 +115,5 @@ class CLI
         file.write(@index_files.html)
       end
     end
+  end
 end

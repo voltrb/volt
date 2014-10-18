@@ -1,4 +1,4 @@
-class MainController < ModelController
+class MainController < Volt::ModelController
   def index
     # Add code for when the index view is loaded
   end

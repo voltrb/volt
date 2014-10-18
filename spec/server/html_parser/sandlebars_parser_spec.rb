@@ -46,15 +46,15 @@ def parse_url(url)
   File.open("/Users/ryanstout/Desktop/tests/#{url}1.html", 'w') {|f| f.write(html) }
 
   handler = HTMLHandler.new
-  SandlebarsParser.new(html, handler)
+  Volt::SandlebarsParser.new(html, handler)
 
   File.open("/Users/ryanstout/Desktop/tests/#{url}2.html", 'w') {|f| f.write(handler.html) }
 end
 
-describe SandlebarsParser do
+describe Volt::SandlebarsParser do
   def test_html(html, match=nil)
     handler = HTMLHandler.new
-    parser = SandlebarsParser.new(html, handler)
+    parser = Volt::SandlebarsParser.new(html, handler)
 
     expect(handler.html).to eq(match || html)
   end
@@ -107,21 +107,21 @@ describe SandlebarsParser do
     html = "<p>testing with {{nested"
 
     handler = HTMLHandler.new
-    expect { SandlebarsParser.new(html, handler) }.to raise_error(HTMLParseError)
+    expect { Volt::SandlebarsParser.new(html, handler) }.to raise_error(Volt::HTMLParseError)
   end
 
   it "should raise an exception on an unclosed binding" do
     html = "<p>testing with {{nested </p>\n<p>ok</p>"
 
     handler = HTMLHandler.new
-    expect { SandlebarsParser.new(html, handler) }.to raise_error(HTMLParseError)
+    expect { Volt::SandlebarsParser.new(html, handler) }.to raise_error(Volt::HTMLParseError)
   end
 
   it "should report the line number" do
     html = "\n\n<p>some paragraph</p>\n\n<p>testing with {{nested </p>\n<p>ok</p>"
 
     handler = HTMLHandler.new
-    expect { SandlebarsParser.new(html, handler) }.to raise_error(HTMLParseError, "unclosed binding: {nested </p> on line: 5")
+    expect { Volt::SandlebarsParser.new(html, handler) }.to raise_error(Volt::HTMLParseError, "unclosed binding: {nested </p> on line: 5")
   end
 
   it "should handle a bunch of things" do
@@ -179,7 +179,7 @@ describe SandlebarsParser do
     html = File.read(File.join(File.dirname(__FILE__), 'sample_page.html'))
     handler = HTMLHandler.new
     time = Benchmark.measure do
-      SandlebarsParser.new(html, handler)
+      Volt::SandlebarsParser.new(html, handler)
     end
 
     # Less than 100ms
@@ -195,7 +195,7 @@ describe SandlebarsParser do
   #   html = "<div><p>test</p></div></div>"
   #
   #   handler = HTMLHandler.new
-  #   expect { SandlebarsParser.new(html, handler) }.to raise_error(HTMLParseError)
+  #   expect { Volt::SandlebarsParser.new(html, handler) }.to raise_error(Volt::HTMLParseError)
   # end
 end
 end

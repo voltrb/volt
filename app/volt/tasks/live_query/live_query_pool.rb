@@ -1,7 +1,7 @@
 require_relative 'live_query'
 require 'volt/utils/generic_pool'
 
-class LiveQueryPool < GenericPool
+class LiveQueryPool < Volt::GenericPool
   def initialize(data_store)
     super()
     @data_store = data_store

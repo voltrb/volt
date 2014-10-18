@@ -2,14 +2,14 @@ require 'spec_helper'
 require 'volt/reactive/eventable'
 
 class TestEventable
-  include Eventable
+  include Volt::Eventable
 
   def trigger_works_event!
     trigger!('works', 20)
   end
 end
 
-describe Eventable do
+describe Volt::Eventable do
   it 'should allow events to be bound with on' do
     test_eventable = TestEventable.new
 
@@ -32,7 +32,7 @@ describe Eventable do
       count += 1
     end
 
-    expect(listener.class).to eq(Listener)
+    expect(listener.class).to eq(Volt::Listener)
 
     expect(count).to eq(0)
     test_eventable.trigger_works_event!

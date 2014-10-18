@@ -1,7 +1,8 @@
-# Should have
-# templates
-# events
+module Volt
+  # Should have
+  # templates
+  # events
+  class Document
 
-class Document
-
+  end
 end

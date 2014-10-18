@@ -1,12 +1,12 @@
 if RUBY_PLATFORM != 'opal'
   require 'volt/server/rack/component_paths'
 
-  describe ComponentPaths do
+  describe Volt::ComponentPaths do
     before do
       spec_app_root = File.join(File.dirname(__FILE__), "../../apps/file_loading")
 
       path_to_main = File.join(File.dirname(__FILE__), "../../apps/file_loading/app/main")
-      @component_paths = ComponentPaths.new(spec_app_root)
+      @component_paths = Volt::ComponentPaths.new(spec_app_root)
     end
 
     it "should return the paths to all app folders" do

@@ -2,12 +2,12 @@ require 'spec_helper'
 require 'volt/reactive/reactive_accessors'
 
 class TestReactiveAccessors
-  include ReactiveAccessors
+  include Volt::ReactiveAccessors
 
   reactive_accessor :_name
 end
 
-describe ReactiveAccessors do
+describe Volt::ReactiveAccessors do
   it "should assign a reactive value" do
     inst = TestReactiveAccessors.new
 
@@ -30,11 +30,11 @@ describe ReactiveAccessors do
     expect(values).to eq([nil])
 
     inst._name = 'Ryan'
-    Computation.flush!
+    Volt::Computation.flush!
     expect(values).to eq([nil,'Ryan'])
 
     inst._name = 'Stout'
-    Computation.flush!
+    Volt::Computation.flush!
     expect(values).to eq([nil,'Ryan','Stout'])
   end
 end

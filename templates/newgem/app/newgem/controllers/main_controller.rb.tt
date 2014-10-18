@@ -1,4 +1,4 @@
 module <%=config[:name].gsub(/^volt[-]/, '').gsub('-', '_').split("_").map {|s| s.capitalize }.join("") %>
-  class MainController < ModelController
+  class MainController < Volt::ModelController
   end
 end

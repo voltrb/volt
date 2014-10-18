@@ -1,4 +1,4 @@
-class MainController < ModelController
+class MainController < Volt::ModelController
   model :page
 
   private

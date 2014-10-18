@@ -36,7 +36,7 @@ if RUBY_PLATFORM != 'opal'
     before do
       # Setup a live query stub
       @live_query = LiveQueryStub.new
-      data_store = double('data store')
+      data_store = double('volt/data store')
 
       # return an empty collection
       @items = []

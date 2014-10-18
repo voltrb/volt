@@ -1,117 +1,117 @@
 # The url class handles parsing and updating the url
 require 'volt/reactive/reactive_accessors'
+module Volt
+  class URL
+    include ReactiveAccessors
 
-class URL
-  include ReactiveAccessors
+    # TODO: we need to make it so change events only trigger on changes
+    reactive_accessor :scheme, :host, :port, :path, :query, :params, :fragment
+    attr_accessor :router
 
-  # TODO: we need to make it so change events only trigger on changes
-  reactive_accessor :scheme, :host, :port, :path, :query, :params, :fragment
-  attr_accessor :router
+    def initialize(router = nil)
+      @router = router
+      @params = Model.new({}, persistor: Persistors::Params)
+    end
 
-  def initialize(router=nil)
-    @router = router
-    @params = Model.new({}, persistor: Persistors::Params)
-  end
-
-  # Parse takes in a url and extracts each sections.
-  # It also assigns and changes to the params.
-  def parse(url)
-    if url[0] == '#'
-      # url only updates fragment
-      self.fragment = url[1..-1]
-      update!
-    else
-      host = `document.location.host`
-      protocol = `document.location.protocol`
-
-      if url !~ /[:]\/\//
-        # Add the host for local urls
-        url = protocol + "//#{host}" + url
+    # Parse takes in a url and extracts each sections.
+    # It also assigns and changes to the params.
+    def parse(url)
+      if url[0] == '#'
+        # url only updates fragment
+        self.fragment = url[1..-1]
+        update!
       else
-        # Make sure its on the same protocol and host, otherwise its external.
-        if url !~ /#{protocol}\/\/#{host}/
-          # Different host, don't process
-          return false
+        host     = `document.location.host`
+        protocol = `document.location.protocol`
+
+        if url !~ /[:]\/\//
+          # Add the host for local urls
+          url = protocol + "//#{host}" + url
+        else
+          # Make sure its on the same protocol and host, otherwise its external.
+          if url !~ /#{protocol}\/\/#{host}/
+            # Different host, don't process
+            return false
+          end
+        end
+
+        matcher         = url.match(/^(#{protocol[0..-2]})[:]\/\/([^\/]+)(.*)$/)
+        self.scheme     = matcher[1]
+        self.host, port = matcher[2].split(':')
+
+        self.port = (port || 80).to_i
+
+        path           = matcher[3]
+        path, fragment = path.split('#', 2)
+        path, query    = path.split('?', 2)
+
+        self.path     = path
+        self.fragment = fragment
+        self.query    = query
+
+        assign_query_hash_to_params
+      end
+
+      scroll
+
+      return true
+    end
+
+    # Full url rebuilds the url from it's constituent parts
+    def full_url
+      host_with_port = host
+      host_with_port += ":#{port}" if port && port != 80
+
+      self.path, params = @router.params_to_url(@params.to_h)
+
+      new_url    = "#{scheme}://#{host_with_port}#{path.chomp('/')}"
+
+      # Add query params
+      params_str = ''
+      unless params.empty?
+        query_parts = []
+        nested_params_hash(params).each_pair do |key, value|
+          # remove the _ from the front
+          value = `encodeURI(value)`
+          query_parts << "#{key[1..-1]}=#{value}"
+        end
+
+        if query_parts.size > 0
+          self.query = query_parts.join('&')
+          new_url    += '?' + self.query
         end
       end
 
-      matcher = url.match(/^(#{protocol[0..-2]})[:]\/\/([^\/]+)(.*)$/)
-      self.scheme = matcher[1]
-      self.host, port = matcher[2].split(':')
+      # Add fragment
+      frag    = self.fragment
+      new_url += '#' + frag if frag.present?
 
-      self.port = (port || 80).to_i
-
-      path = matcher[3]
-      path, fragment = path.split('#', 2)
-      path, query = path.split('?', 2)
-
-      self.path = path
-      self.fragment = fragment
-      self.query = query
-
-      assign_query_hash_to_params
+      return new_url
     end
 
-    scroll
+    # Called when the state has changed and the url in the
+    # browser should be updated
+    # Called when an attribute changes to update the url
+    def update!
+      if Volt.client?
+        new_url = full_url()
 
-    return true
-  end
-
-  # Full url rebuilds the url from it's constituent parts
-  def full_url
-    host_with_port = host
-    host_with_port += ":#{port}" if port && port != 80
-
-    self.path, params = @router.params_to_url(@params.to_h)
-
-    new_url = "#{scheme}://#{host_with_port}#{path.chomp('/')}"
-
-    # Add query params
-    params_str = ''
-    unless params.empty?
-      query_parts = []
-      nested_params_hash(params).each_pair do |key,value|
-        # remove the _ from the front
-        value = `encodeURI(value)`
-        query_parts << "#{key[1..-1]}=#{value}"
-      end
-
-      if query_parts.size > 0
-        self.query = query_parts.join('&')
-        new_url += '?' + self.query
-      end
-    end
-
-    # Add fragment
-    frag = self.fragment
-    new_url += '#' + frag if frag.present?
-
-    return new_url
-  end
-
-  # Called when the state has changed and the url in the
-  # browser should be updated
-  # Called when an attribute changes to update the url
-  def update!
-    if Volt.client?
-      new_url = full_url()
-
-      # Push the new url if pushState is supported
-      # TODO: add fragment fallback
-      %x{
+        # Push the new url if pushState is supported
+        # TODO: add fragment fallback
+        %x{
         if (document.location.href != new_url && history && history.pushState) {
           history.pushState(null, null, new_url);
         }
       }
+      end
     end
-  end
 
-  def scroll
-    if Volt.client?
-      frag = self.fragment
-      if frag
-        # Scroll to anchor via http://www.w3.org/html/wg/drafts/html/master/browsers.html#scroll-to-fragid
-        %x{
+    def scroll
+      if Volt.client?
+        frag = self.fragment
+        if frag
+          # Scroll to anchor via http://www.w3.org/html/wg/drafts/html/master/browsers.html#scroll-to-fragid
+          %x{
           var anchor = $('#' + frag);
           if (anchor.length == 0) {
             anchor = $('*[name="' + frag + '"]:first');
@@ -121,14 +121,14 @@ class URL
             $(document.body).scrollTop(anchor.offset().top);
           }
         }
-      else
-        # Scroll to the top by default
-        `$(document.body).scrollTop(0);`
+        else
+          # Scroll to the top by default
+          `$(document.body).scrollTop(0);`
+        end
       end
     end
-  end
 
-  private
+    private
     # Assigning the params is tricky since we don't want to trigger changed on
     # any values that have not changed.  So we first loop through all current
     # url params, removing any not present in the params, while also removing
@@ -158,7 +158,7 @@ class URL
     def assign_from_old(params, new_params)
       queued_deletes = []
 
-      params.attributes.each_pair do |name,old_val|
+      params.attributes.each_pair do |name, old_val|
         # If there is a new value, see if it has [name]
         new_val = new_params ? new_params[name] : nil
 
@@ -176,7 +176,7 @@ class URL
         end
       end
 
-      queued_deletes.each {|name| params.delete(name) }
+      queued_deletes.each { |name| params.delete(name) }
     end
 
     # Assign any new params, which weren't in the old params.
@@ -193,10 +193,10 @@ class URL
 
     def query_hash
       query_hash = {}
-      qury = self.query
+      qury       = self.query
       if qury
-        qury.split('&').reject {|v| v == '' }.each do |part|
-          parts = part.split('=').reject {|v| v == '' }
+        qury.split('&').reject { |v| v == '' }.each do |part|
+          parts    = part.split('=').reject { |v| v == '' }
 
           # Decode string
           # parts[0] = `decodeURI(parts[0])`
@@ -205,7 +205,7 @@ class URL
           sections = query_key_sections(parts[0])
 
           hash_part = query_hash
-          sections.each_with_index do |section,index|
+          sections.each_with_index do |section, index|
             if index == sections.size-1
               # Last part, assign the value
               hash_part[section] = parts[1]
@@ -224,7 +224,7 @@ class URL
     # Example:
     # user[name]=Ryan would parse as [:_user, :_name]
     def query_key_sections(key)
-      key.split(/\[([^\]]+)\]/).reject(&:empty?).map {|v| :"_#{v}"}
+      key.split(/\[([^\]]+)\]/).reject(&:empty?).map { |v| :"_#{v}" }
     end
 
     # Generate the key for a nested param attribute
@@ -243,7 +243,7 @@ class URL
     def nested_params_hash(params, path=[])
       results = {}
 
-      params.each_pair do |key,value|
+      params.each_pair do |key, value|
         unless value.nil?
           if value.respond_to?(:persistor) && value.persistor && value.persistor.is_a?(Persistors::Params)
             # TODO: Should be a param
@@ -256,5 +256,5 @@ class URL
 
       return results
     end
-
+  end
 end

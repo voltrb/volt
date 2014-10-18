@@ -1,6 +1,6 @@
 require 'mongo'
 
-class StoreTasks < TaskHandler
+class StoreTasks < Volt::TaskHandler
   def initialize(channel=nil, dispatcher=nil)
     @channel = channel
     @dispatcher = dispatcher

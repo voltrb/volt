@@ -2,11 +2,11 @@ require 'volt/router/routes'
 require 'volt/models'
 
 def routes(&block)
-  @routes = Routes.new
+  @routes = Volt::Routes.new
   @routes.define(&block)
 end
 
-describe Routes do
+describe Volt::Routes do
   it "should setup direct routes" do
     routes do
       get '/', _view: 'index'
@@ -115,7 +115,7 @@ describe Routes do
   end
 
   it "should test that params match a param matcher" do
-    routes = Routes.new
+    routes = Volt::Routes.new
     match, params = routes.send(:check_params_match, {_view: 'blog', _id: '55'}, {_view: 'blog', _id: nil})
     expect(match).to eq(true)
     expect(params).to eq({_id: '55'})
@@ -143,7 +143,7 @@ describe Routes do
   end
 
   it "should match routes" do
-    params = Model.new({}, persistor: Persistors::Params)
+    params = Volt::Model.new({}, persistor: Volt::Persistors::Params)
     params._controller = 'blog'
     params._index = '5'
 
@@ -158,7 +158,7 @@ describe Routes do
   end
 
   it "should handle routes with bindings in them" do
-    params = Model.new({}, persistor: Persistors::Params)
+    params = Volt::Model.new({}, persistor: Volt::Persistors::Params)
 
     routes do
       get '/', _controller: 'index'

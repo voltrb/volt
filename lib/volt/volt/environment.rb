@@ -1,4 +1,4 @@
-class Volt
+module Volt
   class Environment
     def initialize
       @env = ENV['VOLT_ENV']

@@ -1,6 +1,6 @@
 require 'volt/data_stores/mongo_driver'
 
-class Volt
+module Volt
   class DataStore
     def self.fetch
       if Volt.config.db_driver == 'mongo'

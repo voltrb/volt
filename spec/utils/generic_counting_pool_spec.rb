@@ -1,12 +1,12 @@
 require 'volt/utils/generic_counting_pool'
 
-class CountingPoolTest < GenericCountingPool
+class CountingPoolTest < Volt::GenericCountingPool
   def create(id, name=nil)
     return Object.new
   end
 end
 
-describe GenericCountingPool do
+describe Volt::GenericCountingPool do
   before do
     @count_pool = CountingPoolTest.new
   end

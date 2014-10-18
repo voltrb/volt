@@ -29,181 +29,182 @@ require 'volt/page/url_tracker'
 require 'volt/benchmark/benchmark'
 require 'volt/page/tasks'
 
+module Volt
+  class Page
+    attr_reader :url, :params, :page, :templates, :routes, :events, :model_classes
 
-class Page
-  attr_reader :url, :params, :page, :templates, :routes, :events, :model_classes
+    def initialize
+      @model_classes = {}
 
-  def initialize
-    @model_classes = {}
+      # Run the code to setup the page
+      @page          = Model.new
 
-    # Run the code to setup the page
-    @page = Model.new
+      @url         = URL.new
+      @params      = @url.params
+      @url_tracker = UrlTracker.new(self)
 
-    @url = URL.new
-    @params = @url.params
-    @url_tracker = UrlTracker.new(self)
+      @events = DocumentEvents.new
 
-    @events = DocumentEvents.new
+      if RUBY_PLATFORM == 'opal'
+        # Setup escape binding for console
+        %x{
+          $(document).keyup(function(e) {
+            if (e.keyCode == 27) {
+              Opal.gvars.page.$launch_console();
+            }
+          });
 
-    if RUBY_PLATFORM == 'opal'
-      # Setup escape binding for console
-      %x{
-        $(document).keyup(function(e) {
-          if (e.keyCode == 27) {
-            Opal.gvars.page.$launch_console();
-          }
-        });
-
-        $(document).on('click', 'a', function(event) {
-          return Opal.gvars.page.$link_clicked($(this).attr('href'), event);
-        });
-      }
-    end
-
-    # Initialize tasks so we can get the reload message
-    self.tasks if Volt.env.development?
-
-    if Volt.client?
-      channel.on('reconnected') do
-        @page._reconnected = true
-
-        `setTimeout(function() {`
-          @page._reconnected = false
-        `}, 2000);`
-      end
-    end
-  end
-
-  def flash
-    @flash ||= Model.new({}, persistor: Persistors::Flash)
-  end
-
-  def store
-    @store ||= Model.new({}, persistor: Persistors::StoreFactory.new(tasks))
-  end
-
-  def local_store
-    @local_store ||= Model.new({}, persistor: Persistors::LocalStore)
-  end
-
-  def tasks
-    @tasks ||= Tasks.new(self)
-  end
-
-  def link_clicked(url='', event=nil)
-    # Skip when href == ''
-    return false if url.blank?
-
-    # Normalize url
-    # Benchmark.bm(1) do
-    if @url.parse(url)
-      if event
-        # Handled new url
-        `event.stopPropagation();`
+          $(document).on('click', 'a', function(event) {
+            return Opal.gvars.page.$link_clicked($(this).attr('href'), event);
+          });
+        }
       end
 
-      # Clear the flash
-      flash.clear
+      # Initialize tasks so we can get the reload message
+      self.tasks if Volt.env.development?
 
-      # return false to stop the event propigation
-      return false
-    end
-    # end
-
-    # Not stopping, process link normally
-    return true
-  end
-
-  # We provide a binding_name, so we can bind events on the document
-  def binding_name
-    'page'
-  end
-
-  def launch_console
-    puts "Launch Console"
-  end
-
-  def channel
-    @channel ||= begin
       if Volt.client?
-        Channel.new
-      else
-        ChannelStub.new
+        channel.on('reconnected') do
+          @page._reconnected = true
+
+          `setTimeout(function() {`
+            @page._reconnected = false
+          `}, 2000);`
+        end
       end
+    end
+
+    def flash
+      @flash ||= Model.new({}, persistor: Persistors::Flash)
+    end
+
+    def store
+      @store ||= Model.new({}, persistor: Persistors::StoreFactory.new(tasks))
+    end
+
+    def local_store
+      @local_store ||= Model.new({}, persistor: Persistors::LocalStore)
+    end
+
+    def tasks
+      @tasks ||= Tasks.new(self)
+    end
+
+    def link_clicked(url='', event=nil)
+      # Skip when href == ''
+      return false if url.blank?
+
+      # Normalize url
+      # Benchmark.bm(1) do
+      if @url.parse(url)
+        if event
+          # Handled new url
+          `event.stopPropagation();`
+        end
+
+        # Clear the flash
+        flash.clear
+
+        # return false to stop the event propigation
+        return false
+      end
+      # end
+
+      # Not stopping, process link normally
+      return true
+    end
+
+    # We provide a binding_name, so we can bind events on the document
+    def binding_name
+      'page'
+    end
+
+    def launch_console
+      puts "Launch Console"
+    end
+
+    def channel
+      @channel ||= begin
+        if Volt.client?
+          Channel.new
+        else
+          ChannelStub.new
+        end
+      end
+    end
+
+    def events
+      @events
+    end
+
+    def add_model(model_name)
+      model_name                 = model_name.camelize.to_sym
+      @model_classes[model_name] = Object.const_get(model_name)
+    end
+
+    def add_template(name, template, bindings)
+      @templates       ||= {}
+      @templates[name] = {'html' => template, 'bindings' => bindings}
+      # puts "Add Template: #{name}"
+    end
+
+    def add_routes(&block)
+      @routes     = Routes.new.define(&block)
+      @url.router = @routes
+    end
+
+    def start
+      # Setup to render template
+      Element.find('body').html = "<!-- $CONTENT --><!-- $/CONTENT -->"
+
+      load_stored_page
+
+      # Do the initial url params parse
+      @url_tracker.url_updated(true)
+
+      main_controller = MainController.new
+
+      # Setup main page template
+      TemplateRenderer.new(self, DomTarget.new, main_controller, 'CONTENT', 'main/main/main/body')
+
+      # Setup title reactive template
+      @title_template = StringTemplateRender.new(self, main_controller, "main/main/main/title")
+
+      # Watch for changes to the title template
+      Proc.new do
+        title = @title_template.html.gsub(/\n/, ' ')
+        `document.title = title;`
+      end.watch!
+    end
+
+    # When the page is reloaded from the backend, we store the $page.page, so we
+    # can reload the page in the exact same state.  Speeds up development.
+    def load_stored_page
+      if Volt.client?
+        if `sessionStorage`
+          page_obj_str = nil
+
+          `page_obj_str = sessionStorage.getItem('___page');`
+          `if (page_obj_str) {`
+            `sessionStorage.removeItem('___page');`
+
+            JSON.parse(page_obj_str).each_pair do |key, value|
+              self.page.send(:"_#{key}=", value)
+            end
+          `}`
+        end
+      end
+    rescue => e
+      puts "Unable to restore: #{e.inspect}"
     end
   end
 
-  def events
-    @events
-  end
+  if Volt.client?
+    $page = Page.new
 
-  def add_model(model_name)
-    model_name = model_name.camelize.to_sym
-    @model_classes[model_name] = Object.const_get(model_name)
-  end
-
-  def add_template(name, template, bindings)
-    @templates ||= {}
-    @templates[name] = {'html' => template, 'bindings' => bindings}
-    # puts "Add Template: #{name}"
-  end
-
-  def add_routes(&block)
-    @routes = Routes.new.define(&block)
-    @url.router = @routes
-  end
-
-  def start
-    # Setup to render template
-    Element.find('body').html = "<!-- $CONTENT --><!-- $/CONTENT -->"
-
-    load_stored_page
-
-    # Do the initial url params parse
-    @url_tracker.url_updated(true)
-
-    main_controller = MainController.new
-
-    # Setup main page template
-    TemplateRenderer.new(self, DomTarget.new, main_controller, 'CONTENT', 'main/main/main/body')
-
-    # Setup title reactive template
-    @title_template = StringTemplateRender.new(self, main_controller, "main/main/main/title")
-
-    # Watch for changes to the title template
-    Proc.new do
-      title = @title_template.html.gsub(/\n/, ' ')
-      `document.title = title;`
-    end.watch!
-  end
-
-  # When the page is reloaded from the backend, we store the $page.page, so we
-  # can reload the page in the exact same state.  Speeds up development.
-  def load_stored_page
-    if Volt.client?
-      if `sessionStorage`
-        page_obj_str = nil
-
-        `page_obj_str = sessionStorage.getItem('___page');`
-        `if (page_obj_str) {`
-          `sessionStorage.removeItem('___page');`
-
-          JSON.parse(page_obj_str).each_pair do |key, value|
-            self.page.send(:"_#{key}=", value)
-          end
-        `}`
-      end
+    # Call start once the page is loaded
+    Document.ready? do
+      $page.start
     end
-  rescue => e
-    puts "Unable to restore: #{e.inspect}"
-  end
-end
-
-if Volt.client?
-  $page = Page.new
-
-  # Call start once the page is loaded
-  Document.ready? do
-    $page.start
   end
 end

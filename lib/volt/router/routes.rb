@@ -1,112 +1,110 @@
 require 'volt'
 
-# The Routes class takes a set of routes and sets up methods to go from
-# a url to params, and params to url.
-# routes do
-#   get "/about", _view: 'about'
-#   get "/blog/{_id}/edit", _view: 'blog/edit', _action: 'edit'
-#   get "/blog/{_id}", _view: 'blog/show', _action: 'show'
-#   get "/blog", _view: 'blog'
-#   get "/blog/new", _view: 'blog/new', _action: 'new'
-#   get "/cool/{_name}", _view: 'cool'
-# end
-#
-# Using the routes above, we would generate the following:
-#
-# @direct_routes = {
-#   '/about' => {_view: 'about'},
-#   '/blog' => {_view: 'blog'}
-#   '/blog/new' => {_view: 'blog/new', _action: 'new'}
-# }
-#
-# -- nil represents a terminal
-# -- * represents any match
-# -- a number for a parameter means use the value in that number section
-#
-# @indirect_routes = {
-#     '*' => {
-#       'edit' => {
-#         nil => {_id: 1, _view: 'blog/edit', _action: 'edit'}
-#       }
-#       nil => {_id: 1, _view: 'blog/show', _action: 'show'}
-#     }
-#   }
-# }
-#
-# Match for params
-# @param_matches = [
-#   {_id: nil, _view: 'blog/edit', _action: 'edit'} => Proc.new {|params| "/blog/#{params.id}/edit", params.reject {|k,v| k == :id }}
-# ]
-
-class Routes
-  def initialize
-    # Paths where there are no bindings (an optimization)
-    @direct_routes = {}
-
-    # Paths with bindings
-    @indirect_routes = {}
-
-    # Matcher for going from params to url
-    @param_matches = []
-  end
-
-  def define(&block)
-    instance_eval(&block)
-
-    return self
-  end
-
-  # Add a route
-  def get(path, params={})
-    params = params.symbolize_keys
-    if has_binding?(path)
-      add_indirect_path(path, params)
-    else
-      @direct_routes[path] = params
-    end
-
-    add_param_matcher(path, params)
-  end
-
-  # Takes in params and generates a path and the remaining params
-  # that should be shown in the url.  The extra "unused" params
-  # will be tacked onto the end of the url ?param1=value1, etc...
+module Volt
+  # The Routes class takes a set of routes and sets up methods to go from
+  # a url to params, and params to url.
+  # routes do
+  #   get "/about", _view: 'about'
+  #   get "/blog/{_id}/edit", _view: 'blog/edit', _action: 'edit'
+  #   get "/blog/{_id}", _view: 'blog/show', _action: 'show'
+  #   get "/blog", _view: 'blog'
+  #   get "/blog/new", _view: 'blog/new', _action: 'new'
+  #   get "/cool/{_name}", _view: 'cool'
+  # end
   #
-  # returns the url and new params, or nil, nil if no match is found.
-  def params_to_url(test_params)
-    # Add in underscores
-    test_params = test_params.each_with_object({}) do |(k,v), obj|
-      obj[:"_#{k}"] = v
+  # Using the routes above, we would generate the following:
+  #
+  # @direct_routes = {
+  #   '/about' => {_view: 'about'},
+  #   '/blog' => {_view: 'blog'}
+  #   '/blog/new' => {_view: 'blog/new', _action: 'new'}
+  # }
+  #
+  # -- nil represents a terminal
+  # -- * represents any match
+  # -- a number for a parameter means use the value in that number section
+  #
+  # @indirect_routes = {
+  #     '*' => {
+  #       'edit' => {
+  #         nil => {_id: 1, _view: 'blog/edit', _action: 'edit'}
+  #       }
+  #       nil => {_id: 1, _view: 'blog/show', _action: 'show'}
+  #     }
+  #   }
+  # }
+  #
+  # Match for params
+  # @param_matches = [
+  #   {_id: nil, _view: 'blog/edit', _action: 'edit'} => Proc.new {|params| "/blog/#{params.id}/edit", params.reject {|k,v| k == :id }}
+  # ]
+  class Routes
+    def initialize
+      # Paths where there are no bindings (an optimization)
+      @direct_routes   = {}
+
+      # Paths with bindings
+      @indirect_routes = {}
+
+      # Matcher for going from params to url
+      @param_matches   = []
     end
 
-    @param_matches.each do |param_matcher|
-      # TODO: Maybe a deep dup?
-      result, new_params = check_params_match(test_params.dup, param_matcher[0])
+    def define(&block)
+      instance_eval(&block)
 
-      if result
-        return param_matcher[1].call(new_params)
+      return self
+    end
+
+    # Add a route
+    def get(path, params={})
+      params = params.symbolize_keys
+      if has_binding?(path)
+        add_indirect_path(path, params)
+      else
+        @direct_routes[path] = params
       end
+
+      add_param_matcher(path, params)
     end
 
-    return nil, nil
-  end
+    # Takes in params and generates a path and the remaining params
+    # that should be shown in the url.  The extra "unused" params
+    # will be tacked onto the end of the url ?param1=value1, etc...
+    #
+    # returns the url and new params, or nil, nil if no match is found.
+    def params_to_url(test_params)
+      # Add in underscores
+      test_params = test_params.each_with_object({}) do |(k, v), obj|
+        obj[:"_#{k}"] = v
+      end
 
-  # Takes in a path and returns the matching params.
-  # returns params as a hash
-  def url_to_params(path)
-    # First try a direct match
-    result = @direct_routes[path]
-    return result if result
+      @param_matches.each do |param_matcher|
+        # TODO: Maybe a deep dup?
+        result, new_params = check_params_match(test_params.dup, param_matcher[0])
 
-    # Next, split the url and walk the sections
-    parts = url_parts(path)
+        if result
+          return param_matcher[1].call(new_params)
+        end
+      end
 
-    result = match_path(parts, parts, @indirect_routes)
+      return nil, nil
+    end
 
-    return result
-  end
+    # Takes in a path and returns the matching params.
+    # returns params as a hash
+    def url_to_params(path)
+      # First try a direct match
+      result = @direct_routes[path]
+      return result if result
 
-  private
+      # Next, split the url and walk the sections
+      parts = url_parts(path)
+
+      match_path(parts, parts, @indirect_routes)
+    end
+
+    private
     # Recursively walk the @indirect_routes hash, return the params for a route, return
     # false for non-matches.
     def match_path(original_parts, remaining_parts, node)
@@ -177,7 +175,7 @@ class Routes
 
     def add_param_matcher(path, params)
       params = params.dup
-      parts = url_parts(path)
+      parts  = url_parts(path)
 
       parts.each_with_index do |part, index|
         if has_binding?(part)
@@ -201,12 +199,12 @@ class Routes
 
         url = parts.map do |part|
           val = if has_binding?(part)
-            # Get the
-            binding = part[2...-2].strip.to_sym
-            input_params.delete(binding)
-          else
-            part
-          end
+                  # Get the
+                  binding = part[2...-2].strip.to_sym
+                  input_params.delete(binding)
+                else
+                  part
+                end
 
           val
         end.join('/')
@@ -261,5 +259,5 @@ class Routes
     def has_binding?(string)
       string.index('{{') && string.index('}}')
     end
-
+  end
 end

@@ -24,11 +24,11 @@ class String
   end
 
   def pluralize
-    Inflector.pluralize(self)
+    Volt::Inflector.pluralize(self)
   end
 
   def singularize
-    Inflector.singularize(self)
+    Volt::Inflector.singularize(self)
   end
 
   def titleize
