@@ -37,9 +37,8 @@ class URL
 
       matcher = url.match(/^(#{protocol[0..-2]})[:]\/\/([^\/]+)(.*)$/)
       self.scheme = matcher[1]
-      host, port = matcher[2].split(':')
+      self.host, port = matcher[2].split(':')
 
-      self.host = host
       self.port = (port || 80).to_i
 
       path = matcher[3]
@@ -232,7 +231,6 @@ class URL
     def query_key(path)
       i = 0
       path.map do |v|
-        # v = v[1..-1]
         i += 1
         if i != 1
           "[#{v}]"

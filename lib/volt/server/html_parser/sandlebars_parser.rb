@@ -51,13 +51,7 @@ class SandlebarsParser
         # In a script or style tag, just look for the first end
         close_tag = "</#{last}>"
         body = @html.scan_until(/#{close_tag}/)
-        body = body[0..((-1 * close_tag.size)-1)]
-
-        body = body.gsub(/\<\!--(.*?)--\>/, "\\1").gsub(/\<\!\[CDATA\[(.*?)\]\]\>/, "\\1")
-
-        text(body)
-
-        end_tag(last, last)
+        special_tag(close_tag, body)
       elsif @html.scan(/\<\!--/)
         # start comment
         comment = @html.scan_until(/--\>/)
@@ -218,5 +212,15 @@ class SandlebarsParser
 
       @stack = @stack[0...new_size]
     end
+  end
+
+  def special_tag(close_tag, body)
+    body = body[0..((-1 * close_tag.size)-1)]
+
+    body = body.gsub(/\<\!--(.*?)--\>/, "\\1").gsub(/\<\!\[CDATA\[(.*?)\]\]\>/, "\\1")
+
+    text(body)
+
+    end_tag(last, last)
   end
 end
