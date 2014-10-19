@@ -19,6 +19,10 @@ module Volt
         super
 
         @query = @model.options[:query]
+        @limit = @model.options[:limit]
+        @skip = @model.options[:skip]
+
+        @skip = nil if @skip == 0
       end
 
       def event_added(event, first, first_for_event)
@@ -68,10 +72,10 @@ module Volt
 
               new_query = @query.call
 
-              run_query(@model, @query.call)
+              run_query(@model, @query.call, @skip, @limit)
             end.watch!
           else
-            run_query(@model, @query)
+            run_query(@model, @query, @skip, @limit)
           end
         end
       end
@@ -82,7 +86,7 @@ module Volt
         @model.clear
       end
 
-      def run_query(model, query={})
+      def run_query(model, query={}, skip=nil, limit=nil)
         @model.clear
 
         collection = model.path.last
@@ -97,9 +101,11 @@ module Volt
           end
         end
 
-        @query_listener = @@query_pool.lookup(collection, query) do
+        # The full query contains the skip and limit
+        full_query = [query, skip, limit]
+        @query_listener = @@query_pool.lookup(collection, full_query) do
           # Create if it does not exist
-          QueryListener.new(@@query_pool, @tasks, collection, query)
+          QueryListener.new(@@query_pool, @tasks, collection, full_query)
         end
 
         @query_listener.add_store(self)
@@ -118,7 +124,15 @@ module Volt
           query ||= {}
         end
 
-        return Cursor.new([], @model.options.merge(:query => query))
+        return Cursor.new([], @model.options.merge(query: query))
+      end
+
+      def limit(limit)
+        return Cursor.new([], @model.options.merge(limit: limit))
+      end
+
+      def skip(skip)
+        return Cursor.new([], @model.options.merge(skip: skip))
       end
 
       # Returns a promise that is resolved/rejected when the query is complete.  Any

@@ -16,6 +16,8 @@ module Volt
 
     def add_listener
       @listening = true
+
+      # Call the backend and add the listner
       QueryTasks.add_listener(@collection, @query).then do |ret|
         results, errors = ret
 

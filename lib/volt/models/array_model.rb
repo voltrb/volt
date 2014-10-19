@@ -22,7 +22,21 @@ module Volt
       end
     end
 
+    # Some methods get passed down to the persistor.
+    def self.proxy_to_persistor(*method_names)
+      method_names.each do |method_name|
+        define_method(method_name) do |*args, &block|
+          if @persistor.respond_to?(method_name)
+            @persistor.send(method_name, *args, &block)
+          else
+            raise "this model's persistance layer does not support #{method_name}, try using store"
+          end
+        end
+      end
+    end
+
     proxy_with_load_data :[], :size, :first, :last
+    proxy_to_persistor :find, :skip, :limit, :then
 
     def initialize(array=[], options={})
       @options   = options
@@ -35,22 +49,6 @@ module Volt
       super(array)
 
       @persistor.loaded if @persistor
-    end
-
-    def find(*args, &block)
-      if @persistor
-        return @persistor.find(*args, &block)
-      else
-        raise "this model's persistance layer does not support find, try using store"
-      end
-    end
-
-    def then(*args, &block)
-      if @persistor
-        @persistor.then(*args, &block)
-      else
-        raise "this model's persistance layer does not support then, try using store"
-      end
     end
 
     def attributes
