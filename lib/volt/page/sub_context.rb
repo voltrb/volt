@@ -2,12 +2,16 @@ module Volt
   # A sub context takes in a hash of local variables that should be available
   # in front of the current context.  It basically proxies the local variables
   # first, then failing those proxies the context.
+  #
+  # SubContext is also used for the attrs in controllers.  You can pass return_nils
+  # to have missing values return nil (as in attrs).
   class SubContext
     attr_reader :locals
 
-    def initialize(locals, context=nil)
+    def initialize(locals, context=nil, return_nils=false)
       @locals  = locals.stringify_keys
       @context = context
+      @return_nils = return_nils
     end
 
     def respond_to?(method_name)
@@ -24,6 +28,8 @@ module Volt
           obj = obj.call(*args)
         end
         return obj
+      elsif @return_nils && method_name[-1] != '='
+        return nil
       elsif @context
         return @context.send(method_name, *args, &block)
       end
