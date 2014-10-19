@@ -15,7 +15,7 @@ module Volt
     end
 
     def respond_to?(method_name)
-      !!(@locals[method_name.to_s] || (@context && @context.respond_to?(method_name)) || super)
+      @return_nils || !!(@locals[method_name.to_s] || (@context && @context.respond_to?(method_name)))
     end
 
     def method_missing(method_name, *args, &block)
