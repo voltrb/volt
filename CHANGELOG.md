@@ -1,3 +1,9 @@
+## Unreleased
+### Added
+- Change changelog format to match: http://keepachangelog.com/
+- Added rubocop config and ran rubocop on repo, lots of changes.
+- Added .limit and .skip to cursors
+
 # 0.8.15 - Oct 18, 2014
 
   - MAJOR CHANGE: everything volt related now is under the Volt module.  The only change apps need to think about is inheriting from ```Volt::ModelController``` and ```Volt::Model```  Also, config.ru needs to use ```Volt::Server``` instead of ```Server```.
