@@ -1,6 +1,10 @@
 if RUBY_PLATFORM == 'opal'
   # The basic front-end logger
   class Logger
+    def initialize(*args)
+      # TODO: handle options
+    end
+
     [:fatal, :info, :warn, :debug, :error].each do |method_name|
       define_method(method_name) do |text, &block|
         text = block.call if block
