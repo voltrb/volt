@@ -1,4 +1,6 @@
-## Unreleased
+# Change Log
+
+## 0.8.16 - 2014-10-20
 ### Added
 - Change changelog format to match: http://keepachangelog.com/
 - Added rubocop config and ran rubocop on repo, lots of changes.
