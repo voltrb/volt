@@ -1,4 +1,4 @@
-require 'volt/extra_core/log'
+require 'volt/extra_core/logger'
 require 'volt/extra_core/array'
 require 'volt/extra_core/object'
 require 'volt/extra_core/blank'

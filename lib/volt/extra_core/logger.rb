@@ -1,12 +1,14 @@
-class Logger
-  def initialize(log_to)
-  end
+if RUBY_PLATFORM == 'opal'
+  # The basic front-end logger
+  class Logger
+    [:fatal, :info, :warn, :debug, :error].each do |method_name|
+      define_method(method_name) do |text, &block|
+        text = block.call if block
 
-  [:fatal, :info, :warn, :debug, :error].each do |method_name|
-    define_method(method_name) do |text, &block|
-      text = block.call if block
-
-      `console[method_name](text);`
+        `console[method_name](text);`
+      end
     end
   end
+else
+  require 'logger'
 end
