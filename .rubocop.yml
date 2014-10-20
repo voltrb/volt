@@ -1,2 +1,2 @@
-UnusedLocalVariable:
+UselessAssignment:
   Enabled: false
