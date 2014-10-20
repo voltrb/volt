@@ -1,2 +1,8 @@
 UselessAssignment:
   Enabled: false
+
+UnusedMethodArgument:
+  Enabled: false
+
+UnderscorePrefixedVariableName:
+  Enabled: false
