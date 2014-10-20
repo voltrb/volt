@@ -1,4 +1,6 @@
 module Volt
+  # Listeners are returned from #on on a class with Eventable included.
+  # Listeners can be stopped by calling #stop
   class Listener
     def initialize(klass, event, callback)
       @klass    = klass
@@ -25,7 +27,14 @@ module Volt
     end
   end
 
+  # Include Eventable to add a basic event/trigger system to a class.  Listeners can be
+  # added with #on(event_name) { ... }  Events can be triggered with #trigger!
   module Eventable
+    # Sets up a listener on the class the Eventable module was included in.
+    # event should be a string or symbol.  When something calls #trigger!(event_name) on
+    # the class, it will trigger any listener with the same event name.
+    #
+    # returns: a listener that has a #stop method to stop the listener.
     def on(event, &callback)
       event             = event.to_sym
       listener          = Listener.new(self, event, callback)
@@ -46,6 +55,8 @@ module Volt
       listener
     end
 
+    # Triggers event on the class the module was includeded.  Any .on listeners
+    # will have their block called passing in *args.
     def trigger!(event, *args)
       event = event.to_sym
 
@@ -58,6 +69,8 @@ module Volt
       end
     end
 
+    # Stops the listener returned by calling .on(:event_name)  Triggers #event_removed
+    # if there are no more listeners for that event.
     def remove_listener(event, listener)
       event = event.to_sym
 

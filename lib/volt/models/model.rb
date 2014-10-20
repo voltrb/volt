@@ -209,19 +209,6 @@ module Volt
       ArrayModel.new(attributes, options)
     end
 
-    def trigger_by_attribute!(event_name, attribute, *passed_args)
-      trigger_by_scope!(event_name, *passed_args) do |scope|
-        method_name, *args, block = scope
-
-        # TODO: Opal bug
-        args                      ||= []
-
-        # Any methods without _ are not directly related to one attribute, so
-        # they should all trigger
-        !method_name || method_name[0] != '_' || (method_name == attribute.to_sym && args.size == 0)
-      end
-    end
-
     # If this model is nil, it makes it into a hash model, then
     # sets it up to track from the parent.
     def expand!
