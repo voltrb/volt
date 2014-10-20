@@ -40,8 +40,11 @@ module Volt
           if File.directory?(folder)
             folder_name = folder[/[^\/]+$/]
 
-            @components[folder_name] ||= []
-            @components[folder_name] << folder
+            # Add in the folder if it's not alreay in there
+            folders = (@components[folder_name] ||= [])
+            unless folders.include?(folder)
+              folders << folder
+            end
           end
         end
       end
