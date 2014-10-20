@@ -1,5 +1,5 @@
 if RUBY_PLATFORM == 'opal'
-  # The basic front-end logger
+  # The basic front-end logger, log to console
   class Logger
     def initialize(*args)
       # TODO: handle options
