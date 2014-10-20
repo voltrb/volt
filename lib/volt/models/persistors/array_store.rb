@@ -124,7 +124,6 @@ module Volt
           query ||= {}
         end
 
-<<<<<<< HEAD
         return Cursor.new([], @model.options.merge(query: query))
       end
 
@@ -134,9 +133,6 @@ module Volt
 
       def skip(skip)
         return Cursor.new([], @model.options.merge(skip: skip))
-=======
-        Cursor.new([], @model.options.merge(query: query))
->>>>>>> master
       end
 
       # Returns a promise that is resolved/rejected when the query is complete.  Any
