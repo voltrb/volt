@@ -14,12 +14,12 @@ module Volt
 
     def load_dependencies(path)
       if path
-        dependencies_file = File.join(path, "config/dependencies.rb")
+        dependencies_file = File.join(path, 'config/dependencies.rb')
       else
-        raise "Unable to find component #{component_name.inspect}"
+        fail "Unable to find component #{component_name.inspect}"
       end
 
-      if File.exists?(dependencies_file)
+      if File.exist?(dependencies_file)
         # Run the dependencies file in this asset files context
         code = File.read(dependencies_file)
         instance_eval(code)
@@ -56,7 +56,7 @@ module Volt
     end
 
     def component_paths
-      return @components
+      @components
     end
 
     def add_assets(path)
@@ -65,7 +65,6 @@ module Volt
         @assets << [:folder, asset_folder]
       end
     end
-
 
     def javascript_files(opal_files)
       javascript_files = []
@@ -88,7 +87,7 @@ module Volt
 
       javascript_files += opal_js_files
 
-      return javascript_files
+      javascript_files
     end
 
     def css_files
@@ -102,8 +101,7 @@ module Volt
         end
       end
 
-      return css_files
+      css_files
     end
-
   end
 end

@@ -1,20 +1,20 @@
 require 'volt/page/targets/dom_template'
 
 module Volt
-# Class to describe the interface for sections
+  # Class to describe the interface for sections
   class BaseSection
     @@template_cache = {}
 
     def remove
-      raise "not implemented"
+      fail 'not implemented'
     end
 
     def remove_anchors
-      raise "not implemented"
+      fail 'not implemented'
     end
 
     def insert_anchor_before_end
-      raise "not implemented"
+      fail 'not implemented'
     end
 
     def set_content_to_template(page, template_name)

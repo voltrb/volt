@@ -10,7 +10,7 @@ module Volt
       @html << "{{#{content}}}"
     end
 
-    def close_scope(pop=true)
+    def close_scope(pop = true)
       # Remove from the scope
       @handler.scope.pop
 
@@ -27,7 +27,6 @@ module Volt
       attributes = @handler.last.process_attributes('textarea', attributes)
 
       @handler.last.html << "<textarea#{attribute_string(attributes)}>#{@html}</textarea>"
-
     end
   end
 end

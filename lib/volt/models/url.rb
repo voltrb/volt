@@ -54,7 +54,7 @@ module Volt
 
       scroll
 
-      return true
+      true
     end
 
     # Full url rebuilds the url from it's constituent parts
@@ -78,15 +78,15 @@ module Volt
 
         if query_parts.size > 0
           self.query = query_parts.join('&')
-          new_url    += '?' + self.query
+          new_url    += '?' + query
         end
       end
 
       # Add fragment
-      frag    = self.fragment
+      frag    = fragment
       new_url += '#' + frag if frag.present?
 
-      return new_url
+      new_url
     end
 
     # Called when the state has changed and the url in the
@@ -94,24 +94,24 @@ module Volt
     # Called when an attribute changes to update the url
     def update!
       if Volt.client?
-        new_url = full_url()
+        new_url = full_url
 
         # Push the new url if pushState is supported
         # TODO: add fragment fallback
-        %x{
+        `
         if (document.location.href != new_url && history && history.pushState) {
           history.pushState(null, null, new_url);
         }
-      }
+      `
       end
     end
 
     def scroll
       if Volt.client?
-        frag = self.fragment
+        frag = fragment
         if frag
           # Scroll to anchor via http://www.w3.org/html/wg/drafts/html/master/browsers.html#scroll-to-fragid
-          %x{
+          `
           var anchor = $('#' + frag);
           if (anchor.length == 0) {
             anchor = $('*[name="' + frag + '"]:first');
@@ -120,7 +120,7 @@ module Volt
             console.log('scroll to: ', anchor.offset().top);
             $(document.body).scrollTop(anchor.offset().top);
           }
-        }
+        `
         else
           # Scroll to the top by default
           `$(document.body).scrollTop(0);`
@@ -129,6 +129,7 @@ module Volt
     end
 
     private
+
     # Assigning the params is tricky since we don't want to trigger changed on
     # any values that have not changed.  So we first loop through all current
     # url params, removing any not present in the params, while also removing
@@ -142,7 +143,7 @@ module Volt
       new_params = @router.url_to_params(path)
 
       if new_params == false
-        raise "no routes match path: #{path}"
+        fail "no routes match path: #{path}"
       end
 
       query_hash.merge!(new_params)
@@ -193,7 +194,7 @@ module Volt
 
     def query_hash
       query_hash = {}
-      qury       = self.query
+      qury       = query
       if qury
         qury.split('&').reject { |v| v == '' }.each do |part|
           parts    = part.split('=').reject { |v| v == '' }
@@ -206,7 +207,7 @@ module Volt
 
           hash_part = query_hash
           sections.each_with_index do |section, index|
-            if index == sections.size-1
+            if index == sections.size - 1
               # Last part, assign the value
               hash_part[section] = parts[1]
             else
@@ -216,7 +217,7 @@ module Volt
         end
       end
 
-      return query_hash
+      query_hash
     end
 
     # Splits a key from a ?key=value&... parameter into its nested
@@ -240,7 +241,7 @@ module Volt
       end.join('')
     end
 
-    def nested_params_hash(params, path=[])
+    def nested_params_hash(params, path = [])
       results = {}
 
       params.each_pair do |key, value|
@@ -254,7 +255,7 @@ module Volt
         end
       end
 
-      return results
+      results
     end
   end
 end

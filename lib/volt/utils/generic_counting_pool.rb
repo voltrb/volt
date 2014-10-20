@@ -19,14 +19,14 @@ module Volt
 
       item[0] += 1
 
-      return item[1]
+      item[1]
     end
 
     # Lookups an item
     def lookup(*args, &block)
       item = super(*args, &block)
 
-      return item[1]
+      item[1]
     end
 
     def transform_item(item)

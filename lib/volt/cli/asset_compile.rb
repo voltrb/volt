@@ -1,13 +1,12 @@
 module Volt
   class CLI
-
-    desc "precompile", "precompile all application assets"
+    desc 'precompile', 'precompile all application assets'
 
     def precompile
       compile
     end
 
-    desc "watch", "compiles the project to /compiled when a file changes"
+    desc 'watch', 'compiles the project to /compiled when a file changes'
 
     def watch
       require 'listen'
@@ -18,7 +17,7 @@ module Volt
 
       listener.start # non-blocking
 
-      Signal.trap("SIGINT") do
+      Signal.trap('SIGINT') do
         listener.stop
       end
 
@@ -32,8 +31,9 @@ module Volt
     end
 
     private
+
     def compile
-      print "compiling project..."
+      print 'compiling project...'
       require 'fileutils'
       require 'opal'
       require 'volt'
@@ -46,7 +46,7 @@ module Volt
       @root_path ||= Dir.pwd
       Volt.root  = @root_path
 
-      @app_path = File.expand_path(File.join(@root_path, "app"))
+      @app_path = File.expand_path(File.join(@root_path, 'app'))
 
       @component_paths   = ComponentPaths.new(@root_path)
       @app               = Rack::Builder.new
@@ -67,7 +67,7 @@ module Volt
       @opal_files.environment.each_logical_path do |logical_path|
         logical_path = logical_path.to_s
         # Only include files that aren't compiled elsewhere, like fonts
-        if !logical_path[/[.](y|css|js|html|erb)$/]
+        unless logical_path[/[.](y|css|js|html|erb)$/]
           write_file(logical_path)
         end
       end
@@ -78,7 +78,6 @@ module Volt
         logical_path = logical_path.gsub(/^\/assets\//, '')
         write_file(logical_path)
       end
-
     end
 
     def write_file(logical_path)
@@ -88,7 +87,7 @@ module Volt
 
       begin
         content = @opal_files.environment[logical_path].to_s
-        File.open(path, "wb") do |file|
+        File.open(path, 'wb') do |file|
           file.write(content)
         end
       rescue Sprockets::FileNotFound, SyntaxError => e
@@ -105,7 +104,6 @@ module Volt
         file.write(javascript_code)
       end
     end
-
 
     def write_index
       path = "#{@root_path}/compiled/index.html"

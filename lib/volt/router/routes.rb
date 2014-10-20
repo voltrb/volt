@@ -53,11 +53,11 @@ module Volt
     def define(&block)
       instance_eval(&block)
 
-      return self
+      self
     end
 
     # Add a route
-    def get(path, params={})
+    def get(path, params = {})
       params = params.symbolize_keys
       if has_binding?(path)
         add_indirect_path(path, params)
@@ -88,7 +88,7 @@ module Volt
         end
       end
 
-      return nil, nil
+      [nil, nil]
     end
 
     # Takes in a path and returns the matching params.
@@ -105,6 +105,7 @@ module Volt
     end
 
     private
+
     # Recursively walk the @indirect_routes hash, return the params for a route, return
     # false for non-matches.
     def match_path(original_parts, remaining_parts, node)
@@ -114,7 +115,7 @@ module Volt
       # really I just got lucky)
       part, *parts = remaining_parts
 
-      if part == nil
+      if part.nil?
         if node[part]
           # We found a match, replace the bindings and return
           # TODO: Handvle nested
@@ -144,9 +145,8 @@ module Volt
         end
       end
 
-      return params
+      params
     end
-
 
     # Build up the @indirect_routes data structure.
     # '*' means wildcard match anything
@@ -172,7 +172,6 @@ module Volt
       node[nil] = params
     end
 
-
     def add_param_matcher(path, params)
       params = params.dup
       parts  = url_parts(path)
@@ -194,7 +193,7 @@ module Volt
     # a url with the bindings filled in, and params with the binding params
     # removed.  (So the remaining can be added onto the end of the url ?params1=...)
     def create_path_transformer(parts)
-      return lambda do |input_params|
+      lambda do |input_params|
         input_params = input_params.dup
 
         url = parts.map do |part|
@@ -234,8 +233,8 @@ module Volt
             # test_params did not have matching key
             return false
           end
-        elsif value == nil
-          unless test_params.has_key?(key)
+        elsif value.nil?
+          unless test_params.key?(key)
             return false
           end
         else
@@ -247,13 +246,12 @@ module Volt
         end
       end
 
-      return true, test_params
+      [true, test_params]
     end
 
     def url_parts(path)
-      return path.split('/').reject(&:blank?)
+      path.split('/').reject(&:blank?)
     end
-
 
     # Check if a string has a binding in it
     def has_binding?(string)

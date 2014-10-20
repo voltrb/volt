@@ -1,5 +1,5 @@
 module Volt
-  def self.spec_setup(app_path='.')
+  def self.spec_setup(app_path = '.')
     if RUBY_PLATFORM == 'opal'
       require 'volt'
     else
@@ -23,7 +23,7 @@ module Volt
 
         Capybara.server do |app, port|
           require 'rack/handler/thin'
-          Rack::Handler::Thin.run(app, :Port => port)
+          Rack::Handler::Thin.run(app, Port: port)
         end
 
         Capybara.app = Server.new(app_path).app
@@ -50,7 +50,7 @@ module Volt
         elsif ENV['BROWSER'] == 'safari'
           # Needs extension
           Capybara.register_driver :safari do |app|
-            Capybara::Selenium::Driver.new(app, :browser => :safari)
+            Capybara::Selenium::Driver.new(app, browser: :safari)
           end
           Capybara.default_driver = :safari
         end

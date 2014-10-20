@@ -47,7 +47,7 @@ module Volt
 
       if RUBY_PLATFORM == 'opal'
         # Setup escape binding for console
-        %x{
+        `
           $(document).keyup(function(e) {
             if (e.keyCode == 27) {
               Opal.gvars.page.$launch_console();
@@ -57,18 +57,18 @@ module Volt
           $(document).on('click', 'a', function(event) {
             return Opal.gvars.page.$link_clicked($(this).attr('href'), event);
           });
-        }
+        `
       end
 
       # Initialize tasks so we can get the reload message
-      self.tasks if Volt.env.development?
+      tasks if Volt.env.development?
 
       if Volt.client?
         channel.on('reconnected') do
           @page._reconnected = true
 
           `setTimeout(function() {`
-            @page._reconnected = false
+          @page._reconnected = false
           `}, 2000);`
         end
       end
@@ -90,7 +90,7 @@ module Volt
       @tasks ||= Tasks.new(self)
     end
 
-    def link_clicked(url='', event=nil)
+    def link_clicked(url = '', event = nil)
       # Skip when href == ''
       return false if url.blank?
 
@@ -111,7 +111,7 @@ module Volt
       # end
 
       # Not stopping, process link normally
-      return true
+      true
     end
 
     # We provide a binding_name, so we can bind events on the document
@@ -120,7 +120,7 @@ module Volt
     end
 
     def launch_console
-      puts "Launch Console"
+      puts 'Launch Console'
     end
 
     def channel
@@ -133,9 +133,7 @@ module Volt
       end
     end
 
-    def events
-      @events
-    end
+    attr_reader :events
 
     def add_model(model_name)
       model_name                 = model_name.camelize.to_sym
@@ -144,7 +142,7 @@ module Volt
 
     def add_template(name, template, bindings)
       @templates       ||= {}
-      @templates[name] = {'html' => template, 'bindings' => bindings}
+      @templates[name] = { 'html' => template, 'bindings' => bindings }
       # puts "Add Template: #{name}"
     end
 
@@ -155,7 +153,7 @@ module Volt
 
     def start
       # Setup to render template
-      Element.find('body').html = "<!-- $CONTENT --><!-- $/CONTENT -->"
+      Element.find('body').html = '<!-- $CONTENT --><!-- $/CONTENT -->'
 
       load_stored_page
 
@@ -168,10 +166,10 @@ module Volt
       TemplateRenderer.new(self, DomTarget.new, main_controller, 'CONTENT', 'main/main/main/body')
 
       # Setup title reactive template
-      @title_template = StringTemplateRender.new(self, main_controller, "main/main/main/title")
+      @title_template = StringTemplateRender.new(self, main_controller, 'main/main/main/title')
 
       # Watch for changes to the title template
-      Proc.new do
+      proc do
         title = @title_template.html.gsub(/\n/, ' ')
         `document.title = title;`
       end.watch!
@@ -186,11 +184,11 @@ module Volt
 
           `page_obj_str = sessionStorage.getItem('___page');`
           `if (page_obj_str) {`
-            `sessionStorage.removeItem('___page');`
+          `sessionStorage.removeItem('___page');`
 
-            JSON.parse(page_obj_str).each_pair do |key, value|
-              self.page.send(:"_#{key}=", value)
-            end
+          JSON.parse(page_obj_str).each_pair do |key, value|
+            page.send(:"_#{key}=", value)
+          end
           `}`
         end
       end

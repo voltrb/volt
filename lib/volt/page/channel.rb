@@ -23,11 +23,11 @@ module Volt
     end
 
     def connected?
-      self.connected
+      connected
     end
 
     def connect!
-      %x{
+      `
         this.socket = new SockJS('/channel');
 
         this.socket.onopen = function() {
@@ -41,7 +41,7 @@ module Volt
         this.socket.onclose = function(error) {
           self.$closed(error);
         };
-      }
+      `
     end
 
     def opened
@@ -71,11 +71,11 @@ module Volt
 
       interval = self.reconnect_interval
 
-      %x{
+      `
         setTimeout(function() {
           self['$connect!']();
         }, interval);
-      }
+      `
     end
 
     def message_received(message)
@@ -85,22 +85,22 @@ module Volt
     end
 
     def send_message(message)
-      if self.status != :open
+      if status != :open
         @queue << message
       else
         # TODO: Temp: wrap message in an array, so we're sure its valid JSON
         message = JSON.dump([message])
-        %x{
+        `
           this.socket.send(message);
-        }
+        `
       end
     end
 
     def close!
       self.status = :closed
-      %x{
+      `
         this.socket.close();
-      }
+      `
     end
   end
 end

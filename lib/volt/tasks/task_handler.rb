@@ -7,7 +7,7 @@ module Volt
         $page.tasks.call(self.name, name, *args, &block)
       end
     else
-      def initialize(channel=nil, dispatcher=nil)
+      def initialize(channel = nil, dispatcher = nil)
         @channel    = channel
         @dispatcher = dispatcher
       end
@@ -27,7 +27,7 @@ module Volt
         promise = Promise.new
 
         begin
-          result = self.new(nil, nil).send(name, *args, &block)
+          result = new(nil, nil).send(name, *args, &block)
 
           promise.resolve(result)
         rescue => e
@@ -36,7 +36,7 @@ module Volt
           promise.reject(e)
         end
 
-        return promise
+        promise
       end
     end
   end

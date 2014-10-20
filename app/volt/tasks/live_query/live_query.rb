@@ -18,38 +18,37 @@ class LiveQuery
     run
   end
 
-  def run(skip_channel=nil)
+  def run(skip_channel = nil)
     @query_tracker.run(skip_channel)
   end
 
   def notify_removed(ids, skip_channel)
     # puts "Removed: #{ids.inspect}"
     notify! do |channel|
-      channel.send_message("removed", nil, @collection, @query, ids)
+      channel.send_message('removed', nil, @collection, @query, ids)
     end
   end
 
   def notify_added(index, data, skip_channel)
     # puts "Added: #{index} - #{data.inspect}"
     notify! do |channel|
-      channel.send_message("added", nil, @collection, @query, index, data)
+      channel.send_message('added', nil, @collection, @query, index, data)
     end
   end
 
   def notify_moved(id, new_position, skip_channel)
     # puts "Moved: #{id}, #{new_position}"
     notify! do |channel|
-      channel.send_message("moved", nil, @collection, @query, id, new_position)
+      channel.send_message('moved', nil, @collection, @query, id, new_position)
     end
   end
 
   def notify_changed(id, data, skip_channel)
     # puts "Changed: #{id}, #{data}"
     notify!(skip_channel) do |channel|
-      channel.send_message("changed", nil, @collection, @query, id, data)
+      channel.send_message('changed', nil, @collection, @query, id, data)
     end
   end
-
 
   # return the query results the first time a channel connects
   def initial_data
@@ -73,18 +72,17 @@ class LiveQuery
     end
   end
 
-  def notify!(skip_channel=nil, only_channel=nil)
+  def notify!(skip_channel = nil, only_channel = nil)
     if only_channel
       channels = [only_channel]
     else
       channels = @channels
     end
 
-    channels = channels.reject {|c| c == skip_channel }
+    channels = channels.reject { |c| c == skip_channel }
 
     channels.each do |channel|
       yield(channel)
     end
   end
-
 end

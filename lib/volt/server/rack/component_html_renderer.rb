@@ -4,7 +4,6 @@ require 'volt/page/page'
 module Volt
   class ComponentHtmlRenderer
     def initialize
-
     end
 
     def call(env)

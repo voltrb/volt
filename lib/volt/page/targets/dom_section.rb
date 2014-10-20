@@ -10,12 +10,11 @@ module Volt
       @end_node   = find_by_comment("$/#{binding_name}")
     end
 
-
     def text=(value)
-      %x{
+      `
         this.$range().deleteContents();
         this.$range().insertNode(document.createTextNode(#{value}));
-      }
+      `
     end
 
     def html=(value)
@@ -25,18 +24,18 @@ module Volt
     end
 
     def remove
-      range = self.range()
+      range = self.range
 
-      %x{
+      `
         range.deleteContents();
-      }
+      `
     end
 
     def remove_anchors
-      %x{
+      `
         this.start_node.parentNode.removeChild(this.start_node);
         this.end_node.parentNode.removeChild(this.end_node);
-      }
+      `
       @start_node = nil
       @end_node   = nil
     end
@@ -53,9 +52,9 @@ module Volt
     # Takes in an array of dom nodes and replaces the current content
     # with the new nodes
     def nodes=(nodes)
-      range = self.range()
+      range = self.range
 
-      %x{
+      `
         range.deleteContents();
 
         for (var i=nodes.length-1; i >= 0; i--) {
@@ -64,50 +63,50 @@ module Volt
           node.parentNode.removeChild(node);
           range.insertNode(node);
         }
-      }
+      `
     end
 
     # Returns the nearest DOM node that contains all of the section.
     def container_node
-      range = self.range()
-      return `range.commonAncestorContainer`
+      range = self.range
+      `range.commonAncestorContainer`
     end
 
     def set_template(dom_template)
       dom_nodes, bindings = dom_template.make_new
 
       children = nil
-      %x{
+      `
       children = dom_nodes.childNodes;
-    }
+        `
 
       # Update the nodes
       self.nodes = children
 
-      %x{
+      `
       dom_nodes = null;
-    }
+        `
 
-      return bindings
+      bindings
     end
 
     def range
       return @range if @range
 
       range = nil
-      %x{
+      `
         range = document.createRange();
         range.setStartAfter(this.start_node);
         range.setEndBefore(this.end_node);
-      }
+      `
 
       @range = range
 
-      return range
+      range
     end
 
     def inspect
-      "<#{self.class.to_s}>"
+      "<#{self.class}>"
     end
   end
 end

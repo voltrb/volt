@@ -36,7 +36,7 @@ module Volt
             if args.blank?
               add_else(nil)
             else
-              raise "else does not take a conditional, #{content} was provided."
+              fail "else does not take a conditional, #{content} was provided."
             end
           when 'template'
             add_template(args)
@@ -73,7 +73,7 @@ module Volt
     end
 
     def add_else(content)
-      raise "#else can only be added inside of an if block"
+      fail '#else can only be added inside of an if block'
     end
 
     def add_each(content)
@@ -99,11 +99,11 @@ module Volt
         parent = 'self'
       end
 
-      return parent
+      parent
     end
 
     def last_method_name(getter)
-      return getter.strip[/[^.]+$/]
+      getter.strip[/[^.]+$/]
     end
 
     def add_component(tag_name, attributes, unary)
@@ -125,17 +125,17 @@ module Volt
             data_hash << "#{name.inspect} => Proc.new { #{getter} }"
 
             setter = getter_to_setter(getter)
-            data_hash << "#{(name + "=").inspect} => Proc.new { |val| #{setter} }"
+            data_hash << "#{(name + '=').inspect} => Proc.new { |val| #{setter} }"
 
             # Add an _parent fetcher.  Useful for things like volt-fields to get the parent model.
             parent = parent_fetcher(getter)
 
             # TODO: This adds some overhead, perhaps there is a way to compute this dynamically on the
             # front-end.
-            data_hash << "#{(name + "_parent").inspect} => Proc.new { #{parent} }"
+            data_hash << "#{(name + '_parent').inspect} => Proc.new { #{parent} }"
 
             # Add a _last_method property.  This is useful
-            data_hash << "#{(name + "_last_method").inspect} => #{last_method_name(getter).inspect}"
+            data_hash << "#{(name + '_last_method').inspect} => #{last_method_name(getter).inspect}"
           end
         else
           # String
@@ -159,17 +159,17 @@ module Volt
     end
 
     # Called when this scope should be closed out
-    def close_scope(pop=true)
+    def close_scope(pop = true)
       if pop
         scope = @handler.scope.pop
       else
         scope = @handler.last
       end
 
-      raise "template path already exists: #{scope.path}" if @handler.templates[scope.path]
+      fail "template path already exists: #{scope.path}" if @handler.templates[scope.path]
 
       template = {
-          'html' => scope.html
+        'html' => scope.html
       }
 
       if scope.bindings.size > 0

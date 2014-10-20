@@ -7,7 +7,7 @@ module Volt
       if RUBY_PLATFORM == 'opal'
         unless @env
           `if (window.start_env) {`
-            @env = `window.start_env`
+          @env = `window.start_env`
           `}`
         end
       end

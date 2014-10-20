@@ -3,6 +3,5 @@ module Volt
   # templates
   # events
   class Document
-
   end
 end

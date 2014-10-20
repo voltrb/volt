@@ -17,7 +17,6 @@ class Object
   def present?
     !blank?
   end
-
 end
 
 class NilClass
@@ -73,7 +72,7 @@ class String
   def blank?
     # self !~ /[^[:space:]]/
     # TODO: Opal fails with the previous regex
-    self.strip == ''
+    strip == ''
   end
 end
 

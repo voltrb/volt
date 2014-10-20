@@ -9,7 +9,7 @@ module Volt
 
       @sub_bindings = []
 
-      bindings = self.dom_section.set_content_to_template(page, template_name)
+      bindings = dom_section.set_content_to_template(page, template_name)
 
       bindings.each_pair do |id, bindings_for_id|
         bindings_for_id.each do |binding|

@@ -10,7 +10,7 @@ class QueryTasks < Volt::TaskHandler
   end
 
   # The dispatcher passes its self in
-  def initialize(channel, dispatcher=nil)
+  def initialize(channel, dispatcher = nil)
     @channel = channel
     @dispatcher = dispatcher
   end
@@ -29,17 +29,17 @@ class QueryTasks < Volt::TaskHandler
       initial_data = live_query.initial_data
     rescue => exception
       # Capture and pass up any exceptions
-      error = {:error => exception.message}
+      error = { error: exception.message }
     end
 
-    return [initial_data, error]
+    [initial_data, error]
   end
 
   def initial_data
     data = live_query.initial_data
     data[:_id] = data[:_id].to_s
 
-    return data
+    data
   end
 
   # Remove a listening channel, the LiveQuery will automatically remove
@@ -48,7 +48,6 @@ class QueryTasks < Volt::TaskHandler
     live_query = @@live_query_pool.lookup(collection, query)
     live_query.remove_channel(@channel)
   end
-
 
   # Removes a channel from all associated live queries
   def close!
@@ -64,11 +63,10 @@ class QueryTasks < Volt::TaskHandler
   end
 
   private
-    # Tracks that this channel will be notified from the live query.
-    def track_channel_in_live_query(live_query)
-      @@channel_live_queries[@channel] ||= []
-      @@channel_live_queries[@channel] << live_query
-    end
 
-
+  # Tracks that this channel will be notified from the live query.
+  def track_channel_in_live_query(live_query)
+    @@channel_live_queries[@channel] ||= []
+    @@channel_live_queries[@channel] << live_query
+  end
 end

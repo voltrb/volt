@@ -1,9 +1,8 @@
 # Config lets a user set global config options for Volt.
 module Volt
   module Config
-
     def setup
-      yield self.config
+      yield config
     end
 
     def config
@@ -18,7 +17,7 @@ module Volt
           app_name:  app_name,
           db_name:   ENV['DB_NAME'] || (app_name + '_' + Volt.env.to_s),
           db_host:   ENV['DB_HOST'] || 'localhost',
-          db_port:   (ENV['DB_PORT'] || 27017).to_i,
+          db_port:   (ENV['DB_PORT'] || 27_017).to_i,
           db_driver: ENV['DB_DRIVER'] || 'mongo'
       )
     end

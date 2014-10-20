@@ -30,6 +30,7 @@ module Volt
     end
 
     private
+
     def ensure_key(key)
       @hash_depedencies[key] ||= Dependency.new
     end

@@ -1,11 +1,11 @@
 require 'volt/page/targets/helpers/comment_searchers'
 
 module Volt
-# A dom template is used to optimize going from a template name to
-# dom nodes and bindings.  It stores a copy of the template's parsed
-# dom nodes, then when a new instance is requested, it updates the
-# dom markers (comments) for new binding numbers and returns a cloneNode'd
-# version of the dom nodes and the bindings.
+  # A dom template is used to optimize going from a template name to
+  # dom nodes and bindings.  It stores a copy of the template's parsed
+  # dom nodes, then when a new instance is requested, it updates the
+  # dom markers (comments) for new binding numbers and returns a cloneNode'd
+  # version of the dom nodes and the bindings.
   class DomTemplate
     include CommentSearchers
 
@@ -31,9 +31,8 @@ module Volt
 
       new_nodes = `self.nodes.cloneNode(true)`
 
-      return [new_nodes, bindings]
+      [new_nodes, bindings]
     end
-
 
     # Finds each of the binding anchors in the temp dom, then stores a reference
     # to them so they can be quickly updated without using xpath to find them again.
@@ -45,9 +44,9 @@ module Volt
         if name.is_a?(String)
           # Find the dom node for an attribute anchor
           node = nil
-          %x{
+          `
             node = self.nodes.querySelector('#' + name);
-          }
+          `
           @binding_anchors[name] = node
         else
           # Find the dom node for a comment anchor
@@ -86,7 +85,7 @@ module Volt
         else
           start_comment, end_comment = anchors
 
-          %x{
+          `
             if (start_comment.textContent) {
               // direct update
               start_comment.textContent = " $" + new_name + " ";
@@ -100,7 +99,7 @@ module Volt
               start_comment.nodeValue = " $" + new_name + " ";
               end_comment.nodeValue = " $/" + new_name + " ";
             }
-          }
+          `
 
           # %x{
           #   start_comment.innerText = " $" + new_name + " ";
@@ -111,7 +110,7 @@ module Volt
         end
       end
 
-      return new_bindings
+      new_bindings
     end
   end
 end

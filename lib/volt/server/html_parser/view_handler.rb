@@ -10,7 +10,7 @@ module Volt
       @scope.last
     end
 
-    def initialize(initial_path, allow_sections=true)
+    def initialize(initial_path, allow_sections = true)
       @original_path = initial_path
 
       # Default to the body section

@@ -1,7 +1,7 @@
 require 'mongo'
 
 class StoreTasks < Volt::TaskHandler
-  def initialize(channel=nil, dispatcher=nil)
+  def initialize(channel = nil, dispatcher = nil)
     @channel = channel
     @dispatcher = dispatcher
   end
@@ -26,7 +26,7 @@ class StoreTasks < Volt::TaskHandler
       return model.to_h, model.errors
     end
 
-    return data, {}
+    [data, {}]
   end
 
   def save(collection, data)
@@ -48,9 +48,9 @@ class StoreTasks < Volt::TaskHandler
           # Update because the id already exists
           update_values = values.dup
           update_values.delete(:_id)
-          db[collection].update({:_id => id}, update_values)
+          db[collection].update({ _id: id }, update_values)
         else
-          return {:error => error.message}
+          return { error: error.message }
         end
       end
 

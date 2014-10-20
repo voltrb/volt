@@ -4,7 +4,6 @@ require 'json'
 
 module Volt
   module Persistors
-
     # Backs a collection in the local store
     class LocalStore < Base
       def initialize(model)
@@ -24,7 +23,7 @@ module Volt
           end
         end
 
-        return node
+        node
       end
 
       # Called when a model is added to the collection
@@ -32,7 +31,7 @@ module Volt
         root_model.persistor.save_all
       end
 
-      def loaded(initial_state=nil)
+      def loaded(initial_state = nil)
         # When the main model is first loaded, we pull in the data from the
         # store if it exists
         if @model.path == []

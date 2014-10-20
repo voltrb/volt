@@ -23,7 +23,7 @@ module Volt
       # environment in closure
       environment                        = @environment
 
-      environment.cache = Sprockets::Cache::FileStore.new("./tmp")
+      environment.cache = Sprockets::Cache::FileStore.new('./tmp')
 
       if Volt.env.production?
         # Compress in production
@@ -33,7 +33,7 @@ module Volt
 
       environment.append_path(app_path)
 
-      volt_gem_lib_path = File.expand_path(File.join(File.dirname(__FILE__), "../../.."))
+      volt_gem_lib_path = File.expand_path(File.join(File.dirname(__FILE__), '../../..'))
       environment.append_path(volt_gem_lib_path)
 
       add_asset_folders(environment)
@@ -44,8 +44,8 @@ module Volt
       end
 
       # opal-jquery gem
-      spec = Gem::Specification.find_by_name("opal-jquery")
-      environment.append_path(spec.gem_dir + "/opal")
+      spec = Gem::Specification.find_by_name('opal-jquery')
+      environment.append_path(spec.gem_dir + '/opal')
 
       builder.map '/assets' do
         run environment
@@ -65,6 +65,5 @@ module Volt
         environment.append_path(asset_folder)
       end
     end
-
   end
 end

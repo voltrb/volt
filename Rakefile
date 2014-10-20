@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'bundler'
-require "bundler/gem_tasks"
+require 'bundler/gem_tasks'
 Bundler.require(:development)
 
 require 'opal'
@@ -9,7 +9,6 @@ require 'opal'
 Opal.append_path(File.expand_path('../lib', __FILE__))
 
 require 'opal/rspec/rake_task'
-
 
 task :docs do
   `bundle exec yardoc 'lib/**/*.rb' - Readme.md docs/*`
@@ -21,8 +20,6 @@ task :docs do
   #   # t.options = ['--any', '--extra', '--opts'] # optional
   # end
 end
-
-
 
 Opal::RSpec::RakeTask.new
 

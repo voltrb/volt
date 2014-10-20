@@ -31,7 +31,7 @@ module Volt
     end
 
     def close!
-      raise "close! should not be called on the backend channel"
+      fail 'close! should not be called on the backend channel'
     end
   end
 end

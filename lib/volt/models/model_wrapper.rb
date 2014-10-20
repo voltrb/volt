@@ -12,7 +12,7 @@ module Volt
       end
     end
 
-    def wrap_values(values, lookup=[])
+    def wrap_values(values, lookup = [])
       if values.is_a?(Array)
         # Coming from an array
         values.map { |v| wrap_value(v, lookup + [:[]]) }

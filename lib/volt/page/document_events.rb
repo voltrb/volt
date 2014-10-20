@@ -14,11 +14,11 @@ module Volt
 
         that = self
 
-        %x{
+        `
         $('body').on(event, function(e) {
           that.$handle(event, e, e.target || e.originalEvent.target);
         });
-      }
+      `
 
       end
 
@@ -70,9 +70,9 @@ module Volt
         @events.delete(event)
 
         # Remove the event from the body
-        %x{
+        `
           $('body').unbind(event);
-        }
+        `
       end
     end
   end

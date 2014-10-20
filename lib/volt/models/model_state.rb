@@ -15,7 +15,7 @@ module Volt
     end
 
     def loaded?
-      self.state == :loaded
+      state == :loaded
     end
   end
 end

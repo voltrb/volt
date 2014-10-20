@@ -15,7 +15,7 @@ module Volt
         @@query_pool
       end
 
-      def initialize(model, tasks=nil)
+      def initialize(model, tasks = nil)
         super
 
         @query = @model.options[:query]
@@ -39,7 +39,7 @@ module Volt
 
       # Called when an event is removed and we no longer want to keep in
       # sync with the database.
-      def stop_listening(stop_watching_query=true)
+      def stop_listening(stop_watching_query = true)
         return if @has_events
         return if @fetch_promises && @fetch_promises.size > 0
 
@@ -82,7 +82,7 @@ module Volt
         @model.clear
       end
 
-      def run_query(model, query={})
+      def run_query(model, query = {})
         @model.clear
 
         collection = model.path.last
@@ -107,18 +107,18 @@ module Volt
 
       # Find can take either a query object, or a block that returns a query object.  Use
       # the block style if you need reactive updating queries
-      def find(query=nil, &block)
+      def find(query = nil, &block)
         # Set a default query if there is no block
         if block
           if query
-            raise "Query should not be passed in to a find if a block is specified"
+            fail 'Query should not be passed in to a find if a block is specified'
           end
           query = block
         else
           query ||= {}
         end
 
-        return Cursor.new([], @model.options.merge(:query => query))
+        Cursor.new([], @model.options.merge(query: query))
       end
 
       # Returns a promise that is resolved/rejected when the query is complete.  Any
@@ -137,7 +137,7 @@ module Volt
           load_data
         end
 
-        return promise
+        promise
       end
 
       # Called from backend
@@ -147,7 +147,7 @@ module Volt
         data_id = data[:_id]
 
         # Don't add if the model is already in the ArrayModel
-        if !@model.array.find { |v| v._id == data_id }
+        unless @model.array.find { |v| v._id == data_id }
           # Find the existing model, or create one
           new_model = @@identity_map.find(data_id) do
             new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
@@ -200,7 +200,6 @@ module Volt
           StoreTasks.delete(channel_name, model.attributes[:_id])
         end
       end
-
     end
   end
 end

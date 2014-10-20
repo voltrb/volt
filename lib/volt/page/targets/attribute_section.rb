@@ -27,7 +27,7 @@ module Volt
         @target.find_by_binding_id(@binding_name).html = html
       end
 
-      return bindings
+      bindings
     end
 
     def remove

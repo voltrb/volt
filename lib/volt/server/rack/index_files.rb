@@ -22,19 +22,19 @@ module Volt
 
       return params if params
 
-      return false
+      false
     end
 
     def call(env)
       if route_match?(env['PATH_INFO'])
-        [200, {'Content-Type' => 'text/html; charset=utf-8'}, [html]]
+        [200, { 'Content-Type' => 'text/html; charset=utf-8' }, [html]]
       else
         @app.call env
       end
     end
 
     def html
-      index_path = File.expand_path(File.join(Volt.root, "public/index.html"))
+      index_path = File.expand_path(File.join(Volt.root, 'public/index.html'))
       html       = File.read(index_path)
 
       ERB.new(html).result(binding)

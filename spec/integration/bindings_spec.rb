@@ -1,26 +1,26 @@
 if ENV['BROWSER']
   require 'spec_helper'
 
-  describe "bindings test", :type => :feature do
-    it "should load the page" do
+  describe 'bindings test', type: :feature do
+    it 'should load the page' do
       visit '/'
 
       expect(page).to have_content('Kitchen Sink')
     end
 
-    describe "text/fields" do
+    describe 'text/fields' do
       it 'should load the bindings page and update bindings' do
         visit '/'
 
         click_link 'Bindings'
 
         # Fill in one field and see if it updates the rest
-        fill_in('pageName1', :with => 'Page bindings')
+        fill_in('pageName1', with: 'Page bindings')
         expect(find('#pageName1').value).to eq('Page bindings')
         expect(find('#pageName2').value).to eq('Page bindings')
         expect(find('#pageName3')).to have_content('Page bindings')
 
-        fill_in('pageName2', :with => 'Update everywhere')
+        fill_in('pageName2', with: 'Update everywhere')
         expect(find('#pageName1').value).to eq('Update everywhere')
         expect(find('#pageName2').value).to eq('Update everywhere')
         expect(find('#pageName3')).to have_content('Update everywhere')
@@ -38,12 +38,12 @@ if ENV['BROWSER']
         end
 
         # Fill in one field and see if it updates the rest
-        fill_in('paramsName1', :with => 'Params bindings')
+        fill_in('paramsName1', with: 'Params bindings')
         expect(find('#paramsName1').value).to eq('Params bindings')
         expect(find('#paramsName2').value).to eq('Params bindings')
         expect(find('#paramsName3')).to have_content('Params bindings')
 
-        fill_in('paramsName2', :with => 'Update everywhere')
+        fill_in('paramsName2', with: 'Update everywhere')
         expect(find('#paramsName1').value).to eq('Update everywhere')
         expect(find('#paramsName2').value).to eq('Update everywhere')
         expect(find('#paramsName3')).to have_content('Update everywhere')
@@ -65,12 +65,12 @@ if ENV['BROWSER']
         end
 
         # Fill in one field and see if it updates the rest
-        fill_in('routesName1', :with => 'Routes bindings')
+        fill_in('routesName1', with: 'Routes bindings')
         expect(find('#routesName1').value).to eq('Routes bindings')
         expect(find('#routesName2').value).to eq('Routes bindings')
         expect(find('#routesName3')).to have_content('Routes bindings')
 
-        fill_in('routesName2', :with => 'bound_url')
+        fill_in('routesName2', with: 'bound_url')
         expect(find('#routesName1').value).to eq('bound_url')
         expect(find('#routesName2').value).to eq('bound_url')
         expect(find('#routesName3')).to have_content('bound_url')
@@ -93,12 +93,12 @@ if ENV['BROWSER']
         click_link 'Bindings'
 
         # Fill in one field and see if it updates the rest
-        fill_in('textareaName1', :with => 'Page bindings')
+        fill_in('textareaName1', with: 'Page bindings')
         expect(find('#textareaName1').value).to eq('Page bindings')
         expect(find('#textareaName2').value).to eq('Page bindings')
         expect(find('#textareaName3')).to have_content('Page bindings')
 
-        fill_in('textareaName2', :with => 'Update everywhere')
+        fill_in('textareaName2', with: 'Update everywhere')
         expect(find('#textareaName1').value).to eq('Update everywhere')
         expect(find('#textareaName2').value).to eq('Update everywhere')
         expect(find('#textareaName3')).to have_content('Update everywhere')
@@ -110,12 +110,12 @@ if ENV['BROWSER']
         click_link 'Bindings'
 
         # Fill in one field and see if it updates the rest
-        fill_in('localstoreName1', :with => 'Page bindings')
+        fill_in('localstoreName1', with: 'Page bindings')
         expect(find('#localstoreName1').value).to eq('Page bindings')
         expect(find('#localstoreName2').value).to eq('Page bindings')
         expect(find('#localstoreName3')).to have_content('Page bindings')
 
-        fill_in('localstoreName2', :with => 'Update everywhere')
+        fill_in('localstoreName2', with: 'Update everywhere')
         expect(find('#localstoreName1').value).to eq('Update everywhere')
         expect(find('#localstoreName2').value).to eq('Update everywhere')
         expect(find('#localstoreName3')).to have_content('Update everywhere')
@@ -143,7 +143,7 @@ if ENV['BROWSER']
       # end
     end
 
-    describe "check boxes" do
+    describe 'check boxes' do
       it 'should load the bindings page and update checkboxes' do
         visit '/'
 
@@ -193,7 +193,7 @@ if ENV['BROWSER']
       end
     end
 
-    describe "content escaping" do
+    describe 'content escaping' do
       it 'should escape in a tripple stash' do
         visit '/'
 

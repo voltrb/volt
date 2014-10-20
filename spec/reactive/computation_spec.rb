@@ -50,14 +50,14 @@ describe Volt::Computation do
       end.watch!
     end.watch!
 
-    expect(values).to eq([nil,nil])
+    expect(values).to eq([nil, nil])
 
     a[1] = 'inner'
     Volt::Computation.flush!
-    expect(values).to eq([nil,nil,'inner'])
+    expect(values).to eq([nil, nil, 'inner'])
 
     a[0] = 'outer'
     Volt::Computation.flush!
-    expect(values).to eq([nil,nil,'inner','outer','inner'])
+    expect(values).to eq([nil, nil, 'inner', 'outer', 'inner'])
   end
 end

@@ -61,9 +61,7 @@ module Volt
         invalidations  = @invalidations
         @invalidations = []
 
-        invalidations.each do |invalidation|
-          invalidation.call
-        end
+        invalidations.each(&:call)
       end
     end
 
@@ -92,9 +90,8 @@ module Volt
       return_value
     end
 
-
     def self.flush!
-      raise "Can't flush while in a flush" if @flushing
+      fail "Can't flush while in a flush" if @flushing
 
       @flushing = true
       # clear any timers
@@ -103,15 +100,13 @@ module Volt
       computations  = @@flush_queue
       @@flush_queue = []
 
-      computations.each do |computation|
-        computation.compute!
-      end
+      computations.each(&:compute!)
 
       @flushing = false
     end
 
     def self.queue_flush!
-      if !@timer
+      unless @timer
         # Flush once everything else has finished running
         @timer = `setImmediate(function() { self['$flush!'](); });`
       end
@@ -119,12 +114,11 @@ module Volt
   end
 end
 
-
 class Proc
   def watch!
     Volt::Computation.new(self).run_in do
       # run self
-      self.call
+      call
     end
   end
 end

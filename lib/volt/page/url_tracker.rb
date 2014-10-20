@@ -11,7 +11,7 @@ module Volt
 
         # Setup popstate on the dom ready event.  Prevents an extra
         # popstate trigger
-        %x{
+        `
           var first = true;
           window.addEventListener("popstate", function(e) {
             if (first === false) {
@@ -22,11 +22,11 @@ module Volt
 
             return true;
           });
-        }
+        `
       end
     end
 
-    def url_updated(first_call=false)
+    def url_updated(first_call = false)
       @page.url.parse(`document.location.href`)
       @page.url.update! unless first_call
     end

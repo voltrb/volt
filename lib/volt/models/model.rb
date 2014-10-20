@@ -7,7 +7,6 @@ require 'volt/models/model_state'
 require 'volt/reactive/reactive_hash'
 
 module Volt
-
   class NilMethodCall < NoMethodError
   end
 
@@ -110,7 +109,6 @@ module Volt
       !attributes
     end
 
-
     def method_missing(method_name, *args, &block)
       if method_name[0] == '_'
         if method_name[-1] == '='
@@ -149,7 +147,7 @@ module Volt
       # Reading an attribute, we may get back a nil model.
       method_name = method_name.to_sym
 
-      if method_name[0] != '_' && @attributes == nil
+      if method_name[0] != '_' && @attributes.nil?
         # The method we are calling is on a nil model, return a wrapped
         # exception.
         return_undefined_method(method_name)
@@ -190,15 +188,13 @@ module Volt
     def return_undefined_method(method_name)
       # Methods called on nil capture an error so the user can know where
       # their nil calls are.  This error can be re-raised at a later point.
-      begin
-        raise NilMethodCall.new("undefined method `#{method_name}' for #{self.to_s}")
-      rescue => e
-        result = e
+      fail NilMethodCall.new("undefined method `#{method_name}' for #{self}")
+    rescue => e
+      result = e
 
-        # Cleanup backtrace
-        # TODO: this could be better
-        result.backtrace.reject! { |line| line['lib/models/model.rb'] || line['lib/models/live_value.rb'] }
-      end
+      # Cleanup backtrace
+      # TODO: this could be better
+      result.backtrace.reject! { |line| line['lib/models/model.rb'] || line['lib/models/live_value.rb'] }
     end
 
     def new_model(attributes, options)
@@ -244,7 +240,7 @@ module Volt
       if @parent
         @parent.expand!
       else
-        raise "Model data should be stored in sub collections."
+        fail 'Model data should be stored in sub collections.'
       end
 
       # Grab the last section of the path, so we can do the assign on the parent
@@ -265,7 +261,7 @@ module Volt
 
     def inspect
       Computation.run_without_tracking do
-        "<#{self.class.to_s}:#{object_id} #{attributes.inspect}>"
+        "<#{self.class}:#{object_id} #{attributes.inspect}>"
       end
     end
 
@@ -278,19 +274,19 @@ module Volt
         if save_to
           if save_to.is_a?(ArrayModel)
             # Add to the collection
-            new_model             = save_to << self.attributes
+            new_model             = save_to << attributes
 
             # Set the buffer's id to track the main model's id
-            self.attributes[:_id] = new_model._id
+            attributes[:_id] = new_model._id
             options[:save_to]     = new_model
 
             # TODO: return a promise that resolves if the append works
           else
             # We have a saved model
-            return save_to.assign_attributes(self.attributes)
+            return save_to.assign_attributes(attributes)
           end
         else
-          raise "Model is not a buffer, can not be saved, modifications should be persisted as they are made."
+          fail 'Model is not a buffer, can not be saved, modifications should be persisted as they are made.'
         end
 
         Promise.new.resolve({})
@@ -303,7 +299,6 @@ module Volt
         Promise.new.reject(errors)
       end
     end
-
 
     # Returns a buffered version of the model
     def buffer
@@ -322,7 +317,7 @@ module Volt
       if state == :loaded
         setup_buffer(model)
       else
-        self.parent.then do
+        parent.then do
           setup_buffer(model)
         end
       end
@@ -330,10 +325,10 @@ module Volt
       model
     end
 
-
     private
+
     def setup_buffer(model)
-      model.attributes = self.attributes
+      model.attributes = attributes
       model.change_state_to(:loaded)
     end
 

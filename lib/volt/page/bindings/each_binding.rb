@@ -45,10 +45,10 @@ module Volt
         values_size    = values.size
 
         # Start over, re-create all nodes
-        (templates_size-1).downto(0) do |index|
+        (templates_size - 1).downto(0) do |index|
           item_removed(index)
         end
-        0.upto(values_size-1) do |index|
+        0.upto(values_size - 1) do |index|
           item_added(index)
         end
       end
@@ -80,19 +80,19 @@ module Volt
       end
 
       # TODORW: :parent => @value may change
-      item_context                           = SubContext.new({:_index_value => position, :parent => @value}, @context)
-      item_context.locals[@item_name.to_sym] = Proc.new { @value[item_context.locals[:_index_value]] }
+      item_context                           = SubContext.new({ _index_value: position, parent: @value }, @context)
+      item_context.locals[@item_name.to_sym] = proc { @value[item_context.locals[:_index_value]] }
 
       position_dependency                    = Dependency.new
       item_context.locals[:index_dependency] = position_dependency
 
       # Get and set index
-      item_context.locals[:index=]           = Proc.new do |val|
+      item_context.locals[:index=]           = proc do |val|
         position_dependency.changed!
         item_context.locals[:_index_value] = val
       end
 
-      item_context.locals[:index] = Proc.new do
+      item_context.locals[:index] = proc do
         position_dependency.depend
         item_context.locals[:_index_value]
       end
@@ -108,7 +108,7 @@ module Volt
     def update_indexes_after(start_index)
       size = @templates.size
       if size > 0
-        start_index.upto(size-1) do |index|
+        start_index.upto(size - 1) do |index|
           @templates[index].context.locals[:index=].call(index)
         end
       end
@@ -118,9 +118,8 @@ module Volt
       return [] if values.is_a?(Model) || values.is_a?(Exception)
       values = values.attributes if values.respond_to?(:attributes)
 
-      return values
+      values
     end
-
 
     # When this each_binding is removed, cleanup.
     def remove

@@ -10,7 +10,6 @@ gem 'volt-bootstrap'
 # Simple theme for bootstrap, remove to theme yourself.
 gem 'volt-bootstrap-jumbotron-theme'
 
-
 # Server for MRI
 platform :mri do
   gem 'thin', '~> 1.6.0'
@@ -21,7 +20,6 @@ end
 platform :jruby do
   gem 'jubilee'
 end
-
 
 #---------------------
 # Needed at the moment

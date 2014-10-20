@@ -35,7 +35,7 @@ module Volt
         end
       end
 
-      return templates
+      templates
     end
   end
 end

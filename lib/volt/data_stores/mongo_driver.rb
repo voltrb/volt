@@ -7,7 +7,7 @@ module Volt
         @@mongo_db ||= Mongo::MongoClient.new(Volt.config.db_host, Volt.config.db_path)
         @@db ||= @@mongo_db.db(Volt.config.db_name)
 
-        return @@db
+        @@db
       end
     end
   end

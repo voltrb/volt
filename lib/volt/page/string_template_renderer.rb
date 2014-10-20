@@ -10,7 +10,7 @@ module Volt
 
       @template_path = template_path
       @target        = AttributeTarget.new(nil, nil, self)
-      @template      = TemplateRenderer.new(page, @target, context, "main", template_path)
+      @template      = TemplateRenderer.new(page, @target, context, 'main', template_path)
     end
 
     # Render the template and get the current value
@@ -22,7 +22,7 @@ module Volt
         html = @target.to_html
       end
 
-      return html
+      html
     end
 
     def changed!
