@@ -6,3 +6,6 @@ UnusedMethodArgument:
 
 UnderscorePrefixedVariableName:
   Enabled: false
+
+UnusedBlockArgument:
+  Enabled: false
