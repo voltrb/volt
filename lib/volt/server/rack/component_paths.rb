@@ -1,7 +1,7 @@
 # ComponentPaths gives an array of every folder where you find a component.
 module Volt
   class ComponentPaths
-    def initialize(root=nil)
+    def initialize(root = nil)
       @root = root || Dir.pwd
     end
 
@@ -9,12 +9,12 @@ module Volt
     def app_folders
       # Find all app folders
       @app_folders ||= begin
-        volt_app    = File.expand_path(File.join(File.dirname(__FILE__), "../../../../app"))
+        volt_app    = File.expand_path(File.join(File.dirname(__FILE__), '../../../../app'))
         app_folders = [volt_app, "#{@root}/app", "#{@root}/vendor/app"].map { |f| File.expand_path(f) }
 
         # Gem folders with volt in them
         # TODO: we should probably qualify this a bit more
-        app_folders += Gem.loaded_specs.values.map { |g| g.full_gem_path }.reject { |g| g !~ /volt/ }.map { |f| f + '/app' }
+        app_folders += Gem.loaded_specs.values.map(&:full_gem_path).reject { |g| g !~ /volt/ }.map { |f| f + '/app' }
 
         app_folders
       end
@@ -27,7 +27,7 @@ module Volt
         files << yield(app_folder)
       end
 
-      return files.flatten
+      files.flatten
     end
 
     # returns an array of every folder that is a component
@@ -49,7 +49,7 @@ module Volt
         end
       end
 
-      return @components
+      @components
     end
 
     # Makes each components classes available on the load path, require classes.

@@ -13,7 +13,7 @@ class QueryTracker
   end
 
   # Runs the query, stores the results and updates the current_ids
-  def run(skip_channel=nil)
+  def run(skip_channel = nil)
     @previous_results = @results
     @previous_results_hash = @results_hash
     @previous_ids = @current_ids
@@ -22,8 +22,8 @@ class QueryTracker
     @results = @data_store.query(@live_query.collection, @live_query.query)
 
     # Update the current_ids
-    @current_ids = @results.map {|r| r['_id'] }
-    @results_hash = Hash[@results.map {|r| [r['_id'], r] }]
+    @current_ids = @results.map { |r| r['_id'] }
+    @results_hash = Hash[@results.map { |r| [r['_id'], r] }]
 
     process_changes(skip_channel)
   end
@@ -55,7 +55,7 @@ class QueryTracker
   # have been added or moved.
   def detect_added_and_moved(skip_channel)
     previous_index = 0
-    @current_ids.each_with_index do |id,index|
+    @current_ids.each_with_index do |id, index|
       if (cur_previous = @previous_ids[previous_index]) && cur_previous == id
         # Same in both previous and new
         previous_index += 1
@@ -91,5 +91,4 @@ class QueryTracker
       end
     end
   end
-
 end

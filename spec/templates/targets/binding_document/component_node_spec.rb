@@ -10,7 +10,7 @@ describe Volt::ComponentNode do
     @component.html = html
   end
 
-  it "should find a component from a binding id" do
+  it 'should find a component from a binding id' do
     expect(@component.find_by_binding_id(1).to_html).to eq('Inside')
     expect(@component.find_by_binding_id(0).to_html).to eq('Before  Inside  After')
 

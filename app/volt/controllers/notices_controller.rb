@@ -3,7 +3,7 @@ module Volt
     model :page
 
     def hey
-      "yep"
+      'yep'
     end
 
     def page

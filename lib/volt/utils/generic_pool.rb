@@ -21,12 +21,11 @@ module Volt
 
       # TODO: This is to work around opal issue #500
       if RUBY_PLATFORM == 'opal'
-        args.pop if args.last == nil
+        args.pop if args.last.nil?
       end
 
-
       args.each_with_index do |arg, index|
-        last = (args.size-1) == index
+        last = (args.size - 1) == index
 
         if last
           # return, creating if needed
@@ -48,7 +47,7 @@ module Volt
         new_item = create(*args)
       end
 
-      return transform_item(new_item)
+      transform_item(new_item)
     end
 
     # Allow other pools to override how the created item gets stored.
@@ -77,19 +76,19 @@ module Volt
       args.each_with_index do |arg, index|
         stack << section
 
-        if args.size-1 == index
+        if args.size - 1 == index
           section.delete(arg)
         else
           section = section[arg]
         end
       end
 
-      (stack.size-1).downto(1) do |index|
+      (stack.size - 1).downto(1) do |index|
         node   = stack[index]
-        parent = stack[index-1]
+        parent = stack[index - 1]
 
         if node.size == 0
-          parent.delete(args[index-1])
+          parent.delete(args[index - 1])
         end
       end
     end

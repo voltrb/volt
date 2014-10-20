@@ -10,11 +10,11 @@ module Volt
       def added(model, index)
         if Volt.client?
           # Setup a new timer for clearing the flash.
-          %x{
+          `
             setTimeout(function() {
               self.$clear_model(model);
             }, 5000);
-          }
+          `
         end
       end
 

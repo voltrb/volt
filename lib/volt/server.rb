@@ -7,13 +7,13 @@ else
   require 'thin'
 end
 
-require "rack"
+require 'rack'
 if RUBY_PLATFORM != 'java'
-  require "rack/sockjs"
-  require "eventmachine"
+  require 'rack/sockjs'
+  require 'eventmachine'
 end
-require "sass"
-require "sprockets-sass"
+require 'sass'
+require 'sprockets-sass'
 require 'listen'
 
 require 'volt'
@@ -52,11 +52,11 @@ end
 
 module Volt
   class Server
-    def initialize(root_path=nil)
+    def initialize(root_path = nil)
       root_path ||= Dir.pwd
       Volt.root = root_path
 
-      @app_path        = File.expand_path(File.join(root_path, "app"))
+      @app_path        = File.expand_path(File.join(root_path, 'app'))
 
       # Boot the volt app
       @component_paths = Volt.boot(root_path)
@@ -67,13 +67,13 @@ module Volt
     end
 
     def display_welcome
-      puts File.read(File.join(File.dirname(__FILE__), "server/banner.txt"))
+      puts File.read(File.join(File.dirname(__FILE__), 'server/banner.txt'))
     end
 
     def setup_change_listener
       # Setup the listeners for file changes
       listener = Listen.to("#{@app_path}/") do |modified, added, removed|
-        puts "file changed, sending reload"
+        puts 'file changed, sending reload'
         SocketConnectionHandler.send_message_all(nil, 'reload')
       end
       listener.start
@@ -115,20 +115,20 @@ module Volt
       if RUBY_PLATFORM != 'java'
         SocketConnectionHandler.dispatcher = Dispatcher.new
 
-        @app.map "/channel" do
-          run Rack::SockJS.new(SocketConnectionHandler) #, :websocket => false
+        @app.map '/channel' do
+          run Rack::SockJS.new(SocketConnectionHandler) # , :websocket => false
         end
       end
 
       @app.use Rack::Static,
-               :urls         => ["/"],
-               :root         => "public",
-               :index        => "",
-               :header_rules => [
-                   [:all, {'Cache-Control' => 'public, max-age=86400'}]
+               urls: ['/'],
+               root: 'public',
+               index: '',
+               header_rules: [
+                 [:all, { 'Cache-Control' => 'public, max-age=86400' }]
                ]
 
-      @app.run lambda { |env| [404, {'Content-Type' => 'text/html; charset=utf-8'}, ['404 - page not found']] }
+      @app.run lambda { |env| [404, { 'Content-Type' => 'text/html; charset=utf-8' }, ['404 - page not found']] }
 
       @app
     end

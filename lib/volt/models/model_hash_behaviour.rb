@@ -3,7 +3,6 @@ module Volt
   # Moving this into a module cleans up the main Model class for things that
   # make it behave like a model.
   module ModelHashBehaviour
-
     def delete(name)
       name = name.to_sym
 
@@ -44,7 +43,6 @@ module Volt
     def each_with_object(*args, &block)
       (@attributes || {}).each_with_object(*args, &block)
     end
-
 
     # Convert the model to a hash all of the way down.
     def to_h

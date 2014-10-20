@@ -2,7 +2,7 @@ require 'volt/reactive/hash_dependency'
 
 module Volt
   class ReactiveHash
-    def initialize(values={})
+    def initialize(values = {})
       @hash     = values
       @deps     = HashDependency.new
       @all_deps = Dependency.new
@@ -17,13 +17,13 @@ module Volt
     def method_missing(method_name, *args, &block)
       @all_deps.depend
 
-      return @hash.send(method_name, *args, &block)
+      @hash.send(method_name, *args, &block)
     end
 
     def [](key)
       @deps.depend(key)
 
-      return @hash[key]
+      @hash[key]
     end
 
     def []=(key, value)

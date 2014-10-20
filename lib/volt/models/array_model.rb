@@ -38,7 +38,7 @@ module Volt
     proxy_with_load_data :[], :size, :first, :last
     proxy_to_persistor :find, :skip, :limit, :then
 
-    def initialize(array=[], options={})
+    def initialize(array = [], options = {})
       @options   = options
       @parent    = options[:parent]
       @path      = options[:path] || []
@@ -66,7 +66,7 @@ module Volt
 
       super(model)
 
-      @persistor.added(model, @array.size-1) if @persistor
+      @persistor.added(model, @array.size - 1) if @persistor
 
       model
     end
@@ -105,7 +105,7 @@ module Volt
     def inspect
       if @persistor && @persistor.is_a?(Persistors::ArrayStore) && state == :not_loaded
         # Show a special message letting users know it is not loaded yet.
-        "#<#{self.class.to_s}:not loaded, access with [] or size to load>"
+        "#<#{self.class}:not loaded, access with [] or size to load>"
       else
         # Otherwise inspect normally
         super
@@ -123,6 +123,7 @@ module Volt
     end
 
     private
+
     # Takes the persistor if there is one and
     def setup_persistor(persistor)
       if persistor

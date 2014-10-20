@@ -1,6 +1,5 @@
 module Volt
   module ReactiveAccessors
-
     module ClassMethods
       # Create a method to read a reactive value from an instance value.  If it
       # is not setup, create it so it can be updated through the reactive value

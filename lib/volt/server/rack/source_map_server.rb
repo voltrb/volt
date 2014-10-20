@@ -1,6 +1,6 @@
 module Volt
   class SourceMapServer
-    def initialize sprockets
+    def initialize(sprockets)
       @sprockets = sprockets
     end
 
@@ -24,9 +24,9 @@ module Volt
         asset = sprockets[path]
         return [404, {}, []] if asset.nil?
 
-        return [200, {"Content-Type" => "text/json"}, [$OPAL_SOURCE_MAPS[asset.pathname].to_s]]
+        return [200, { 'Content-Type' => 'text/json' }, [$OPAL_SOURCE_MAPS[asset.pathname].to_s]]
       else
-        return [200, {"Content-Type" => "text/text"}, [File.read(sprockets.resolve(path_info))]]
+        return [200, { 'Content-Type' => 'text/text' }, [File.read(sprockets.resolve(path_info))]]
       end
     end
   end

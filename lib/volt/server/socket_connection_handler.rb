@@ -1,6 +1,6 @@
 require 'json'
 require 'sockjs/session'
-require File.join(File.dirname(__FILE__), "../../../app/volt/tasks/query_tasks")
+require File.join(File.dirname(__FILE__), '../../../app/volt/tasks/query_tasks')
 
 module Volt
   class SocketConnectionHandler < SockJS::Session
@@ -15,14 +15,13 @@ module Volt
     end
 
     # Sends a message to all, optionally skipping a users channel
-    def self.send_message_all(skip_channel=nil, *args)
+    def self.send_message_all(skip_channel = nil, *args)
       @@channels.each do |channel|
         if skip_channel && channel == skip_channel
           next
         end
         channel.send_message(*args)
       end
-
     end
 
     def initialize(session, *args)
@@ -63,7 +62,7 @@ module Volt
     end
 
     def inspect
-      "<#{self.class.to_s}:#{object_id}>"
+      "<#{self.class}:#{object_id}>"
     end
   end
 end

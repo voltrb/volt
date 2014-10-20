@@ -7,13 +7,13 @@ module Volt
         if args.is_a?(Hash) && args[:message]
           message = args[:message]
         else
-          message = "must be specified"
+          message = 'must be specified'
         end
 
         errors[field_name] = [message]
       end
 
-      return errors
+      errors
     end
   end
 end

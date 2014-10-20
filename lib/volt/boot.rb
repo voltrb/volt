@@ -18,6 +18,6 @@ module Volt
     component_paths = ComponentPaths.new(app_path)
     component_paths.require_in_components
 
-    return component_paths
+    component_paths
   end
 end

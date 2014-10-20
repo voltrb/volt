@@ -1,8 +1,8 @@
 require 'volt/utils/generic_counting_pool'
 
 class CountingPoolTest < Volt::GenericCountingPool
-  def create(id, name=nil)
-    return Object.new
+  def create(id, name = nil)
+    Object.new
   end
 end
 
@@ -11,7 +11,7 @@ describe Volt::GenericCountingPool do
     @count_pool = CountingPoolTest.new
   end
 
-  it "should lookup and retrieve" do
+  it 'should lookup and retrieve' do
     item1 = @count_pool.find('one')
 
     item2 = @count_pool.find('one')
@@ -21,7 +21,7 @@ describe Volt::GenericCountingPool do
     expect(item2).to_not eq(item3)
   end
 
-  it "should only remove items when the same number have been removed as have been added" do
+  it 'should only remove items when the same number have been removed as have been added' do
     item1 = @count_pool.find('_items', 'one')
     item2 = @count_pool.find('_items', 'one')
     expect(@count_pool.instance_variable_get('@pool')).to_not eq({})

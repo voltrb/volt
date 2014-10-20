@@ -11,7 +11,7 @@ module Volt
     end
 
     def get
-      return (controller = self.controller) && controller[0]
+      (controller = self.controller) && controller[0]
     end
 
     def set(controller)
@@ -31,6 +31,7 @@ module Volt
     end
 
     private
+
     def controller
       @@controllers[@name]
     end

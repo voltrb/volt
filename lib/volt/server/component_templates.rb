@@ -4,7 +4,7 @@ require 'volt/server/html_parser/view_parser'
 # setup code (for controllers, models, views, and routes)
 module Volt
   class ComponentTemplates
-    def initialize(component_path, component_name, client=true)
+    def initialize(component_path, component_name, client = true)
       @component_path = component_path
       @component_name = component_name
       @client         = true
@@ -17,7 +17,7 @@ module Volt
         code << generate_controller_code + generate_model_code + generate_routes_code + generate_tasks_code
       end
 
-      return code
+      code
     end
 
     def page_reference
@@ -56,7 +56,7 @@ module Volt
         end
       end
 
-      return code
+      code
     end
 
     def generate_controller_code
@@ -67,7 +67,7 @@ module Volt
         code << File.read(controller_path) + "\n\n"
       end
 
-      return code
+      code
     end
 
     def generate_model_code
@@ -82,24 +82,24 @@ module Volt
         code << "#{page_reference}.add_model(#{model_name.inspect})\n\n"
       end
 
-      return code
+      code
     end
 
     def generate_routes_code
       code        = ''
       routes_path = "#{@component_path}/config/routes.rb"
 
-      if File.exists?(routes_path)
+      if File.exist?(routes_path)
         code << "#{page_reference}.add_routes do\n"
         code << "\n" + File.read(routes_path) + "\n"
         code << "end\n\n"
       end
 
-      return code
+      code
     end
 
     def generate_tasks_code
-      return TaskHandler.known_handlers.map do |handler|
+      TaskHandler.known_handlers.map do |handler|
         "class #{handler.name} < Volt::TaskHandler; end"
       end.join "\n"
     end

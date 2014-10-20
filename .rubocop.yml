@@ -1,0 +1,11 @@
+UselessAssignment:
+  Enabled: false
+
+UnusedMethodArgument:
+  Enabled: false
+
+UnderscorePrefixedVariableName:
+  Enabled: false
+
+UnusedBlockArgument:
+  Enabled: false

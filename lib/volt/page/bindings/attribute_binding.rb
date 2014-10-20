@@ -14,7 +14,6 @@ module Volt
     end
 
     def setup
-
       # Listen for changes
       @computation = -> do
         begin
@@ -39,7 +38,7 @@ module Volt
       end
     end
 
-    def changed(event=nil)
+    def changed(event = nil)
       case @attribute_name
         when 'value'
           current_value = element.value
@@ -134,7 +133,7 @@ module Volt
     end
 
     def remove_anchors
-      raise "attribute bindings do not have anchors, can not remove them"
+      fail 'attribute bindings do not have anchors, can not remove them'
     end
   end
 end

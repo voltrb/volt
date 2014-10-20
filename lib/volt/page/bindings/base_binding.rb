@@ -18,7 +18,7 @@ module Volt
       @context      = context
       @binding_name = binding_name
 
-      @@binding_number ||= 10000
+      @@binding_number ||= 10_000
     end
 
     def dom_section

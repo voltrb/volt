@@ -40,10 +40,10 @@ module Volt
       if self.respond_to?(:event_added)
         # call event added passing the event, the scope, and a boolean if it
         # is the first time this event has been added.
-        self.event_added(event, first, first_for_event)
+        event_added(event, first, first_for_event)
       end
 
-      return listener
+      listener
     end
 
     def trigger!(event, *args)
@@ -61,7 +61,7 @@ module Volt
     def remove_listener(event, listener)
       event = event.to_sym
 
-      raise "Unable to delete #{event} from #{self.inspect}" unless @listeners && @listeners[event]
+      fail "Unable to delete #{event} from #{inspect}" unless @listeners && @listeners[event]
 
       @listeners[event].delete(listener)
 
@@ -77,7 +77,7 @@ module Volt
       # Let the class we're included on know that we removed a listener (if it cares)
       if self.respond_to?(:event_removed)
         # Pass in the event and a boolean indicating if it is the last event
-        self.event_removed(event, last, last_for_event)
+        event_removed(event, last, last_for_event)
       end
     end
   end

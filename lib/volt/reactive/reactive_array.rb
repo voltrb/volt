@@ -4,7 +4,7 @@ module Volt
   class ReactiveArray
     include Eventable
 
-    def initialize(array=[])
+    def initialize(array = [])
       @array      = array
       @array_deps = []
       @size_dep   = Dependency.new
@@ -49,7 +49,7 @@ module Volt
         end
       end
 
-      return result
+      result
     end
 
     def any?
@@ -73,7 +73,7 @@ module Volt
         size.times do |index|
           val = self[index]
 
-          if !yield(val).true?
+          unless yield(val).true?
             return false
           end
         end
@@ -96,11 +96,10 @@ module Volt
       dep.depend
 
       # Return the index
-      return @array[index]
+      @array[index]
     end
 
     def []=(index, value)
-
       # Assign the new value
       @array[index] = value
 
@@ -112,10 +111,10 @@ module Volt
     def size
       @size_dep.depend
 
-      return @array.size
+      @array.size
     end
 
-    alias :length :size
+    alias_method :length, :size
 
     def delete_at(index)
       # Handle a negative index
@@ -131,7 +130,7 @@ module Volt
 
       # Trigger a changed event for each element in the zone where the
       # delete would change
-      index.upto(self.size+1) do |position|
+      index.upto(size + 1) do |position|
         trigger_for_index!(position)
       end
 
@@ -139,14 +138,13 @@ module Volt
 
       @persistor.removed(model) if @persistor
 
-      return model
+      model
     end
-
 
     def delete(val)
       index = @array.index(val)
       if index
-        self.delete_at(index)
+        delete_at(index)
       else
         # Sometimes the model isn't loaded at the right state yet, so we
         # just remove it from the persistor
@@ -180,29 +178,28 @@ module Volt
     def <<(value)
       result = (@array << value)
 
-      trigger_for_index!(self.size-1)
-      trigger_added!(self.size-1)
+      trigger_for_index!(size - 1)
+      trigger_added!(size - 1)
       trigger_size_change!
 
-      return result
+      result
     end
 
-
     def +(array)
-      raise "not implemented yet"
-      old_size = self.size
+      fail 'not implemented yet'
+      old_size = size
 
       # TODO: += is funky here, might need to make a .plus! method
       result   = ReactiveArray.new(@array.dup + array)
 
-      old_size.upto(result.size-1) do |index|
+      old_size.upto(result.size - 1) do |index|
         trigger_for_index!('changed', index)
         trigger_added!(old_size + index)
       end
 
       trigger_size_change!
 
-      return result
+      result
     end
 
     def insert(index, *objects)
@@ -214,21 +211,20 @@ module Volt
       end
 
       objects.size.times do |count|
-        trigger_added!(index+count)
+        trigger_added!(index + count)
       end
 
       trigger_size_change!
 
-      return result
+      result
     end
-
 
     def inspect
-      "#<#{self.class.to_s}:#{object_id} #{@array.inspect}>"
+      "#<#{self.class}:#{object_id} #{@array.inspect}>"
     end
 
-
     private
+
     # Check to see if the size has changed, trigger a change on size if it has
     def trigger_size_change!
       new_size = @array.size
@@ -244,7 +240,6 @@ module Volt
 
       dep.changed! if dep
     end
-
 
     def trigger_added!(index)
       trigger!('added', index)

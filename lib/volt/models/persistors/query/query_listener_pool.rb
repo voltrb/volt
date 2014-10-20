@@ -8,7 +8,7 @@ module Volt
   # single query at once.  Data updates will only be sent once as well.
   class QueryListenerPool < GenericPool
     def print
-      puts "--- Running Queries ---"
+      puts '--- Running Queries ---'
 
       @pool.each_pair do |table, query_hash|
         query_hash.keys.each do |query|

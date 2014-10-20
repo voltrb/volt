@@ -55,11 +55,11 @@ module Volt
     # 2. controller - main
     # 3. view - main
     # 4. section - body
-    def path_for_template(lookup_path, force_section=nil)
+    def path_for_template(lookup_path, force_section = nil)
       parts      = lookup_path.split('/')
       parts_size = parts.size
 
-      default_parts     = ['main', 'main', 'index', 'body']
+      default_parts     = %w(main main index body)
 
       # When forcing a sub template, we can default the sub template section
       default_parts[-1] = force_section if force_section
@@ -96,10 +96,10 @@ module Volt
         end
       end
 
-      return nil, nil
+      [nil, nil]
     end
 
-    def update(path, section_or_arguments=nil, options={})
+    def update(path, section_or_arguments = nil, options = {})
       Computation.run_without_tracking do
         # Remove existing template and call _removed
         controller_send(:"#{@action}_removed") if @action && @controller
@@ -144,7 +144,7 @@ module Volt
         # In the browser, we want to keep a grouped controller around during a single run
         # of the event loop.  To make that happen, we clear it on the next tick.
         `setImmediate(function() {`
-          clear_grouped_controller
+        clear_grouped_controller
         `});`
       else
         # For the backend, clear it immediately
@@ -228,6 +228,7 @@ module Volt
     end
 
     private
+
     # Sends the action to the controller if it exists
     def controller_send(action_name)
       if @controller.respond_to?(action_name)
@@ -260,7 +261,7 @@ module Volt
         end
       end
 
-      return obj, action
+      [obj, action]
     end
   end
 end

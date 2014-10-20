@@ -8,7 +8,7 @@ module Volt
   class SubContext
     attr_reader :locals
 
-    def initialize(locals, context=nil, return_nils=false)
+    def initialize(locals, context = nil, return_nils = false)
       @locals  = locals.stringify_keys
       @context = context
       @return_nils = return_nils
@@ -20,7 +20,7 @@ module Volt
 
     def method_missing(method_name, *args, &block)
       method_name = method_name.to_s
-      if @locals.has_key?(method_name)
+      if @locals.key?(method_name)
         obj = @locals[method_name]
 
         # TODORW: Might get a normal proc, flag internal procs
@@ -34,7 +34,7 @@ module Volt
         return @context.send(method_name, *args, &block)
       end
 
-      raise NoMethodError.new("undefined method `#{method_name}' for \"#{self.inspect}\":#{self.class.to_s}")
+      fail NoMethodError.new("undefined method `#{method_name}' for \"#{inspect}\":#{self.class}")
     end
   end
 end

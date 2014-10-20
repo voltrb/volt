@@ -2,10 +2,10 @@ if RUBY_PLATFORM == 'opal'
   module Volt
     module LocalStorage
       def self.[](key)
-        %x{
+        `
           var val = localStorage.getItem(key);
           return val === null ? nil : val;
-        }
+        `
       end
 
       def self.[]=(key, value)
@@ -18,11 +18,11 @@ if RUBY_PLATFORM == 'opal'
       end
 
       def self.delete(key)
-        %x{
+        `
           var val = localStorage.getItem(key);
           localStorage.removeItem(key);
           return val === null ? nil : val;
-        }
+        `
       end
     end
   end

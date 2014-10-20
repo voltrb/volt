@@ -2,9 +2,8 @@ module Volt
   module Persistors
     # StoreState provides method for a store to track its loading state.
     module StoreState
-
       # Called when a collection loads
-      def loaded(initial_state=nil)
+      def loaded(initial_state = nil)
         change_state_to(initial_state || :not_loaded)
       end
 
@@ -15,7 +14,7 @@ module Volt
       end
 
       # Called from the QueryListener when the data is loaded
-      def change_state_to(new_state, skip_trigger=false)
+      def change_state_to(new_state, skip_trigger = false)
         old_state = @state
         @state    = new_state
 

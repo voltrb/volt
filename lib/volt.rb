@@ -21,9 +21,7 @@ module Volt
       @root ||= File.expand_path(Dir.pwd)
     end
 
-    def root=(val)
-      @root = val
-    end
+    attr_writer :root
 
     def server?
       !!ENV['SERVER']
@@ -45,9 +43,7 @@ module Volt
       @logger ||= Logger.new
     end
 
-    def logger=(val)
-      @logger = val
-    end
+    attr_writer :logger
 
     def in_browser?
       @in_browser

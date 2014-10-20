@@ -6,7 +6,7 @@ module Volt
       if Volt.config.db_driver == 'mongo'
         return MongoDriver.fetch
       else
-        raise "#{database_name} is not a supported database"
+        fail "#{database_name} is not a supported database"
       end
     end
   end

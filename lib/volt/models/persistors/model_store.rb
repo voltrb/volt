@@ -6,7 +6,7 @@ module Volt
     class ModelStore < Store
       include StoreState
 
-      ID_CHARS = [('a'..'f'), ('0'..'9')].map { |v| v.to_a }.flatten
+      ID_CHARS = [('a'..'f'), ('0'..'9')].map(&:to_a).flatten
 
       attr_reader :model
       attr_accessor :in_identity_map
@@ -49,11 +49,11 @@ module Volt
         id = []
         24.times { id << ID_CHARS.sample }
 
-        return id.join
+        id.join
       end
 
       # Called when the model changes
-      def changed(attribute_name=nil)
+      def changed(attribute_name = nil)
         path = @model.path
 
         promise = Promise.new
@@ -67,8 +67,8 @@ module Volt
           end
 
           if !collection
-            puts "Attempting to save model directly on store."
-            raise "Attempting to save model directly on store."
+            puts 'Attempting to save model directly on store.'
+            fail 'Attempting to save model directly on store.'
           else
             StoreTasks.save(collection, self_attributes).then do |errors|
               if errors.size == 0
@@ -103,10 +103,11 @@ module Volt
       end
 
       def [](val)
-        raise "Models do not support hash style lookup.  Hashes inserted into other models are converted to models, see https://github.com/voltrb/volt#automatic-model-conversion"
+        fail 'Models do not support hash style lookup.  Hashes inserted into other models are converted to models, see https://github.com/voltrb/volt#automatic-model-conversion'
       end
 
       private
+
       # Return the attributes that are only for this store, not any sub-associations.
       def self_attributes
         # Don't store any sub-stores, those will do their own saving.

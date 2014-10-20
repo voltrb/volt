@@ -27,7 +27,6 @@ module Volt
       promise
     end
 
-
     def received_message(name, promise_id, *args)
       case name
         when 'added', 'removed', 'updated', 'changed'

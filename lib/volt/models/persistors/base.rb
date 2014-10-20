@@ -2,7 +2,7 @@ module Volt
   module Persistors
     # Implements the base persistor functionality.
     class Base
-      def loaded(initial_state=nil)
+      def loaded(initial_state = nil)
       end
 
       def changed(attribute_name)

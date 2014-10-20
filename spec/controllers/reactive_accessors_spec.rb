@@ -8,14 +8,14 @@ class TestReactiveAccessors
 end
 
 describe Volt::ReactiveAccessors do
-  it "should assign a reactive value" do
+  it 'should assign a reactive value' do
     inst = TestReactiveAccessors.new
 
     inst._name = 'Ryan'
     expect(inst._name).to eq('Ryan')
   end
 
-  it "should start nil" do
+  it 'should start nil' do
     inst = TestReactiveAccessors.new
 
     expect(inst._name).to eq(nil)
@@ -31,10 +31,10 @@ describe Volt::ReactiveAccessors do
 
     inst._name = 'Ryan'
     Volt::Computation.flush!
-    expect(values).to eq([nil,'Ryan'])
+    expect(values).to eq([nil, 'Ryan'])
 
     inst._name = 'Stout'
     Volt::Computation.flush!
-    expect(values).to eq([nil,'Ryan','Stout'])
+    expect(values).to eq([nil, 'Ryan', 'Stout'])
   end
 end

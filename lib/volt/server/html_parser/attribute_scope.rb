@@ -13,7 +13,7 @@ module Volt
         end
       end
 
-      return new_attributes
+      new_attributes
     end
 
     def process_event_binding(tag_name, attributes, name, value)
@@ -38,7 +38,7 @@ module Volt
       parts         = value.split(/(\{\{[^\}]+\}\})/).reject(&:blank?)
       binding_count = parts.count { |p| p[0] == '{' && p[1] == '{' && p[-2] == '}' && p[-1] == '}' }
 
-      return parts, binding_count
+      [parts, binding_count]
     end
 
     def process_attribute(tag_name, attributes, attribute_name, value)
@@ -73,7 +73,7 @@ module Volt
         prefix = 'self.'
       end
 
-      return "#{prefix}#{getter}=(val)"
+      "#{prefix}#{getter}=(val)"
     end
 
     # Add an attribute binding on the tag, bind directly to the getter in the binding
@@ -89,16 +89,15 @@ module Volt
       save_binding(id, "lambda { |__p, __t, __c, __id| Volt::AttributeBinding.new(__p, __t, __c, __id, #{attribute_name.inspect}, Proc.new { #{getter} }, Proc.new { |val| #{setter} }) }")
     end
 
-
     def add_multiple_attribute(tag_name, id, attribute_name, parts, content)
       case attribute_name
         when 'checked', 'value'
           if parts.size > 1
             if tag_name == 'textarea'
-              raise "The content of text area's can not be bound to multiple bindings."
+              fail "The content of text area's can not be bound to multiple bindings."
             else
               # Multiple values can not be passed to value or checked attributes.
-              raise "Multiple bindings can not be passed to a #{attribute_name} binding: #{parts.inspect}"
+              fail "Multiple bindings can not be passed to a #{attribute_name} binding: #{parts.inspect}"
             end
           end
       end
@@ -123,24 +122,24 @@ module Volt
         @handler.templates[key] = value
       end
 
-      return path
+      path
     end
 
     def add_id_to_attributes(attributes)
       id              = attributes['id'] ||= "id#{@binding_number}"
       @binding_number += 1
 
-      return id.to_s
+      id.to_s
     end
 
     def attribute_string(attributes)
       attr_str = attributes.map { |v| "#{v[0]}=\"#{v[1]}\"" }.join(' ')
       if attr_str.size > 0
         # extra space
-        attr_str = " " + attr_str
+        attr_str = ' ' + attr_str
       end
 
-      return attr_str
+      attr_str
     end
   end
 end

@@ -1,7 +1,7 @@
 require 'volt/page/bindings/base_binding'
 
 module Volt
-# TODO: We need to figure out how we want to wrap JS events
+  # TODO: We need to figure out how we want to wrap JS events
   class JSEvent
     attr_reader :js_event
 
@@ -26,7 +26,6 @@ module Volt
     end
   end
 
-
   class EventBinding < BaseBinding
     attr_accessor :context, :binding_name
 
@@ -34,7 +33,7 @@ module Volt
       super(page, target, context, binding_name)
       @event_name = event_name
 
-      handler = Proc.new do |js_event|
+      handler = proc do |js_event|
         event = JSEvent.new(js_event)
         event.prevent_default! if event_name == 'submit'
 

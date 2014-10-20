@@ -13,7 +13,7 @@ module Volt
     end
 
     # Sends a message to all, optionally skipping a users channel
-    def self.send_message_all(skip_channel=nil, *args)
+    def self.send_message_all(skip_channel = nil, *args)
       # Stub
     end
 

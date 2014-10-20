@@ -16,7 +16,7 @@ module Volt
 
       javascript_code = compile_for_component(component_name)
 
-      return [200, {"Content-Type" => "application/javascript; charset=utf-8"}, StringIO.new(javascript_code)]
+      [200, { 'Content-Type' => 'application/javascript; charset=utf-8' }, StringIO.new(javascript_code)]
     end
 
     def compile_for_component(component_name)
@@ -28,7 +28,7 @@ module Volt
       # Compile the code
       javascript_code = Opal.compile(code)
 
-      return javascript_code
+      javascript_code
     end
   end
 end

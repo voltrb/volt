@@ -39,7 +39,6 @@ module Volt
       apply_inflections(word, inflections(locale).singulars)
     end
 
-
     private
 
     # Applies inflection rules for +singularize+ and +pluralize+.

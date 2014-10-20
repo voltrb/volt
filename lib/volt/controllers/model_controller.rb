@@ -18,14 +18,14 @@ module Volt
       if Symbol === val || String === val
         collections = [:page, :store, :params, :controller]
         if collections.include?(val.to_sym)
-          self.current_model = self.send(val)
+          self.current_model = send(val)
         else
-          raise "#{val} is not the name of a valid model, choose from: #{collections.join(', ')}"
+          fail "#{val} is not the name of a valid model, choose from: #{collections.join(', ')}"
         end
       elsif val
         self.current_model = val
       else
-        raise "model can not be #{val.inspect}"
+        fail "model can not be #{val.inspect}"
       end
     end
 
@@ -37,17 +37,17 @@ module Volt
         model = model.call
       end
 
-      return model
+      model
     end
 
     def self.new(*args, &block)
-      inst = self.allocate
+      inst = allocate
 
       inst.model = (@default_model || :controller)
 
       inst.initialize(*args, &block)
 
-      return inst
+      inst
     end
 
     attr_accessor :attrs

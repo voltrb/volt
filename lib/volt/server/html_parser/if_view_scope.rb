@@ -42,7 +42,7 @@ module Volt
       new_path
     end
 
-    def close_scope(final=true)
+    def close_scope(final = true)
       @branches << [@last_content, path]
 
       super()
@@ -51,7 +51,7 @@ module Volt
         # Add the binding to the parent
         branches = @branches.map do |branch|
           content = branch[0]
-          if content == nil
+          if content.nil?
             content = nil.inspect
           else
             content = "Proc.new { #{branch[0]} }"

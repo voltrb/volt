@@ -16,7 +16,7 @@ module Volt
       hash = {}
       array.each { |v| hash[v] = true }
 
-      return hash
+      hash
     end
 
     # regex matchers
@@ -25,15 +25,15 @@ module Volt
     ATTRIBUTES = /([-\:A-Za-z0-9_]+)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/
 
     # Types of elements
-    BLOCK      = truth_hash(%w{a address applet blockquote button center dd del dir div dl dt fieldset form frameset hr iframe ins isindex li map menu noframes noscript object ol p pre script table tbody td tfoot th thead tr ul})
-    EMPTY      = truth_hash(%w{area base basefont br col frame hr img input isindex link meta param embed})
-    INLINE     = truth_hash(%w{abbr acronym applet b basefont bdo big br button cite code del dfn em font i iframe img input ins kbd label map object q s samp script select small span strike strong sub sup textarea tt u var})
-    CLOSE_SELF = truth_hash(%w{colgroup dd dt li options p td tfoot th thead tr})
-    SPECIAL    = truth_hash(%w{script style})
+    BLOCK      = truth_hash(%w(a address applet blockquote button center dd del dir div dl dt fieldset form frameset hr iframe ins isindex li map menu noframes noscript object ol p pre script table tbody td tfoot th thead tr ul))
+    EMPTY      = truth_hash(%w(area base basefont br col frame hr img input isindex link meta param embed))
+    INLINE     = truth_hash(%w(abbr acronym applet b basefont bdo big br button cite code del dfn em font i iframe img input ins kbd label map object q s samp script select small span strike strong sub sup textarea tt u var))
+    CLOSE_SELF = truth_hash(%w(colgroup dd dt li options p td tfoot th thead tr))
+    SPECIAL    = truth_hash(%w(script style))
 
-    FILL_IN_ATTRIBUTES = truth_hash(%w{checked compact declare defer disabled ismap multiple nohref noresize noshade nowrap readonly selected})
+    FILL_IN_ATTRIBUTES = truth_hash(%w(checked compact declare defer disabled ismap multiple nohref noresize noshade nowrap readonly selected))
 
-    def initialize(html, handler, file_path=nil)
+    def initialize(html, handler, file_path = nil)
       @html      = StringScanner.new(html)
       @handler   = handler
       @file_path = file_path
@@ -122,7 +122,7 @@ module Volt
           # or end of doc before closed binding
           raise_parse_error("unclosed binding: {#{binding.strip}")
         else
-          raise "should not reach here"
+          fail 'should not reach here'
         end
       end
 
@@ -136,7 +136,7 @@ module Volt
       error_str = error + " on line: #{line_number}"
       error_str += " of #{@file_path}" if @file_path
 
-      raise HTMLParseError, error_str
+      fail HTMLParseError, error_str
     end
 
     def start_tag(tag, tag_name, rest, unary)
@@ -197,7 +197,7 @@ module Volt
 
       if tag
         # Find the closest tag that closes.
-        (@stack.size-1).downto(0) do |index|
+        (@stack.size - 1).downto(0) do |index|
           if @stack[index] == tag_name
             new_size = index
             break
@@ -207,7 +207,7 @@ module Volt
 
       if new_size >= 0
         if @handler.respond_to?(:end_tag)
-          (@stack.size-1).downto(new_size) do |index|
+          (@stack.size - 1).downto(new_size) do |index|
             @handler.end_tag(@stack[index])
           end
         end
@@ -217,9 +217,9 @@ module Volt
     end
 
     def special_tag(close_tag, body)
-      body = body[0..((-1 * close_tag.size)-1)]
+      body = body[0..((-1 * close_tag.size) - 1)]
 
-      body = body.gsub(/\<\!--(.*?)--\>/, "\\1").gsub(/\<\!\[CDATA\[(.*?)\]\]\>/, "\\1")
+      body = body.gsub(/\<\!--(.*?)--\>/, '\\1').gsub(/\<\!\[CDATA\[(.*?)\]\]\>/, '\\1')
 
       text(body)
 

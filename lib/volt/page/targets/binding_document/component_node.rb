@@ -11,7 +11,7 @@ module Volt
 
     attr_accessor :parent, :binding_id, :nodes
 
-    def initialize(binding_id=nil, parent=nil, root=nil)
+    def initialize(binding_id = nil, parent = nil, root = nil)
       @nodes      = []
       @binding_id = binding_id
       @parent     = parent
@@ -24,7 +24,6 @@ module Volt
       else
         trigger!('changed')
       end
-
     end
 
     def text=(text)
@@ -72,7 +71,7 @@ module Volt
         str << node.to_html
       end
 
-      return str.join('')
+      str.join('')
     end
 
     def find_by_binding_id(binding_id)
@@ -87,7 +86,7 @@ module Volt
         end
       end
 
-      return nil
+      nil
     end
 
     def remove
@@ -100,7 +99,7 @@ module Volt
     end
 
     def remove_anchors
-      raise "not implemented"
+      fail 'not implemented'
 
       @parent.nodes.delete(self)
 
