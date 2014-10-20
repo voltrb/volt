@@ -76,12 +76,12 @@ module Volt
       end
     end
 
-    # Returns the path for a specific component
-    def component_path(name)
+    # Returns all paths for a specific component
+    def component_paths(name)
       folders = components[name]
 
       if folders
-        return folders.first
+        return folders
       else
         return nil
       end

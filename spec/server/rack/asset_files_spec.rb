@@ -1,4 +1,5 @@
 if RUBY_PLATFORM != 'opal'
+  require 'spec_helper'
   require 'volt/server/rack/asset_files'
 
   describe Volt::AssetFiles do

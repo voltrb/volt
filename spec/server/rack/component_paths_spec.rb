@@ -21,7 +21,7 @@ if RUBY_PLATFORM != 'opal'
     end
 
     it 'should return the path to a component' do
-      main_path = @component_paths.component_path('main')
+      main_path = @component_paths.component_paths('main').first
       expect(main_path).to match(/spec\/apps\/file_loading\/app\/main$/)
     end
   end

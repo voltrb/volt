@@ -141,8 +141,17 @@ module Volt
     end
 
     def add_template(name, template, bindings)
-      @templates       ||= {}
-      @templates[name] = { 'html' => template, 'bindings' => bindings }
+      @templates ||= {}
+
+      # First template gets priority.  The backend will load templates in order so
+      # that local templates come in before gems (so they can be overridden).
+      #
+      # TODO: Currently this means we will send templates to the client that will
+      # not get used because they are being overridden.  Need to detect that and
+      # not send them.
+      unless @templates[name]
+        @templates[name] = { 'html' => template, 'bindings' => bindings }
+      end
       # puts "Add Template: #{name}"
     end
 

@@ -28,18 +28,19 @@ module Volt
 
     def component(name)
       unless @included_components[name]
-        # Get the path to the component
-        path                       = @component_paths.component_path(name)
-
         # Track that we added
         @included_components[name] = true
 
-        # Load the dependencies
-        load_dependencies(path)
+        # Get the path to the component
+        @component_paths.component_paths(name).each do |path|
 
-        # Add any assets
-        add_assets(path)
-        @components << [path, name]
+          # Load the dependencies
+          load_dependencies(path)
+
+          # Add any assets
+          add_assets(path)
+          @components << [path, name]
+        end
       end
     end
 
@@ -87,7 +88,7 @@ module Volt
 
       javascript_files += opal_js_files
 
-      javascript_files
+      javascript_files.uniq
     end
 
     def css_files
@@ -101,7 +102,7 @@ module Volt
         end
       end
 
-      css_files
+      css_files.uniq
     end
   end
 end

@@ -11,7 +11,7 @@ module Volt
 
       @@router ||= Routes.new.define do
         # Find the route file
-        home_path  = component_paths.component_path('main')
+        home_path  = component_paths.component_paths('main').first
         route_file = File.read("#{home_path}/config/routes.rb")
         eval(route_file)
       end
