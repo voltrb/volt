@@ -3,6 +3,7 @@
 - Change changelog format to match: http://keepachangelog.com/
 - Added rubocop config and ran rubocop on repo, lots of changes.
 - Added .limit and .skip to cursors
+- Changed: ```attrs``` now return nil for attributes that weren't passed in.
 
 # 0.8.15 - Oct 18, 2014
 
