@@ -7,6 +7,7 @@ module Volt
       def self.run_file(path)
         Volt.boot(Dir.pwd)
 
+        # Require in the file at path
         require './' + path
       end
     end

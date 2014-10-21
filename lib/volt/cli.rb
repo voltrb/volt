@@ -23,7 +23,7 @@ module Volt
     desc 'console', 'run the console on the project in the current directory'
 
     def console
-      require 'volt/console'
+      require 'volt/cli/console'
       Console.start
     end
 

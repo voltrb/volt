@@ -1,4 +1,5 @@
 require 'pry'
+require 'bundler/setup'
 
 class Pry
   # To make the console more useful, we make it so we flush the event registry
