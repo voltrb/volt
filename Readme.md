@@ -16,6 +16,7 @@ Pages HTML is written in a template language where you can put ruby between ```{
 
 See some demo videos here:
 - [Volt Todos Example](https://www.youtube.com/watch?v=Tg-EtRnMz7o)
+- [Pagination Example](https://www.youtube.com/watch?v=1uanfzMLP9g)
 - [Build a Blog with Volt](https://www.youtube.com/watch?v=c478sMlhx1o)
 ** Note: The blog video is outdated, expect an updated version soon.
 

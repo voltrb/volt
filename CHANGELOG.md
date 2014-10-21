@@ -3,6 +3,7 @@
 ## 0.8.17 - 2014-10-20
 ### Added
 - Volt now has a runner task (like rails) so you can run .rb files inside of the volt project.  Example: ```volt runner lib/import.rb```
+- New video showing pagination: https://www.youtube.com/watch?v=1uanfzMLP9g
 
 ## 0.8.16 - 2014-10-20
 ### Added
