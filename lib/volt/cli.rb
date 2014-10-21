@@ -65,6 +65,15 @@ module Volt
       end
     end
 
+    desc 'runner FILEPATH', 'Runs a ruby file at FILEPATH in the volt app'
+    method_option :file_path, type: :string
+    def runner(file_path)
+      ENV['SERVER'] = 'true'
+      require 'volt/cli/runner'
+
+      Volt::CLI::Runner.run_file(file_path)
+    end
+
     desc 'gem GEM', 'Creates a component gem where you can share a component'
     method_option :bin, type: :boolean, default: false, aliases: '-b', banner: 'Generate a binary for your library.'
     method_option :test, type: :string, lazy_default: 'rspec', aliases: '-t', banner: "Generate a test directory for your library: 'rspec' is the default, but 'minitest' is also supported."
