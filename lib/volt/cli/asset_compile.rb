@@ -6,37 +6,19 @@ module Volt
       compile
     end
 
-    desc 'watch', 'compiles the project to /compiled when a file changes'
-
-    def watch
-      require 'listen'
-
-      listener = Listen.to('app') do |modified, added, removed|
-        compile
-      end
-
-      listener.start # non-blocking
-
-      Signal.trap('SIGINT') do
-        listener.stop
-      end
-
-      compile
-
-      begin
-        sleep
-      rescue ThreadError => e
-        # ignore, breaks out on sigint
-      end
-    end
-
     private
 
     def compile
       print 'compiling project...'
       require 'fileutils'
+      ENV['SERVER'] = 'true'
+
       require 'opal'
       require 'volt'
+      require 'volt/boot'
+
+      Volt.boot(Dir.pwd)
+
       require 'volt/server/rack/component_paths'
       require 'volt/server/rack/component_code'
       require 'volt/server/rack/opal_files'
