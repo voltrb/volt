@@ -73,10 +73,6 @@ module Volt
       $page.page
     end
 
-    def paged
-      $page.page
-    end
-
     def store
       $page.store
     end
