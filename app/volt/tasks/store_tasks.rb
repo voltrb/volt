@@ -44,6 +44,9 @@ class StoreTasks < Volt::TaskHandler
 
         # On the backend, the promise is resolved before its returned, so we can
         # return from within it.
+        #
+        # Pass the channel as a thread-local so that we don't update the client
+        # who sent the update.
         Thread.current['in_channel'] = @channel
         model.persistor.changed do |errors|
           Thread.current['in_channel'] = nil
