@@ -1,4 +1,5 @@
 require 'mongo'
+require 'volt/models'
 
 class StoreTasks < Volt::TaskHandler
   def initialize(channel = nil, dispatcher = nil)
@@ -10,7 +11,7 @@ class StoreTasks < Volt::TaskHandler
     @@db ||= Volt::DataStore.fetch
   end
 
-  def model_values_and_errors(collection, data)
+  def load_model(collection, path, data)
     model_name = collection.singularize.camelize
 
     # TODO: Security check to make sure we have a valid model
@@ -22,42 +23,36 @@ class StoreTasks < Volt::TaskHandler
     end
 
     if model_class
-      model = model_class.new(data)
-      return model.to_h, model.errors
+      # Load the model
+      model = model_class.new(data, persistor: Volt::Persistors::StoreFactory.new(nil), path: path)
+      return model
     end
 
-    [data, {}]
+    return nil
   end
 
-  def save(collection, data)
+  def save(collection, path, data)
     data = data.symbolize_keys
-    values, errors = model_values_and_errors(collection, data)
+    model = load_model(collection, path, data)
 
-    if errors.size == 0
-      # id = BSON::ObjectId(values[:_id])
-      id = values[:_id]
-
-      # Try to create
-      # TODO: Seems mongo is dumb and doesn't let you upsert with custom id's
-      begin
-        # values['_id'] = BSON::ObjectId('_id') if values['_id']
-        db[collection].insert(values)
-      rescue Mongo::OperationFailure => error
-        # Really mongo client?
-        if error.message[/^11000[:]/]
-          # Update because the id already exists
-          update_values = values.dup
-          update_values.delete(:_id)
-          db[collection].update({ _id: id }, update_values)
-        else
-          return { error: error.message }
-        end
-      end
-
-      QueryTasks.live_query_pool.updated_collection(collection, @channel)
-      return {}
+    unless model
+      return { error: 'no such model' }
     else
-      return errors
+      errors = model.errors
+
+      if model.errors.size == 0
+
+        # On the backend, the promise is resolved before its returned, so we can
+        # return from within it.
+        Thread.current['in_channel'] = @channel
+        model.persistor.changed do |errors|
+          Thread.current['in_channel'] = nil
+
+          return errors
+        end
+      else
+        return errors
+      end
     end
   end
 

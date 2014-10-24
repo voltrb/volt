@@ -158,7 +158,7 @@ module Volt
       def add(index, data)
         $loading_models = true
 
-        data_id = data[:_id]
+        data_id = data['_id'] || data[:_id]
 
         # Don't add if the model is already in the ArrayModel
         unless @model.array.find { |v| v._id == data_id }
