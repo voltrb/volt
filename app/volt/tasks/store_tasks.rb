@@ -19,11 +19,11 @@ class StoreTasks < Volt::TaskHandler
     begin
       model_class = Object.send(:const_get, model_name)
     rescue NameError => e
-      model_class = nil
+      model_class = Volt::Model
     end
 
     if model_class
-      # Load the model
+      # Load the model, use the Store persistor and set the path
       model = model_class.new(data, persistor: Volt::Persistors::StoreFactory.new(nil), path: path)
       return model
     end
@@ -35,27 +35,23 @@ class StoreTasks < Volt::TaskHandler
     data = data.symbolize_keys
     model = load_model(collection, path, data)
 
-    unless model
-      return { error: 'no such model' }
-    else
-      errors = model.errors
+    errors = model.errors
 
-      if model.errors.size == 0
+    if model.errors.size == 0
 
-        # On the backend, the promise is resolved before its returned, so we can
-        # return from within it.
-        #
-        # Pass the channel as a thread-local so that we don't update the client
-        # who sent the update.
-        Thread.current['in_channel'] = @channel
-        model.persistor.changed do |errors|
-          Thread.current['in_channel'] = nil
+      # On the backend, the promise is resolved before its returned, so we can
+      # return from within it.
+      #
+      # Pass the channel as a thread-local so that we don't update the client
+      # who sent the update.
+      Thread.current['in_channel'] = @channel
+      model.persistor.changed do |errors|
+        Thread.current['in_channel'] = nil
 
-          return errors
-        end
-      else
         return errors
       end
+    else
+      return errors
     end
   end
 

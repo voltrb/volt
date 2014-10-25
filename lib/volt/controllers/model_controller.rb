@@ -22,10 +22,8 @@ module Volt
         else
           fail "#{val} is not the name of a valid model, choose from: #{collections.join(', ')}"
         end
-      elsif val
-        self.current_model = val
       else
-        fail "model can not be #{val.inspect}"
+        self.current_model = val
       end
     end
 
@@ -43,7 +41,7 @@ module Volt
     def self.new(*args, &block)
       inst = allocate
 
-      inst.model = (@default_model || :controller)
+      inst.model = @default_model if @default_model
 
       inst.initialize(*args, &block)
 
@@ -105,8 +103,27 @@ module Volt
       @controller ||= Model.new
     end
 
+    def loaded?
+      respond_to?(:state) && state == :loaded
+    end
+
+    # Check if this controller responds_to method, or the model
+    def respond_to?(method_name)
+      super || begin
+        model = self.model
+
+        model.respond_to?(method_name) if model
+      end
+    end
+
     def method_missing(method_name, *args, &block)
-      model.send(method_name, *args, &block)
+      model = self.model
+
+      if model
+        model.send(method_name, *args, &block)
+      else
+        super
+      end
     end
   end
 end

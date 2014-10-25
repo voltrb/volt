@@ -129,11 +129,15 @@ module Volt
       # Clear value
       @value       = nil
 
-      @added_listener.remove
-      @added_listener = nil
+      if @added_listener
+        @added_listener.remove
+        @added_listener = nil
+      end
 
-      @removed_listener.remove
-      @removed_listener = nil
+      if @removed_listener
+        @removed_listener.remove
+        @removed_listener = nil
+      end
 
       if @templates
         template_count = @templates.size
