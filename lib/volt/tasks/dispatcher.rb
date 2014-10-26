@@ -9,23 +9,27 @@ module Volt
       # Get the class
       klass = Object.send(:const_get, class_name)
 
+      result = nil
+      error = nil
+
       if safe_method?(klass, method_name)
         # Init and send the method
         begin
           result = klass.new(channel, self).send(method_name, *args)
-          error = nil
         rescue => e
           # TODO: Log these errors better
           puts e.inspect
           puts e.backtrace
-          result = nil
           error = e
         end
+      else
+        # Unsafe method
+        error = RuntimeError.new("unsafe method: #{method_name}")
+      end
 
-        if callback_id
-          # Callback with result
-          channel.send_message('response', callback_id, result, error)
-        end
+      if callback_id
+        # Callback with result
+        channel.send_message('response', callback_id, result, error)
       end
     end
 
