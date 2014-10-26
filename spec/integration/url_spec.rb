@@ -1,4 +1,4 @@
-if ENV['BROWSER']
+if ENV['BROWSER'] && ENV['BROWSER'] != 'phantom'
   require 'spec_helper'
 
   describe 'url features', type: :feature do
