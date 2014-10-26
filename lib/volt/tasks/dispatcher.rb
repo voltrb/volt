@@ -4,14 +4,12 @@ module Volt
   class Dispatcher
     def dispatch(channel, message)
       callback_id, class_name, method_name, *args = message
+      method_name = method_name.to_sym
 
       # Get the class
       klass = Object.send(:const_get, class_name)
 
-      # Make sure the class being called is a TaskHandler.
-      # Make sure the method is defined on the klass we're using and not up the hiearchy.
-      #   ^ This check prevents methods like #send, #eval, #instance_eval, #class_eval, etc...
-      if klass.is_a?(TaskHandler) && klass.instance_methods(false).include?(method_name)
+      if safe_method?(klass, method_name)
         # Init and send the method
         begin
           result = klass.new(channel, self).send(method_name, *args)
@@ -29,6 +27,26 @@ module Volt
           channel.send_message('response', callback_id, result, error)
         end
       end
+    end
+
+    # Check if it is safe to use this method
+    def safe_method?(klass, method_name)
+      # Make sure the class being called is a TaskHandler.
+      return false unless klass.ancestors.include?(TaskHandler)
+
+      # Make sure the method is defined on the klass we're using and not up the hiearchy.
+      #   ^ This check prevents methods like #send, #eval, #instance_eval, #class_eval, etc...
+      klass.ancestors.each do |ancestor_klass|
+        if ancestor_klass.instance_methods(false).include?(method_name)
+          return true
+        elsif ancestor_klass == TaskHandler
+          # We made it to TaskHandler and didn't find the method, that means it
+          # was defined above TaskHandler, so we reject the call.
+          return false
+        end
+      end
+
+      return false
     end
   end
 end
