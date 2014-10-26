@@ -17,7 +17,7 @@ describe Volt::Routes do
     expect(direct_routes).to eq('/' => { _view: 'index' }, '/page1' => { _view: 'first_page' })
   end
 
-  it 'should setup indiect routes' do
+  it 'should setup indirect routes' do
     routes do
       get '/blog/{{ _id }}/edit', _view: 'blog/edit'
       get '/blog/{{ _id }}', _view: 'blog/show'

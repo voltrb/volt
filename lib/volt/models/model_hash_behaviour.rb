@@ -46,7 +46,7 @@ module Volt
 
     # Convert the model to a hash all of the way down.
     def to_h
-      if empty?
+      if @attributes.nil?
         nil
       else
         hash = {}

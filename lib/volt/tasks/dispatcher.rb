@@ -8,7 +8,10 @@ module Volt
       # Get the class
       klass = Object.send(:const_get, class_name)
 
-      if klass.ancestors.include?(TaskHandler)
+      # Make sure the class being called is a TaskHandler.
+      # Make sure the method is defined on the klass we're using and not up the hiearchy.
+      #   ^ This check prevents methods like #send, #eval, #instance_eval, #class_eval, etc...
+      if klass.is_a?(TaskHandler) && klass.instance_methods(false).include?(method_name)
         # Init and send the method
         begin
           result = klass.new(channel, self).send(method_name, *args)
