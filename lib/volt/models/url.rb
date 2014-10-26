@@ -109,7 +109,7 @@ module Volt
     def scroll
       if Volt.client?
         frag = fragment
-        if frag
+        if frag.present?
           # Scroll to anchor via http://www.w3.org/html/wg/drafts/html/master/browsers.html#scroll-to-fragid
           `
           var anchor = $('#' + frag);
