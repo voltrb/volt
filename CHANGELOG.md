@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.8.19 - 2014-10-26
+### Added
+- update flash to handle successes, notices, warnings, errors.
+- Add .keys to models
+
 ## 0.8.18 - 2014-10-26
 ### Added
 - Added a default app.css.scss file
