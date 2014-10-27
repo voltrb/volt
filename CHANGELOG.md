@@ -7,6 +7,7 @@
 ### Changed
 - back button fixed
 - improve security on task dispatcher
+- lots of minor bug fixes
 
 ## 0.8.17 - 2014-10-20
 ### Added

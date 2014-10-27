@@ -6,8 +6,18 @@ module Volt
       'yep'
     end
 
-    def page
-      $page.page
+    def map_key_class(key)
+      case key
+      when 'errors'
+        'danger'
+      when 'warnings'
+        'warning'
+      when 'successes'
+        'success'
+      else
+        # notices
+        'info'
+      end
     end
   end
 end

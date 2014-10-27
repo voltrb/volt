@@ -11,10 +11,12 @@
   {{ if page._reconnected }}
     <div class="notices alert alert-success">Reconnected!</div>
   {{ end }}
-  {{ if !flash.empty? }}
-    <div class="notices alert alert-info" e-click="flash.clear">
-      {{ flash._notices.each do |notice| }}
-        <p>{{ notice }}</p>
-      {{ end }}
-    </div>
+  {{ flash.keys.each do |key| }}
+    {{ if flash.send(:"_#{key}").present? }}
+      <div class="notices alert alert-{{ map_key_class(key) }}" e-click="flash.clear">
+        {{ flash.send(:"_#{key}").each do |notice| }}
+          <p>{{ notice }}</p>
+        {{ end }}
+      </div>
+    {{ end }}
   {{ end }}

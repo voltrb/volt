@@ -204,17 +204,16 @@ describe Volt::Model do
     a._blue._green = 5
     Volt::Computation.flush!
 
-    # TODO: Should equal 2
-    expect(count).to eq(2)
+    expect(count).to eq(1)
 
     a._blue = 22
     Volt::Computation.flush!
-    expect(count).to eq(3)
+    expect(count).to eq(2)
 
     a._blue = { green: 50 }
     expect(a._blue._green).to eq(50)
     Volt::Computation.flush!
-    expect(count).to eq(4)
+    expect(count).to eq(3)
   end
 
   it 'should trigger changed when a value is deleted' do
