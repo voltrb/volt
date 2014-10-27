@@ -6,4 +6,8 @@ describe Volt::Inflector do
     expect('car'.pluralize).to eq('cars')
     # expect('database'.pluralize).to eq('database')
   end
+
+  it 'should singularize correctly' do
+    expect('cars'.singularize).to eq('car')
+  end
 end

@@ -45,3 +45,7 @@ group :development do
   # gem 'opal-rspec', '0.3.0.beta2'#, git: 'https://github.com/adambeynon/opal-rspec.git'
   # gem 'yard', require: false
 end
+
+group :development, :test do
+  gem 'bson_ext'
+end

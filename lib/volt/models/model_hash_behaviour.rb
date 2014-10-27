@@ -8,34 +8,47 @@ module Volt
 
       value = attributes.delete(name)
       @deps.delete(name)
+      @size_dep.changed!
 
       @persistor.removed(name) if @persistor
 
       value
     end
 
+    def size
+      @size_dep.depend
+      @attributes.size
+    end
+
+    def keys
+      @size_dep.depend
+      @attributes.keys
+    end
+
     def nil?
-      attributes.nil?
+      @attributes.nil?
     end
 
     def empty?
-      !attributes || attributes.size == 0
+      @size_dep.depend
+      !@attributes || @attributes.size == 0
     end
 
     def false?
-      attributes.false?
+      @attributes.false?
     end
 
     def true?
-      attributes.true?
+      @attributes.true?
     end
 
     def clear
-      attributes.each_pair do |key, value|
+      @attributes.each_pair do |key, value|
         @deps.changed!(key)
       end
 
-      attributes.clear
+      @attributes.clear
+      @size_dep.changed!
 
       @persistor.removed(nil) if @persistor
     end
@@ -46,15 +59,18 @@ module Volt
 
     # Convert the model to a hash all of the way down.
     def to_h
-      if empty?
+      @size_dep.depend
+
+      if @attributes.nil?
         nil
       else
         hash = {}
-        attributes.each_pair do |key, value|
+        @attributes.each_pair do |key, value|
           hash[key] = deep_unwrap(value)
         end
         hash
       end
     end
+
   end
 end

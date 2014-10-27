@@ -25,6 +25,11 @@ module Volt
       @array.each(&block)
     end
 
+    def empty?
+      @size_dep.depend
+      @array.empty?
+    end
+
     def count(&block)
       if block
         count = 0
@@ -220,6 +225,8 @@ module Volt
     end
 
     def inspect
+      # TODO: should also depend on items in array
+      @size_dep.depend
       "#<#{self.class}:#{object_id} #{@array.inspect}>"
     end
 

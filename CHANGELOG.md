@@ -1,5 +1,19 @@
 # Change Log
 
+## 0.8.19 - 2014-10-26
+### Added
+- update flash to handle successes, notices, warnings, errors.
+- Add .keys to models
+
+## 0.8.18 - 2014-10-26
+### Added
+- Added a default app.css.scss file
+
+### Changed
+- back button fixed
+- improve security on task dispatcher
+- lots of minor bug fixes
+
 ## 0.8.17 - 2014-10-20
 ### Added
 - Volt now has a runner task (like rails) so you can run .rb files inside of the volt project.  Example: ```volt runner lib/import.rb```

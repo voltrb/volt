@@ -38,6 +38,11 @@ module Volt
 
         promise
       end
+
+      # Provide access to the store collection
+      def store
+        $page.store
+      end
     end
   end
 end

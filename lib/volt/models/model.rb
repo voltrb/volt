@@ -22,6 +22,7 @@ module Volt
 
     def initialize(attributes = {}, options = {}, initial_state = nil)
       @deps        = HashDependency.new
+      @size_dep    = Dependency.new
       self.options = options
 
       send(:attributes=, attributes, true)
@@ -131,12 +132,21 @@ module Volt
 
       value = args[0]
 
-      @attributes[attribute_name] = wrap_value(value, [attribute_name])
+      old_value = @attributes[attribute_name]
+      new_value = wrap_value(value, [attribute_name])
 
-      @deps.changed!(attribute_name)
+      if old_value != new_value
+        @attributes[attribute_name] = new_value
 
-      # Let the persistor know something changed
-      @persistor.changed(attribute_name) if @persistor
+        @deps.changed!(attribute_name)
+
+        if old_value == nil || new_value == nil
+          @size_dep.changed!
+        end
+
+        # Let the persistor know something changed
+        @persistor.changed(attribute_name) if @persistor
+      end
     end
 
     # When reading an attribute, we need to handle reading on:
@@ -166,6 +176,8 @@ module Volt
           new_model              = read_new_model(attr_name)
           @attributes            ||= {}
           @attributes[attr_name] = new_model
+
+          @size_dep.changed!
           new_model
         end
       end

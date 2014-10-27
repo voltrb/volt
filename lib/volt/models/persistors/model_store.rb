@@ -1,6 +1,11 @@
 require 'volt/models/persistors/store'
 require 'volt/models/persistors/store_state'
 
+if RUBY_PLATFORM == 'opal'
+else
+  require 'mongo'
+end
+
 module Volt
   module Persistors
     class ModelStore < Store
@@ -52,6 +57,14 @@ module Volt
         id.join
       end
 
+      def save_changes?
+        if RUBY_PLATFORM == 'opal'
+          return !(defined?($loading_models) && $loading_models) && @tasks
+        else
+          return true
+        end
+      end
+
       # Called when the model changes
       def changed(attribute_name = nil)
         path = @model.path
@@ -61,7 +74,7 @@ module Volt
         ensure_setup
 
         path_size = path.size
-        if !(defined?($loading_models) && $loading_models) && @tasks && path_size > 0 && !@model.nil?
+        if save_changes? && path_size > 0 && !@model.nil?
           if path_size > 3 && (parent = @model.parent) && (source = parent.parent)
             @model.attributes[:"#{path[-4].singularize}_id"] = source._id
           end
@@ -70,7 +83,16 @@ module Volt
             puts 'Attempting to save model directly on store.'
             fail 'Attempting to save model directly on store.'
           else
-            StoreTasks.save(collection, self_attributes).then do |errors|
+            if RUBY_PLATFORM == 'opal'
+              StoreTasks.save(collection, path, self_attributes).then do |errors|
+                if errors.size == 0
+                  promise.resolve(nil)
+                else
+                  promise.reject(errors)
+                end
+              end
+            else
+              errors = save_to_db!(self_attributes)
               if errors.size == 0
                 promise.resolve(nil)
               else
@@ -116,6 +138,38 @@ module Volt
 
       def collection
         @model.path[-2]
+      end
+
+      if RUBY_PLATFORM != 'opal'
+        def db
+          @@db ||= Volt::DataStore.fetch
+        end
+
+        # Do the actual writing of data to the database, only runs on the backend.
+        def save_to_db!(values)
+          id = values[:_id]
+
+          # Try to create
+          # TODO: Seems mongo is dumb and doesn't let you upsert with custom id's
+          begin
+            # values['_id'] = BSON::ObjectId('_id') if values['_id']
+            db[collection].insert(values)
+          rescue Mongo::OperationFailure => error
+            # Really mongo client?
+            if error.message[/^11000[:]/]
+              # Update because the id already exists
+              update_values = values.dup
+              update_values.delete(:_id)
+              db[collection].update({ _id: id }, update_values)
+            else
+              return { error: error.message }
+            end
+          end
+
+          # puts "Update Collection: #{collection.inspect} - #{values.inspect}"
+          QueryTasks.live_query_pool.updated_collection(collection.to_s, Thread.current['from_channel'])
+          return {}
+        end
       end
     end
   end

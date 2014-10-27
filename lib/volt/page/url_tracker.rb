@@ -12,14 +12,8 @@ module Volt
         # Setup popstate on the dom ready event.  Prevents an extra
         # popstate trigger
         `
-          var first = true;
           window.addEventListener("popstate", function(e) {
-            if (first === false) {
-              that.$url_updated();
-            }
-
-            first = false;
-
+            that.$url_updated();
             return true;
           });
         `
