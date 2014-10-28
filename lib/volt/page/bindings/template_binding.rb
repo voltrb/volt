@@ -53,7 +53,7 @@ module Volt
     # The defaults are as follows:
     # 1. component - main
     # 2. controller - main
-    # 3. view - main
+    # 3. view - index
     # 4. section - body
     def path_for_template(lookup_path, force_section = nil)
       parts      = lookup_path.split('/')

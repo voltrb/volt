@@ -7,7 +7,7 @@ module Volt
     def initialize(component_path, component_name, client = true)
       @component_path = component_path
       @component_name = component_name
-      @client         = true
+      @client         = client
     end
 
     def code
@@ -24,7 +24,7 @@ module Volt
       if @client
         '$page'
       else
-        'page'
+        '$page'
       end
     end
 

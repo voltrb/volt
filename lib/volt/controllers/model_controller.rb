@@ -43,7 +43,8 @@ module Volt
 
       inst.model = @default_model if @default_model
 
-      inst.initialize(*args, &block)
+      # In MRI initialize is private for some reason, so call it with send
+      inst.send(:initialize, *args, &block)
 
       inst
     end

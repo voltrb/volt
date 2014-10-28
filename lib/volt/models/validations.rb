@@ -1,6 +1,7 @@
 # require 'volt/models/validations/errors'
 require 'volt/models/validators/length_validator'
 require 'volt/models/validators/presence_validator'
+require 'volt/models/validators/unique_validator'
 
 module Volt
   # Include in any class to get validation logic
@@ -35,6 +36,7 @@ module Volt
     # TODO: Errors is being called for any validation change.  We should have errors return a
     # hash like object that only calls the validation for each one.
     def errors(marked_only = false)
+      puts "Check Validations: #{self.inspect}"
       errors = {}
 
       validations = self.class.validations

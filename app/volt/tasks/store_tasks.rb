@@ -22,35 +22,39 @@ class StoreTasks < Volt::TaskHandler
       model_class = Volt::Model
     end
 
-    if model_class
-      # Load the model, use the Store persistor and set the path
-      model = model_class.new(data, persistor: Volt::Persistors::StoreFactory.new(nil), path: path)
-      return model
-    end
+    # Load the model, use the Store persistor and set the path
+    model = model_class.new({}, persistor: Volt::Persistors::StoreFactory.new(nil), path: path)
+    model.persistor.change_state_to(:loaded)
 
-    return nil
+    # Create a buffer
+    buffer = model.buffer
+
+    # Assign the data
+    buffer.attributes = data
+
+    return buffer
   end
 
   def save(collection, path, data)
     data = data.symbolize_keys
-    model = load_model(collection, path, data)
+    model = nil
+    Volt::Model.nosave do
+      model = load_model(collection, path, data)
+    end
 
-    errors = model.errors
+    # On the backend, the promise is resolved before its returned, so we can
+    # return from within it.
+    #
+    # Pass the channel as a thread-local so that we don't update the client
+    # who sent the update.
+    Thread.current['in_channel'] = @channel
+    model.save!.then do |result|
+      Thread.current['in_channel'] = nil
 
-    if model.errors.size == 0
+      return nil
+    end.fail do |errors|
+      Thread.current['in_channel'] = nil
 
-      # On the backend, the promise is resolved before its returned, so we can
-      # return from within it.
-      #
-      # Pass the channel as a thread-local so that we don't update the client
-      # who sent the update.
-      Thread.current['in_channel'] = @channel
-      model.persistor.changed do |errors|
-        Thread.current['in_channel'] = nil
-
-        return errors
-      end
-    else
       return errors
     end
   end

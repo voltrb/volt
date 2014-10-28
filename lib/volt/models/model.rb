@@ -61,16 +61,20 @@ module Volt
       if attrs
         # Assign id first
         id       = attrs.delete(:_id)
-        self._id = id if id
 
-        # Assign each attribute using setters
-        attrs.each_pair do |key, value|
-          if self.respond_to?(:"#{key}=")
-            # If a method without an underscore is defined, call that.
-            send(:"#{key}=", value)
-          else
-            # Otherwise, use the _ version
-            send(:"_#{key}=", value)
+        # When doing a mass-assign, we don't save until the end.
+        Model.nosave do
+          self._id = id if id
+
+          # Assign each attribute using setters
+          attrs.each_pair do |key, value|
+            if self.respond_to?(:"#{key}=")
+              # If a method without an underscore is defined, call that.
+              send(:"#{key}=", value)
+            else
+              # Otherwise, use the _ version
+              send(:"_#{key}=", value)
+            end
           end
         end
       else
@@ -144,8 +148,11 @@ module Volt
           @size_dep.changed!
         end
 
-        # Let the persistor know something changed
-        @persistor.changed(attribute_name) if @persistor
+        # Don't save right now if we're in a nosave block
+        if !defined?(Thread) || !Thread.current['nosave']
+          # Let the persistor know something changed
+          @persistor.changed(attribute_name) if @persistor
+        end
       end
     end
 
@@ -322,6 +329,24 @@ module Volt
       end
 
       model
+    end
+
+    # Takes a block that when run, changes to models will not save inside of
+    if RUBY_PLATFORM == 'opal'
+      # Temporary stub for no save on client
+      def self.nosave
+        yield
+      end
+    else
+      def self.nosave
+        previous = Thread.current['nosave']
+        Thread.current['nosave'] = true
+        begin
+          yield
+        ensure
+          Thread.current['nosave'] = previous
+        end
+      end
     end
 
     private

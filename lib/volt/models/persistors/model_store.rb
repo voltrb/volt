@@ -67,6 +67,7 @@ module Volt
 
       # Called when the model changes
       def changed(attribute_name = nil)
+        puts "Changed: #{attribute_name.inspect}"
         path = @model.path
 
         promise = Promise.new
@@ -84,14 +85,12 @@ module Volt
             fail 'Attempting to save model directly on store.'
           else
             if RUBY_PLATFORM == 'opal'
-              StoreTasks.save(collection, path, self_attributes).then do |errors|
-                if errors.size == 0
-                  promise.resolve(nil)
-                else
-                  promise.reject(errors)
-                end
-              end
+              @save_promises ||= []
+              @save_promises << promise
+
+              queue_client_save
             else
+              puts "Save to DB"
               errors = save_to_db!(self_attributes)
               if errors.size == 0
                 promise.resolve(nil)
@@ -102,6 +101,33 @@ module Volt
           end
         end
         promise
+      end
+
+      def queue_client_save
+        `
+        if (!self.saveTimer) {
+          self.saveTimer = setImmediate(self.$run_save.bind(self));
+        }
+        `
+      end
+
+      # Run save is called on the client side after a queued setImmediate.  It does the
+      # saving on the front-end.  Adding a setImmediate allows multiple changes to be
+      # batched together.
+      def run_save
+        # Clear the save timer
+        `clearImmediate(self.saveTimer);`
+
+        StoreTasks.save(collection, @model.path, self_attributes).then do |errors|
+          save_promises = @save_promises
+          @save_promises = nil
+          if errors.size == 0
+            save_promises.each {|promise|  promise.resolve(nil) }
+          else
+            save_promises.each {|promise|  promise.reject(errors) }
+          end
+        end
+
       end
 
       def event_added(event, first, first_for_event)
@@ -147,6 +173,11 @@ module Volt
 
         # Do the actual writing of data to the database, only runs on the backend.
         def save_to_db!(values)
+          # Check to make sure the model has no validation errors.
+          errors = @model.errors
+          return errors if errors.present?
+
+          # Passed, save it
           id = values[:_id]
 
           # Try to create

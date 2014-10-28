@@ -1,4 +1,6 @@
 # ComponentPaths gives an array of every folder where you find a component.
+require 'volt/server/rack/component_code'
+
 module Volt
   class ComponentPaths
     def initialize(root = nil)
@@ -72,6 +74,19 @@ module Volt
               $page.add_model(class_name)
             end
           end
+        end
+
+        component_names = []
+        app_folders do |app_folder|
+          Dir["#{app_folder}/*"].map {|cp| cp[/[^\/]+$/] }.each do |component_name|
+            component_names << component_name
+          end
+        end
+
+        # Load in all views
+        component_names.uniq.each do |component_name|
+          code = Volt::ComponentCode.new(component_name, self).code
+          eval(code)
         end
       end
     end
