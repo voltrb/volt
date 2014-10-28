@@ -67,7 +67,6 @@ module Volt
 
       # Called when the model changes
       def changed(attribute_name = nil)
-        puts "Changed: #{attribute_name.inspect}"
         path = @model.path
 
         promise = Promise.new

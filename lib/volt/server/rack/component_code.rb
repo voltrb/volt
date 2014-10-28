@@ -12,12 +12,13 @@ module Volt
       @client          = client
     end
 
-    def code
+    # The client argument is for if this code is being generated for the client
+    def code(client=true)
       code = ''
 
       asset_files = AssetFiles.new(@component_name, @component_paths)
       asset_files.component_paths.each do |component_path, component_name|
-        code << ComponentTemplates.new(component_path, component_name, true).code
+        code << ComponentTemplates.new(component_path, component_name, client).code
         code << "\n\n"
       end
 
