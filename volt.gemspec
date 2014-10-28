@@ -30,6 +30,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rake', '~> 10.0.4'
   spec.add_dependency 'listen', '~> 2.7.0'
   spec.add_dependency 'uglifier', '~> 2.4.0'
+  spec.add_dependency "configurations", "~> 1.4"
   spec.add_dependency 'yui-compressor', '~> 0.12.0'
   spec.add_dependency 'opal', '~> 0.6.0'
   spec.add_dependency 'opal-jquery', '~> 0.2.0'

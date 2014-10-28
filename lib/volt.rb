@@ -16,7 +16,6 @@ module Volt
                 end
 
   class << self
-    include Volt::Config unless RUBY_PLATFORM == 'opal'
     def root
       @root ||= File.expand_path(Dir.pwd)
     end
