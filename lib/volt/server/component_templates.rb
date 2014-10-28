@@ -4,6 +4,7 @@ require 'volt/server/html_parser/view_parser'
 # setup code (for controllers, models, views, and routes)
 module Volt
   class ComponentTemplates
+    # client is if we are generating for the client or backend
     def initialize(component_path, component_name, client = true)
       @component_path = component_path
       @component_name = component_name
@@ -21,11 +22,7 @@ module Volt
     end
 
     def page_reference
-      if @client
-        '$page'
-      else
-        '$page'
-      end
+      '$page'
     end
 
     def generate_view_code

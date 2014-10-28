@@ -17,7 +17,7 @@ module Volt
 
       asset_files = AssetFiles.new(@component_name, @component_paths)
       asset_files.component_paths.each do |component_path, component_name|
-        code << ComponentTemplates.new(component_path, component_name, Volt.client?).code
+        code << ComponentTemplates.new(component_path, component_name, true).code
         code << "\n\n"
       end
 
