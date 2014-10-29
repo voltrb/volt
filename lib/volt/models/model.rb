@@ -148,6 +148,11 @@ module Volt
           @size_dep.changed!
         end
 
+        # TODO: Can we make this so it doesn't need to be handled for non store collections
+        # (maybe move it to persistor, though thats weird since buffers don't have a persistor)
+        clear_server_errors('_' + attribute_name) if @server_errors
+
+
         # Don't save right now if we're in a nosave block
         if !defined?(Thread) || !Thread.current['nosave']
           # Let the persistor know something changed
@@ -293,22 +298,29 @@ module Volt
         if save_to
           if save_to.is_a?(ArrayModel)
             # Add to the collection
-            new_model             = save_to << attributes
+            promise = save_to.append(attributes)
+          else
+            # We have a saved model
+            promise = save_to.assign_attributes(attributes)
+          end
 
+          return promise.then do |new_model|
+            puts "SAVED: #{new_model.inspect}"
             # Set the buffer's id to track the main model's id
             attributes[:_id] = new_model._id
             options[:save_to]     = new_model
 
-            # TODO: return a promise that resolves if the append works
-          else
-            # We have a saved model
-            return save_to.assign_attributes(attributes)
+            new_model
+          end.fail do |errors|
+            puts "ERRORS: #{errors.inspect}"
+            @server_errors ||= ReactiveHash.new
+            @server_errors.replace(errors)
+
+            Promise.new.reject(errors)
           end
         else
           fail 'Model is not a buffer, can not be saved, modifications should be persisted as they are made.'
         end
-
-        Promise.new.resolve({})
       else
         # Some errors, mark all fields
         self.class.validations.keys.each do |key|

@@ -9,24 +9,32 @@ module Volt
     end
 
     def changed!(key)
-      ensure_key(key).changed!
-    end
-
-    def delete(key)
-      dep = @hash_depedencies[key]
+      dep = @hash_depedencies.delete(key)
 
       if dep
         dep.changed!
         dep.remove
       end
+    end
 
-      @hash_depedencies.delete(key)
+    def delete(key)
+      dep = @hash_depedencies.delete(key)
+
+      puts "Delete DEP: #{key} - #{dep.inspect}"
+
+      if dep
+        dep.changed!
+        dep.remove
+      end
     end
 
     def changed_all!
       @hash_depedencies.each_pair do |key, value|
         value.changed!
+        value.remove
       end
+
+      @hash_depedencies = {}
     end
 
     private

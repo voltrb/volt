@@ -71,8 +71,6 @@ module Volt
       def changed(attribute_name = nil)
         path = @model.path
 
-        @model.clear_server_errors(attribute_name) if attribute_name
-
         promise = Promise.new
 
         ensure_setup

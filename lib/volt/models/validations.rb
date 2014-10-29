@@ -35,15 +35,18 @@ module Volt
 
     # When a field is changed, we want to clear any errors from the server
     def clear_server_errors(key)
-      if @server_errors
-        @server_errors.delete(key)
-      end
+      puts "Clear error: #{key}"
+      @server_errors.delete(key) if @server_errors
     end
 
     # TODO: Errors is being called for any validation change.  We should have errors return a
     # hash like object that only calls the validation for each one.
     def errors(marked_only = false)
       puts "Check Validations: #{self.inspect}"
+      if Volt.client?
+        @server_errors ||= ReactiveHash.new
+      end
+
       errors = {}
 
       validations = self.class.validations
@@ -75,12 +78,13 @@ module Volt
             end
           end
         end
+
+        if Volt.client?
+          errors = merge.call(@server_errors.to_h)
+        end
       end
 
-      if @server_errors
-        erros = merge.call(@server_errors.to_h)
-      end
-
+      puts "ERRS: #{errors.inspect}"
       errors
     end
 

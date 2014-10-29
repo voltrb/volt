@@ -27,6 +27,7 @@ module Volt
     end
 
     def []=(key, value)
+      puts "SET: #{key} - #{value}"
       @deps.changed!(key)
       @all_deps.changed!
 
@@ -42,9 +43,20 @@ module Volt
       @hash.each_pair do |key, _|
         delete(key)
       end
+
+      @all_deps.changed!
+    end
+
+    def replace(hash)
+      clear
+
+      hash.each_pair do |key, value|
+        self[key] = value
+      end
     end
 
     def to_h
+      @all_deps.depend
       @hash
     end
 
