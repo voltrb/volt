@@ -139,10 +139,8 @@ module Volt
       old_value = @attributes[attribute_name]
       new_value = wrap_value(value, [attribute_name])
 
-      # puts "Old Val: #{old_value.inspect} vs New Val: #{new_value.inspect}"
       if old_value != new_value
         @attributes[attribute_name] = new_value
-        # puts @attributes.inspect
         puts "Old Val: #{old_value.inspect} vs New Val: #{new_value.inspect} -- #{attribute_name.inspect}"
 
         @deps.changed!(attribute_name)
@@ -173,14 +171,13 @@ module Volt
         return_undefined_method(method_name)
       else
         attr_name = method_name[1..-1].to_sym
+
+        # Track dependency
+        @deps.depend(attr_name)
+
         # See if the value is in attributes
         if @attributes && @attributes.key?(attr_name)
-          value = @attributes[attr_name]
-
-          # Track dependency
-          @deps.depend(attr_name)
-
-          value
+          @attributes[attr_name]
         else
           new_model              = read_new_model(attr_name)
           @attributes            ||= {}
