@@ -36,7 +36,6 @@ class StoreTasks < Volt::TaskHandler
   end
 
   def save(collection, path, data)
-    puts "Save--------"
     data = data.symbolize_keys
     model = nil
     Volt::Model.nosave do

@@ -163,9 +163,7 @@ module Volt
       # Return the attributes that are only for this store, not any sub-associations.
       def self_attributes
         # Don't store any sub-stores, those will do their own saving.
-        attrs = @model.attributes.reject { |k, v| v.is_a?(Model) || v.is_a?(ArrayModel) }
-        puts "SELF ATTRS: " + attrs.inspect + " vs " + @model.attributes.inspect
-        return attrs
+        @model.attributes.reject { |k, v| v.is_a?(Model) || v.is_a?(ArrayModel) }
       end
 
       def collection

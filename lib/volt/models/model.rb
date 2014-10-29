@@ -141,7 +141,6 @@ module Volt
 
       if old_value != new_value
         @attributes[attribute_name] = new_value
-        puts "Old Val: #{old_value.inspect} vs New Val: #{new_value.inspect} -- #{attribute_name.inspect}"
 
         @deps.changed!(attribute_name)
 
@@ -173,18 +172,27 @@ module Volt
         attr_name = method_name[1..-1].to_sym
 
         # Track dependency
-        @deps.depend(attr_name)
+        # @deps.depend(attr_name)
 
         # See if the value is in attributes
         if @attributes && @attributes.key?(attr_name)
-          @attributes[attr_name]
+          # Track dependency
+          @deps.depend(attr_name)
+
+          return @attributes[attr_name]
         else
           new_model              = read_new_model(attr_name)
           @attributes            ||= {}
           @attributes[attr_name] = new_model
 
+          # Trigger size change
           @size_dep.changed!
-          new_model
+
+          # Depend on attribute
+          # TODO: We can probably move depend up if we make size_dep call changed
+          # on the next tick.
+          @deps.depend(attr_name)
+          return new_model
         end
       end
     end
