@@ -2,6 +2,10 @@ class UserTasks < Volt::TaskHandler
   # Login a user, takes a username and password
   def create_user(username, password)
     puts "Add User: #{username} -- #{password.inspect}"
-    store._users << { email: username, password: password }
+    res = store._users.append({ email: username, password: password })
+
+    puts "RES---------#{res.inspect}"
+
+    return res
   end
 end

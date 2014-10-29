@@ -66,12 +66,26 @@ module Volt
 
       super(model)
 
-      @persistor.added(model, @array.size - 1) if @persistor
-
-      model
+      if @persistor
+        @persistor.added(model, @array.size - 1)
+      else
+        nil
+      end
     end
 
-    alias_method :append, :<<
+    # Works like << except it returns a promise
+    def append(model)
+      promise, model = self.send(:<<, model)
+
+      # Return a promise if one doesn't exist
+      promise ||= begin
+        pr = Promise.new
+        pr.resolve(model)
+        pr
+      end
+
+      promise
+    end
 
     # Make sure it gets wrapped
     def inject(*args)

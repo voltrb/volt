@@ -33,6 +33,13 @@ module Volt
       errors(true)
     end
 
+    # When a field is changed, we want to clear any errors from the server
+    def clear_server_errors(key)
+      if @server_errors
+        @server_errors.delete(key)
+      end
+    end
+
     # TODO: Errors is being called for any validation change.  We should have errors return a
     # hash like object that only calls the validation for each one.
     def errors(marked_only = false)
@@ -68,6 +75,10 @@ module Volt
             end
           end
         end
+      end
+
+      if @server_errors
+        erros = merge.call(@server_errors.to_h)
       end
 
       errors

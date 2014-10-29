@@ -44,6 +44,10 @@ module Volt
       end
     end
 
+    def to_h
+      @hash
+    end
+
     def inspect
       "#<ReactiveHash #{@hash.inspect}>"
     end

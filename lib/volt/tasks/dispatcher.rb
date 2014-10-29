@@ -28,8 +28,17 @@ module Volt
       end
 
       if callback_id
-        # Callback with result
-        channel.send_message('response', callback_id, result, error)
+        # If callback is a promise, pass it to the client
+        if result.is_a?(Promise)
+          result.then do |result|
+            channel.send_message('response', callback_id, result, nil)
+          end.fail do |error|
+            channel.send_message('response', callback_id, nil, error)
+          end
+        else
+          # Take result and call directly
+          channel.send_message('response', callback_id, result, error)
+        end
       end
     end
 
