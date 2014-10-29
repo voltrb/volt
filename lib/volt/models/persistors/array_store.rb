@@ -197,7 +197,7 @@ module Volt
       # method.  This should trigger a save.
       def added(model, index)
         if model.persistor
-          # Tell the persistor it was added
+          # Tell the persistor it was added, return the promise
           model.persistor.add_to_collection
         end
       end

@@ -56,6 +56,8 @@ module Volt
           if Volt.in_browser?
             self.class.queue_flush!
           end
+
+          # If we are not in the browser, the user must manually flush
         end
 
         invalidations  = @invalidations

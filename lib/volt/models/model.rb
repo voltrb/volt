@@ -186,11 +186,17 @@ module Volt
           @attributes[attr_name] = new_model
 
           # Trigger size change
-          @size_dep.changed!
+          # TODO: We can probably improve Computations to just make this work
+          # without the delay
+          if RUBY_PLATFORM == 'opal'
+            `setImmediate(function() {`
+              @size_dep.changed!
+            `});`
+          else
+            @size_dep.changed!
+          end
 
           # Depend on attribute
-          # TODO: We can probably move depend up if we make size_dep call changed
-          # on the next tick.
           @deps.depend(attr_name)
           return new_model
         end

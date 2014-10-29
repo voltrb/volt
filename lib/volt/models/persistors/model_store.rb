@@ -25,6 +25,8 @@ module Volt
       def add_to_collection
         @in_collection = true
         ensure_setup
+
+        # Call changed, return the promise
         changed
       end
 
