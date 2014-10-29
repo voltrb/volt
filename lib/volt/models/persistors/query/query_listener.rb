@@ -84,6 +84,7 @@ module Volt
 
     def changed(model_id, data)
       $loading_models = true
+      puts "new data: #{data.inspect}"
       Persistors::ModelStore.changed(model_id, data)
       $loading_models = false
     end

@@ -115,7 +115,10 @@ module Volt
       # batched together.
       def run_save
         # Clear the save timer
-        `clearImmediate(self.saveTimer);`
+        `
+        clearImmediate(self.saveTimer);
+        delete self.saveTimer;
+        `
 
         StoreTasks.save(collection, @model.path, self_attributes).then do |errors|
           save_promises = @save_promises
@@ -138,12 +141,14 @@ module Volt
       # Update the models based on the id/identity map.  Usually these requests
       # will come from the backend.
       def self.changed(model_id, data)
-        model = @@identity_map.lookup(model_id)
+        Model.nosave do
+          model = @@identity_map.lookup(model_id)
 
-        if model
-          data.each_pair do |key, value|
-            if key != :_id
-              model.send(:"_#{key}=", value)
+          if model
+            data.each_pair do |key, value|
+              if key != :_id
+                model.send(:"_#{key}=", value)
+              end
             end
           end
         end
@@ -158,7 +163,9 @@ module Volt
       # Return the attributes that are only for this store, not any sub-associations.
       def self_attributes
         # Don't store any sub-stores, those will do their own saving.
-        @model.attributes.reject { |k, v| v.is_a?(Model) || v.is_a?(ArrayModel) }
+        attrs = @model.attributes.reject { |k, v| v.is_a?(Model) || v.is_a?(ArrayModel) }
+        puts "SELF ATTRS: " + attrs.inspect + " vs " + @model.attributes.inspect
+        return attrs
       end
 
       def collection
@@ -196,8 +203,8 @@ module Volt
             end
           end
 
-          # puts "Update Collection: #{collection.inspect} - #{values.inspect}"
-          QueryTasks.live_query_pool.updated_collection(collection.to_s, Thread.current['from_channel'])
+          puts "Update Collection: #{collection.inspect} - #{values.inspect} -- #{Thread.current['in_channel'].inspect}"
+          QueryTasks.live_query_pool.updated_collection(collection.to_s, Thread.current['in_channel'])
           return {}
         end
       end
