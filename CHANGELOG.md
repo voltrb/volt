@@ -4,6 +4,7 @@
 ### Added
 - update flash to handle successes, notices, warnings, errors.
 - Add .keys to models
+- validations do not use underscore for the field name
 
 ## 0.8.18 - 2014-10-26
 ### Added
