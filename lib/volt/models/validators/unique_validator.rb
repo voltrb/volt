@@ -5,7 +5,7 @@ module Volt
 
       if RUBY_PLATFORM != 'opal'
         if args
-          value  = model.send(field_name)
+          value  = model.read_attribute(field_name)
 
           query = {}
           query[field_name[1..-1]] = value
@@ -13,7 +13,7 @@ module Volt
 
           # Check if the value is taken
           # if model.parent.find(query).size > 0
-          if Volt.server? || $page.store._posts.find(query).size > 0
+          if false && (Volt.server? || $page.store._posts.find(query).size > 0)
             puts "Taken!"
             errors[field_name] = ["is already taken"]
           end

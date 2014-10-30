@@ -122,14 +122,14 @@ module Volt
         delete self.saveTimer;
         `
 
-        StoreTasks.save(collection, @model.path, self_attributes).then do |errors|
+        StoreTasks.save(collection, @model.path, self_attributes).then do
           save_promises = @save_promises
           @save_promises = nil
-          if errors.size == 0
-            save_promises.each {|promise|  promise.resolve(nil) }
-          else
-            save_promises.each {|promise|  promise.reject(errors) }
-          end
+          save_promises.each {|promise|  promise.resolve(nil) }
+        end.fail do |errors|
+          save_promises = @save_promises
+          @save_promises = nil
+          save_promises.each {|promise|  promise.reject(errors) }
         end
 
       end

@@ -2,6 +2,10 @@ module Volt
   # The task dispatcher is responsible for taking incoming messages
   # from the socket channel and dispatching them to the proper handler.
   class Dispatcher
+
+    # Dispatch takes an incoming Task from the client and runs it on the
+    # server, returning the result to the client.
+    # Tasks returning a promise will wait to return.
     def dispatch(channel, message)
       callback_id, class_name, method_name, *args = message
       method_name = method_name.to_sym
@@ -9,35 +13,27 @@ module Volt
       # Get the class
       klass = Object.send(:const_get, class_name)
 
-      result = nil
-      error = nil
+      promise = Promise.new
 
+      # Check that we are calling on a TaskHandler class and a method provide at
+      # TaskHandler or above in the ancestor chain.
       if safe_method?(klass, method_name)
         # Init and send the method
-        begin
-          result = klass.new(channel, self).send(method_name, *args)
-        rescue => e
-          # TODO: Log these errors better
-          puts e.inspect
-          puts e.backtrace
-          error = e
-        end
+        promise = promise.then do
+          klass.new(channel, self).send(method_name, *args)
+        end.resolve(nil)
       else
         # Unsafe method
-        error = RuntimeError.new("unsafe method: #{method_name}")
+        promise = promise.reject(RuntimeError.new("unsafe method: #{method_name}"))
       end
 
       if callback_id
-        # If callback is a promise, pass it to the client
-        if result.is_a?(Promise)
-          result.then do |result|
-            channel.send_message('response', callback_id, result, nil)
-          end.fail do |error|
-            channel.send_message('response', callback_id, nil, error)
-          end
-        else
-          # Take result and call directly
-          channel.send_message('response', callback_id, result, error)
+        # Run the promise and pass the return value/error back to the client
+        promise.then do |result|
+          channel.send_message('response', callback_id, result, nil)
+        end.fail do |error|
+          channel.send_message('response', callback_id, nil, error)
+          Volt.logger.error(error)
         end
       end
     end

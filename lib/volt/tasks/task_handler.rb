@@ -22,33 +22,14 @@ module Volt
       end
 
       # On the backend, we proxy all class methods like we would
-      # on the front-end.  This returns promises.
+      # on the front-end.  This returns a promise, even if the
+      # original code did not.
       def self.method_missing(name, *args, &block)
-
-        begin
-          puts "Call: #{name}"
-          result = new(nil, nil).send(name, *args, &block)
-          puts "GOT RES: #{result.inspect}"
-
-          if result.is_a?(Promise)
-            puts "IS A PROMISE: #{result.inspect}"
-            return result
-          end
-
-          promise = Promise.new
-          promise.resolve(result)
-          puts "HERE"
-        rescue => e
-          puts "Task Error: #{e.inspect}"
-          puts e.backtrace
-
-          promise = Promise.new
-          promise.reject(e)
-        end
-
-        puts "DONE"
-
-        promise
+        # TODO: optimize: this could run the inside first to see if it
+        # returns a promise, so we don't have to wrap it.
+        return Promise.new.then do
+          new(nil, nil).send(name, *args, &block)
+        end.resolve(nil)
       end
 
       # Provide access to the store collection

@@ -116,6 +116,9 @@ module Volt
 
     def method_missing(method_name, *args, &block)
       if method_name[0] == '_'
+
+        # Remove underscore
+        method_name = method_name[1..-1]
         if method_name[-1] == '='
           # Assigning an attribute with =
           assign_attribute(method_name, *args, &block)
@@ -132,7 +135,7 @@ module Volt
     def assign_attribute(method_name, *args, &block)
       self.expand!
       # Assign, without the =
-      attribute_name = method_name[1..-2].to_sym
+      attribute_name = method_name[0..-2].to_sym
 
       value = args[0]
 
@@ -150,7 +153,7 @@ module Volt
 
         # TODO: Can we make this so it doesn't need to be handled for non store collections
         # (maybe move it to persistor, though thats weird since buffers don't have a persistor)
-        clear_server_errors('_' + attribute_name) if @server_errors
+        clear_server_errors(attribute_name) if @server_errors
 
 
         # Don't save right now if we're in a nosave block
@@ -165,46 +168,38 @@ module Volt
     # 1) a nil model, which returns a wrapped error
     # 2) reading directly from attributes
     # 3) trying to read a key that doesn't exist.
-    def read_attribute(method_name)
+    def read_attribute(attr_name)
       # Reading an attribute, we may get back a nil model.
-      method_name = method_name.to_sym
+      attr_name = attr_name.to_sym
 
-      if method_name[0] != '_' && @attributes.nil?
-        # The method we are calling is on a nil model, return a wrapped
-        # exception.
-        return_undefined_method(method_name)
-      else
-        attr_name = method_name[1..-1].to_sym
+      # Track dependency
+      # @deps.depend(attr_name)
 
+      # See if the value is in attributes
+      if @attributes && @attributes.key?(attr_name)
         # Track dependency
-        # @deps.depend(attr_name)
+        @deps.depend(attr_name)
 
-        # See if the value is in attributes
-        if @attributes && @attributes.key?(attr_name)
-          # Track dependency
-          @deps.depend(attr_name)
+        return @attributes[attr_name]
+      else
+        new_model              = read_new_model(attr_name)
+        @attributes            ||= {}
+        @attributes[attr_name] = new_model
 
-          return @attributes[attr_name]
-        else
-          new_model              = read_new_model(attr_name)
-          @attributes            ||= {}
-          @attributes[attr_name] = new_model
-
-          # Trigger size change
-          # TODO: We can probably improve Computations to just make this work
-          # without the delay
-          if RUBY_PLATFORM == 'opal'
-            `setImmediate(function() {`
-              @size_dep.changed!
-            `});`
-          else
+        # Trigger size change
+        # TODO: We can probably improve Computations to just make this work
+        # without the delay
+        if RUBY_PLATFORM == 'opal'
+          `setImmediate(function() {`
             @size_dep.changed!
-          end
-
-          # Depend on attribute
-          @deps.depend(attr_name)
-          return new_model
+          `});`
+        else
+          @size_dep.changed!
         end
+
+        # Depend on attribute
+        @deps.depend(attr_name)
+        return new_model
       end
     end
 
@@ -305,30 +300,34 @@ module Volt
           end
 
           return promise.then do |new_model|
-            puts "SAVED: #{new_model.inspect}"
-            # Set the buffer's id to track the main model's id
-            attributes[:_id] = new_model._id
-            options[:save_to]     = new_model
+            if new_model
+              # Set the buffer's id to track the main model's id
+              attributes[:_id] = new_model._id
+              options[:save_to]     = new_model
+            end
 
-            new_model
+            nil
           end.fail do |errors|
-            puts "ERRORS: #{errors.inspect}"
-            @server_errors ||= ReactiveHash.new
-            @server_errors.replace(errors)
+            if errors.is_a?(Hash)
+              server_errors.replace(errors)
+            end
 
-            Promise.new.reject(errors)
+            promise_for_errors(errors)
           end
         else
           fail 'Model is not a buffer, can not be saved, modifications should be persisted as they are made.'
         end
       else
         # Some errors, mark all fields
-        self.class.validations.keys.each do |key|
-          mark_field!(key.to_sym)
-        end
-
-        Promise.new.reject(errors)
+        promise_for_errors(errors)
       end
+    end
+
+    # When errors come in, we mark all fields and return a rejected promise.
+    def promise_for_errors(errors)
+      mark_all_fields!
+
+      Promise.new.reject(errors)
     end
 
     # Returns a buffered version of the model

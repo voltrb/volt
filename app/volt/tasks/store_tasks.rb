@@ -48,15 +48,13 @@ class StoreTasks < Volt::TaskHandler
     # Pass the channel as a thread-local so that we don't update the client
     # who sent the update.
     Thread.current['in_channel'] = @channel
-    model.save!.then do |result|
-      Thread.current['in_channel'] = nil
-
+    promise = model.save!.then do |result|
       return nil
-    end.fail do |errors|
-      Thread.current['in_channel'] = nil
-
-      return errors
     end
+
+    Thread.current['in_channel'] = nil
+
+    return promise
   end
 
   def delete(collection, id)

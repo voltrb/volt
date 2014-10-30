@@ -27,7 +27,6 @@ module Volt
     end
 
     def []=(key, value)
-      puts "SET: #{key} - #{value}"
       @deps.changed!(key)
       @all_deps.changed!
 
@@ -36,6 +35,7 @@ module Volt
 
     def delete(key)
       @deps.delete(key)
+      @all_deps.changed!
       @hash.delete(key)
     end
 
@@ -61,6 +61,7 @@ module Volt
     end
 
     def inspect
+      @all_deps.depend
       "#<ReactiveHash #{@hash.inspect}>"
     end
   end

@@ -21,7 +21,7 @@ module Volt
 
     # Once a field is ready, we can use include_in_errors! to start
     # showing its errors.
-    def mark_field!(field_name, trigger_changed = true)
+    def mark_field!(field_name)
       marked_fields[field_name] = true
     end
 
@@ -29,24 +29,34 @@ module Volt
       @marked_fields ||= ReactiveHash.new
     end
 
+
+    # Marks all fields, useful for when a model saves.
+    def mark_all_fields!
+      self.class.validations.keys.each do |key|
+        mark_field!(key.to_sym)
+      end
+    end
+
+
     def marked_errors
       errors(true)
     end
 
+    # server errors are errors that come back from the server when we save!
+    # Any changes to the associated fields will clear the error until another
+    # save!
+    def server_errors
+      @server_errors ||= ReactiveHash.new
+    end
+
     # When a field is changed, we want to clear any errors from the server
     def clear_server_errors(key)
-      puts "Clear error: #{key}"
-      @server_errors.delete(key) if @server_errors
+      @server_errors.delete(key)
     end
 
     # TODO: Errors is being called for any validation change.  We should have errors return a
     # hash like object that only calls the validation for each one.
     def errors(marked_only = false)
-      puts "Check Validations: #{self.inspect}"
-      if Volt.client?
-        @server_errors ||= ReactiveHash.new
-      end
-
       errors = {}
 
       validations = self.class.validations
@@ -79,12 +89,12 @@ module Volt
           end
         end
 
+        # See if any server errors are in place and merge them in if they are
         if Volt.client?
-          errors = merge.call(@server_errors.to_h)
+          errors = merge.call(server_errors.to_h)
         end
       end
 
-      puts "ERRS: #{errors.inspect}"
       errors
     end
 
