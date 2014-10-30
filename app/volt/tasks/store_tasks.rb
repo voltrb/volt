@@ -12,6 +12,7 @@ class StoreTasks < Volt::TaskHandler
   end
 
   def load_model(collection, path, data)
+    puts "Load Model: #{path.inspect}"
     model_name = collection.singularize.camelize
 
     # TODO: Security check to make sure we have a valid model

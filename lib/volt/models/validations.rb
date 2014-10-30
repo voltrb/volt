@@ -32,8 +32,11 @@ module Volt
 
     # Marks all fields, useful for when a model saves.
     def mark_all_fields!
-      self.class.validations.keys.each do |key|
-        mark_field!(key.to_sym)
+      validations = self.class.validations
+      if validations
+        validations.keys.each do |key|
+          mark_field!(key.to_sym)
+        end
       end
     end
 

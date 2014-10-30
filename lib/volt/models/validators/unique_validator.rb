@@ -13,7 +13,7 @@ module Volt
 
           # Check if the value is taken
           # if model.parent.find(query).size > 0
-          if false && (Volt.server? || $page.store._posts.find(query).size > 0)
+          if Volt.server? || $page.store.send(:"_#{path[-2]}").find(query).size > 0
             puts "Taken!"
             errors[field_name] = ["is already taken"]
           end
