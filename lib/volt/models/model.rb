@@ -300,14 +300,17 @@ module Volt
           end
 
           return promise.then do |new_model|
+            puts "HERE1"
             if new_model
               # Set the buffer's id to track the main model's id
               attributes[:_id] = new_model._id
               options[:save_to]     = new_model
             end
 
+            puts "Done"
             nil
           end.fail do |errors|
+            puts "HERE2: #{errors.inspect}"
             if errors.is_a?(Hash)
               server_errors.replace(errors)
             end

@@ -4,4 +4,10 @@
 <:Body>
   <h1>Users Test</h1>
 
-  <button e-click="signup">Signup</button>
+  <form e-submit="signup">
+    {{ errors.html_inspect }}<br />
+    <input value="{{ _username }}" /><br />
+    <input type="password" value="{{ _password }}" /><br />
+
+    <button>Signup</button>
+  </form>

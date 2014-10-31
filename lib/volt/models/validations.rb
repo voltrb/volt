@@ -12,7 +12,10 @@ module Volt
         @validations[field_name] = options
       end
 
-      attr_reader :validations
+      # TODO: For some reason attr_reader on a class doesn't work in Opal
+      def validations
+        @validations
+      end
     end
 
     def self.included(base)
