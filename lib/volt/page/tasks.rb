@@ -12,7 +12,7 @@ module Volt
       end
     end
 
-    def call(class_name, method_name, *args)
+    def call(class_name, method_name, meta_data, *args)
       promise_id            = @promise_id
       @promise_id           += 1
 
@@ -22,7 +22,7 @@ module Volt
 
       # TODO: Timeout on these callbacks
 
-      @page.channel.send_message([promise_id, class_name, method_name, *args])
+      @page.channel.send_message([promise_id, class_name, method_name, meta_data, *args])
 
       promise
     end

@@ -4,7 +4,16 @@ module Volt
       # On the front-end we setup a proxy class to the backend that returns
       # promises for all calls.
       def self.method_missing(name, *args, &block)
-        $page.tasks.call(self.name, name, *args, &block)
+        # Meta data is passed from the browser to the server so the server can know
+        # things like who's logged in.
+        meta_data = {}
+
+        user_id = $page.cookies._user_id
+        unless user_id.nil?
+          meta_data['user_id'] = user_id
+        end
+
+        $page.tasks.call(self.name, name, meta_data, *args, &block)
       end
     else
       def initialize(channel = nil, dispatcher = nil)

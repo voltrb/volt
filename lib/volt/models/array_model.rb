@@ -84,6 +84,14 @@ module Volt
       promise
     end
 
+
+    # Find one does a query, but only returns the first item or
+    # nil if there is no match.  Unlike #find, #find_one does not
+    # return another cursor that you can call .then on.
+    def find_one(*args, &block)
+      find(*args, &block).limit(1)[0]
+    end
+
     # Make sure it gets wrapped
     def inject(*args)
       args = wrap_values(args)

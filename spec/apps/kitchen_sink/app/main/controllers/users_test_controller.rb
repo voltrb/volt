@@ -4,6 +4,7 @@ class UsersTestController < Volt::ModelController
   end
 
   def signup
+    puts "Signup"
     model.save!.then do |a|
       puts "Saved"
     end.fail do |err|
@@ -12,12 +13,15 @@ class UsersTestController < Volt::ModelController
   end
 
   def login
-    UserTasks.login('ryanstout@gmail.com', 'temppass').then do |result|
-      puts "RESULT: #{result}"
-
-      cookies._user_id = result
+    puts "USER LOGIN"
+    User.login('ryanstout@gmail.com', 'temppass').then do |result|
+      puts "Login Success"
     end.fail do |err|
       puts "ERR: #{err.inspect}"
     end
+  end
+
+  def logout
+    User.logout
   end
 end

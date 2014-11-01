@@ -8,8 +8,6 @@ module Volt
 
       value = @attributes.delete(name)
 
-      puts "Delete: #{name.inspect} - #{@attributes.inspect}"
-
       @size_dep.changed!
       @deps.delete(name)
 

@@ -48,5 +48,52 @@ module Volt
     def in_browser?
       @in_browser
     end
+
+    # Get the user_id from the cookie
+    def user_id
+      if Volt.client?
+        user_id_hash = $page.cookies._user_id
+      else
+        # Check meta for the user id and validate it
+        meta_data = Thread.current['meta']
+        if meta_data
+          user_id_hash = meta_data['user_id']
+        else
+          user_id_hash = nil
+        end
+      end
+
+      if user_id_hash.nil?
+        return nil
+      else
+        index = user_id_hash.index(':')
+        user_id = user_id_hash[0...index]
+
+        if Volt.server?
+          hash = user_id_hash[(index+1)..-1]
+
+          # Make sure the user hash matches
+          if BCrypt::Password.new(hash) != user_id
+            # user id has been tampered with, reject
+            raise "user id or hash has been tampered with"
+          end
+
+        end
+
+        return user_id
+      end
+    end
+
+    # Return the current user.
+    def user
+      user_id = self.user_id
+      if user_id
+        return $page.store._users.find_one(_id: user_id)
+      else
+        return nil
+      end
+    end
+
   end
 end
+

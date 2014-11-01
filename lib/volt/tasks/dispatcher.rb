@@ -7,7 +7,7 @@ module Volt
     # server, returning the result to the client.
     # Tasks returning a promise will wait to return.
     def dispatch(channel, message)
-      callback_id, class_name, method_name, *args = message
+      callback_id, class_name, method_name, meta_data, *args = message
       method_name = method_name.to_sym
 
       # Get the class
@@ -22,7 +22,13 @@ module Volt
 
         # Init and send the method
         promise = promise.then do
-          klass.new(channel, self).send(method_name, *args)
+          Thread.current['meta'] = meta_data
+
+          result = klass.new(channel, self).send(method_name, *args)
+
+          Thread.current['meta'] = nil
+
+          result
         end
 
       else

@@ -12,4 +12,11 @@
     <button>Signup</button>
   </form>
 
-  <button e-click="login">Login</button>
+  <hr />
+
+  <button e-click="login">Login</button><button e-click="logout">Logout</button>
+
+  {{ if Volt.user }}
+    {{ Volt.user._username }}<br />
+    {{ Volt.user._name }}
+  {{ end }}
