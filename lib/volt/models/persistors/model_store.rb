@@ -101,6 +101,7 @@ module Volt
             end
           end
         end
+
         promise
       end
 

@@ -8,4 +8,8 @@ class UserTasks < Volt::TaskHandler
   #
   #   return res
   # end
+
+  def login(username, password)
+
+  end
 end

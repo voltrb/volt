@@ -120,8 +120,8 @@ module Volt
         # Remove underscore
         method_name = method_name[1..-1]
         if method_name[-1] == '='
-          # Assigning an attribute with =
-          assign_attribute(method_name, *args, &block)
+          # Assigning an attribute without the =
+          assign_attribute(method_name[0..-2], *args, &block)
         else
           read_attribute(method_name)
         end
@@ -135,7 +135,7 @@ module Volt
     def assign_attribute(method_name, *args, &block)
       self.expand!
       # Assign, without the =
-      attribute_name = method_name[0..-2].to_sym
+      attribute_name = method_name.to_sym
 
       value = args[0]
 
@@ -300,17 +300,14 @@ module Volt
           end
 
           return promise.then do |new_model|
-            puts "HERE1"
             if new_model
               # Set the buffer's id to track the main model's id
               attributes[:_id] = new_model._id
               options[:save_to]     = new_model
             end
 
-            puts "Done"
             nil
           end.fail do |errors|
-            puts "HERE2: #{errors.inspect}"
             if errors.is_a?(Hash)
               server_errors.replace(errors)
             end

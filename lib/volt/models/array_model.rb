@@ -77,12 +77,9 @@ module Volt
     def append(model)
       promise, model = self.send(:<<, model)
 
+      puts "Got PROM: #{promise.inspect}"
       # Return a promise if one doesn't exist
-      promise ||= begin
-        pr = Promise.new
-        pr.resolve(model)
-        pr
-      end
+      promise ||= Promise.new.resolve(model)
 
       promise
     end

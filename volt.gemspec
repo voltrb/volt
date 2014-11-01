@@ -42,6 +42,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'opal-rspec', '0.3.0.beta3'
   spec.add_dependency 'bundler', '>= 1.5'
 
+  # For user passwords
+  spec.add_dependency 'bcrypt', '~> 3.1.9'
+
   # spec.add_dependency "promise.rb", "~> 0.6.1"
 
   # spec.add_dependency "rack-colorized_logger", "~> 1.0.4"

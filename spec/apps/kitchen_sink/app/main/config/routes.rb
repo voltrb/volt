@@ -3,6 +3,7 @@
 get '/bindings/{{_route_test}}', _action: 'bindings'
 get '/bindings', _action: 'bindings'
 get '/store', _action: 'store'
+get '/cookie_test', _action: 'cookie_test'
 get '/flash', _action: 'flash'
 get '/todos', _controller: 'todos'
 get '/users_test', _controller: 'users_test'

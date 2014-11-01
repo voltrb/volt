@@ -88,6 +88,10 @@ module Volt
       $page.local_store
     end
 
+    def cookies
+      $page.cookies
+    end
+
     def url
       $page.url
     end

@@ -4,22 +4,14 @@ class UsersTestController < Volt::ModelController
   end
 
   def signup
-    p = Promise.new.resolve(1)
-
-    e = p.then do
-      2
-    end.fail do
-      puts "fail"
+    model.save!.then do |a|
+      puts "Saved"
+    end.fail do |err|
+      puts "Fail with: #{err.inspect}"
     end
+  end
 
-    e.then do |v|
-      puts v
-    end
-    # puts "Signup"
-    # model.save! do
-    #   puts "Saved"
-    # end.fail do |err|
-    #   puts "Fail with: #{err.inspect}"
-    # end
+  def test2
+    cookies._awesome = 'yes'
   end
 end
