@@ -2,15 +2,17 @@ class UserTasks < Volt::TaskHandler
   # Login a user, takes a username and password
 
   def login(username, password)
-    puts "Login user: #{username}"
-    store._users.find(username: username).then do |users|
-      puts "Found: #{users.inspect}"
+    return store._users.find(username: username).then do |users|
       user = users.first
 
-      puts "Password: #{password} vs #{user._hashed_password}"
       match_pass = BCrypt::Password.new(user._hashed_password)
       if match_pass == password
-        return "#{user._id}:...temphash..."
+        # TODO: returning here should be possible, but causes some issues
+        user_id_hash = BCrypt::Password.create(user._id)
+
+        puts "#{user._id}:#{user_id_hash}"
+        # Return user_id:hash on user id
+        next "#{user._id}:#{user_id_hash}"
       else
         raise "Password did not match"
       end

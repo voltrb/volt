@@ -2,6 +2,7 @@ require 'volt/models/persistors/store'
 require 'volt/models/persistors/query/query_listener_pool'
 require 'volt/models/persistors/store_state'
 
+
 module Volt
   module Persistors
     class ArrayStore < Store
@@ -82,6 +83,7 @@ module Volt
 
       # Clear out the models data, since we're not listening anymore.
       def unload_data
+        puts "Unload Data"
         change_state_to :not_loaded
         @model.clear
       end
@@ -138,11 +140,11 @@ module Volt
       # Returns a promise that is resolved/rejected when the query is complete.  Any
       # passed block will be passed to the promises then.  Then will be passed the model.
       def then(&block)
+        raise "then must pass a block" unless block
         promise = Promise.new
 
-        promise = promise.then(&block) if block
+        promise = promise.then(&block)
 
-        puts "THEN: #{@state.inspect}"
         if @state == :loaded
           promise.resolve(@model)
         else

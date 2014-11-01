@@ -18,13 +18,16 @@ module Volt
       # Check that we are calling on a TaskHandler class and a method provide at
       # TaskHandler or above in the ancestor chain.
       if safe_method?(klass, method_name)
+        promise.resolve(nil)
+
         # Init and send the method
         promise = promise.then do
           klass.new(channel, self).send(method_name, *args)
-        end.resolve(nil)
+        end
+
       else
         # Unsafe method
-        promise = promise.reject(RuntimeError.new("unsafe method: #{method_name}"))
+        promise.reject(RuntimeError.new("unsafe method: #{method_name}"))
       end
 
       if callback_id
