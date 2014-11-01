@@ -13,7 +13,7 @@ if RUBY_PLATFORM != 'opal'
 
       expect(channel).to receive(:send_message).with('response', 0, 'yes works', nil)
 
-      Volt::Dispatcher.new.dispatch(channel, [0, 'TestTask', :allowed_method, ' works'])
+      Volt::Dispatcher.new.dispatch(channel, [0, 'TestTask', :allowed_method, {}, ' works'])
     end
 
     it 'should not allow eval' do
