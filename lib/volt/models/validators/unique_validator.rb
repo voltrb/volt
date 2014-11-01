@@ -15,7 +15,9 @@ module Volt
           # Check if the value is taken
           # TODO: need a way to handle scope for unique
           if $page.store.send(:"_#{model.path[-2]}").find(query).size > 0
-            errors[field_name] = ["is already taken"]
+            message = (args.is_a?(Hash) && args[:message]) || "is already taken"
+
+            errors[field_name] = [message]
           end
         end
       end
