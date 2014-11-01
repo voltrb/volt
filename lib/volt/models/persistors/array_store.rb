@@ -142,6 +142,7 @@ module Volt
 
         promise = promise.then(&block) if block
 
+        puts "THEN: #{@state.inspect}"
         if @state == :loaded
           promise.resolve(@model)
         else

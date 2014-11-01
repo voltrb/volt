@@ -11,7 +11,13 @@ class UsersTestController < Volt::ModelController
     end
   end
 
-  def test2
-    cookies._awesome = 'yes'
+  def login
+    UserTasks.login('ryanstout@gmail.com', 'temppass').then do |result|
+      puts "RESULT: #{result}"
+
+      cookies._user_id = result
+    end.fail do |err|
+      puts "ERR: #{err.inspect}"
+    end
   end
 end

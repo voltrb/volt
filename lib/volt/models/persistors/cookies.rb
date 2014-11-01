@@ -2,8 +2,6 @@
 # Some code borrowed from: https://github.com/opal/opal-browser/blob/master/opal/browser/cookies.rb
 
 require 'volt/models/persistors/base'
-require 'volt/utils/local_storage'
-require 'json'
 
 module Volt
   module Persistors
@@ -66,14 +64,14 @@ module Volt
         end
       end
 
-      # Callled when an item is changed (or removed)
+      # Callled when an cookies value is changed
       def changed(attribute_name)
         # TODO: Make sure we're only assigning directly, not sub models
         unless $writing_cookies
           value = @model.read_attribute(attribute_name)
 
           # Temp, expire in 1 year, going to expand this api
-          write_cookie(attribute_name, value, expires: Time.now + (356 * 24 * 60 * 60))
+          write_cookie(attribute_name, value.to_s, expires: Time.now + (356 * 24 * 60 * 60))
         end
       end
 
