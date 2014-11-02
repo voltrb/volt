@@ -52,28 +52,28 @@ module Volt
     # Get the user_id from the cookie
     def user_id
       if Volt.client?
-        user_id_hash = $page.cookies._user_id
+        user_id_signature = $page.cookies._user_id
       else
         # Check meta for the user id and validate it
         meta_data = Thread.current['meta']
         if meta_data
-          user_id_hash = meta_data['user_id']
+          user_id_signature = meta_data['user_id']
         else
-          user_id_hash = nil
+          user_id_signature = nil
         end
       end
 
-      if user_id_hash.nil?
+      if user_id_signature.nil?
         return nil
       else
-        index = user_id_hash.index(':')
-        user_id = user_id_hash[0...index]
+        index = user_id_signature.index(':')
+        user_id = user_id_signature[0...index]
 
-        if Volt.server?
-          hash = user_id_hash[(index+1)..-1]
+        if RUBY_PLATFORM != 'opal'
+          hash = user_id_signature[(index+1)..-1]
 
           # Make sure the user hash matches
-          if BCrypt::Password.new(hash) != user_id
+          if BCrypt::Password.new(hash) != "#{Volt.config.app_secret}::#{user._id}"
             # user id has been tampered with, reject
             raise "user id or hash has been tampered with"
           end
