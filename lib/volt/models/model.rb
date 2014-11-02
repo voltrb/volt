@@ -291,7 +291,7 @@ module Volt
         Promise.new.resolve({})
       else
         # Some errors, mark all fields
-        self.class.validations.keys.each do |key|
+        self.class.validations.each_key do |key|
           mark_field!(key.to_sym)
         end
 
