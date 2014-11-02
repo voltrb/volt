@@ -11,7 +11,7 @@ module Volt
       puts '--- Running Queries ---'
 
       @pool.each_pair do |table, query_hash|
-        query_hash.keys.each do |query|
+        query_hash.each_key do |query|
           puts "#{table}: #{query.inspect}"
         end
       end
