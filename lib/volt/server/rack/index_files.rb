@@ -34,7 +34,7 @@ module Volt
     end
 
     def html
-      index_path = File.expand_path(File.join(Volt.root, 'public/index.html'))
+      index_path = File.expand_path(File.join(Volt.root, 'public/base_page/index.html'))
       html       = File.read(index_path)
 
       ERB.new(html).result(binding)
