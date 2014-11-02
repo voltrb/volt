@@ -243,7 +243,7 @@ module Volt
       action = controller_path[-1]
 
       # Get the constant parts
-      parts  = controller_path[0..-2].map { |v| v.gsub('-', '_').camelize }
+      parts  = controller_path[0..-2].map { |v| v.tr('-', '_').camelize }
 
       # Home doesn't get namespaced
       if parts.first == 'Main'
