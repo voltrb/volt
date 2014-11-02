@@ -63,7 +63,7 @@ module Volt
     end
 
     def write_file(logical_path)
-      path = "#{@root_path}/compiled/assets/#{logical_path}"
+      path = "#{@root_path}/public/assets/#{logical_path}"
 
       FileUtils.mkdir_p(File.dirname(path))
 
@@ -80,7 +80,7 @@ module Volt
     def write_component_js
       javascript_code = @component_handler.compile_for_component('main')
 
-      components_folder = File.join(Volt.root, '/compiled/components')
+      components_folder = File.join(Volt.root, '/public/components')
       FileUtils.mkdir_p(components_folder)
       File.open(File.join(components_folder, '/main.js'), 'w') do |file|
         file.write(javascript_code)
@@ -88,7 +88,7 @@ module Volt
     end
 
     def write_index
-      path = "#{@root_path}/compiled/index.html"
+      path = "#{@root_path}/public/index.html"
       FileUtils.mkdir_p(File.dirname(path))
 
       File.open(path, 'w') do |file|

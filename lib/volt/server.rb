@@ -122,7 +122,7 @@ module Volt
 
       @app.use Rack::Static,
                urls: ['/'],
-               root: 'public',
+               root: 'config/base',
                index: '',
                header_rules: [
                  [:all, { 'Cache-Control' => 'public, max-age=86400' }]
