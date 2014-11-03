@@ -12,7 +12,6 @@ module Volt
           db_host:   ENV['DB_HOST'] || 'localhost',
           db_port:   (ENV['DB_PORT'] || 27_017).to_i,
           db_driver: ENV['DB_DRIVER'] || 'mongo',
-          deflate:   nil
         }
     end
 
