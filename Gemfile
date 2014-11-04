@@ -3,7 +3,9 @@ source 'http://rubygems.org'
 gemspec
 
 # gem 'rspec', '3.0.0.beta1'
-# gem 'opal', git: 'https://github.com/opal/opal.git'
+
+# Run 0.7 from master until it comes out
+gem 'opal', git: 'https://github.com/opal/opal.git'
 # gem 'opal-jquery', :git => 'https://github.com/opal/opal-jquery.git'
 
 #---------------------
