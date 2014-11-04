@@ -39,6 +39,8 @@ group :development do
   # Simple theme for bootstrap, remove to theme yourself.
   gem 'volt-bootstrap-jumbotron-theme'
 
+  gem 'opal-rspec', git: 'https://github.com/opal/opal-rspec.git'
+
   gem 'rubocop', require: false
   # gem 'guard', '2.0.1' # bug in current guard
   # gem 'guard-rspec'
