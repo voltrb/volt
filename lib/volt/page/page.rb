@@ -1,7 +1,5 @@
-if RUBY_PLATFORM == 'opal'
-  require 'opal'
-  require 'opal-jquery'
-end
+require 'opal'
+require 'opal-jquery' if RUBY_PLATFORM == 'opal'
 require 'volt/models'
 require 'volt/controllers/model_controller'
 require 'volt/tasks/task_handler'
