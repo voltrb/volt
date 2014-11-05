@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.8.20 - 2014-11-05
+### Changed
+- fix secure random bug from 0.8.19 :-)
+
 ## 0.8.19 - 2014-11-05
 ### Breaking Changes
 - the default index page is now moved from ```public/index.html``` to ```config/base/index.html```  Please update your app's accordingly.  Since the public page is essentially static at the moment, public will only be used for asset pre-compilation (and index.html will be rendered in place)
