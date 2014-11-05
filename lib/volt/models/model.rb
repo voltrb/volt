@@ -190,9 +190,9 @@ module Volt
         # TODO: We can probably improve Computations to just make this work
         # without the delay
         if RUBY_PLATFORM == 'opal'
-          `setImmediate(function() {`
+          # `setImmediate(function() {`
             @size_dep.changed!
-          `});`
+          # `});`
         else
           @size_dep.changed!
         end
