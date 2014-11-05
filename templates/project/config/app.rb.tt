@@ -1,4 +1,4 @@
-Volt.setup do |config|
+Volt.configure do |config|
   # Setup your global app config here.
 
   # The app name defaults to the folder it is run in.
