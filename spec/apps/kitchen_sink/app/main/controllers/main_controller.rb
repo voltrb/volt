@@ -17,6 +17,16 @@ class MainController < Volt::ModelController
     flash._errors << 'An error message'
   end
 
+  def cookie_test
+    self.model = page._new_cookie.buffer
+  end
+
+  def add_cookie
+    cookies.send(:"_#{_name.to_s}=", _value)
+
+    self.model = page._new_cookie.buffer
+  end
+
   private
 
   # the main template contains a #template binding that shows another

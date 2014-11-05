@@ -10,19 +10,18 @@ module Volt
       def state
         @state_dep ||= Dependency.new
         @state_dep.depend
+
         @state
       end
 
       # Called from the QueryListener when the data is loaded
-      def change_state_to(new_state, skip_trigger = false)
+      def change_state_to(new_state)
         old_state = @state
         @state    = new_state
 
         # Trigger changed on the 'state' method
-        unless skip_trigger
-          if old_state != @state
-            @state_dep.changed! if @state_dep
-          end
+        if old_state != @state
+          @state_dep.changed! if @state_dep
         end
 
         if @state == :loaded && @fetch_promises
@@ -30,6 +29,7 @@ module Volt
           @fetch_promises.compact.each { |fp| fp.resolve(@model) }
           @fetch_promises = nil
 
+          # puts "STOP LIST---------"
           stop_listening
         end
       end

@@ -2,34 +2,48 @@ module Volt
   # The task dispatcher is responsible for taking incoming messages
   # from the socket channel and dispatching them to the proper handler.
   class Dispatcher
+
+    # Dispatch takes an incoming Task from the client and runs it on the
+    # server, returning the result to the client.
+    # Tasks returning a promise will wait to return.
     def dispatch(channel, message)
-      callback_id, class_name, method_name, *args = message
+      callback_id, class_name, method_name, meta_data, *args = message
       method_name = method_name.to_sym
 
       # Get the class
       klass = Object.send(:const_get, class_name)
 
-      result = nil
-      error = nil
+      promise = Promise.new
 
+      # Check that we are calling on a TaskHandler class and a method provide at
+      # TaskHandler or above in the ancestor chain.
       if safe_method?(klass, method_name)
+        promise.resolve(nil)
+
         # Init and send the method
-        begin
+        promise = promise.then do
+          Thread.current['meta'] = meta_data
+
           result = klass.new(channel, self).send(method_name, *args)
-        rescue => e
-          # TODO: Log these errors better
-          puts e.inspect
-          puts e.backtrace
-          error = e
+
+          Thread.current['meta'] = nil
+
+          result
         end
+
       else
         # Unsafe method
-        error = RuntimeError.new("unsafe method: #{method_name}")
+        promise.reject(RuntimeError.new("unsafe method: #{method_name}"))
       end
 
       if callback_id
-        # Callback with result
-        channel.send_message('response', callback_id, result, error)
+        # Run the promise and pass the return value/error back to the client
+        promise.then do |result|
+          channel.send_message('response', callback_id, result, nil)
+        end.fail do |error|
+          channel.send_message('response', callback_id, nil, error)
+          Volt.logger.error(error)
+        end
       end
     end
 

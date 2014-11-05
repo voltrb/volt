@@ -13,14 +13,12 @@ module Volt
     end
 
     def delete(key)
-      dep = @hash_depedencies[key]
+      dep = @hash_depedencies.delete(key)
 
       if dep
         dep.changed!
         dep.remove
       end
-
-      @hash_depedencies.delete(key)
     end
 
     def changed_all!

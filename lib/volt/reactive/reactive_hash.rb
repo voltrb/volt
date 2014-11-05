@@ -35,6 +35,7 @@ module Volt
 
     def delete(key)
       @deps.delete(key)
+      @all_deps.changed!
       @hash.delete(key)
     end
 
@@ -42,9 +43,25 @@ module Volt
       @hash.each_pair do |key, _|
         delete(key)
       end
+
+      @all_deps.changed!
+    end
+
+    def replace(hash)
+      clear
+
+      hash.each_pair do |key, value|
+        self[key] = value
+      end
+    end
+
+    def to_h
+      @all_deps.depend
+      @hash
     end
 
     def inspect
+      @all_deps.depend
       "#<ReactiveHash #{@hash.inspect}>"
     end
   end

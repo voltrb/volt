@@ -3,7 +3,10 @@
 ## 0.8.19 - 2014-10-26
 ### Added
 - update flash to handle successes, notices, warnings, errors.
-- Add .keys to models
+- Add .keys to models (you can use .keys.each do |key| until we get .each_pair binding support)
+- validations do not use underscore for the field name
+- added ```cookies``` collection.  See docs for more info
+- ```validate :field_name, unique: true``` now supported (scope coming soon)
 
 ## 0.8.18 - 2014-10-26
 ### Added

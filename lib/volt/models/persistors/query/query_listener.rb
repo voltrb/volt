@@ -33,7 +33,7 @@ module Volt
           store.change_state_to(:loaded)
         end
       end.fail do |err|
-        puts "Err: #{err.inspect}"
+        puts "Error adding listener: #{err.inspect}"
       end
     end
 
@@ -47,6 +47,8 @@ module Volt
         @stores.first.model.each_with_index do |item, index|
           store.add(index, item.to_h)
         end
+
+        store.change_state_to(:loaded)
       else
         # First time we've added a store, setup the listener and get
         # the initial data.
@@ -84,6 +86,7 @@ module Volt
 
     def changed(model_id, data)
       $loading_models = true
+      puts "new data: #{data.inspect}"
       Persistors::ModelStore.changed(model_id, data)
       $loading_models = false
     end

@@ -25,6 +25,8 @@ module Volt
       def add_to_collection
         @in_collection = true
         ensure_setup
+
+        # Call changed, return the promise
         changed
       end
 
@@ -84,14 +86,12 @@ module Volt
             fail 'Attempting to save model directly on store.'
           else
             if RUBY_PLATFORM == 'opal'
-              StoreTasks.save(collection, path, self_attributes).then do |errors|
-                if errors.size == 0
-                  promise.resolve(nil)
-                else
-                  promise.reject(errors)
-                end
-              end
+              @save_promises ||= []
+              @save_promises << promise
+
+              queue_client_save
             else
+              puts "Save to DB"
               errors = save_to_db!(self_attributes)
               if errors.size == 0
                 promise.resolve(nil)
@@ -101,7 +101,38 @@ module Volt
             end
           end
         end
+
         promise
+      end
+
+      def queue_client_save
+        `
+        if (!self.saveTimer) {
+          self.saveTimer = setImmediate(self.$run_save.bind(self));
+        }
+        `
+      end
+
+      # Run save is called on the client side after a queued setImmediate.  It does the
+      # saving on the front-end.  Adding a setImmediate allows multiple changes to be
+      # batched together.
+      def run_save
+        # Clear the save timer
+        `
+        clearImmediate(self.saveTimer);
+        delete self.saveTimer;
+        `
+
+        StoreTasks.save(collection, @model.path, self_attributes).then do
+          save_promises = @save_promises
+          @save_promises = nil
+          save_promises.each {|promise|  promise.resolve(nil) }
+        end.fail do |errors|
+          save_promises = @save_promises
+          @save_promises = nil
+          save_promises.each {|promise|  promise.reject(errors) }
+        end
+
       end
 
       def event_added(event, first, first_for_event)
@@ -113,12 +144,14 @@ module Volt
       # Update the models based on the id/identity map.  Usually these requests
       # will come from the backend.
       def self.changed(model_id, data)
-        model = @@identity_map.lookup(model_id)
+        Model.nosave do
+          model = @@identity_map.lookup(model_id)
 
-        if model
-          data.each_pair do |key, value|
-            if key != :_id
-              model.send(:"_#{key}=", value)
+          if model
+            data.each_pair do |key, value|
+              if key != :_id
+                model.send(:"_#{key}=", value)
+              end
             end
           end
         end
@@ -147,6 +180,11 @@ module Volt
 
         # Do the actual writing of data to the database, only runs on the backend.
         def save_to_db!(values)
+          # Check to make sure the model has no validation errors.
+          errors = @model.errors
+          return errors if errors.present?
+
+          # Passed, save it
           id = values[:_id]
 
           # Try to create
@@ -166,8 +204,8 @@ module Volt
             end
           end
 
-          # puts "Update Collection: #{collection.inspect} - #{values.inspect}"
-          QueryTasks.live_query_pool.updated_collection(collection.to_s, Thread.current['from_channel'])
+          puts "Update Collection: #{collection.inspect} - #{values.inspect} -- #{Thread.current['in_channel'].inspect}"
+          QueryTasks.live_query_pool.updated_collection(collection.to_s, Thread.current['in_channel'])
           return {}
         end
       end

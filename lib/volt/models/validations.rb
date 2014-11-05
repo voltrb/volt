@@ -1,17 +1,33 @@
 # require 'volt/models/validations/errors'
 require 'volt/models/validators/length_validator'
 require 'volt/models/validators/presence_validator'
+require 'volt/models/validators/unique_validator'
 
 module Volt
   # Include in any class to get validation logic
   module Validations
     module ClassMethods
-      def validate(field_name, options)
-        @validations             ||= {}
-        @validations[field_name] = options
+      def validate(field_name=nil, options=nil, &block)
+        if block
+          if field_name || options
+            raise "validate should be passed a field name and options or a block, not both."
+          end
+          @custom_validations ||= []
+          @custom_validations << block
+        else
+          @validations             ||= {}
+          @validations[field_name] = options
+        end
       end
 
-      attr_reader :validations
+      # TODO: For some reason attr_reader on a class doesn't work in Opal
+      def validations
+        @validations
+      end
+
+      def custom_validations
+        @custom_validations
+      end
     end
 
     def self.included(base)
@@ -20,7 +36,7 @@ module Volt
 
     # Once a field is ready, we can use include_in_errors! to start
     # showing its errors.
-    def mark_field!(field_name, trigger_changed = true)
+    def mark_field!(field_name)
       marked_fields[field_name] = true
     end
 
@@ -28,8 +44,32 @@ module Volt
       @marked_fields ||= ReactiveHash.new
     end
 
+
+    # Marks all fields, useful for when a model saves.
+    def mark_all_fields!
+      validations = self.class.validations
+      if validations
+        validations.each_key do |key|
+          mark_field!(key.to_sym)
+        end
+      end
+    end
+
+
     def marked_errors
       errors(true)
+    end
+
+    # server errors are errors that come back from the server when we save!
+    # Any changes to the associated fields will clear the error until another
+    # save!
+    def server_errors
+      @server_errors ||= ReactiveHash.new
+    end
+
+    # When a field is changed, we want to clear any errors from the server
+    def clear_server_errors(key)
+      @server_errors.delete(key)
     end
 
     # TODO: Errors is being called for any validation change.  We should have errors return a
@@ -37,22 +77,36 @@ module Volt
     def errors(marked_only = false)
       errors = {}
 
-      validations = self.class.validations
-
-      if validations
-        # Merge into errors, combining any error arrays
-        merge = proc do |new_errors|
-          errors.merge!(new_errors) do |key, new_val, old_val|
-            new_val + old_val
-          end
+      # Merge into errors, combining any error arrays
+      merge = proc do |new_errors|
+        errors.merge!(new_errors) do |key, new_val, old_val|
+          new_val + old_val
         end
+      end
+
+      errors = run_validations(errors, merge, marked_only)
+
+      # See if any server errors are in place and merge them in if they are
+      if Volt.client?
+        errors = merge.call(server_errors.to_h)
+      end
+
+      errors = run_custom_validations(errors, merge)
+
+      errors
+    end
+
+    private
+
+    # Runs through each of the normal validations.
+    def run_validations(errors, merge, marked_only)
+      validations = self.class.validations
+      if validations
 
         # Run through each validation
         validations.each_pair do |field_name, options|
-          if marked_only
-            # When marked only, skip any validations on non-marked fields
-            next unless marked_fields[field_name]
-          end
+          # When marked only, skip any validations on non-marked fields
+          next if marked_only && !marked_fields[field_name]
 
           options.each_pair do |validation, args|
             # Call the specific validator, then merge the results back
@@ -68,10 +122,25 @@ module Volt
         end
       end
 
-      errors
+      return errors
     end
 
-    private
+    def run_custom_validations(errors, merge)
+      # Call all of the custom validations
+      custom_validations = self.class.custom_validations
+      if custom_validations
+        custom_validations.each do |custom_validation|
+          # Run the validator in the context of the model
+          result = instance_eval(&custom_validation)
+          if result
+            errors = merge.call(result)
+          end
+        end
+      end
+
+      return errors
+    end
+
 
     # calls the validate method on the class, passing the right arguments.
     def validate_with(merge, klass, field_name, args)

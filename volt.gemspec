@@ -30,6 +30,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rake', '~> 10.0.4'
   spec.add_dependency 'listen', '~> 2.7.0'
   spec.add_dependency 'uglifier', '~> 2.4.0'
+  spec.add_dependency "configurations", "~> 2.0.0.pre"
   spec.add_dependency 'yui-compressor', '~> 0.12.0'
   spec.add_dependency 'opal', '~> 0.6.0'
   spec.add_dependency 'opal-jquery', '~> 0.2.0'
@@ -41,6 +42,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'poltergeist', '~> 1.5.0'
   spec.add_dependency 'opal-rspec', '0.3.0.beta3'
   spec.add_dependency 'bundler', '>= 1.5'
+
+  # For user passwords
+  spec.add_dependency 'bcrypt', '~> 3.1.9'
 
   # spec.add_dependency "promise.rb", "~> 0.6.1"
 

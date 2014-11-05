@@ -1,17 +1,17 @@
 require 'volt/models'
 
 class TestModel < Volt::Model
-  validate :_name, length: 4
-  validate :_description, length: { message: 'needs to be longer', length: 50 }
-  validate :_username, presence: true
+  validate :name, length: 4
+  validate :description, length: { message: 'needs to be longer', length: 50 }
+  validate :username, presence: true
 end
 
 describe Volt::Model do
   it 'should validate the name' do
     expect(TestModel.new.errors).to eq(
-      _name: ['must be at least 4 characters'],
-      _description: ['needs to be longer'],
-      _username: ['must be specified']
+      name: ['must be at least 4 characters'],
+      description: ['needs to be longer'],
+      username: ['must be specified']
     )
   end
 
@@ -20,10 +20,10 @@ describe Volt::Model do
 
     expect(model.marked_errors).to eq({})
 
-    model.mark_field!(:_name)
+    model.mark_field!(:name)
 
     expect(model.marked_errors).to eq(
-      _name: ['must be at least 4 characters']
+      name: ['must be at least 4 characters']
     )
   end
 
@@ -34,7 +34,7 @@ describe Volt::Model do
 
     model.save!
 
-    expect(model.marked_errors.keys).to eq([:_name, :_description, :_username])
+    expect(model.marked_errors.keys).to eq([:name, :description, :username])
   end
 
   describe 'length' do
@@ -43,10 +43,10 @@ describe Volt::Model do
 
       expect(model.marked_errors).to eq({})
 
-      model.mark_field!(:_description)
+      model.mark_field!(:description)
 
       expect(model.marked_errors).to eq(
-        _description: ['needs to be longer']
+        description: ['needs to be longer']
       )
     end
   end
@@ -57,10 +57,10 @@ describe Volt::Model do
 
       expect(model.marked_errors).to eq({})
 
-      model.mark_field!(:_username)
+      model.mark_field!(:username)
 
       expect(model.marked_errors).to eq(
-        _username: ['must be specified']
+        username: ['must be specified']
       )
     end
   end
