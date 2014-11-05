@@ -29,7 +29,7 @@ module Volt
       end
     end
 
-    alias_method :setup, :configuration
+    alias_method :setup,  :configure
     alias_method :config, :configuration
   end
 
