@@ -1,0 +1,25 @@
+<:Title>
+  Cookies
+
+<:Body>
+  <h1>Add Cookies</h1>
+
+  <form e-submit="add_cookie">
+    <div class="form-group">
+       <label>Name</label>
+       <input class="form-control" id="cookieName" type="text" value="{{ _name }}" />
+    </div>
+    <div class="form-group">
+       <label>Value</label>
+       <input class="form-control" id="cookieValue" type="text" value="{{ _value }}" />
+    </div>
+    <button>Add Cookie</button>
+  </form>
+
+  <h2>Cookies</h2>
+
+  <ul>
+    {{ cookies.keys.each do |key| }}
+      <li>{{ key }}: {{ cookies.read_attribute(key) }} <button class="cookieDelete" e-click="cookies.delete(key)">X</button></li>
+    {{ end }}
+  </ul>

@@ -61,16 +61,20 @@ module Volt
       if attrs
         # Assign id first
         id       = attrs.delete(:_id)
-        self._id = id if id
 
-        # Assign each attribute using setters
-        attrs.each_pair do |key, value|
-          if self.respond_to?(:"#{key}=")
-            # If a method without an underscore is defined, call that.
-            send(:"#{key}=", value)
-          else
-            # Otherwise, use the _ version
-            send(:"_#{key}=", value)
+        # When doing a mass-assign, we don't save until the end.
+        Model.nosave do
+          self._id = id if id
+
+          # Assign each attribute using setters
+          attrs.each_pair do |key, value|
+            if self.respond_to?(:"#{key}=")
+              # If a method without an underscore is defined, call that.
+              send(:"#{key}=", value)
+            else
+              # Otherwise, use the _ version
+              send(:"_#{key}=", value)
+            end
           end
         end
       else
@@ -112,9 +116,12 @@ module Volt
 
     def method_missing(method_name, *args, &block)
       if method_name[0] == '_'
+
+        # Remove underscore
+        method_name = method_name[1..-1]
         if method_name[-1] == '='
-          # Assigning an attribute with =
-          assign_attribute(method_name, *args, &block)
+          # Assigning an attribute without the =
+          assign_attribute(method_name[0..-2], *args, &block)
         else
           read_attribute(method_name)
         end
@@ -128,7 +135,7 @@ module Volt
     def assign_attribute(method_name, *args, &block)
       self.expand!
       # Assign, without the =
-      attribute_name = method_name[1..-2].to_sym
+      attribute_name = method_name.to_sym
 
       value = args[0]
 
@@ -144,8 +151,16 @@ module Volt
           @size_dep.changed!
         end
 
-        # Let the persistor know something changed
-        @persistor.changed(attribute_name) if @persistor
+        # TODO: Can we make this so it doesn't need to be handled for non store collections
+        # (maybe move it to persistor, though thats weird since buffers don't have a persistor)
+        clear_server_errors(attribute_name) if @server_errors
+
+
+        # Don't save right now if we're in a nosave block
+        if !defined?(Thread) || !Thread.current['nosave']
+          # Let the persistor know something changed
+          @persistor.changed(attribute_name) if @persistor
+        end
       end
     end
 
@@ -153,33 +168,38 @@ module Volt
     # 1) a nil model, which returns a wrapped error
     # 2) reading directly from attributes
     # 3) trying to read a key that doesn't exist.
-    def read_attribute(method_name)
+    def read_attribute(attr_name)
       # Reading an attribute, we may get back a nil model.
-      method_name = method_name.to_sym
+      attr_name = attr_name.to_sym
 
-      if method_name[0] != '_' && @attributes.nil?
-        # The method we are calling is on a nil model, return a wrapped
-        # exception.
-        return_undefined_method(method_name)
-      else
-        attr_name = method_name[1..-1].to_sym
-        # See if the value is in attributes
-        value     = (@attributes && @attributes[attr_name])
+      # Track dependency
+      # @deps.depend(attr_name)
 
+      # See if the value is in attributes
+      if @attributes && @attributes.key?(attr_name)
         # Track dependency
         @deps.depend(attr_name)
 
-        if value
-          # key was in attributes or cache
-          value
-        else
-          new_model              = read_new_model(attr_name)
-          @attributes            ||= {}
-          @attributes[attr_name] = new_model
+        return @attributes[attr_name]
+      else
+        new_model              = read_new_model(attr_name)
+        @attributes            ||= {}
+        @attributes[attr_name] = new_model
 
+        # Trigger size change
+        # TODO: We can probably improve Computations to just make this work
+        # without the delay
+        if Volt.in_browser?
+          `setImmediate(function() {`
+            @size_dep.changed!
+          `});`
+        else
           @size_dep.changed!
-          new_model
         end
+
+        # Depend on attribute
+        @deps.depend(attr_name)
+        return new_model
       end
     end
 
@@ -273,30 +293,41 @@ module Volt
         if save_to
           if save_to.is_a?(ArrayModel)
             # Add to the collection
-            new_model             = save_to << attributes
-
-            # Set the buffer's id to track the main model's id
-            attributes[:_id] = new_model._id
-            options[:save_to]     = new_model
-
-            # TODO: return a promise that resolves if the append works
+            promise = save_to.append(attributes)
           else
             # We have a saved model
-            return save_to.assign_attributes(attributes)
+            promise = save_to.assign_attributes(attributes)
+          end
+
+          return promise.then do |new_model|
+            if new_model
+              # Set the buffer's id to track the main model's id
+              attributes[:_id] = new_model._id
+              options[:save_to]     = new_model
+            end
+
+            nil
+          end.fail do |errors|
+            if errors.is_a?(Hash)
+              server_errors.replace(errors)
+            end
+
+            promise_for_errors(errors)
           end
         else
           fail 'Model is not a buffer, can not be saved, modifications should be persisted as they are made.'
         end
-
-        Promise.new.resolve({})
       else
         # Some errors, mark all fields
-        self.class.validations.each_key do |key|
-          mark_field!(key.to_sym)
-        end
-
-        Promise.new.reject(errors)
+        promise_for_errors(errors)
       end
+    end
+
+    # When errors come in, we mark all fields and return a rejected promise.
+    def promise_for_errors(errors)
+      mark_all_fields!
+
+      Promise.new.reject(errors)
     end
 
     # Returns a buffered version of the model
@@ -322,6 +353,24 @@ module Volt
       end
 
       model
+    end
+
+    # Takes a block that when run, changes to models will not save inside of
+    if RUBY_PLATFORM == 'opal'
+      # Temporary stub for no save on client
+      def self.nosave
+        yield
+      end
+    else
+      def self.nosave
+        previous = Thread.current['nosave']
+        Thread.current['nosave'] = true
+        begin
+          yield
+        ensure
+          Thread.current['nosave'] = previous
+        end
+      end
     end
 
     private

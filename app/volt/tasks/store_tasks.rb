@@ -12,6 +12,7 @@ class StoreTasks < Volt::TaskHandler
   end
 
   def load_model(collection, path, data)
+    puts "Load Model: #{path.inspect}"
     model_name = collection.singularize.camelize
 
     # TODO: Security check to make sure we have a valid model
@@ -22,37 +23,39 @@ class StoreTasks < Volt::TaskHandler
       model_class = Volt::Model
     end
 
-    if model_class
-      # Load the model, use the Store persistor and set the path
-      model = model_class.new(data, persistor: Volt::Persistors::StoreFactory.new(nil), path: path)
-      return model
-    end
+    # Load the model, use the Store persistor and set the path
+    model = model_class.new({}, persistor: Volt::Persistors::StoreFactory.new(nil), path: path)
+    model.persistor.change_state_to(:loaded)
 
-    return nil
+    # Create a buffer
+    buffer = model.buffer
+
+    # Assign the data
+    buffer.attributes = data
+
+    return buffer
   end
 
   def save(collection, path, data)
     data = data.symbolize_keys
-    model = load_model(collection, path, data)
-
-    errors = model.errors
-
-    if model.errors.size == 0
-
-      # On the backend, the promise is resolved before its returned, so we can
-      # return from within it.
-      #
-      # Pass the channel as a thread-local so that we don't update the client
-      # who sent the update.
-      Thread.current['in_channel'] = @channel
-      model.persistor.changed do |errors|
-        Thread.current['in_channel'] = nil
-
-        return errors
-      end
-    else
-      return errors
+    model = nil
+    Volt::Model.nosave do
+      model = load_model(collection, path, data)
     end
+
+    # On the backend, the promise is resolved before its returned, so we can
+    # return from within it.
+    #
+    # Pass the channel as a thread-local so that we don't update the client
+    # who sent the update.
+    Thread.current['in_channel'] = @channel
+    promise = model.save!.then do |result|
+      return nil
+    end
+
+    Thread.current['in_channel'] = nil
+
+    return promise
   end
 
   def delete(collection, id)

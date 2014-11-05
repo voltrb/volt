@@ -3,6 +3,7 @@
 [![Build Status](http://img.shields.io/travis/voltrb/volt/master.svg)](https://travis-ci.org/voltrb/volt)
 [![Inline docs](http://inch-ci.org/github/voltrb/volt.svg?branch=master)](http://inch-ci.org/github/voltrb/volt)
 [![Volt Chat](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/voltrb/volt)
+[![Stories in Ready](https://badge.waffle.io/voltrb/volt.png?label=ready&title=Ready)](https://waffle.io/voltrb/volt)
 
 ** For the current status of volt, read: http://voltframework.com/blog
 

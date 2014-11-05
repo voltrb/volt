@@ -1,0 +1,22 @@
+<:Title>
+  Users Test
+
+<:Body>
+  <h1>Users Test</h1>
+
+  <form e-submit="signup">
+    {{ errors.html_inspect }}<br />
+    <input value="{{ _username }}" /><br />
+    <input type="password" value="{{ _password }}" /><br />
+
+    <button>Signup</button>
+  </form>
+
+  <hr />
+
+  <button e-click="login">Login</button><button e-click="logout">Logout</button>
+
+  {{ if Volt.user }}
+    {{ Volt.user._username }}<br />
+    {{ Volt.user._name }}
+  {{ end }}

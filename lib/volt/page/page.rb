@@ -84,6 +84,10 @@ module Volt
       @local_store ||= Model.new({}, persistor: Persistors::LocalStore)
     end
 
+    def cookies
+      @cookies ||= Model.new({}, persistor: Persistors::Cookies)
+    end
+
     def tasks
       @tasks ||= Tasks.new(self)
     end

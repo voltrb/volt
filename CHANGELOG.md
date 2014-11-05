@@ -1,9 +1,17 @@
 # Change Log
 
-## 0.8.19 - 2014-10-26
+## 0.8.19 - 2014-11-05
+### Breaking Changes
+- the default index page is now moved from ```public/index.html``` to ```config/base/index.html```  Please update your app's accordingly.  Since the public page is essentially static at the moment, public will only be used for asset pre-compilation (and index.html will be rendered in place)
+- validations do not use underscore for the field name
+
 ### Added
+- you can precompile an app with ```bundle exec volt precompile``` - still a work in process
 - update flash to handle successes, notices, warnings, errors.
-- Add .keys to models
+- Add .keys to models (you can use .keys.each do |key| until we get .each_pair binding support)
+- added ```cookies``` collection.  See docs for more info
+- ```validate :field_name, unique: true``` now supported (scope coming soon)
+- added custom validations by passing a block to ```validate``` and returning a hash of errors like ```{field_name => ['...', '...']}```
 
 ## 0.8.18 - 2014-10-26
 ### Added

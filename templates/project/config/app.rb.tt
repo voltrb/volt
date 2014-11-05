@@ -1,5 +1,10 @@
-Volt.setup do |config|
+Volt.configure do |config|
   # Setup your global app config here.
+
+  # Your app secret is used for signing things like the user cookie so it can't
+  # be tampered with.  A random value is generated on new projects that will work
+  # without the need to customize.  Make sure this value doesn't leave your server.
+  config.app_secret = '<%= SecureRandom.urlsafe_base64(50) %>'
 
   # The app name defaults to the folder it is run in.
   # config.app_name = '<%= config[:name] %>'

@@ -6,9 +6,10 @@ module Volt
     def delete(name)
       name = name.to_sym
 
-      value = attributes.delete(name)
-      @deps.delete(name)
+      value = @attributes.delete(name)
+
       @size_dep.changed!
+      @deps.delete(name)
 
       @persistor.removed(name) if @persistor
 

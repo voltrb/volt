@@ -66,12 +66,30 @@ module Volt
 
       super(model)
 
-      @persistor.added(model, @array.size - 1) if @persistor
-
-      model
+      if @persistor
+        @persistor.added(model, @array.size - 1)
+      else
+        nil
+      end
     end
 
-    alias_method :append, :<<
+    # Works like << except it returns a promise
+    def append(model)
+      promise, model = self.send(:<<, model)
+
+      # Return a promise if one doesn't exist
+      promise ||= Promise.new.resolve(model)
+
+      promise
+    end
+
+
+    # Find one does a query, but only returns the first item or
+    # nil if there is no match.  Unlike #find, #find_one does not
+    # return another cursor that you can call .then on.
+    def find_one(*args, &block)
+      find(*args, &block).limit(1)[0]
+    end
 
     # Make sure it gets wrapped
     def inject(*args)

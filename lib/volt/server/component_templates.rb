@@ -1,13 +1,15 @@
 require 'volt/server/html_parser/view_parser'
+require 'volt/tasks/task_handler'
 
 # Initialize with the path to a component and returns all the front-end
 # setup code (for controllers, models, views, and routes)
 module Volt
   class ComponentTemplates
+    # client is if we are generating for the client or backend
     def initialize(component_path, component_name, client = true)
       @component_path = component_path
       @component_name = component_name
-      @client         = true
+      @client         = client
     end
 
     def code
@@ -21,11 +23,7 @@ module Volt
     end
 
     def page_reference
-      if @client
-        '$page'
-      else
-        'page'
-      end
+      '$page'
     end
 
     def generate_view_code

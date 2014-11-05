@@ -50,28 +50,26 @@ module Volt
         logical_path = logical_path.to_s
         # Only include files that aren't compiled elsewhere, like fonts
         unless logical_path[/[.](y|css|js|html|erb)$/]
-          write_file(logical_path)
+          write_sprocket_file(logical_path)
         end
       end
     end
 
     def write_js_and_css
       (@index_files.javascript_files + @index_files.css_files).each do |logical_path|
-        logical_path = logical_path.gsub(/^\/assets\//, '')
-        write_file(logical_path)
+        if logical_path =~ /^\/assets\//
+          logical_path = logical_path.gsub(/^\/assets\//, '')
+          write_sprocket_file(logical_path)
+        end
       end
     end
 
-    def write_file(logical_path)
-      path = "#{@root_path}/compiled/assets/#{logical_path}"
-
-      FileUtils.mkdir_p(File.dirname(path))
+    def write_sprocket_file(logical_path)
+      path = "#{@root_path}/public/assets/#{logical_path}"
 
       begin
         content = @opal_files.environment[logical_path].to_s
-        File.open(path, 'wb') do |file|
-          file.write(content)
-        end
+        write_file(path, content)
       rescue Sprockets::FileNotFound, SyntaxError => e
         # ignore
       end
@@ -80,19 +78,21 @@ module Volt
     def write_component_js
       javascript_code = @component_handler.compile_for_component('main')
 
-      components_folder = File.join(Volt.root, '/compiled/components')
-      FileUtils.mkdir_p(components_folder)
-      File.open(File.join(components_folder, '/main.js'), 'w') do |file|
-        file.write(javascript_code)
-      end
+      path = File.join(Volt.root, '/public/components/main.js')
+      write_file(path, javascript_code)
     end
 
     def write_index
-      path = "#{@root_path}/compiled/index.html"
+      path = "#{@root_path}/public/index.html"
+
+      write_file(path, @index_files.html)
+    end
+
+    def write_file(path, data)
       FileUtils.mkdir_p(File.dirname(path))
 
-      File.open(path, 'w') do |file|
-        file.write(@index_files.html)
+      File.open(path, 'wb') do |file|
+        file.write(data)
       end
     end
   end
