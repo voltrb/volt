@@ -107,7 +107,7 @@ module Volt
     end
 
     def add_component(tag_name, attributes, unary)
-      component_name = tag_name[1..-1].gsub(':', '/')
+      component_name = tag_name[1..-1].tr(':', '/')
 
       @handler.html << "<!-- $#{@binding_number} --><!-- $/#{@binding_number} -->"
 

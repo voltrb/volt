@@ -37,7 +37,7 @@ module Volt
     def mark_all_fields!
       validations = self.class.validations
       if validations
-        validations.keys.each do |key|
+        validations.each_key do |key|
           mark_field!(key.to_sym)
         end
       end
