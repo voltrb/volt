@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/voltrb/volt.png?label=ready&title=Ready)](https://waffle.io/voltrb/volt)
 [![Gem Version](https://badge.fury.io/rb/volt.svg)](http://badge.fury.io/rb/volt)
 [![Code Climate](https://codeclimate.com/github/voltrb/volt/badges/gpa.svg)](https://codeclimate.com/github/voltrb/volt)
 [![Build Status](http://img.shields.io/travis/voltrb/volt/master.svg)](https://travis-ci.org/voltrb/volt)
