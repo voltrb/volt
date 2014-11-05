@@ -58,6 +58,7 @@ module Volt
     def write_js_and_css
       (@index_files.javascript_files + @index_files.css_files).each do |logical_path|
         logical_path = logical_path.gsub(/^\/assets\//, '')
+        next if logical_path =~ /^\/components\//
         write_file(logical_path)
       end
     end
