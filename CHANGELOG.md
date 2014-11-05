@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.8.21 - 2014-11-05
+### Changed
+- fix merge conflict
+
 ## 0.8.20 - 2014-11-05
 ### Changed
 - fix secure random bug from 0.8.19 :-)
