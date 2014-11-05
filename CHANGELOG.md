@@ -7,6 +7,9 @@
 - validations do not use underscore for the field name
 - added ```cookies``` collection.  See docs for more info
 - ```validate :field_name, unique: true``` now supported (scope coming soon)
+- added custom validations by passing a block to ```validate``` and returning a hash of errors like ```{field_name => ['...', '...']}```
+- the default index page is now moved from ```public/index.html``` to ```config/base/index.html```  Since the public page is essentially static at the moment, public will only be used for asset pre-compilation (and index.html will be rendered in place)
+- you can precompile an app with ```bundle exec volt precompile``` - still a work in process
 
 ## 0.8.18 - 2014-10-26
 ### Added
