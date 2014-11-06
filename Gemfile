@@ -44,6 +44,9 @@ group :development do
   # gem 'guard-rspec'
   # gem 'opal-rspec', '0.3.0.beta2'#, git: 'https://github.com/adambeynon/opal-rspec.git'
   # gem 'yard', require: false
+
+  gem 'sauce', '3.5.3'
+  gem 'sauce-connect'
 end
 
 group :development, :test do

@@ -1,7 +1,7 @@
 if ENV['BROWSER'] && ENV['BROWSER'] != 'phantom'
   require 'spec_helper'
 
-  describe 'url features', type: :feature do
+  describe 'url features', type: :feature, sauce: true do
     it 'should update the page when using the back button' do
       visit '/'
       expect(current_url).to match(/\/$/)

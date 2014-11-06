@@ -1,7 +1,7 @@
 if ENV['BROWSER'] == 'firefox'
   require 'spec_helper'
 
-  describe 'todo example spec', type: :feature do
+  describe 'todo example spec', type: :feature, :sauce => true do
     before do
       visit '/'
 
