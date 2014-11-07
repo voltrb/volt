@@ -2,6 +2,8 @@ if RUBY_PLATFORM != 'opal'
   require 'bcrypt'
 end
 
+puts "LOAD MODEL"
+
 class User < Volt::Model
   validate :username, unique: true, length: 8
   if RUBY_PLATFORM == 'opal'
@@ -29,6 +31,8 @@ class User < Volt::Model
 
       # Pass nil back
       nil
+    end.fail do |err|
+      $page.flash._errors << err
     end
   end
 

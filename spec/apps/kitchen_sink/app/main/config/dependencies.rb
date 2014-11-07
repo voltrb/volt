@@ -6,3 +6,6 @@ component 'bootstrap'
 
 # a default theme for the bootstrap framework
 component 'bootstrap-jumbotron-theme'
+
+# For testing user
+component 'fields'

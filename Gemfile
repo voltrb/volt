@@ -10,6 +10,9 @@ group :development do
   # Simple theme for bootstrap, remove to theme yourself.
   gem 'volt-bootstrap-jumbotron-theme'
 
+  # For testing
+  gem 'volt-fields'
+
   # For running rubocop
   gem 'rubocop', require: false
 end
