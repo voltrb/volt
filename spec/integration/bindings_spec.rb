@@ -1,7 +1,7 @@
 if ENV['BROWSER']
   require 'spec_helper'
 
-  describe 'bindings test', type: :feature do
+  describe 'bindings test', type: :feature, sauce: true do
     it 'should load the page' do
       visit '/'
 

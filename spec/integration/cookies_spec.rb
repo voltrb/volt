@@ -1,7 +1,7 @@
 if ENV['BROWSER']
   require 'spec_helper'
 
-  describe 'cookies collection', type: :feature do
+  describe 'cookies collection', type: :feature, sauce: true do
     if ENV['BROWSER'] != 'phantom'
       # TODO: fails in phantom for some reason
       it 'should add' do

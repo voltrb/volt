@@ -1,7 +1,8 @@
-if ENV['BROWSER']
+# This spec fails on sauce randomly, disable for now
+if ENV['BROWSER'] && ENV['BROWSER'] != 'sauce'
   require 'spec_helper'
 
-  describe 'flash messages', type: :feature do
+  describe 'flash messages', type: :feature, :sauce => true do
     it 'should flash on sucesses, notices, warnings, and errors' do
       visit '/'
 

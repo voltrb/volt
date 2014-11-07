@@ -4,12 +4,24 @@
 <:Body>
   <h1>Users Test</h1>
 
+
+  <h2>Signup</h2>
   <form e-submit="signup">
-    {{ errors.html_inspect }}<br />
-    <input value="{{ _username }}" /><br />
-    <input type="password" value="{{ _password }}" /><br />
+    <:fields:text value="{{ _username }}" />
+    <:fields:text value="{{ _password }}" />
 
     <button>Signup</button>
+  </form>
+
+  <hr />
+
+  <h2>Login</h2>
+
+  <form e-submit="login">
+    <:fields:text value="{{ page._login._username }}" />
+    <:fields:text value="{{ page._login._password }}" />
+
+    <button>Login</button>
   </form>
 
   <hr />

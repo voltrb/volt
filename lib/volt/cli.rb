@@ -12,6 +12,8 @@ module Volt
     desc 'new PROJECT_NAME', 'generates a new project.'
 
     def new(name)
+      require 'securerandom'
+
       # Grab the current volt version
       version = File.read(File.join(File.dirname(__FILE__), '../../VERSION'))
       directory('project', name, version: version, name: name)

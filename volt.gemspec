@@ -25,8 +25,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'sprockets-sass', '~> 1.0.0'
   spec.add_dependency 'sass', '~> 3.2.5'
   spec.add_dependency 'mongo', '~> 1.9.0'
-  # spec.add_dependency "bson_ext", "~> 1.9.0"
-  # spec.add_dependency "thin", "~> 1.6.0"
   spec.add_dependency 'rake', '~> 10.0.4'
   spec.add_dependency 'listen', '~> 2.7.0'
   spec.add_dependency 'uglifier', '~> 2.4.0'
@@ -42,16 +40,16 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'poltergeist', '~> 1.5.0'
   spec.add_dependency 'opal-rspec', '0.4.0.beta3'
   spec.add_dependency 'bundler', '>= 1.5'
+  spec.add_dependency 'volt-sockjs', '~> 0.3.4.4'
 
   # For user passwords
   spec.add_dependency 'bcrypt', '~> 3.1.9'
 
-  # spec.add_dependency "promise.rb", "~> 0.6.1"
-
-  # spec.add_dependency "rack-colorized_logger", "~> 1.0.4"
-
   spec.add_development_dependency 'guard', '2.6.0' # bug in current guard
   spec.add_development_dependency 'guard-rspec', '~> 4.3.0'
   spec.add_development_dependency 'yard', '~> 0.8.7.0'
+  spec.add_development_dependency 'sauce', '~> 3.5.3'
+  spec.add_development_dependency 'sauce-connect', '~> 3.5.0'
+
 
 end

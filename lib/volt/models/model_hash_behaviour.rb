@@ -58,6 +58,16 @@ module Volt
       (@attributes || {}).each_with_object(*args, &block)
     end
 
+    def each_pair
+      @attributes.each_pair do |k,v|
+        yield(k,v)
+      end
+    end
+
+    def key?(key)
+      @attributes && @attributes.key?(key)
+    end
+
     # Convert the model to a hash all of the way down.
     def to_h
       @size_dep.depend
