@@ -11,6 +11,7 @@ gem 'volt-bootstrap'
 gem 'volt-bootstrap-jumbotron-theme'
 
 gem 'volt-fields'
+gem 'volt-user-templates'
 
 # Server for MRI
 platform :mri do
