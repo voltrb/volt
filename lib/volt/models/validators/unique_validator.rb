@@ -1,6 +1,6 @@
 module Volt
   class UniqueValidator
-    def self.validate(model, field_name, args)
+    def self.validate(model, old_model, field_name, args)
       errors = {}
 
       if RUBY_PLATFORM != 'opal'

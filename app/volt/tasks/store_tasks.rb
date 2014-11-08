@@ -12,20 +12,30 @@ class StoreTasks < Volt::TaskHandler
   end
 
   def load_model(collection, path, data)
-    puts "Load Model: #{path.inspect}"
+    puts "Load Model: #{path.inspect} - #{data.inspect}"
     model_name = collection.singularize.camelize
 
-    # TODO: Security check to make sure we have a valid model
-    # and don't load classes we shouldn't
-    begin
-      model_class = Object.send(:const_get, model_name)
-    rescue NameError => e
-      model_class = Volt::Model
-    end
+    # # TODO: Security check to make sure we have a valid model
+    # # and don't load classes we shouldn't
+    # begin
+    #   model_class = Object.send(:const_get, model_name)
+    # rescue NameError => e
+    #   model_class = Volt::Model
+    # end
+    #
+    # # Load the model, use the Store persistor and set the path
+    # model = model_class.new({}, persistor: Volt::Persistors::StoreFactory.new(nil), path: path)
+    # model.persistor.change_state_to(:loaded)
 
-    # Load the model, use the Store persistor and set the path
-    model = model_class.new({}, persistor: Volt::Persistors::StoreFactory.new(nil), path: path)
-    model.persistor.change_state_to(:loaded)
+    # Fetch the model
+    collection = store.send(:"_#{path[-2]}")
+
+    # See if the model has already been made
+    model = collection.find_one({_id: data[:_id]})
+
+    # Otherwise assign to the collection
+    model ||= collection
+
 
     # Create a buffer
     buffer = model.buffer

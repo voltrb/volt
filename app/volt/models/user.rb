@@ -4,19 +4,17 @@ end
 
 class User < Volt::Model
   # returns true if the user configured using the username
-  def self.use_username?
+  def self.login_field
     auth = Volt.config.auth
-    auth && auth.use_username
+    if auth && auth.use_username
+      :username
+    else
+      :email
+    end
   end
 
-  if use_username?
-    # use username
-    validate :username, unique: true, length: 8
-  else
-    # use e-mail
-    # TODO: Needs to validate email format
-    validate :email, unique: true, length: 8
-  end
+  validate login_field, unique: true, length: 8
+
   if RUBY_PLATFORM == 'opal'
     # Don't validate on the server
     validate :password, length: 8
