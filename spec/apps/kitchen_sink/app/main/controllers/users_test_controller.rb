@@ -14,7 +14,7 @@ class UsersTestController < Volt::ModelController
 
   def login
     puts "USER LOGIN"
-    User.login(page._login._username, page._login._password).then do |result|
+    Volt.login(page._login._email, page._login._password).then do |result|
       puts "Login Success"
     end.fail do |err|
       puts "ERR: #{err.inspect}"

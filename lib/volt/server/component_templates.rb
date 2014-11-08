@@ -13,7 +13,9 @@ module Volt
     end
 
     def code
-      code = generate_view_code
+      code = ''
+      code += generate_config_code if @client
+      code += generate_view_code
       if @client
         # On the backend, we just need the views
         code << generate_controller_code + generate_model_code + generate_routes_code + generate_tasks_code
@@ -100,6 +102,10 @@ module Volt
       TaskHandler.known_handlers.map do |handler|
         "class #{handler.name} < Volt::TaskHandler; end"
       end.join "\n"
+    end
+
+    def generate_config_code
+      "\nVolt.setup_client_config(#{Volt.config.to_h.inspect})\n"
     end
   end
 end

@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.8.22 - 2014-...
+### Added
+- Volt.config is now accessable from the client.
+
 ## 0.8.21 - 2014-11-05
 ### Changed
 - fix merge conflict

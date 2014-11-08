@@ -2,11 +2,12 @@ require 'volt/volt/environment'
 require 'volt/extra_core/extra_core'
 require 'volt/reactive/computation'
 require 'volt/reactive/dependency'
+require 'volt/config'
 if RUBY_PLATFORM == 'opal'
 else
-  require 'volt/config'
   require 'volt/data_stores/data_store'
 end
+require 'volt/volt/users'
 
 module Volt
   @in_browser = if RUBY_PLATFORM == 'opal'
@@ -81,6 +82,11 @@ module Volt
 
         return user_id
       end
+    end
+
+    # True if the user is logged in and the user is loaded
+    def user?
+      !!user
     end
 
     # Return the current user.

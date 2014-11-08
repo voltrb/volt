@@ -3,7 +3,20 @@ if RUBY_PLATFORM != 'opal'
 end
 
 class User < Volt::Model
-  validate :username, unique: true, length: 8
+  # returns true if the user configured using the username
+  def self.use_username?
+    auth = Volt.config.auth
+    auth && auth.use_username
+  end
+
+  if use_username?
+    # use username
+    validate :username, unique: true, length: 8
+  else
+    # use e-mail
+    # TODO: Needs to validate email format
+    validate :email, unique: true, length: 8
+  end
   if RUBY_PLATFORM == 'opal'
     # Don't validate on the server
     validate :password, length: 8
@@ -18,21 +31,4 @@ class User < Volt::Model
     end
   end
 
-  # Login the user, return a promise for success
-  def self.login(username, password)
-    puts "Login now"
-    UserTasks.login(username, password).then do |result|
-      puts "Got: #{result.inspect}"
-
-      # Assign the user_id cookie for the user
-      $page.cookies._user_id = result
-
-      # Pass nil back
-      nil
-    end
-  end
-
-  def self.logout
-    $page.cookies.delete(:user_id)
-  end
 end
