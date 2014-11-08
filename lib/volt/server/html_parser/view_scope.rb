@@ -113,6 +113,7 @@ module Volt
 
       data_hash = []
       attributes.each_pair do |name, value|
+        name = name.tr('-', '_')
         parts, binding_count = binding_parts_and_count(value)
 
         # if this attribute has bindings
