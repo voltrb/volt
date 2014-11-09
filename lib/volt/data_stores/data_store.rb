@@ -9,7 +9,7 @@ module Volt
       when 'mongo'
         MongoDriver.fetch
       else
-        fail "Could not resolve the db specified in Volt.config.db_driver: #{db_driver}"
+        fail "Database specified in Volt.config.db_driver is not supported: #{db_driver}"
       end
     end
 
