@@ -91,7 +91,6 @@ module Volt
 
               queue_client_save
             else
-              puts "Save to DB"
               errors = save_to_db!(self_attributes)
               if errors.size == 0
                 promise.resolve(nil)
@@ -204,7 +203,7 @@ module Volt
             end
           end
 
-          puts "Update Collection: #{collection.inspect} - #{values.inspect} -- #{Thread.current['in_channel'].inspect}"
+          # puts "Update Collection: #{collection.inspect} - #{values.inspect} -- #{Thread.current['in_channel'].inspect}"
           QueryTasks.live_query_pool.updated_collection(collection.to_s, Thread.current['in_channel'])
           return {}
         end

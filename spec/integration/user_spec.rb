@@ -2,18 +2,20 @@ if ENV['BROWSER']
   require 'spec_helper'
 
   describe "user accounts", type: :feature, sauce: true do
-    before(:all) do
+    before(:each) do
       # Clear out db
       DataStore.new.drop_database
     end
 
-    after(:all) do
+    after(:each) do
       # Clear out db
       DataStore.new.drop_database
     end
 
     it 'should create an account' do
       visit '/'
+
+      # sleep 300
 
       click_link 'Login'
 
@@ -27,25 +29,30 @@ if ENV['BROWSER']
 
       click_button 'Signup'
 
-      sleep 10
-
       expect(page).to have_content('Test Account 9550')
     end
 
-    # it 'should login and logout' do
-    #   visit '/'
-    #
-    #   click_link 'Login'
-    #
-    #   fields = all(:css, 'form .form-control')
-    #   fields[0].set('test@test.com')
-    #   fields[1].set('awes0mesEcRet')
-    #   click_button 'Login'
-    #
-    #   sleep 10
-    #
-    #   expect(page).to have_content('Test Account 9550')
-    # end
+    it 'should login and logout' do
+      visit '/'
+
+      # Add the user
+      $page.store._users << {email: 'test@test.com', password: 'awes0mesEcRet', name: 'Test Account 9550'}
+
+      click_link 'Login'
+
+      fields = all(:css, 'form .form-control')
+      fields[0].set('test@test.com')
+      fields[1].set('awes0mesEcRet')
+      click_button 'Login'
+
+      expect(page).to have_content('Test Account 9550')
+
+      click_link 'Test Account 9550'
+      click_link 'Logout'
+
+      expect(page).to_not have_content('Test Account 9550')
+
+    end
   end
 
 end

@@ -58,7 +58,7 @@ else
 
       # Load in all .rb files in the config folder
       def run_files_in_config_folder
-        Dir[Dir.pwd + '/config/*.rb'].each do |config_file|
+        Dir[Volt.root + '/config/*.rb'].each do |config_file|
           require(config_file)
         end
       end

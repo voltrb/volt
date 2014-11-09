@@ -4,6 +4,7 @@ module Volt
       require 'volt'
     else
       ENV['SERVER'] = 'true'
+      ENV['VOLT_ENV'] = 'test'
 
       if ENV['BROWSER']
         require 'capybara'
@@ -16,7 +17,7 @@ module Volt
       require 'volt/boot'
 
       # Require in app
-      Volt.boot(Dir.pwd)
+      Volt.boot(app_path)
 
       if ENV['BROWSER']
         require 'volt/server'
