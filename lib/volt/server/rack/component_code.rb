@@ -14,7 +14,8 @@ module Volt
 
     # The client argument is for if this code is being generated for the client
     def code(client=true)
-      code = ''
+      # Start with config code
+      code = generate_config_code
 
       asset_files = AssetFiles.new(@component_name, @component_paths)
       asset_files.component_paths.each do |component_path, component_name|
@@ -24,5 +25,11 @@ module Volt
 
       code
     end
+
+
+    def generate_config_code
+      "\nVolt.setup_client_config(#{Volt.config.public.to_h.inspect})\n"
+    end
+
   end
 end
