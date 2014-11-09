@@ -3,11 +3,15 @@ require 'volt/data_stores/mongo_driver'
 module Volt
   class DataStore
     def self.fetch
-      if Volt.config.db_driver == 'mongo'
-        return MongoDriver.fetch
+      db_driver = Volt.config.db_driver
+
+      case db_driver
+      when 'mongo'
+        MongoDriver.fetch
       else
-        fail "#{database_name} is not a supported database"
+        fail "Database specified in Volt.config.db_driver is not supported: #{db_driver}"
       end
     end
+
   end
 end

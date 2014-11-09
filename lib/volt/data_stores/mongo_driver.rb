@@ -1,5 +1,3 @@
-require 'mongo'
-
 module Volt
   class DataStore
     class MongoDriver
