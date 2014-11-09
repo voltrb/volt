@@ -11,7 +11,7 @@ if RUBY_PLATFORM != 'opal'
 
   RSpec.configure do |config|
     # config.before(:each) do
-    #   puts Volt.config.db_name
+    #   DataStore.new.drop_database
     # end
 
     config.run_all_when_everything_filtered = true

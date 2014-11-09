@@ -14,7 +14,8 @@ if ENV['BROWSER']
       fields[0].set('test@test.com')
       fields[1].set('awes0mesEcRet')
       fields[2].set('Test Account')
-      sleep 5
+
+      click_button 'Signup'
     end
   end
 

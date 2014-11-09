@@ -12,7 +12,6 @@ class StoreTasks < Volt::TaskHandler
   end
 
   def load_model(collection, path, data)
-    puts "Load Model: #{path.inspect} - #{data.inspect}"
     model_name = collection.singularize.camelize
 
     # # TODO: Security check to make sure we have a valid model
@@ -28,7 +27,7 @@ class StoreTasks < Volt::TaskHandler
     # model.persistor.change_state_to(:loaded)
 
     # Fetch the model
-    collection = store.send(:"_#{path[-2]}")
+    collection = $page.store.send(:"_#{path[-2]}")
 
     # See if the model has already been made
     model = collection.find_one({_id: data[:_id]})
