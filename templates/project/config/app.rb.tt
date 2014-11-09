@@ -6,9 +6,6 @@ Volt.configure do |config|
   # without the need to customize.  Make sure this value doesn't leave your server.
   config.app_secret = '<%= SecureRandom.urlsafe_base64(50) %>'
 
-  # The app name defaults to the folder it is run in.
-  # config.app_name = '<%= config[:name] %>'
-
   # Database config all start with db_ and can be set either in the config
   # file or with an environment variable (DB_NAME for example).
 
@@ -22,4 +19,12 @@ Volt.configure do |config|
   # If you are not running behind something like nginx in production, you can
   # have rack deflate all files.
   # config.deflate = true
+
+  # Public configurations
+  # Anything under config.public will be sent to the client as well as the server,
+  # so be sure no private data ends up under public
+
+  # Use username instead of email as the login
+  # config.public.auth.use_username = true
+
 end

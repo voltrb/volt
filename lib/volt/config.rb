@@ -3,6 +3,13 @@
 if RUBY_PLATFORM == 'opal'
   require 'ostruct'
 
+  # TODO: Temporary fix for missing on OpenStruct in opal
+  class OpenStruct
+    def respond_to?(method_name)
+      @table.key?(method_name) || super
+    end
+  end
+
   module Volt
     class << self
       # Returns the config
@@ -12,7 +19,8 @@ if RUBY_PLATFORM == 'opal'
 
       # Called on page load to pass the backend config to the client
       def setup_client_config(config_hash)
-        @config = wrap_config(config_hash)
+        # Only Volt.config.public is passed from the server (for security reasons)
+        @config = wrap_config({public: config_hash})
       end
 
       # Wraps the config hash in an OpenStruct so it can be accessed in the same way

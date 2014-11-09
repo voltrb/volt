@@ -1,7 +1,7 @@
 class UserTasks < Volt::TaskHandler
 
   # Login a user, takes a login and password.  Login can be either a username or an e-mail
-  # based on Volt.config.auth.use_username
+  # based on Volt.config.public.auth.use_username
   def login(login, password)
     query = {User.login_field => login}
 

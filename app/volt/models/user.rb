@@ -5,8 +5,7 @@ end
 class User < Volt::Model
   # returns true if the user configured using the username
   def self.login_field
-    auth = Volt.config.auth
-    if auth && auth.use_username
+    if Volt.config.public.try(:auth).try(:use_username)
       :username
     else
       :email

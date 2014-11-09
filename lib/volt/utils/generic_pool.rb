@@ -16,6 +16,10 @@ module Volt
       @pool = {}
     end
 
+    def clear
+      @pool = {}
+    end
+
     def lookup(*args, &block)
       section = @pool
 
