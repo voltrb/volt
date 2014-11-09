@@ -1,4 +1,4 @@
-require 'mongo'
+#require 'mongo'
 
 module Volt
   class DataStore
