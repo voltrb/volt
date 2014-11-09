@@ -27,7 +27,7 @@ class StoreTasks < Volt::TaskHandler
     # model.persistor.change_state_to(:loaded)
 
     # Fetch the model
-    collection = $page.store.send(:"_#{path[-2]}")
+    collection = store.send(:"_#{path[-2]}")
 
     # See if the model has already been made
     model = collection.find_one({_id: data[:_id]})

@@ -47,11 +47,11 @@ if ENV['BROWSER']
 
       expect(page).to have_content('Test Account 9550')
 
+      # Click the logout link
       click_link 'Test Account 9550'
       click_link 'Logout'
 
       expect(page).to_not have_content('Test Account 9550')
-
     end
   end
 
