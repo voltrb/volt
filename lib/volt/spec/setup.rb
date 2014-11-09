@@ -22,8 +22,8 @@ module Volt
         require 'volt/server'
 
         Capybara.server do |app, port|
-          require 'rack/handler/puma'
-          Rack::Handler::Puma.run(app, Port: port)
+          require 'rack/handler/thin'
+-         Rack::Handler::Thin.run(app, Port: port)
         end
 
         Capybara.app = Server.new(app_path).app

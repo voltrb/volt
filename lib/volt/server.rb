@@ -4,7 +4,7 @@ require 'opal'
 if RUBY_PLATFORM == 'java'
   require 'jubilee'
 else
-  require 'puma'
+  require 'thin'
 end
 
 require 'rack'
