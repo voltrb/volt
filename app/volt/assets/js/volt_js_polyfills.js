@@ -1,3 +1,17 @@
+// For phantomjs
+
+// Bind
+if (!Function.prototype.bind) {
+  Function.prototype.bind = function (scope) {
+      var fn = this;
+      return function () {
+          return fn.apply(scope);
+      };
+  };
+}
+
+
+// setImmediate
 (function (global, undefined) {
     "use strict";
 
