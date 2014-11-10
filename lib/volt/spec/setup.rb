@@ -19,48 +19,48 @@ module Volt
       # Require in app
       Volt.boot(app_path)
 
-      setup_capybara
+      setup_capybara(app_path)
     end
+  end
 
-    def self.setup_capybara
-      if ENV['BROWSER']
-        require 'volt/server'
+  def self.setup_capybara(app_path)
+    if ENV['BROWSER']
+      require 'volt/server'
 
-        Capybara.server do |app, port|
-          require 'rack/handler/thin'
-          Rack::Handler::Thin.run(app, Port: port)
+      Capybara.server do |app, port|
+        require 'rack/handler/thin'
+        Rack::Handler::Thin.run(app, Port: port)
+      end
+
+      Capybara.app = Server.new(app_path).app
+
+      if ENV['BROWSER'] == 'phantom'
+        Capybara.default_driver = :poltergeist
+      elsif ENV['BROWSER'] == 'chrome'
+        Capybara.register_driver :chrome do |app|
+          Capybara::Selenium::Driver.new(app, browser: :chrome)
         end
 
-        Capybara.app = Server.new(app_path).app
+        Capybara.default_driver = :chrome
+      elsif ENV['BROWSER'] == 'firefox'
 
-        if ENV['BROWSER'] == 'phantom'
-          Capybara.default_driver = :poltergeist
-        elsif ENV['BROWSER'] == 'chrome'
-          Capybara.register_driver :chrome do |app|
-            Capybara::Selenium::Driver.new(app, browser: :chrome)
-          end
+        # require 'selenium/webdriver'
+        # # require 'selenium/client'
+        #
+        Capybara.default_driver = :selenium
 
-          Capybara.default_driver = :chrome
-        elsif ENV['BROWSER'] == 'firefox'
-
-          # require 'selenium/webdriver'
-          # # require 'selenium/client'
-          #
-          Capybara.default_driver = :selenium
-
-          # Capybara.register_driver :selenium_firefox do |app|
-          #   Capybara::Selenium::Driver.new(app, :browser => :firefox)
-          # end
-          # Capybara.current_driver = :selenium_firefox
-        elsif ENV['BROWSER'] == 'safari'
-          # Needs extension
-          Capybara.register_driver :safari do |app|
-            Capybara::Selenium::Driver.new(app, browser: :safari)
-          end
-          Capybara.default_driver = :safari
-        elsif ENV['BROWSER'] == 'sauce'
-          setup_sauce_labs
+        # Capybara.register_driver :selenium_firefox do |app|
+        #   Capybara::Selenium::Driver.new(app, :browser => :firefox)
+        # end
+        # Capybara.current_driver = :selenium_firefox
+      elsif ENV['BROWSER'] == 'safari'
+        # Needs extension
+        Capybara.register_driver :safari do |app|
+          Capybara::Selenium::Driver.new(app, browser: :safari)
         end
+        Capybara.default_driver = :safari
+      elsif ENV['BROWSER'] == 'sauce'
+        setup_sauce_labs
       end
     end
   end
