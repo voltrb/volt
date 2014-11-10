@@ -24,45 +24,39 @@ module Volt
   end
 
   def self.setup_capybara(app_path)
-    if ENV['BROWSER']
-      require 'volt/server'
+    browser = ENV['BROWSER']
 
-      Capybara.server do |app, port|
-        require 'rack/handler/thin'
-        Rack::Handler::Thin.run(app, Port: port)
-      end
+    if browser
+      self.setup_capybara_app(app_path)
 
-      Capybara.app = Server.new(app_path).app
-
-      if ENV['BROWSER'] == 'phantom'
+      case browser
+      when 'phantom'
         Capybara.default_driver = :poltergeist
-      elsif ENV['BROWSER'] == 'chrome'
-        Capybara.register_driver :chrome do |app|
-          Capybara::Selenium::Driver.new(app, browser: :chrome)
+      when 'chrome', 'safari'
+        # Use the browser name, note that safari requires an extension to run
+        browser = browser.to_sym
+        Capybara.register_driver(browser) do |app|
+          Capybara::Selenium::Driver.new(app, browser: browser)
         end
 
-        Capybara.default_driver = :chrome
-      elsif ENV['BROWSER'] == 'firefox'
-
-        # require 'selenium/webdriver'
-        # # require 'selenium/client'
-        #
+        Capybara.default_driver = browser
+      when 'firefox'
         Capybara.default_driver = :selenium
-
-        # Capybara.register_driver :selenium_firefox do |app|
-        #   Capybara::Selenium::Driver.new(app, :browser => :firefox)
-        # end
-        # Capybara.current_driver = :selenium_firefox
-      elsif ENV['BROWSER'] == 'safari'
-        # Needs extension
-        Capybara.register_driver :safari do |app|
-          Capybara::Selenium::Driver.new(app, browser: :safari)
-        end
-        Capybara.default_driver = :safari
       elsif ENV['BROWSER'] == 'sauce'
         setup_sauce_labs
       end
     end
+  end
+
+  def self.setup_capybara_app(app_path)
+    require 'volt/server'
+
+    Capybara.server do |app, port|
+      require 'rack/handler/thin'
+      Rack::Handler::Thin.run(app, Port: port)
+    end
+
+    Capybara.app = Server.new(app_path).app
   end
 
   def self.setup_sauce_labs
