@@ -5,7 +5,7 @@
   {{ if channel.status == :reconnecting }}
     <div class="notices alert alert-info">
       Connection Lost... {{ channel.error }}...
-      {{ if channel.reconnect_interval }}  Reconnecting in {{ (channel.reconnect_interval / 1000.0).round }} sec{{ end }}
+      {{ if channel.reconnect_interval }}  Reconnecting in {{ (channel.reconnect_in / 1000.0).round }} sec{{ end }}
     </div>
   {{ end }}
   {{ if page._reconnected }}
