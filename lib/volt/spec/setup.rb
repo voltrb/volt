@@ -1,10 +1,10 @@
-require 'volt/spec/capybara'
-
 module Volt
   class << self
     def spec_setup(app_path = '.')
       require 'volt'
       unless RUBY_PLATFORM == 'opal'
+        require 'volt/spec/capybara'
+
         ENV['SERVER'] = 'true'
         ENV['VOLT_ENV'] = 'test'
 
