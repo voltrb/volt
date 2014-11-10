@@ -16,6 +16,5 @@ module Volt
         setup_capybara(app_path)
       end
     end
-
   end
 end
