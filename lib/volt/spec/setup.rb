@@ -1,19 +1,10 @@
 module Volt
   def self.spec_setup(app_path = '.')
-    if RUBY_PLATFORM == 'opal'
-      require 'volt'
-    else
+    require 'volt'
+    unless RUBY_PLATFORM == 'opal'
       ENV['SERVER'] = 'true'
       ENV['VOLT_ENV'] = 'test'
 
-      if ENV['BROWSER']
-        require 'capybara'
-        require 'capybara/dsl'
-        require 'capybara/rspec'
-        require 'capybara/poltergeist'
-      end
-
-      require 'volt'
       require 'volt/boot'
 
       # Require in app
@@ -49,6 +40,10 @@ module Volt
   end
 
   def self.setup_capybara_app(app_path)
+    require 'capybara'
+    require 'capybara/dsl'
+    require 'capybara/rspec'
+    require 'capybara/poltergeist'
     require 'volt/server'
 
     Capybara.server do |app, port|
