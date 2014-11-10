@@ -42,7 +42,7 @@ module Volt
         Capybara.default_driver = browser
       when 'firefox'
         Capybara.default_driver = :selenium
-      elsif ENV['BROWSER'] == 'sauce'
+      when 'sauce'
         setup_sauce_labs
       end
     end
