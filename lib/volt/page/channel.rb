@@ -75,19 +75,6 @@ module Volt
       reconnect_tick
     end
 
-    def reconnect_tick
-      if reconnect_in >= 1000
-        self.reconnect_in -= 1000
-        `
-        setTimeout(function() {
-          self['$reconnect_tick']();
-        }, 1000);
-        `
-      else
-        connect!
-      end
-    end
-
     def message_received(message)
       message = JSON.parse(message)
 
@@ -112,5 +99,21 @@ module Volt
         this.socket.close();
       `
     end
+
+    private
+
+    def reconnect_tick
+      if reconnect_in >= 1000
+        self.reconnect_in -= 1000
+        `
+        setTimeout(function() {
+          self['$reconnect_tick']();
+        }, 1000);
+        `
+      else
+        connect!
+      end
+    end
+
   end
 end
