@@ -155,7 +155,6 @@ module Volt
         # (maybe move it to persistor, though thats weird since buffers don't have a persistor)
         clear_server_errors(attribute_name) if @server_errors
 
-
         # Don't save right now if we're in a nosave block
         if !defined?(Thread) || !Thread.current['nosave']
           # Let the persistor know something changed
@@ -217,18 +216,6 @@ module Volt
       end
     end
 
-    def return_undefined_method(method_name)
-      # Methods called on nil capture an error so the user can know where
-      # their nil calls are.  This error can be re-raised at a later point.
-      fail NilMethodCall.new("undefined method `#{method_name}' for #{self}")
-    rescue => e
-      result = e
-
-      # Cleanup backtrace
-      # TODO: this could be better
-      result.backtrace.reject! { |line| line['lib/models/model.rb'] || line['lib/models/live_value.rb'] }
-    end
-
     def new_model(attributes, options)
       class_at_path(options[:path]).new(attributes, options)
     end
@@ -279,9 +266,7 @@ module Volt
     end
 
     def inspect
-      Computation.run_without_tracking do
-        "<#{self.class}:#{object_id} #{attributes.inspect}>"
-      end
+      "<#{self.class}:#{object_id} #{attributes.inspect}>"
     end
 
     def save!
