@@ -9,3 +9,6 @@ component 'bootstrap-jumbotron-theme'
 
 # For testing user
 component 'fields'
+
+# For testing
+component 'user-templates'

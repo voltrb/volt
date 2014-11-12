@@ -18,4 +18,8 @@ class DataStore
 
     return cursor.to_a
   end
+
+  def drop_database
+    db.connection.drop_database(Volt.config.db_name)
+  end
 end

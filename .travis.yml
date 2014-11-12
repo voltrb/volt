@@ -10,7 +10,7 @@ env:
   - secure: X95q9DUVJRLIoxd116xEbi/3xL85XiGbWdz0p5z/UawShQalMHxLfPNdU9u5gyw99LrgxTdPsJOTps8hB3vhzp8qIegrM8i2AICcicXC1QDOWi7McXSH9SBmE1AjhlyE/PLLHwLDeqfvwNMPAOrDH1GOisQp505D7SSXUZ9m0GI=
   matrix:
   - NO_BROWSER=true
-  - BROWSER=sauce OS="Windows 8" USE_BROWSER="Firefox" VERSION="33"
+  # - BROWSER=sauce OS="Windows 8" USE_BROWSER="Firefox" VERSION="33"
 script: bundle exec rake
 notifications:
   webhooks:

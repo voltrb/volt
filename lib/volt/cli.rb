@@ -1,4 +1,6 @@
+# Load in the gemfile
 require 'bundler/setup'
+
 require 'thor'
 require 'volt/extra_core/extra_core'
 require 'volt/cli/generate'

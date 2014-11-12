@@ -1,14 +1,11 @@
 class UserTasks < Volt::TaskHandler
-  # Login a user, takes a username and password
 
-  def login(username, password)
-    puts "META: " + Thread.current['meta'].inspect
+  # Login a user, takes a login and password.  Login can be either a username or an e-mail
+  # based on Volt.config.public.auth.use_username
+  def login(login, password)
+    query = {User.login_field => login}
 
-    if Volt.user
-      puts "USER: " + Volt.user._name
-    end
-
-    return store._users.find(username: username).then do |users|
+    return store._users.find(query).then do |users|
       user = users.first
 
       if user

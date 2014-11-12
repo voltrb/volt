@@ -1,6 +1,6 @@
 module Volt
   class LengthValidator
-    def self.validate(model, field_name, args)
+    def self.validate(model, old_model, field_name, args)
       errors = {}
       value  = model.read_attribute(field_name)
 

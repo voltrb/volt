@@ -8,11 +8,11 @@ else
 end
 
 require 'rack'
+require 'sass'
 if RUBY_PLATFORM != 'java'
   require 'rack/sockjs'
   require 'eventmachine'
 end
-require 'sass'
 require 'sprockets-sass'
 require 'listen'
 
@@ -27,6 +27,7 @@ end
 require 'volt/server/rack/component_paths'
 require 'volt/server/rack/index_files'
 require 'volt/server/rack/opal_files'
+require 'volt/server/rack/quiet_common_logger'
 require 'volt/page/page'
 
 module Rack
@@ -94,7 +95,7 @@ module Volt
       @app.use Rack::ConditionalGet
       @app.use Rack::ETag
 
-      @app.use Rack::CommonLogger
+      @app.use QuietCommonLogger
       @app.use Rack::ShowExceptions
 
       component_paths = @component_paths

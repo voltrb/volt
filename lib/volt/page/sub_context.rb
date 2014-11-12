@@ -8,19 +8,23 @@ module Volt
   class SubContext
     attr_reader :locals
 
-    def initialize(locals, context = nil, return_nils = false)
-      @locals  = locals.stringify_keys
+    def initialize(locals=nil, context = nil, return_nils = false)
+      @locals  = locals.stringify_keys if locals
       @context = context
       @return_nils = return_nils
     end
 
     def respond_to?(method_name)
-      !!(@locals[method_name.to_s] || (@context && @context.respond_to?(method_name)))
+      !!((@locals && @locals[method_name.to_s]) || (@context && @context.respond_to?(method_name)))
+    end
+
+    def inspect
+      "#<SubContext #{@locals.inspect} context:#{@context.inspect}>"
     end
 
     def method_missing(method_name, *args, &block)
       method_name = method_name.to_s
-      if @locals.key?(method_name)
+      if @locals && @locals.key?(method_name)
         obj = @locals[method_name]
 
         # TODORW: Might get a normal proc, flag internal procs

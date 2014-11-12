@@ -18,7 +18,7 @@ module Volt
         # TODO: we should probably qualify this a bit more
         app_folders += Gem.loaded_specs.values.map(&:full_gem_path).reject { |g| g !~ /volt/ }.map { |f| f + '/app' }
 
-        app_folders
+        app_folders.uniq
       end
 
       # Yield each app folder and return a flattened array with
@@ -71,6 +71,7 @@ module Volt
             # Add models to page
             Dir["#{app_folder}/*/models/*.rb"].each do |ruby_file|
               class_name = File.basename(ruby_file).gsub(/[.]rb$/, '')
+
               $page.add_model(class_name)
             end
           end

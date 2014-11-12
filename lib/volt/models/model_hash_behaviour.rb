@@ -21,9 +21,19 @@ module Volt
       @attributes.size
     end
 
+    # Returns all of the keys, skipping over nil models
+    # TODO: We should store nil-models elsewhere so we don't have
+    # to skip.
     def keys
       @size_dep.depend
-      @attributes.keys
+
+      keys = []
+
+      each_pair do |k,v|
+        keys << k
+      end
+
+      keys
     end
 
     def nil?
@@ -44,14 +54,14 @@ module Volt
     end
 
     def clear
-      @attributes.each_pair do |key, value|
-        @deps.changed!(key)
+      @attributes.each_pair do |key, _|
+        delete(key)
       end
 
-      @attributes.clear
+      # @attributes.clear
       @size_dep.changed!
-
-      @persistor.removed(nil) if @persistor
+      #
+      # @persistor.removed(nil) if @persistor
     end
 
     def each_with_object(*args, &block)
@@ -60,7 +70,7 @@ module Volt
 
     def each_pair
       @attributes.each_pair do |k,v|
-        yield(k,v)
+        yield(k,v) unless v.is_a?(Model) && v.nil?
       end
     end
 

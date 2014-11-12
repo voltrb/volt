@@ -4,6 +4,7 @@ require 'volt/models/model_helpers'
 require 'volt/models/model_hash_behaviour'
 require 'volt/models/validations'
 require 'volt/models/model_state'
+require 'volt/models/buffer'
 require 'volt/reactive/reactive_hash'
 
 module Volt
@@ -16,6 +17,7 @@ module Volt
     include ModelHashBehaviour
     include Validations
     include ModelState
+    include Buffer
 
     attr_reader :attributes
     attr_reader :parent, :path, :persistor, :options
@@ -155,7 +157,6 @@ module Volt
         # (maybe move it to persistor, though thats weird since buffers don't have a persistor)
         clear_server_errors(attribute_name) if @server_errors
 
-
         # Don't save right now if we're in a nosave block
         if !defined?(Thread) || !Thread.current['nosave']
           # Let the persistor know something changed
@@ -217,18 +218,6 @@ module Volt
       end
     end
 
-    def return_undefined_method(method_name)
-      # Methods called on nil capture an error so the user can know where
-      # their nil calls are.  This error can be re-raised at a later point.
-      fail NilMethodCall.new("undefined method `#{method_name}' for #{self}")
-    rescue => e
-      result = e
-
-      # Cleanup backtrace
-      # TODO: this could be better
-      result.backtrace.reject! { |line| line['lib/models/model.rb'] || line['lib/models/live_value.rb'] }
-    end
-
     def new_model(attributes, options)
       class_at_path(options[:path]).new(attributes, options)
     end
@@ -279,80 +268,7 @@ module Volt
     end
 
     def inspect
-      Computation.run_without_tracking do
-        "<#{self.class}:#{object_id} #{attributes.inspect}>"
-      end
-    end
-
-    def save!
-      # Compute the erros once
-      errors = self.errors
-
-      if errors.size == 0
-        save_to = options[:save_to]
-        if save_to
-          if save_to.is_a?(ArrayModel)
-            # Add to the collection
-            promise = save_to.append(attributes)
-          else
-            # We have a saved model
-            promise = save_to.assign_attributes(attributes)
-          end
-
-          return promise.then do |new_model|
-            if new_model
-              # Set the buffer's id to track the main model's id
-              attributes[:_id] = new_model._id
-              options[:save_to]     = new_model
-            end
-
-            nil
-          end.fail do |errors|
-            if errors.is_a?(Hash)
-              server_errors.replace(errors)
-            end
-
-            promise_for_errors(errors)
-          end
-        else
-          fail 'Model is not a buffer, can not be saved, modifications should be persisted as they are made.'
-        end
-      else
-        # Some errors, mark all fields
-        promise_for_errors(errors)
-      end
-    end
-
-    # When errors come in, we mark all fields and return a rejected promise.
-    def promise_for_errors(errors)
-      mark_all_fields!
-
-      Promise.new.reject(errors)
-    end
-
-    # Returns a buffered version of the model
-    def buffer
-      model_path = options[:path]
-
-      # When we grab a buffer off of a plual class (subcollection), we get it as a model.
-      if model_path.last.plural? && model_path[-1] != :[]
-        model_klass = class_at_path(model_path + [:[]])
-      else
-        model_klass = class_at_path(model_path)
-      end
-
-      new_options = options.merge(path: model_path, save_to: self).reject { |k, _| k.to_sym == :persistor }
-      model       = model_klass.new({}, new_options, :loading)
-
-      if state == :loaded
-        setup_buffer(model)
-      else
-        parent.then do
-          setup_buffer(model)
-        end
-      end
-
-      model
+      "<#{self.class}:#{object_id} #{attributes.inspect}>"
     end
 
     # Takes a block that when run, changes to models will not save inside of

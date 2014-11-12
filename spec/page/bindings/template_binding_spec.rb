@@ -22,10 +22,6 @@ describe Volt::TemplateBinding do
     @page.instance_variable_set('@templates', templates)
   end
 
-  after do
-    $page = nil
-  end
-
   it 'should lookup nested controller action' do
     @templates = {
       'main/main/blog/nav' => '',

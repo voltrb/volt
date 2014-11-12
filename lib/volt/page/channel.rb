@@ -9,7 +9,7 @@ module Volt
     include ReactiveAccessors
     include Eventable
 
-    reactive_accessor :connected, :status, :error, :reconnect_interval, :retry_count
+    reactive_accessor :connected, :status, :error, :reconnect_interval, :retry_count, :reconnect_in
 
     def initialize
       @socket          = nil
@@ -45,11 +45,10 @@ module Volt
     end
 
     def opened
-      old_status          = @status
-      @status             = :open
-      @connected          = true
-      @reconnect_interval = nil
-      @retry_count        = 0
+      self.status             = :open
+      self.connected          = true
+      self.reconnect_interval = nil
+      self.retry_count        = 0
       @queue.each do |message|
         send_message(message)
       end
@@ -66,16 +65,14 @@ module Volt
     def reconnect!
       self.status             = :reconnecting
       self.reconnect_interval ||= 0
-      self.reconnect_interval += (2000 + rand(5000))
+      self.reconnect_interval += (1000 + rand(5000))
       self.retry_count        += 1
 
       interval = self.reconnect_interval
 
-      `
-        setTimeout(function() {
-          self['$connect!']();
-        }, interval);
-      `
+      self.reconnect_in = interval
+
+      reconnect_tick
     end
 
     def message_received(message)
@@ -102,5 +99,21 @@ module Volt
         this.socket.close();
       `
     end
+
+    private
+
+    def reconnect_tick
+      if reconnect_in >= 1000
+        self.reconnect_in -= 1000
+        `
+        setTimeout(function() {
+          self['$reconnect_tick']();
+        }, 1000);
+        `
+      else
+        connect!
+      end
+    end
+
   end
 end

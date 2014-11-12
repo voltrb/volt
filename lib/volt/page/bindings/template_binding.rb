@@ -161,7 +161,8 @@ module Volt
 
     # The context for templates can be either a controller, or the original context.
     def render_template(full_path, controller_path)
-      args = @arguments ? [SubContext.new(@arguments, nil, true)] : []
+      # If arguments is nil, then an blank SubContext will be created
+      args = [SubContext.new(@arguments, nil, true)]
 
       @controller = nil
 

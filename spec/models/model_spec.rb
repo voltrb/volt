@@ -412,7 +412,6 @@ describe Volt::Model do
   if RUBY_PLATFORM != 'opal'
     describe 'class loading' do
       it 'should load classes for models' do
-        $page = Volt::Page.new
         $page.add_model('Item')
 
         @model = Volt::Model.new

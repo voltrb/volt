@@ -6,6 +6,10 @@ Volt.spec_setup(kitchen_sink_path)
 
 unless RUBY_PLATFORM == 'opal'
   RSpec.configure do |config|
+    # config.before(:each) do
+    #   DataStore.new.drop_database
+    # end
+
     config.run_all_when_everything_filtered = true
     config.filter_run :focus
 
@@ -14,5 +18,6 @@ unless RUBY_PLATFORM == 'opal'
     # the seed, which is printed after each run.
     #     --seed 1234
     config.order = 'random'
+    # config.seed = '2234'
   end
 end
