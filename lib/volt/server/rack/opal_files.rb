@@ -56,6 +56,10 @@ module Volt
         run environment
       end
 
+      map server.source_maps.prefix do
+        run server.source_maps
+      end
+
       # if Volt.source_maps?
       #   source_maps = SourceMapServer.new(environment)
       #
