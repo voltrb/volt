@@ -17,7 +17,7 @@ module Volt
       # Opal::Processor.arity_check_enabled = !Volt.env.production?
       # Opal::Processor.dynamic_require_severity = :raise
 
-      server = Opal::Server.new
+      server = Opal::Server.new(prefix: '/')
 
 
       @component_paths                   = component_paths
@@ -53,12 +53,12 @@ module Volt
       server.append_path(spec.gem_dir + '/opal')
 
       builder.map '/assets' do
-        run environment
+        run server
       end
 
-      map server.source_maps.prefix do
-        run server.source_maps
-      end
+      # map server.source_maps.prefix do
+      #   run server.source_maps
+      # end
 
       # if Volt.source_maps?
       #   source_maps = SourceMapServer.new(environment)
