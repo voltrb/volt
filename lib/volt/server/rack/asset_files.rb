@@ -22,7 +22,7 @@ module Volt
       if File.exist?(dependencies_file)
         # Run the dependencies file in this asset files context
         code = File.read(dependencies_file)
-        instance_eval(code)
+        instance_eval(code, dependencies_file, 0)
       end
     end
 
@@ -32,7 +32,13 @@ module Volt
         @included_components[name] = true
 
         # Get the path to the component
-        @component_paths.component_paths(name).each do |path|
+        component_path = @component_paths.component_paths(name)
+
+        unless component_path
+          raise "Unable to find component '#{name}', make sure the gem is included in your Gemfile"
+        end
+
+        component_path.each do |path|
 
           # Load the dependencies
           load_dependencies(path)
