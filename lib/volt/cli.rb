@@ -59,8 +59,8 @@ module Volt
         Thread.stop
       else
         ENV['SERVER'] = 'true'
-        args          = ['start', '--threaded', '--max-persistent-conns', '300', '--max-conns', '400']
-        args.concat ['--max-conns', '400'] unless Gem.win_platform?
+        args = ['start', '--threaded', '--max-persistent-conns', '300']
+        args += ['--max-conns', '400'] unless Gem.win_platform?
         if options[:port]
           args += ['-p', options[:port].to_s]
         end
