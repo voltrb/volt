@@ -102,7 +102,12 @@ module Volt
       @assets.each do |type, path|
         case type
           when :folder
-            css_files += Dir["#{path}/**/*.{css,scss}"].sort.map { |folder| '/assets' + folder[path.size..-1].gsub(/[.]scss$/, '') }
+            # Don't import any css/scss files that start with an underscore, so scss partials
+            # aren't imported by default:
+            #  http://sass-lang.com/guide
+            css_files += Dir["#{path}/**/[^_]*.{css,scss}"].sort.map do |folder|
+              '/assets' + folder[path.size..-1].gsub(/[.]scss$/, '')
+            end
           when :css_file
             css_files << path
         end
