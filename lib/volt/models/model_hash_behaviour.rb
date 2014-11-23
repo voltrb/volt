@@ -68,6 +68,12 @@ module Volt
       (@attributes || {}).each_with_object(*args, &block)
     end
 
+    def each(&block)
+      # TODO: We shouldn't need to check the size for this to work
+      size
+      @array.each(&block)
+    end
+
     def each_pair
       @attributes.each_pair do |k,v|
         yield(k,v) unless v.is_a?(Model) && v.nil?

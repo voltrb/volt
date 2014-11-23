@@ -6,7 +6,6 @@ if RUBY_PLATFORM != 'opal'
     before do
       spec_app_root = File.join(File.dirname(__FILE__), '../../apps/file_loading')
 
-      path_to_main = File.join(File.dirname(__FILE__), '../../apps/file_loading/app/main')
       @component_paths = Volt::ComponentPaths.new(spec_app_root)
     end
 
@@ -21,6 +20,26 @@ if RUBY_PLATFORM != 'opal'
       main = Volt::AssetFiles.new('main', @component_paths)
 
       expect(main.javascript_files(nil)).to eq(["/assets/js/jquery-2.0.3.js", "/assets/js/sockjs-0.3.4.min.js", "/assets/js/volt_js_polyfills.js", "/assets/js/bootstrap.js", "/assets/js/test2.js", "/assets/js/test3.js", "/assets/js/test1.js", "/assets/volt/page/page.js", "/components/main.js"])
+    end
+
+    it 'should raise an exception for a missing component gem' do
+      main = Volt::AssetFiles.new('main', @component_paths)
+
+      relative_dep_path = '../../apps/file_loading/app/missing_deps'
+      path_to_missing_deps = File.join(File.dirname(__FILE__), relative_dep_path)
+      expect do
+        main.load_dependencies(path_to_missing_deps)
+      end.to raise_error("Unable to find component 'a-gem-that-isnt-in-the-gemfile', make sure the gem is included in your Gemfile")
+    end
+
+    it 'should not raise an exception for a dependency file with valid components' do
+      main = Volt::AssetFiles.new('main', @component_paths)
+
+      path_to_main = File.join(File.dirname(__FILE__), '../../apps/file_loading/app/main')
+      path_to_missing_deps = File.join(File.dirname(__FILE__), path_to_main)
+      expect do
+        main.load_dependencies(path_to_missing_deps)
+      end.to_not raise_error
     end
   end
 end

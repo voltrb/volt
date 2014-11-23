@@ -14,7 +14,7 @@ module Volt
           hash = user_id_signature[(index+1)..-1]
 
           # Make sure the user hash matches
-          if BCrypt::Password.new(hash) != "#{Volt.config.app_secret}::#{user._id}"
+          if BCrypt::Password.new(hash) != "#{Volt.config.app_secret}::#{user_id}"
             # user id has been tampered with, reject
             raise "user id or hash has been tampered with"
           end
@@ -56,8 +56,6 @@ module Volt
       $page.cookies.delete(:user_id)
     end
 
-
-    private
 
     # Fetches the user_id+signature from the correct spot depending on client
     # or server, does not verify it.

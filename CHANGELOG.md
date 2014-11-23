@@ -1,11 +1,13 @@
 # Change Log
 
-## 0.8.22 - 2014-...
+## 0.8.22 - 2014-11-16
 ### Added
 - Volt.config is now accessable from the client.
 - Added ```.try``` to Object
 - Added Volt.login
 - successful asset loads are not logged in development
+- Basics of users is now place, along with including the default user templates gem
+  - more user related helpers in the works
 
 ## 0.8.21 - 2014-11-05
 ### Changed

@@ -103,7 +103,10 @@ module Volt
       Computation.run_without_tracking do
         # Remove existing template and call _removed
         controller_send(:"#{@action}_removed") if @action && @controller
-        @current_template.remove if @current_template
+        if @current_template
+          @current_template.remove
+          @current_template = nil
+        end
 
         @options = options
 

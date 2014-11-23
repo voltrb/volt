@@ -81,7 +81,7 @@ module Volt
 
       # TODORW: :parent => @value may change
       item_context                           = SubContext.new({ _index_value: position, parent: @value }, @context)
-      item_context.locals[@item_name.to_sym] = proc { @value[item_context.locals[:_index_value]] }
+      item_context.locals[@item_name.to_sym] = proc { @value[item_context.locals[:_index_value]]}
 
       position_dependency                    = Dependency.new
       item_context.locals[:index_dependency] = position_dependency
@@ -127,7 +127,7 @@ module Volt
       @computation = nil
 
       # Clear value
-      @value       = nil
+      @value       = []
 
       if @added_listener
         @added_listener.remove

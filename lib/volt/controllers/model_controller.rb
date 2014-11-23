@@ -31,7 +31,7 @@ module Volt
       model = self.current_model
 
       # If the model is a proc, call it now
-      if model.is_a?(Proc)
+      if model && model.is_a?(Proc)
         model = model.call
       end
 
