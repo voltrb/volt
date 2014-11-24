@@ -30,7 +30,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'uglifier', '>= 2.4.0'
   spec.add_dependency "configurations", "~> 2.0.0.pre"
   spec.add_dependency 'yui-compressor', '~> 0.12.0'
-  spec.add_dependency 'opal', '~> 0.7.0.beta2'
+  spec.add_dependency 'opal', '~> 0.7.0.beta3'
   spec.add_dependency 'opal-jquery', '~> 0.3.0.beta1'
   spec.add_dependency 'rspec-core', '~> 3.1.0'
   spec.add_dependency 'rspec-expectations', '~> 3.1.0'
