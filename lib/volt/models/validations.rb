@@ -140,7 +140,8 @@ module Volt
         custom_validations.each do |custom_validation|
           # Run the validator in the context of the model, passes in
           # the old_model as an argument
-          result = instance_eval(old_model, &custom_validation)
+          result = instance_exec(old_model, &custom_validation)
+
           if result
             errors = merge.call(result)
           end
