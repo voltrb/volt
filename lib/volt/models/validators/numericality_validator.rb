@@ -3,10 +3,16 @@ module Volt
     def self.validate(model, old_model, field_name, args)
       errors = {}
 
-      value = model.read_attribute(field_name)
-      value = Kernel.Float(value) if value !~ /\A0[xX]/
-
       errors[field_name] = []
+      value = model.read_attribute(field_name)
+
+      if value.nil?
+        errors[field_name] << 'must be numeric'
+        return errors
+      else
+        value = Kernel.Float(value) if value !~ /\A0[xX]/
+      end
+
       if value && value.is_a?(Numeric)
         if args.is_a?(Hash)
 
