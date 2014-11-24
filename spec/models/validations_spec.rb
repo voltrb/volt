@@ -4,6 +4,7 @@ class TestModel < Volt::Model
   validate :name, length: 4
   validate :description, length: { message: 'needs to be longer', length: 50 }
   validate :username, presence: true
+  validate :count, numericality: { min: 5, max: 10 }
 end
 
 describe Volt::Model do
