@@ -4,6 +4,7 @@ class TestModel < Volt::Model
   validate :name, length: 4
   validate :description, length: { message: 'needs to be longer', length: 50 }
   validate :username, presence: true
+  validate :count, numericality: { min: 5, max: 10 }
 end
 
 describe Volt::Model do
@@ -11,7 +12,8 @@ describe Volt::Model do
     expect(TestModel.new.errors).to eq(
       name: ['must be at least 4 characters'],
       description: ['needs to be longer'],
-      username: ['must be specified']
+      username: ['must be specified'],
+      count: ['must be numeric']
     )
   end
 
@@ -34,7 +36,7 @@ describe Volt::Model do
 
     model.save!
 
-    expect(model.marked_errors.keys).to eq([:name, :description, :username])
+    expect(model.marked_errors.keys).to eq([:name, :description, :username, :count])
   end
 
   describe 'length' do
@@ -64,4 +66,19 @@ describe Volt::Model do
       )
     end
   end
+
+  describe 'numericality' do
+    it 'should validate numericality' do
+      model = TestModel.new
+
+      expect(model.marked_errors).to eq({})
+
+      model.mark_field!(:count)
+
+      expect(model.marked_errors).to eq(
+        count: ['must be numeric']
+      )
+    end
+  end
+
 end
