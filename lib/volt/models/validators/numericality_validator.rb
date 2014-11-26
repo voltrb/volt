@@ -1,44 +1,53 @@
 module Volt
   class NumericalityValidator
     def self.validate(model, old_model, field_name, args)
-      errors = {}
+      # Construct the class and return the errors
+      self.new(model, field_name, args).errors
+    end
 
-      errors[field_name] = []
-      value = model.read_attribute(field_name)
+    attr_reader :errors
 
-      if value.nil?
-        errors[field_name] << 'must be numeric'
-        return errors
-      else
-        value = Kernel.Float(value) if value !~ /\A0[xX]/
-      end
+    def initialize(model, field_name, args)
+      @field_name = field_name
+      @args = args
+      @errors = {}
 
-      if value && value.is_a?(Numeric)
-        if args.is_a?(Hash)
+      @value = model.read_attribute(field_name)
 
-          args.each do |arg, val|
+      # Convert to float if it is a string for a float
+      @value = Kernel.Float(@value) rescue nil
+
+      check_errors
+    end
+
+    def add_error(error)
+      field_errors = (@errors[@field_name] ||= [])
+      field_errors << error
+    end
+
+    # Looks at the value
+    def check_errors
+      if @value && @value.is_a?(Numeric)
+        if @args.is_a?(Hash)
+
+          @args.each do |arg, val|
             case arg
             when :min
-              if value < args[:min]
-               errors[field_name] << 'number must be greater than ' + args[:min].to_s
+              if @value < val
+               add_error("number must be greater than #{val}")
               end
             when :max
-              if value > args[:min]
-                errors[field_name] << 'number must be less than ' + args[:max].to_s
+              if @value > val
+                add_error("number must be less than #{val}")
               end
             end
           end
 
         end
       else
-        if args.is_a?(Hash) && args[:message]
-          errors[field_name] << args[:message]
-        else
-          errors[field_name] << 'must be numeric'
-        end
+        message = (@args.is_a?(Hash) && @args[:message]) || 'must be a number'
+        add_error(message)
       end
-
-      errors
     end
   end
 end

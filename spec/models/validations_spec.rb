@@ -13,7 +13,7 @@ describe Volt::Model do
       name: ['must be at least 4 characters'],
       description: ['needs to be longer'],
       username: ['must be specified'],
-      count: ['must be numeric']
+      count: ['must be a number']
     )
   end
 
@@ -76,7 +76,7 @@ describe Volt::Model do
       model.mark_field!(:count)
 
       expect(model.marked_errors).to eq(
-        count: ['must be numeric']
+        count: ['must be a number']
       )
     end
   end
