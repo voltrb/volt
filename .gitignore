@@ -20,3 +20,5 @@ tmp
 .sass-cache
 .DS_Store
 sauce_connect.log
+.ruby-gemset
+tags
