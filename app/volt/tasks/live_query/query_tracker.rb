@@ -90,7 +90,4 @@ class QueryTracker
       end
     end
   end
-
-  private
-
 end
