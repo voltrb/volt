@@ -47,7 +47,7 @@ class QueryTracker
     end
 
     # Update @previous_ids to relect the removed
-    @previous_ids = @previous_ids & @current_ids
+    @previous_ids &= @current_ids
   end
 
   # Loop through the new list, tracking in the old, notifies of any that
@@ -66,7 +66,7 @@ class QueryTracker
       if @previous_ids.include?(id)
         # The location from the previous has changed, move to correct location.
 
-        # Remove from previous_ids, since it will be moved and we will be past it.
+        # Remove from previous_ids, as it will be moved and we will be past it.
         @previous_ids.delete(id)
 
         @live_query.notify_moved(id, index, skip_channel)
