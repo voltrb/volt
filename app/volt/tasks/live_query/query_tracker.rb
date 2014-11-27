@@ -68,7 +68,6 @@ class QueryTracker
 
         # Remove from previous_ids, as it will be moved and we will be past it.
         @previous_ids.delete(id)
-
         @live_query.notify_moved(id, index, skip_channel)
       else
         # TODO: Faster lookup
