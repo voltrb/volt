@@ -2,6 +2,7 @@
 # that take place.
 class QueryTracker
   attr_accessor :results
+
   def initialize(live_query, data_store)
     @live_query = live_query
     @data_store = data_store
@@ -31,13 +32,11 @@ class QueryTracker
   # Looks at the changes in the last run and sends out notices
   # all changes.
   def process_changes(skip_channel)
-    if @previous_ids
-      detect_removed(skip_channel)
+    return unless @previous_ids
 
-      detect_added_and_moved(skip_channel)
-
-      detect_changed(skip_channel)
-    end
+    detect_removed(skip_channel)
+    detect_added_and_moved(skip_channel)
+    detect_changed(skip_channel)
   end
 
   def detect_removed(skip_channel)
@@ -91,4 +90,7 @@ class QueryTracker
       end
     end
   end
+
+  private
+
 end
