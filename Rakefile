@@ -1,5 +1,6 @@
 require 'bundler'
 require 'bundler/gem_tasks'
+require 'rubocop/rake_task'
 Bundler.require(:development)
 
 require 'opal'
@@ -29,4 +30,9 @@ task :test do
   system 'bundle exec rspec'
   puts "--------------------------\nRun specs in Opal\n--------------------------"
   Rake::Task['opal:rspec'].invoke
+end
+
+# Rubocop task
+RuboCop::RakeTask.new(:rubocop) do |task|
+  task.options = ['--display-cop-names']
 end
