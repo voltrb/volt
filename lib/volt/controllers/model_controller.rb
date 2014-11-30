@@ -108,6 +108,14 @@ module Volt
       @controller ||= Model.new
     end
 
+    def url_for(params)
+      $page.url.url_for(params)
+    end
+
+    def url_with(params)
+      $page.url.url_with(params)
+    end
+
     def loaded?
       respond_to?(:state) && state == :loaded
     end

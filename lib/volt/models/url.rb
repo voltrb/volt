@@ -57,12 +57,13 @@ module Volt
       true
     end
 
-    # Full url rebuilds the url from it's constituent parts
-    def full_url
+    # Full url rebuilds the url from it's constituent parts.
+    # The params passed in are used to generate the urls.
+    def url_for(params)
       host_with_port = host
       host_with_port += ":#{port}" if port && port != 80
 
-      self.path, params = @router.params_to_url(@params.to_h)
+      path, params = @router.params_to_url(params)
 
       new_url    = "#{scheme}://#{host_with_port}#{path.chomp('/')}"
 
@@ -77,7 +78,7 @@ module Volt
         end
 
         if query_parts.size > 0
-          self.query = query_parts.join('&')
+          query = query_parts.join('&')
           new_url    += '?' + query
         end
       end
@@ -89,12 +90,16 @@ module Volt
       new_url
     end
 
+    def url_with(params)
+      url_for(@params.to_h.merge(params))
+    end
+
     # Called when the state has changed and the url in the
     # browser should be updated
     # Called when an attribute changes to update the url
     def update!
       if Volt.client?
-        new_url = full_url
+        new_url = url_for(@params.to_h)
 
         # Push the new url if pushState is supported
         # TODO: add fragment fallback
