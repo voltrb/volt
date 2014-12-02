@@ -55,6 +55,23 @@ if ENV['BROWSER']
 
       expect(page).to_not have_content('Test Account 9550')
     end
+
+    it 'should fail to create an account without a valid email and password' do
+      visit '/'
+
+      click_link 'Login'
+      click_link 'Signup here'
+
+      expect(page).to_not have_content('must be at least 8 characters')
+
+      fields = all(:css, 'form .form-control')
+
+      fields[0].set('test')
+      fields[1].set('awe')
+      fields[2].set('Tes')
+
+      expect(page).to have_content('must be at least 8 characters')
+    end
   end
 
 end

@@ -13,26 +13,18 @@ module Volt
           if field_name || options
             raise "validate should be passed a field name and options or a block, not both."
           end
-          @@custom_validations ||= []
-          @@custom_validations << block
+          self.custom_validations ||= []
+          custom_validations << block
         else
-          @@validations             ||= {}
-          @@validations[field_name] = options
+          self.validations             ||= {}
+          validations[field_name] = options
         end
-      end
-
-      # TODO: For some reason attr_reader on a class doesn't work in Opal
-      def validations
-        @@validations
-      end
-
-      def custom_validations
-        @@custom_validations
       end
     end
 
     def self.included(base)
       base.send :extend, ClassMethods
+      base.class_attribute(:custom_validations, :validations)
     end
 
     # Once a field is ready, we can use include_in_errors! to start
