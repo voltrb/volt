@@ -13,21 +13,21 @@ module Volt
           if field_name || options
             raise "validate should be passed a field name and options or a block, not both."
           end
-          @custom_validations ||= []
-          @custom_validations << block
+          @@custom_validations ||= []
+          @@custom_validations << block
         else
-          @validations             ||= {}
-          @validations[field_name] = options
+          @@validations             ||= {}
+          @@validations[field_name] = options
         end
       end
 
       # TODO: For some reason attr_reader on a class doesn't work in Opal
       def validations
-        @validations
+        @@validations
       end
 
       def custom_validations
-        @custom_validations
+        @@custom_validations
       end
     end
 
