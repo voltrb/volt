@@ -16,7 +16,7 @@ class DataStore
     cursor = cursor.skip(skip) if skip
     cursor = cursor.limit(limit) if limit
 
-    return cursor.to_a
+    cursor.to_a
   end
 
   def drop_database

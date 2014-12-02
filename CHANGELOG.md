@@ -1,5 +1,12 @@
 # Change Log
 
+## 0.8.34 - 2014-12-01
+- Fix bug with validation inheritance
+
+## 0.8.33 - 2014-11-30
+### Added
+- Added url_for and url_with to controllers.  (See docs under Controllers)
+
 ## 0.8.22 - 2014-11-16
 ### Added
 - Volt.config is now accessable from the client.

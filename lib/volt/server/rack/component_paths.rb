@@ -77,18 +77,23 @@ module Volt
           end
         end
 
-        # component_names = []
-        # app_folders do |app_folder|
-        #   Dir["#{app_folder}/*"].map {|cp| cp[/[^\/]+$/] }.each do |component_name|
-        #     component_names << component_name
-        #   end
-        # end
-        #
-        # # Load in all views
-        # component_names.uniq.each do |component_name|
-        #   code = Volt::ComponentCode.new(component_name, self).code
-        #   eval(code)
-        # end
+        load_views_and_routes
+      end
+    end
+
+    def load_views_and_routes
+      component_names = []
+      app_folders do |app_folder|
+        Dir["#{app_folder}/*"].map {|cp| cp[/[^\/]+$/] }.each do |component_name|
+          component_names << component_name
+        end
+      end
+
+      # Load in all views and routes
+      # TODO: Nested components listed twice are are loaded multiple times
+      component_names.uniq.each do |component_name|
+        code = Volt::ComponentCode.new(component_name, self, false).code
+        eval(code)
       end
     end
 
