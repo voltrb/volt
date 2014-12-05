@@ -22,6 +22,6 @@ if RUBY_PLATFORM != 'opal'
     # the seed, which is printed after each run.
     #     --seed 1234
     config.order = 'random'
-    # config.seed = '2234'
+    # config.seed = '31241'
   end
 end

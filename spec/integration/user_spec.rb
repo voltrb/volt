@@ -70,6 +70,9 @@ if ENV['BROWSER']
       fields[1].set('awe')
       fields[2].set('Tes')
 
+      # some capybara drivers don't trigger blur correctly
+      page.execute_script("$('.form-control').blur()")
+
       expect(page).to have_content('must be at least 8 characters')
     end
   end
