@@ -5,6 +5,7 @@ require 'volt/models/model_hash_behaviour'
 require 'volt/models/validations'
 require 'volt/models/model_state'
 require 'volt/models/buffer'
+require 'volt/models/field_helpers'
 require 'volt/reactive/reactive_hash'
 
 module Volt
@@ -18,6 +19,7 @@ module Volt
     include Validations
     include ModelState
     include Buffer
+    include FieldHelpers
 
     attr_reader :attributes
     attr_reader :parent, :path, :persistor, :options
