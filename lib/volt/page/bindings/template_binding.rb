@@ -83,15 +83,9 @@ module Volt
         end
 
         path = full_path.join('/')
-        if check_for_template?(path)
-          controller = nil
 
-          # Don't return a controller if we are just getting another section
-          # from the same controller
-          if path_position >= 1
-            # Lookup the controller
-            controller = [full_path[0], full_path[1] + '_controller', full_path[2]]
-          end
+        if check_for_template?(path)
+          controller = [full_path[0], full_path[1] + '_controller', full_path[2]]
           return path, controller
         end
       end
