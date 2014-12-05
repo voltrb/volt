@@ -23,7 +23,7 @@
   </div>
 
 <:Nav>
-  <li class="{{ if url.path.split('/')[1] == attrs.href.split('/')[1] }}active{{ end }}">
+  <li class="{{ if active_tab? }}active{{ end }}">
     <a href="{{ attrs.href }}">{{ attrs.text }}</a>
   </li>
 

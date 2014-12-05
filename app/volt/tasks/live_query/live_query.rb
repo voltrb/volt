@@ -66,10 +66,8 @@ class LiveQuery
   def remove_channel(channel)
     @channels.delete(channel)
 
-    if @channels.size == 0
-      # remove this query, no one is listening anymore
-      @pool.remove(@collection, @query)
-    end
+    # remove this query, no one is listening anymore
+    @pool.remove(@collection, @query) if @channels.empty?
   end
 
   def notify!(skip_channel = nil, only_channel = nil)

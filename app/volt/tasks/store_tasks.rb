@@ -18,11 +18,10 @@ class StoreTasks < Volt::TaskHandler
     collection = store.send(:"_#{path[-2]}")
 
     # See if the model has already been made
-    model = collection.find_one({_id: data[:_id]})
+    model = collection.find_one(_id: data[:_id])
 
     # Otherwise assign to the collection
     model ||= collection
-
 
     # Create a buffer
     buffer = model.buffer
@@ -30,7 +29,7 @@ class StoreTasks < Volt::TaskHandler
     # Assign the data
     buffer.attributes = data
 
-    return buffer
+    buffer
   end
 
   def save(collection, path, data)
@@ -52,7 +51,7 @@ class StoreTasks < Volt::TaskHandler
 
     Thread.current['in_channel'] = nil
 
-    return promise
+    promise
   end
 
   def delete(collection, id)

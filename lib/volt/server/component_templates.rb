@@ -13,10 +13,10 @@ module Volt
     end
 
     def code
-      code = generate_view_code
+      code = generate_routes_code + generate_view_code
       if @client
         # On the backend, we just need the views
-        code << generate_controller_code + generate_model_code + generate_routes_code + generate_tasks_code
+        code << generate_controller_code + generate_model_code + generate_tasks_code
       end
 
       code

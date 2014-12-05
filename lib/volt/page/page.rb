@@ -163,7 +163,8 @@ module Volt
     end
 
     def add_routes(&block)
-      @routes     = Routes.new.define(&block)
+      @routes   ||= Routes.new
+      @routes.define(&block)
       @url.router = @routes
     end
 

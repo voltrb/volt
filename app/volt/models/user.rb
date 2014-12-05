@@ -1,6 +1,4 @@
-if RUBY_PLATFORM != 'opal'
-  require 'bcrypt'
-end
+require 'bcrypt' if RUBY_PLATFORM != 'opal'
 
 module Volt
   class User < Model
@@ -28,6 +26,5 @@ module Volt
         self._password = val
       end
     end
-
   end
 end

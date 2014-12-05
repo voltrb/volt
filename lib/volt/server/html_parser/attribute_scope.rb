@@ -64,16 +64,21 @@ module Volt
 
     # TODO: We should use a real parser for this
     def getter_to_setter(getter)
-      getter = getter.strip
+      getter = getter.strip.gsub(/\(\s*\)/, '')
 
-      # Convert a getter into a setter
-      if getter.index('.') || getter.index('@')
-        prefix = ''
+      # Check to see if this can be converted to a setter
+      if getter[0] =~ /^[a-z_]/ && getter[-1] != ')'
+        # Convert a getter into a setter
+        if getter.index('.') || getter.index('@')
+          prefix = ''
+        else
+          prefix = 'self.'
+        end
+
+        "#{prefix}#{getter}=(val)"
       else
-        prefix = 'self.'
+        "raise \"could not auto generate setter for `#{getter}`\""
       end
-
-      "#{prefix}#{getter}=(val)"
     end
 
     # Add an attribute binding on the tag, bind directly to the getter in the binding
