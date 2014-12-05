@@ -50,7 +50,7 @@ describe Volt::TemplateBinding do
 
     path, result = @template_binding.path_for_template('comments/new/errors')
     expect(path).to eq('main/comments/new/errors')
-    expect(result).to eq(nil)
+    expect(result).to eq(["main", "comments_controller", "errors"])
   end
 
   it 'should handle a tripple lookup to controllers' do

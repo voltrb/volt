@@ -86,12 +86,15 @@ module Volt
         if check_for_template?(path)
           controller = nil
 
-          # Don't return a controller if we are just getting another section
-          # from the same controller
           if path_position >= 1
-            # Lookup the controller
-            controller = [full_path[0], full_path[1] + '_controller', full_path[2]]
+            init_method = full_path[2]
+          else
+            init_method = full_path[3]
           end
+
+          # Lookup the controller
+          controller = [full_path[0], full_path[1] + '_controller', init_method]
+
           return path, controller
         end
       end
