@@ -7,6 +7,7 @@ require 'volt/models/model_state'
 require 'volt/models/buffer'
 require 'volt/models/field_helpers'
 require 'volt/reactive/reactive_hash'
+require 'volt/models/validators/user_validation'
 
 module Volt
   class NilMethodCall < NoMethodError
@@ -20,6 +21,7 @@ module Volt
     include ModelState
     include Buffer
     include FieldHelpers
+    include UserValidatorHelpers
 
     attr_reader :attributes
     attr_reader :parent, :path, :persistor, :options
@@ -120,7 +122,6 @@ module Volt
 
     def method_missing(method_name, *args, &block)
       if method_name[0] == '_'
-
         # Remove underscore
         method_name = method_name[1..-1]
         if method_name[-1] == '='

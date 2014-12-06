@@ -7,6 +7,13 @@ end
 class Item < Volt::Model
 end
 
+class TestAssignsMethod < Volt::Model
+  def name=(val)
+    puts "Assign #{val}"
+    self._name = val
+  end
+end
+
 describe Volt::Model do
 
   it 'should allow _ methods to be used to store values without predefining them' do
@@ -424,5 +431,13 @@ describe Volt::Model do
         expect(@model._items[0].class).to eq(Item)
       end
     end
+  end
+
+  it 'should have assignments optionally go through a method' do
+    model = TestAssignsMethod.new
+
+    model._name = 'Jimmy'
+
+    expect(model._name).to eq('Jimmy')
   end
 end
