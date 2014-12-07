@@ -23,14 +23,19 @@ module Volt
       end
 
       # permissions takes a block and yields
-      def permissions
+      def permissions(&block)
+        self.__permissions__ = block
+
+        validate do
 
 
+        end
       end
     end
 
     def self.included(base)
       base.send(:extend, ClassMethods)
+      base.class_attribute :__permissions__
     end
   end
 
