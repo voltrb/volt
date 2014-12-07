@@ -57,6 +57,8 @@ module Volt
 
     # Make sure it gets wrapped
     def <<(model)
+      load_data
+
       if model.is_a?(Model)
         # Set the new path
         model.options = @options.merge(path: @options[:path] + [:[]])
@@ -121,6 +123,9 @@ module Volt
     end
 
     def inspect
+      # Just load the data on the server making it easier to work with
+      load_data if Volt.server?
+
       if @persistor && @persistor.is_a?(Persistors::ArrayStore) && state == :not_loaded
         # Show a special message letting users know it is not loaded yet.
         "#<#{self.class}:not loaded, access with [] or size to load>"
