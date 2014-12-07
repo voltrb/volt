@@ -8,6 +8,7 @@ require 'volt/models/buffer'
 require 'volt/models/field_helpers'
 require 'volt/reactive/reactive_hash'
 require 'volt/models/validators/user_validation'
+require 'volt/models/dirty'
 
 module Volt
   class NilMethodCall < NoMethodError
@@ -22,6 +23,7 @@ module Volt
     include Buffer
     include FieldHelpers
     include UserValidatorHelpers
+    include Dirty
 
     attr_reader :attributes
     attr_reader :parent, :path, :persistor, :options
@@ -30,6 +32,8 @@ module Volt
       @deps        = HashDependency.new
       @size_dep    = Dependency.new
       self.options = options
+
+      @old_attributes = {}
 
       send(:attributes=, attributes, true)
 
@@ -148,6 +152,10 @@ module Volt
       new_value = wrap_value(value, [attribute_name])
 
       if old_value != new_value
+        # Track the old value
+        @changed_attributes[attribute_name] = old_value
+
+        # Assign the new value
         @attributes[attribute_name] = new_value
 
         @deps.changed!(attribute_name)
