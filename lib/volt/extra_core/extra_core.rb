@@ -6,6 +6,7 @@ require 'volt/extra_core/stringify_keys'
 require 'volt/extra_core/string'
 require 'volt/extra_core/numeric'
 require 'volt/extra_core/true_false'
+require 'volt/extra_core/hash'
 require 'volt/extra_core/class'
 if RUBY_PLATFORM == 'opal'
   # TODO: != does not work with opal for some reason
