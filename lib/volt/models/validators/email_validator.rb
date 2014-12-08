@@ -8,7 +8,6 @@ module Volt
     end
 
     def initialize(model, field_name, options)
-      @errors = {}
       @value = model.read_attribute field_name
 
       case options
