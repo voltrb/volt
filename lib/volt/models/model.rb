@@ -128,7 +128,7 @@ module Volt
         method_name = method_name[1..-1]
         if method_name[-1] == '='
           # Assigning an attribute without the =
-          assign_attribute(method_name[0..-2], *args, &block)
+          assign_attribute(method_name[0..-2], args[0], &block)
         else
           read_attribute(method_name)
         end
@@ -139,12 +139,10 @@ module Volt
     end
 
     # Do the assignment to a model and trigger a changed event
-    def assign_attribute(method_name, *args, &block)
+    def assign_attribute(method_name, value, &block)
       self.expand!
       # Assign, without the =
       attribute_name = method_name.to_sym
-
-      value = args[0]
 
       old_value = @attributes[attribute_name]
       new_value = wrap_value(value, [attribute_name])
