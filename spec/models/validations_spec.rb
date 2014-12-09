@@ -1,19 +1,21 @@
-require 'volt/models'
+require 'spec_helper'
 
 class TestModel < Volt::Model
-  validate :name, length: 4
-  validate :description, length: { message: 'needs to be longer', length: 50 }
-  validate :username, presence: true
   validate :count, numericality: { min: 5, max: 10 }
+  validate :description, length: { message: 'needs to be longer', length: 50 }
+  validate :email, email: true
+  validate :name, length: 4
+  validate :username, presence: true
 end
 
 describe Volt::Model do
   it 'should validate the name' do
     expect(TestModel.new.errors).to eq(
-      name: ['must be at least 4 characters'],
+      count: ['must be a number'],
       description: ['needs to be longer'],
-      username: ['must be specified'],
-      count: ['must be a number']
+      email: ['must be an email address'],
+      name: ['must be at least 4 characters'],
+      username: ['must be specified']
     )
   end
 
@@ -36,7 +38,9 @@ describe Volt::Model do
 
     model.save!
 
-    expect(model.marked_errors.keys).to eq([:name, :description, :username, :count])
+    expect(model.marked_errors.keys).to eq(
+      [:count, :description, :email, :name, :username]
+    )
   end
 
   describe 'length' do
@@ -81,4 +85,17 @@ describe Volt::Model do
     end
   end
 
+  describe 'email' do
+    it 'should validate email' do
+      model = TestModel.new
+
+      expect(model.marked_errors).to eq({})
+
+      model.mark_field!(:email)
+
+      expect(model.marked_errors).to eq(
+        email: ['must be an email address']
+      )
+    end
+  end
 end

@@ -1,8 +1,12 @@
 # Change Log
 
+## 0.8.25 - ...
+### Added
+- Added email validator
 
 
 ## 0.8.24 - 2014-12-05
+### Added
 - Fix bug with validation inheritance
 - Fixed issue with controller loading.
 
