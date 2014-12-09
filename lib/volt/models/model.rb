@@ -139,10 +139,10 @@ module Volt
     end
 
     # Do the assignment to a model and trigger a changed event
-    def assign_attribute(method_name, value, &block)
+    def assign_attribute(attribute_name, value, &block)
       self.expand!
       # Assign, without the =
-      attribute_name = method_name.to_sym
+      attribute_name = attribute_name.to_sym
 
       old_value = @attributes[attribute_name]
       new_value = wrap_value(value, [attribute_name])
