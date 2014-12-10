@@ -1,6 +1,6 @@
 module Volt
   class NumericalityValidator
-    def self.validate(model, old_model, field_name, args)
+    def self.validate(model, field_name, args)
       # Construct the class and return the errors
       self.new(model, field_name, args).errors
     end

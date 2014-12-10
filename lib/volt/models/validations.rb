@@ -78,22 +78,14 @@ module Volt
         end
       end
 
-      # Get the previous model from the buffer
-      save_to = options[:save_to]
-      if save_to && save_to.is_a?(Volt::Model)
-        old_model = save_to
-      else
-        old_model = nil
-      end
-
-      errors = run_validations(errors, merge, marked_only, old_model)
+      errors = run_validations(errors, merge, marked_only)
 
       # See if any server errors are in place and merge them in if they are
       if Volt.client?
         errors = merge.call(server_errors.to_h)
       end
 
-      errors = run_custom_validations(errors, merge, old_model)
+      errors = run_custom_validations(errors, merge)
 
       errors
     end
@@ -101,7 +93,7 @@ module Volt
     private
 
     # Runs through each of the normal validations.
-    def run_validations(errors, merge, marked_only, old_model)
+    def run_validations(errors, merge, marked_only)
       validations = self.class.validations
       if validations
 
@@ -116,7 +108,7 @@ module Volt
             klass = validation_class(validation, args)
 
             if klass
-              validate_with(merge, klass, old_model, field_name, args)
+              validate_with(merge, klass, field_name, args)
             else
               fail "validation type #{validation} is not specified."
             end
@@ -127,14 +119,13 @@ module Volt
       return errors
     end
 
-    def run_custom_validations(errors, merge, old_model)
+    def run_custom_validations(errors, merge)
       # Call all of the custom validations
       custom_validations = self.class.custom_validations
       if custom_validations
         custom_validations.each do |custom_validation|
-          # Run the validator in the context of the model, passes in
-          # the old_model as an argument
-          result = instance_exec(old_model, &custom_validation)
+          # Run the validator in the context of the model
+          result = instance_exec(&custom_validation)
 
           if result
             errors = merge.call(result)
@@ -147,8 +138,8 @@ module Volt
 
 
     # calls the validate method on the class, passing the right arguments.
-    def validate_with(merge, klass, old_model, field_name, args)
-      merge.call(klass.validate(self, old_model, field_name, args))
+    def validate_with(merge, klass, field_name, args)
+      merge.call(klass.validate(self, field_name, args))
     end
 
     def validation_class(validation, args)
