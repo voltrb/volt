@@ -5,6 +5,7 @@ class TestModel < Volt::Model
   validate :description, length: { message: 'needs to be longer', length: 50 }
   validate :email, email: true
   validate :name, length: 4
+  validate :phone_number, phone_number: true
   validate :username, presence: true
 end
 
@@ -15,6 +16,7 @@ describe Volt::Model do
       description: ['needs to be longer'],
       email: ['must be an email address'],
       name: ['must be at least 4 characters'],
+      phone_number: ['must be a phone number with area or country code'],
       username: ['must be specified']
     )
   end
@@ -39,7 +41,7 @@ describe Volt::Model do
     model.save!
 
     expect(model.marked_errors.keys).to eq(
-      [:count, :description, :email, :name, :username]
+      [:count, :description, :email, :name, :phone_number, :username]
     )
   end
 
@@ -95,6 +97,20 @@ describe Volt::Model do
 
       expect(model.marked_errors).to eq(
         email: ['must be an email address']
+      )
+    end
+  end
+
+  describe 'phone_number' do
+    it 'should validate phone number' do
+      model = TestModel.new
+
+      expect(model.marked_errors).to eq({})
+
+      model.mark_field!(:phone_number)
+
+      expect(model.marked_errors).to eq(
+        phone_number: ['must be a phone number with area or country code']
       )
     end
   end
