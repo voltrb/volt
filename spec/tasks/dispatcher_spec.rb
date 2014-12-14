@@ -7,6 +7,10 @@ if RUBY_PLATFORM != 'opal'
 
 
   describe Volt::Dispatcher do
+    before do
+      # Stub the logger so it doesn't show up in the rpsec logs
+      allow(Volt.logger).to receive(:error)
+    end
 
     it 'should only allow method calls on TaskHandler or above in the inheritance chain' do
       channel = double('channel')
