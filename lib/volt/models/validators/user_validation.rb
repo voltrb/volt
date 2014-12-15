@@ -27,8 +27,20 @@ module Volt
         self.__permissions__ = block
 
         validate do
+          @__deny_fields = []
 
+          # Run the permissions
+          instance_eval(&self.class.__permissions__)
 
+          errors = {}
+          @__deny_fields.each do |deny_field|
+            if changed?(deny_field) && send(:"#{deny_field}_was")
+              errors[deny_field] ||= []
+              errors[deny_field] << 'can not be changed'
+            end
+          end
+
+          errors
         end
       end
     end
@@ -37,8 +49,11 @@ module Volt
       base.send(:extend, ClassMethods)
       base.class_attribute :__permissions__
     end
-  end
 
+    def deny_write(*fields)
+      @__deny_fields += fields.map(&:to_sym)
+    end
+  end
 
 
   # own_by_user

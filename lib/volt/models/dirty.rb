@@ -8,8 +8,13 @@ module Volt
     end
 
     # Return true if key has changed
-    def changed?(key)
-      changed_attributes.key?(key)
+    def changed?(key=nil)
+      if key
+        # return the changed values for the keys
+        changed_attributes.key?(key)
+      else
+        changed_attributes.present?
+      end
     end
 
     # Grab all previous versions of for key

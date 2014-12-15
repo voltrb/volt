@@ -148,11 +148,8 @@ module Volt
       new_value = wrap_value(value, [attribute_name])
 
       if old_value != new_value
-        # Track the old value, if it's nil and there was a key, track
-        if old_value || @attributes.key?(attribute_name)
-          # Track the old value
-          (changed_attributes[attribute_name] ||= []) << old_value
-        end
+        # Track the old value
+        (changed_attributes[attribute_name] ||= []) << old_value
 
         # Assign the new value
         @attributes[attribute_name] = new_value
