@@ -5,8 +5,11 @@ if RUBY_PLATFORM != 'opal'
     end
   end
 
-
   describe Volt::Dispatcher do
+    before do
+      Volt.logger = double('Logger')
+      allow(Volt.logger).to receive(:info)
+    end
 
     it 'should only allow method calls on TaskHandler or above in the inheritance chain' do
       channel = double('channel')
@@ -38,6 +41,14 @@ if RUBY_PLATFORM != 'opal'
       expect(channel).to receive(:send_message).with('response', 0, nil, RuntimeError.new('unsafe method: methods'))
 
       Volt::Dispatcher.new.dispatch(channel, [0, 'TestTask', :methods])
+    end
+
+    it 'should log an info message before and after the dispatch' do
+      channel = double('channel')
+
+      expect(Volt.logger).to receive(:info).twice
+
+      Volt::Dispatcher.new.dispatch(channel, [0, 'TestTask', :allowed_method, {}, ' works'])
     end
   end
 end

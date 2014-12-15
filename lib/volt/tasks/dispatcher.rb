@@ -24,7 +24,11 @@ module Volt
         promise = promise.then do
           Thread.current['meta'] = meta_data
 
+          log_dispatch_begin(klass.name, method_name)
+
           result = klass.new(channel, self).send(method_name, *args)
+
+          log_dispatch_finish(klass.name, method_name)
 
           Thread.current['meta'] = nil
 
@@ -65,6 +69,35 @@ module Volt
       end
 
       return false
+    end
+
+    private
+
+    def log_dispatch_begin(class_name, method_name)
+      @timer = Time.now.to_f
+
+      if STDOUT.tty?
+        Volt.logger.info("TASK DISPATCHED: " +
+          "\033[1;34m#{class_name}#" +
+          "\033[0;32m#{method_name}\033[0;37m")
+      else
+        Volt.logger.info("TASK DISPATCHED: #{class_name}##{method_name}")
+      end
+    end
+
+    def log_dispatch_finish(class_name, method_name)
+      timer_done = ((Time.now.to_f - @timer) * 1000).round(3)
+
+      if STDOUT.tty?
+        Volt.logger.info("TASK " +
+          "\033[1;34m#{class_name}#" +
+          "\033[0;32m#{method_name} " +
+          "\033[0;37mFINISHED in " +
+          "\033[0;32m#{timer_done}ms\033[0;37m")
+      else
+        Volt.logger.info(
+          "TASK #{class_name}##{method_name} FINISHED in #{timer_done}ms")
+      end
     end
   end
 end
