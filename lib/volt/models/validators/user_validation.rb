@@ -6,16 +6,11 @@ module Volt
       def own_by_user(key=:user_id)
         # Setup a validation that
         validate do |old_model|
-          if Volt.user_id
-            # The user is logged in, assign the user_id if the model is
-            # not tracking a user.
-            puts "OM1: #{old_model.inspect} -- #{self.inspect}"
-            if !old_model || old_model.send(:"_#{key}").blank?
-              puts "CHANGE"
-              send(:"_#{key}=", Volt.user_id)
-              next nil
-            end
-          else
+          if _user_id == nil && Volt.user_id
+            send(:"_#{key}=", Volt.user_id)
+          end
+          # Lock the user_id so it can only be assigned once
+          if changed?(key) && user_id_was != nil
             # No valid user, add an error
             next {key => ['requires a logged in user']}
           end
@@ -34,7 +29,7 @@ module Volt
 
           errors = {}
           @__deny_fields.each do |deny_field|
-            if changed?(deny_field) && send(:"#{deny_field}_was")
+            if changed?(deny_field)
               errors[deny_field] ||= []
               errors[deny_field] << 'can not be changed'
             end
@@ -53,27 +48,9 @@ module Volt
     def deny_write(*fields)
       @__deny_fields += fields.map(&:to_sym)
     end
-  end
 
-
-  # own_by_user
-  #
-  # permissions do |user_id|
-  #   if owner?
-  #     allow_write :field1, :field2
-  #   else
-  #     deny_write :field3
-  #   end
-  # end
-  #
-
-  class UserValidator
-    def self.validate(model, old_model, field_name, args)
-      errors = {}
-
-      message = (args.is_a?(Hash) && args[:message]) || 'can not be modified by you'
-
-
+    def owner?(key=:user_id)
+      send(:"_#{key}") == Volt.user_id
     end
   end
 end
