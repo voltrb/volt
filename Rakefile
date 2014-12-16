@@ -1,8 +1,7 @@
 require 'bundler'
 require 'bundler/gem_tasks'
-require 'rubocop/rake_task'
 Bundler.require(:development)
-
+require 'rubocop/rake_task'
 require 'opal'
 
 # Add our opal/ directory to the load path
