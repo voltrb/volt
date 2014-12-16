@@ -47,7 +47,12 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'guard', '2.6.0' # bug in current guard
   spec.add_development_dependency 'guard-rspec', '~> 4.3.0'
+
+  # Yard and formatting
   spec.add_development_dependency 'yard', '~> 0.8.7.0'
+  spec.add_development_dependency 'redcarpet', '~> 3.2.2'
+  spec.add_development_dependency 'github-markup', '~> 1.3.1'
+
   spec.add_development_dependency 'sauce', '~> 3.5.3'
   spec.add_development_dependency 'sauce-connect', '~> 3.5.0'
   spec.add_development_dependency 'byebug', '~> 3.5.1'
