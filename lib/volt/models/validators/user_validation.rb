@@ -39,9 +39,17 @@ module Volt
       # end
 
       # permissions takes a block and yields
-      def permissions(&block)
+      def permissions(*actions, &block)
         # Store the permissions block so we can run it in validations
-        self.__permissions__ = block
+        self.__permissions__ ||= {}
+
+        # if no action was specified, assume all actions
+        actions += [:create, :read, :update, :delete] if actions.size == 0
+
+        actions.each do |action|
+          # Add to an array of proc's for each action
+          (self.__permissions__[action] ||= []) << block
+        end
 
         validate do
           @__deny_fields = []
