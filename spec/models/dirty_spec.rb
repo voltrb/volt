@@ -8,29 +8,29 @@ describe "Volt::Dirty" do
     expect(model.name_was).to eq(nil)
 
     model._name = 'Jimmy'
-    expect(model.name_was).to eq('Bob')
-    expect(model.name_changes).to eq(['Bob'])
+    expect(model.name_was).to eq(nil)
+    expect(model.name_changes).to eq([nil, 'Bob'])
 
     model._name = 'Martin'
-    expect(model.name_was).to eq('Bob')
-    expect(model.name_changes).to eq(['Bob', 'Jimmy'])
+    expect(model.name_was).to eq(nil)
+    expect(model.name_changes).to eq([nil, 'Bob', 'Jimmy'])
 
     model._name = nil
-    expect(model.name_was).to eq('Bob')
-    expect(model.name_changes).to eq(['Bob', 'Jimmy', 'Martin'])
+    expect(model.name_was).to eq(nil)
+    expect(model.name_changes).to eq([nil, 'Bob', 'Jimmy', 'Martin'])
 
     model._name = 'Ryan'
-    expect(model.name_was).to eq('Bob')
-    expect(model.name_changes).to eq(['Bob', 'Jimmy', 'Martin', nil])
+    expect(model.name_was).to eq(nil)
+    expect(model.name_changes).to eq([nil, 'Bob', 'Jimmy', 'Martin', nil])
 
-    expect(model.changed_attributes).to eq({:name=>["Bob", "Jimmy", "Martin", nil]})
+    expect(model.changed_attributes).to eq({:name=>[nil, "Bob", "Jimmy", "Martin", nil]})
   end
 
   it 'should say models are changed' do
     expect(model.changed?(:name)).to eq(false)
     model._name = 'Bob'
 
-    expect(model.changed?(:name)).to eq(false)
+    expect(model.changed?(:name)).to eq(true)
     model._name = 'Jimmy'
 
     expect(model.changed?(:name)).to eq(true)
@@ -41,13 +41,30 @@ describe "Volt::Dirty" do
   end
 
   it 'should reset changes' do
+    expect(model.changed?(:name)).to eq(false)
     model._name = 'Bob'
+    expect(model.changed?(:name)).to eq(true)
     model._name = 'Jimmy'
+    expect(model.changed?(:name)).to eq(true)
 
-    expect(model.name_was).to eq('Bob')
+    expect(model.name_was).to eq(nil)
+    expect(model.name_changes).to eq([nil, 'Bob'])
 
     model.reset_changes
 
     expect(model.name_was).to eq(nil)
+  end
+
+  it 'should not track when assigning the same value' do
+    expect(model.changed?(:name)).to eq(false)
+    model._name = nil
+    expect(model.changed?(:name)).to eq(false)
+
+    model._name = 'bob'
+    expect(model.changed?(:name)).to eq(true)
+    expect(model.name_changes).to eq([nil])
+
+    model._name = 'bob'
+    expect(model.name_changes).to eq([nil])
   end
 end

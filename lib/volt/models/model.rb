@@ -149,7 +149,7 @@ module Volt
 
       if old_value != new_value
         # Track the old value
-        (changed_attributes[attribute_name] ||= []) << old_value
+        attribute_will_change!(attribute_name, old_value)
 
         # Assign the new value
         @attributes[attribute_name] = new_value

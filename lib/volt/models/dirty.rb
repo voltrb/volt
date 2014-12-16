@@ -37,7 +37,12 @@ module Volt
 
     # Clear changed attributes
     def reset_changes
+      @has_changed_attributes = {}
       @changed_attributes = {}
+    end
+
+    def attribute_will_change!(attribute_name, old_value)
+      (changed_attributes[attribute_name] ||= []) << old_value
     end
 
     # Handle change and was method calls
