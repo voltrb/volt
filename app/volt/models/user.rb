@@ -12,6 +12,7 @@ module Volt
     end
 
     validate login_field, unique: true, length: 8
+    validate :email, email: true
 
     if RUBY_PLATFORM == 'opal'
       # Don't validate on the server
