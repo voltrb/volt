@@ -63,7 +63,7 @@ module Volt
         args = ['start', '--threaded', '--max-persistent-conns', '300']
         args += ['--max-conns', '400'] unless Gem.win_platform?
         args += ['-p', options[:port].to_s] if options[:port]
-        args += ['-b', options[:bind].to_s] if options[:bind]
+        args += ['-a', options[:bind]] if options[:bind]
 
         Thin::Runner.new(args).run!
       end
