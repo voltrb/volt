@@ -117,7 +117,7 @@ describe Volt::ViewParser do
                                    'html' => "      <div class=\"main\">\n        <!-- $0 --><!-- $/0 -->\n      </div>\n",
                                    'bindings' => {
                                      0 => [
-                                       "lambda { |__p, __t, __c, __id| Volt::EachBinding.new(__p, __t, __c, __id, Proc.new { _items }, \"item\", \"main/main/main/body/__each0/__template/0\") }"
+                                       "lambda { |__p, __t, __c, __id| Volt::EachBinding.new(__p, __t, __c, __id, Proc.new { _items }, \"item\", nil, \"main/main/main/body/__each0/__template/0\") }"
                                      ]
                                    }
                                  })
