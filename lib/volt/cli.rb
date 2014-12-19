@@ -32,7 +32,8 @@ module Volt
     end
 
     desc 'server', 'run the server on the project in the current directory'
-    method_option :port, type: :string, aliases: '-p', banner: 'specify which port the server should run on'
+    method_option :port, type: :string, aliases: '-p', banner: 'the port the server should run on'
+    method_option :bind, type: :string, aliases: '-b', banner: 'the ip the server should bind to'
 
     def server
       if RUBY_PLATFORM == 'java'
@@ -61,9 +62,8 @@ module Volt
         ENV['SERVER'] = 'true'
         args = ['start', '--threaded', '--max-persistent-conns', '300']
         args += ['--max-conns', '400'] unless Gem.win_platform?
-        if options[:port]
-          args += ['-p', options[:port].to_s]
-        end
+        args += ['-p', options[:port].to_s] if options[:port]
+        args += ['-b', options[:bind].to_s] if options[:bind]
 
         Thin::Runner.new(args).run!
       end
