@@ -42,7 +42,9 @@ module Volt
             add_template(args)
           else
             if content =~ /.each\s+do\s+\|/
-              add_each(content)
+              add_each(content, false)
+            elsif content =~ /.each_with_index\s+do\s+\|/
+              add_each(content, true)
             else
               add_content_binding(content)
             end
@@ -76,8 +78,8 @@ module Volt
       fail '#else can only be added inside of an if block'
     end
 
-    def add_each(content)
-      @handler.scope << EachScope.new(@handler, @path + "/__each#{@binding_number}", content)
+    def add_each(content, with_index)
+      @handler.scope << EachScope.new(@handler, @path + "/__each#{@binding_number}", content, with_index)
     end
 
     def add_template(content)

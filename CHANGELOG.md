@@ -3,6 +3,7 @@
 ## 0.8.25 - ...
 ### Added
 - Added email validator
+- each_with_index is now supported in views and the ```index``` value is no longer provided by default.
 
 
 ## 0.8.24 - 2014-12-05
