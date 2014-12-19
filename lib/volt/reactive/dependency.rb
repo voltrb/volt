@@ -81,6 +81,8 @@ module Volt
       @dependencies = Set.new
 
       deps.each(&:invalidate!)
+
+      @on_stop_dep.call if @on_stop_dep
     end
 
     # Called when a dependency is no longer needed
