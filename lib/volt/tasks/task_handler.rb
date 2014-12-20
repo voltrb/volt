@@ -36,7 +36,7 @@ module Volt
       def self.method_missing(name, *args, &block)
         # TODO: optimize: this could run the inside first to see if it
         # returns a promise, so we don't have to wrap it.
-        return Promise.new.then do
+        Promise.new.then do
           new(nil, nil).send(name, *args, &block)
         end.resolve(nil)
       end

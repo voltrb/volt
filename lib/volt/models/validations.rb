@@ -10,10 +10,10 @@ module Volt
   # Include in any class to get validation logic
   module Validations
     module ClassMethods
-      def validate(field_name=nil, options=nil, &block)
+      def validate(field_name = nil, options = nil, &block)
         if block
           if field_name || options
-            raise "validate should be passed a field name and options or a block, not both."
+            fail 'validate should be passed a field name and options or a block, not both.'
           end
           self.custom_validations ||= []
           custom_validations << block
@@ -39,7 +39,6 @@ module Volt
       @marked_fields ||= ReactiveHash.new
     end
 
-
     # Marks all fields, useful for when a model saves.
     def mark_all_fields!
       validations = self.class.validations
@@ -49,7 +48,6 @@ module Volt
         end
       end
     end
-
 
     def marked_errors
       errors(true)
@@ -125,7 +123,7 @@ module Volt
         end
       end
 
-      return errors
+      errors
     end
 
     def run_custom_validations(errors, merge, old_model)
@@ -143,9 +141,8 @@ module Volt
         end
       end
 
-      return errors
+      errors
     end
-
 
     # calls the validate method on the class, passing the right arguments.
     def validate_with(merge, klass, old_model, field_name, args)

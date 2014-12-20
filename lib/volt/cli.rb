@@ -82,9 +82,9 @@ module Volt
     method_option :bin, type: :boolean, default: false, aliases: '-b', banner: 'Generate a binary for your library.'
     method_option :test, type: :string, lazy_default: 'rspec', aliases: '-t', banner: "Generate a test directory for your library: 'rspec' is the default, but 'minitest' is also supported."
     method_option :edit, type: :string, aliases: '-e',
-                  lazy_default: [ENV['BUNDLER_EDITOR'], ENV['VISUAL'], ENV['EDITOR']].find { |e| !e.nil? && !e.empty? },
-                  required: false, banner: '/path/to/your/editor',
-                  desc: 'Open generated gemspec in the specified editor (defaults to $EDITOR or $BUNDLER_EDITOR)'
+                         lazy_default: [ENV['BUNDLER_EDITOR'], ENV['VISUAL'], ENV['EDITOR']].find { |e| !e.nil? && !e.empty? },
+                         required: false, banner: '/path/to/your/editor',
+                         desc: 'Open generated gemspec in the specified editor (defaults to $EDITOR or $BUNDLER_EDITOR)'
 
     def gem(name)
       require 'volt/cli/new_gem'

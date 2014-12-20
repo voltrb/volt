@@ -11,7 +11,7 @@ module Volt
         cookies = `document.cookie`
         Hash[cookies.split(';').map do |v|
           # Equals are valid as part of a cookie, so only parse the first equals.
-          parts = v.split('=', 2).map { |p| p = p.strip ; `decodeURIComponent(p)` }
+          parts = v.split('=', 2).map { |p| p = p.strip; `decodeURIComponent(p)` }
 
           # Default to empty if no value
           parts << '' if parts.size == 1
@@ -21,7 +21,7 @@ module Volt
         end]
       end
 
-      def write_cookie(key, value, options={})
+      def write_cookie(key, value, options = {})
         parts = []
 
         parts << `encodeURIComponent(key)`

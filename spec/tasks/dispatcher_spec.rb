@@ -1,13 +1,11 @@
 if RUBY_PLATFORM != 'opal'
   class TestTask < Volt::TaskHandler
     def allowed_method(arg1)
-      return 'yes' + arg1
+      'yes' + arg1
     end
   end
 
-
   describe Volt::Dispatcher do
-
     it 'should only allow method calls on TaskHandler or above in the inheritance chain' do
       channel = double('channel')
 

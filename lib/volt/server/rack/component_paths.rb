@@ -84,7 +84,7 @@ module Volt
     def load_views_and_routes
       component_names = []
       app_folders do |app_folder|
-        Dir["#{app_folder}/*"].map {|cp| cp[/[^\/]+$/] }.each do |component_name|
+        Dir["#{app_folder}/*"].map { |cp| cp[/[^\/]+$/] }.each do |component_name|
           component_names << component_name
         end
       end

@@ -6,7 +6,7 @@ class ExampleModelWithField < Volt::Model
   field :value, Numeric
 end
 
-describe "field helpers" do
+describe 'field helpers' do
   it 'should allow a user to setup a field that can be written to and read' do
     model = ExampleModelWithField.new
 

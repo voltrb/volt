@@ -59,7 +59,6 @@ describe Volt::ReactiveArray do
       expect(values_at_2).to eq([3, 1.3])
       expect(values_at_3).to eq([nil, 1.7])
       expect(values_at_4).to eq([nil, 3])
-
     end
   end
 

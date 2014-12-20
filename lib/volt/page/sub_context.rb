@@ -8,7 +8,7 @@ module Volt
   class SubContext
     attr_reader :locals
 
-    def initialize(locals=nil, context = nil, return_nils = false)
+    def initialize(locals = nil, context = nil, return_nils = false)
       @locals  = locals.stringify_keys if locals
       @context = context
       @return_nils = return_nils

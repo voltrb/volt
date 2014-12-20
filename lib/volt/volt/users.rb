@@ -11,12 +11,12 @@ module Volt
         user_id = user_id_signature[0...index]
 
         if RUBY_PLATFORM != 'opal'
-          hash = user_id_signature[(index+1)..-1]
+          hash = user_id_signature[(index + 1)..-1]
 
           # Make sure the user hash matches
           if BCrypt::Password.new(hash) != "#{Volt.config.app_secret}::#{user_id}"
             # user id has been tampered with, reject
-            raise "user id or hash has been tampered with"
+            fail 'user id or hash has been tampered with'
           end
 
         end
@@ -43,7 +43,6 @@ module Volt
     # Login the user, return a promise for success
     def login(username, password)
       UserTasks.login(username, password).then do |result|
-
         # Assign the user_id cookie for the user
         $page.cookies._user_id = result
 
@@ -55,7 +54,6 @@ module Volt
     def logout
       $page.cookies.delete(:user_id)
     end
-
 
     # Fetches the user_id+signature from the correct spot depending on client
     # or server, does not verify it.

@@ -31,6 +31,5 @@ describe Volt::GenericCountingPool do
 
     @count_pool.remove('_items', 'one')
     expect(@count_pool.instance_variable_get('@pool')).to eq({})
-
   end
 end

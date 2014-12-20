@@ -114,6 +114,5 @@ module Volt
         connect!
       end
     end
-
   end
 end

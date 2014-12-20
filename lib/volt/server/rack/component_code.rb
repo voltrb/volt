@@ -26,10 +26,8 @@ module Volt
       code
     end
 
-
     def generate_config_code
       "\nVolt.setup_client_config(#{Volt.config.public.to_h.inspect})\n"
     end
-
   end
 end

@@ -42,7 +42,6 @@ if ENV['BROWSER']
       page.evaluate_script('document.location.reload()')
 
       expect(page).to_not have_content('two: two')
-
     end
   end
 end

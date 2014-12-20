@@ -11,7 +11,7 @@ end
 class TestSubClassAttributes2 < TestClassAttributes
 end
 
-describe "extra_core class addons" do
+describe 'extra_core class addons' do
   it 'should provide class_attributes that can be inherited' do
     expect(TestClassAttributes.some_data).to eq(nil)
 

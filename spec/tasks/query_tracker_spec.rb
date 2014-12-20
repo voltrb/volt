@@ -44,7 +44,6 @@ if RUBY_PLATFORM != 'opal'
 
       @query_tracker = QueryTracker.new(@live_query, data_store)
       @query_tracker.run
-
     end
 
     it 'should add items' do
@@ -113,8 +112,6 @@ if RUBY_PLATFORM != 'opal'
       ]
       @query_tracker.run
       expect(@live_query.items).to eq(@items)
-
     end
-
   end
 end
