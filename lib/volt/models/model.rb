@@ -64,7 +64,7 @@ module Volt
 
       if attrs
         # Assign id first
-        id       = attrs.delete(:_id)
+        id = attrs.delete(:_id)
 
         # When doing a mass-assign, we don't save until the end.
         Model.nosave do
