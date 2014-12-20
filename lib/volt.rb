@@ -41,6 +41,10 @@ module Volt
 
     def logger
       @logger ||= Logger.new(STDOUT)
+      @logger.formatter = proc do |severity, datetime, progname, msg|
+        "\n\n#{severity}: #{msg}\n"
+      end
+      @logger
     end
 
     attr_writer :logger
