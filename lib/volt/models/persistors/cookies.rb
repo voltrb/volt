@@ -10,11 +10,13 @@ module Volt
       def read_cookies
         cookies = `document.cookie`
         Hash[cookies.split(';').map do |v|
-          parts = v.split('=').map { |p| p = p.strip ; `decodeURIComponent(p)` }
+          # Equals are valid as part of a cookie, so only parse the first equals.
+          parts = v.split('=', 2).map { |p| p = p.strip ; `decodeURIComponent(p)` }
 
           # Default to empty if no value
           parts << '' if parts.size == 1
 
+          # Equals are valid in
           parts
         end]
       end
