@@ -29,7 +29,7 @@ module Volt
           if @persistor.respond_to?(method_name)
             @persistor.send(method_name, *args, &block)
           else
-            raise "this model's persistance layer does not support #{method_name}, try using store"
+            fail "this model's persistance layer does not support #{method_name}, try using store"
           end
         end
       end
@@ -77,14 +77,13 @@ module Volt
 
     # Works like << except it returns a promise
     def append(model)
-      promise, model = self.send(:<<, model)
+      promise, model = send(:<<, model)
 
       # Return a promise if one doesn't exist
       promise ||= Promise.new.resolve(model)
 
       promise
     end
-
 
     # Find one does a query, but only returns the first item or
     # nil if there is no match.  Unlike #find, #find_one does not

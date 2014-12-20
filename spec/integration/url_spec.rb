@@ -26,6 +26,5 @@ if ENV['BROWSER'] && ENV['BROWSER'] != 'phantom'
 
       expect(current_url).to match(/\/$/)
     end
-
   end
 end

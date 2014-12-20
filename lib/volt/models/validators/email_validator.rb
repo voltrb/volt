@@ -25,7 +25,7 @@ module Volt
     end
 
     def errors
-      valid? ? {} : { email: [ @custom_message || ERROR_MESSAGE ] }
+      valid? ? {} : { email: [@custom_message || ERROR_MESSAGE] }
     end
 
     private

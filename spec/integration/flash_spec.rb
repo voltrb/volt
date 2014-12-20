@@ -2,7 +2,7 @@
 if ENV['BROWSER'] && ENV['BROWSER'] != 'sauce'
   require 'spec_helper'
 
-  describe 'flash messages', type: :feature, :sauce => true do
+  describe 'flash messages', type: :feature, sauce: true do
     it 'should flash on sucesses, notices, warnings, and errors' do
       visit '/'
 
@@ -27,7 +27,6 @@ if ENV['BROWSER'] && ENV['BROWSER'] != 'sauce'
       expect(page).to have_content('An error message')
       find('.alert').click
       expect(page).to_not have_content('An error message')
-
     end
   end
 end

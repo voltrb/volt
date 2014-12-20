@@ -16,7 +16,6 @@ class QuietCommonLogger < Rack::CommonLogger
     end
 
     body = BodyProxy.new(body) do
-
       # Don't log on ignored extensions
       unless @@ignore_extensions.include?(ext)
         log(env, status, header, began_at)

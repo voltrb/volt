@@ -51,7 +51,6 @@ describe Volt::ViewParser do
                                      ]
                                    }
                                  })
-
   end
 
   it "should handle nested if's" do
@@ -121,7 +120,6 @@ describe Volt::ViewParser do
                                      ]
                                    }
                                  })
-
   end
 
   it 'should parse a single attribute binding' do
@@ -201,7 +199,6 @@ describe Volt::ViewParser do
   end
 
   it 'should parse components' do
-
   end
 
   it 'should parse sections' do
@@ -221,7 +218,6 @@ describe Volt::ViewParser do
                                  'main/main/main/body' => {
                                    'html' => "\n      <p>This text goes in the body</p>\n"
                                  })
-
   end
 
   it 'should keep the html inside of a textarea if there are no bindings' do

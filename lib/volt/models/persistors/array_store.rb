@@ -2,7 +2,6 @@ require 'volt/models/persistors/store'
 require 'volt/models/persistors/query/query_listener_pool'
 require 'volt/models/persistors/store_state'
 
-
 module Volt
   module Persistors
     class ArrayStore < Store
@@ -83,12 +82,12 @@ module Volt
 
       # Clear out the models data, since we're not listening anymore.
       def unload_data
-        puts "Unload Data"
+        puts 'Unload Data'
         change_state_to :not_loaded
         @model.clear
       end
 
-      def run_query(model, query={}, skip=nil, limit=nil)
+      def run_query(model, query = {}, skip = nil, limit = nil)
         @model.clear
 
         collection = model.path.last
@@ -126,21 +125,21 @@ module Volt
           query ||= {}
         end
 
-        return Cursor.new([], @model.options.merge(query: query))
+        Cursor.new([], @model.options.merge(query: query))
       end
 
       def limit(limit)
-        return Cursor.new([], @model.options.merge(limit: limit))
+        Cursor.new([], @model.options.merge(limit: limit))
       end
 
       def skip(skip)
-        return Cursor.new([], @model.options.merge(skip: skip))
+        Cursor.new([], @model.options.merge(skip: skip))
       end
 
       # Returns a promise that is resolved/rejected when the query is complete.  Any
       # passed block will be passed to the promises then.  Then will be passed the model.
       def then(&block)
-        raise "then must pass a block" unless block
+        fail 'then must pass a block' unless block
         promise = Promise.new
 
         promise = promise.then(&block)

@@ -15,7 +15,6 @@ class TestAssignsMethod < Volt::Model
 end
 
 describe Volt::Model do
-
   it 'should allow _ methods to be used to store values without predefining them' do
     a = Volt::Model.new
     a._stash = 'yes'
@@ -138,7 +137,6 @@ describe Volt::Model do
     Volt::Computation.flush!
 
     expect(values).to eq([nil, 'one'])
-
   end
 
   it 'should trigger changed for any indicies after a deleted index' do

@@ -44,7 +44,7 @@ module Volt
 
     # the id is stored in a field named _id, so we setup _id to proxy to this
     def _id
-      @attributes && @attributes[:_id]
+      __id
     end
 
     def _id=(val)
@@ -68,7 +68,7 @@ module Volt
 
       if attrs
         # Assign id first
-        id       = attrs.delete(:_id)
+        id = attrs.delete(:_id)
 
         # When doing a mass-assign, we don't save until the end.
         Model.nosave do

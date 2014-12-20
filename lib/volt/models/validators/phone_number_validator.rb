@@ -25,7 +25,7 @@ module Volt
     end
 
     def errors
-      valid? ? {} : { phone_number: [ @custom_message || ERROR_MESSAGE ] }
+      valid? ? {} : { phone_number: [@custom_message || ERROR_MESSAGE] }
     end
 
     private
