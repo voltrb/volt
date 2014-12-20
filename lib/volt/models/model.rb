@@ -40,7 +40,7 @@ module Volt
 
     # the id is stored in a field named _id, so we setup _id to proxy to this
     def _id
-      @attributes && @attributes[:_id]
+      __id
     end
 
     def _id=(val)

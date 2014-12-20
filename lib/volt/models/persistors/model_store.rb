@@ -36,8 +36,9 @@ module Volt
 
       # Called the first time a value is assigned into this model
       def ensure_setup
-        if @model.attributes
-          @model.attributes[:_id] ||= generate_id
+        if (attrs = @model.attributes)
+          # Do a nil check incase there is a nil model there
+          @model.__id = generate_id if attrs[:_id].nil?
 
           add_to_identity_map
         end
