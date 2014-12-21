@@ -6,6 +6,7 @@
 - each_with_index is now supported in views and the ```index``` value is no longer provided by default.
 - fixed bug with cookie parsing with equals in them
 - fixed bug appending existing models to a collection
+- refactored TemplateBinding, moved code into ViewLookupForPath (SRP)
 
 ## 0.8.24 - 2014-12-05
 ### Added
