@@ -18,53 +18,44 @@ else
 
   module Volt
     class VoltLogger < Logger
-      def initialize(opts={})
+      def initialize(current={})
         super(STDOUT)
-        @opts = opts
+        @current = current
         @formatter = Volt::VoltLoggerFormatter.new
       end
 
-      def log_dispatch
+      def log_dispatch(class_name, method_name, run_time, args)
+        @current = {
+          args: args,
+          class_name: class_name,
+          method_name: method_name,
+          run_time: run_time
+        }
+
         log(Logger::INFO, task_dispatch_message)
       end
 
       def args
-        if @opts[:args]
-          @args ||= @opts[:args].join(", ")
-        else
-          @args ||= ''
-        end
+        @current[:args].to_s
       end
 
       def class_name
-        if @opts[:class_name]
-          @class_name ||= colorize(@opts[:class_name], :light_blue)
-        else
-          @class_name ||= ''
-        end
+        colorize(@current[:class_name].to_s, :light_blue)
       end
 
       def method_name
-        if @opts[:method_name]
-          @method_name ||= colorize(@opts[:method_name], :green)
-        else
-          @method_name ||= ''
-        end
+        colorize(@current[:method_name].to_s, :green)
       end
 
       def run_time
-        if @opts[:run_time]
-          @run_time ||= colorize(@opts[:run_time].to_s + 'ms', :green)
-        else
-          @run_time ||= ''
-        end
+        colorize(@current[:run_time].to_s + 'ms', :green)
       end
 
 
       private
 
       def colorize(string, color)
-        if STDOUT.tty?
+        if STDOUT.tty? && string
           case color
           when :cyan
             "\e[1;34m" + string + "\e[0;37m"
@@ -78,7 +69,7 @@ else
             "\e[1;31m" + string + "\e[0;37m"
           end
         else
-          string
+          string.to_s
         end
       end
 

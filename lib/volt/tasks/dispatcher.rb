@@ -40,7 +40,9 @@ module Volt
         # Run the promise and pass the return value/error back to the client
       promise.then do |result|
         channel.send_message('response', callback_id, result, nil)
-        log_dispatch(start_time, klass.name, method_name, *args)
+
+        run_time = ((Time.now.to_f - start_time) * 1000).round(3)
+        Volt.logger.log_dispatch(class_name, method_name, run_time, args)
       end.fail do |error|
         Volt.logger.error(error)
         channel.send_message('response', callback_id, nil, error)
@@ -65,26 +67,6 @@ module Volt
       end
 
       return false
-    end
-
-
-    private
-
-    def log_dispatch(start_time, class_name, method_name, *args)
-      timer_done = ((Time.now.to_f - start_time) * 1000).round(3)
-
-      if STDOUT.tty?
-        Volt.logger.info("TASK " +
-          "\033[1;34m#{class_name}#" +
-          "\033[0;32m#{method_name}\n" +
-          "\033[0;37mWITH ARGS #{args}\n" +
-          "\033[0;37mFINISHED in " +
-          "\033[0;32m#{timer_done}ms\033[0;37m")
-      else
-        Volt.logger.info("TASK #{class_name}##{method_name}\n" +
-          "WITH ARGS#{args}\n" +
-          "FINISHED in #{timer_done}ms\033[0;37m")
-      end
     end
   end
 end

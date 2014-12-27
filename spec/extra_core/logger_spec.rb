@@ -1,15 +1,13 @@
-require 'byebug'
-
 if RUBY_PLATFORM != 'opal'
   describe Volt::VoltLogger do
-    let (:args)        { ['arg1', 'arg2'] }
-    let (:class_name)  { 'ClassName' }
-    let (:method_name) { 'method_name' }
-    let (:run_time)    { 50 }
+    let(:args)        { [5, :arg2] }
+    let(:class_name)  { 'ClassName' }
+    let(:method_name) { 'method_name' }
+    let(:run_time)    { 50 }
 
-    let (:logger) { Volt::VoltLogger.new }
+    let(:logger) { Volt::VoltLogger.new }
 
-    let (:logger_with_opts) do
+    let(:logger_with_opts) do
       Volt::VoltLogger.new({
         args: args,
         class_name: class_name,
@@ -24,7 +22,7 @@ if RUBY_PLATFORM != 'opal'
     end
 
     it 'should convert an array of arguments into a comma separated string' do
-      expect(logger_with_opts.args).to eq("arg1, arg2")
+      expect(logger_with_opts.args).to eq("[5, :arg2]")
     end
 
     context 'when STDOUT is a TTY' do

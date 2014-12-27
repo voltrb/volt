@@ -40,11 +40,7 @@ module Volt
     end
 
     def logger
-      @logger ||= Logger.new(STDOUT)
-      @logger.formatter = proc do |severity, datetime, progname, msg|
-        "\n\n#{severity}: #{msg}\n"
-      end
-      @logger
+      @logger ||= Volt::VoltLogger.new
     end
 
     attr_writer :logger
