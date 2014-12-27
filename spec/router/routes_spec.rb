@@ -66,7 +66,6 @@ describe Volt::Routes do
 
     params = @routes.url_to_params('/login/cool')
     expect(params).to eq(false)
-
   end
 
   it 'should setup param matchers' do
@@ -86,7 +85,6 @@ describe Volt::Routes do
       { _view: 'blog/tag', _tag: nil },
       { _view: 'login', _action: 'user', _name: nil, _id: nil }
     ])
-
   end
 
   it 'should go from params to url' do
@@ -136,7 +134,6 @@ describe Volt::Routes do
     match, params = routes.send(:check_params_match, { _view: 'blog', _id: '55', _extra: 'some value' }, _view: 'blog', _id: '55')
     expect(match).to eq(true)
     expect(params).to eq(_extra: 'some value')
-
   end
 
   it 'should match routes' do
@@ -163,6 +160,5 @@ describe Volt::Routes do
     end
 
     params = @routes.url_to_params('/blog/20')
-
   end
 end

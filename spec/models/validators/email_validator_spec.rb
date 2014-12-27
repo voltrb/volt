@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Volt::EmailValidator do
   subject { Volt::EmailValidator.new(*params) }
-  let(:params) { [ model, field_name, options ] }
+  let(:params) { [model, field_name, options] }
 
   let(:model) { Volt::Model.new email: email }
   let(:field_name) { :email }
@@ -112,7 +112,7 @@ describe Volt::EmailValidator do
         let(:email) { invalid_email }
 
         it 'returns errors with the custom message' do
-          expect(subject.errors).to eq(email: [ custom_message ])
+          expect(subject.errors).to eq(email: [custom_message])
         end
       end
     end

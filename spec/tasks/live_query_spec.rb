@@ -14,6 +14,5 @@ if RUBY_PLATFORM != 'opal'
 
       live_query = LiveQuery.new(pool, data_store, '_items', {})
     end
-
   end
 end

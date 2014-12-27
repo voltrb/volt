@@ -2,10 +2,11 @@ require 'volt/page/bindings/base_binding'
 
 module Volt
   class EachBinding < BaseBinding
-    def initialize(page, target, context, binding_name, getter, variable_name, template_name)
+    def initialize(page, target, context, binding_name, getter, variable_name, index_name, template_name)
       super(page, target, context, binding_name)
 
       @item_name     = variable_name
+      @index_name    = index_name
       @template_name = template_name
 
       @templates = []
@@ -28,7 +29,6 @@ module Volt
       # Since we're checking things like size, we don't want this to be re-triggered on a
       # size change, so we run without tracking.
       Computation.run_without_tracking do
-        # puts "RELOAD:-------------- #{value.inspect}"
         # Adjust to the new size
         values = current_values(value)
         @value = values
@@ -56,9 +56,8 @@ module Volt
 
     def item_removed(position)
       # Remove dependency
-      @templates[position].context.locals[:index_dependency].remove
+      @templates[position].context.locals[:_index_dependency].remove
 
-      # puts "REMOVE AT: #{position.inspect} - #{@templates[position].inspect} - #{@templates.inspect}"
       @templates[position].remove_anchors
       @templates[position].remove
       @templates.delete_at(position)
@@ -81,20 +80,24 @@ module Volt
 
       # TODORW: :parent => @value may change
       item_context                           = SubContext.new({ _index_value: position, parent: @value }, @context)
-      item_context.locals[@item_name.to_sym] = proc { @value[item_context.locals[:_index_value]]}
+      item_context.locals[@item_name.to_sym] = proc { @value[item_context.locals[:_index_value]] }
 
       position_dependency                    = Dependency.new
-      item_context.locals[:index_dependency] = position_dependency
+      item_context.locals[:_index_dependency] = position_dependency
 
       # Get and set index
-      item_context.locals[:index=]           = proc do |val|
+      item_context.locals[:_index=]           = proc do |val|
         position_dependency.changed!
         item_context.locals[:_index_value] = val
       end
 
-      item_context.locals[:index] = proc do
-        position_dependency.depend
-        item_context.locals[:_index_value]
+      # If the user provides an each_with_index, we can assign the lookup for the index
+      # variable here.
+      if @index_name
+        item_context.locals[@index_name.to_sym] = proc do
+          position_dependency.depend
+          item_context.locals[:_index_value]
+        end
       end
 
       item_template = TemplateRenderer.new(@page, @target, item_context, binding_name, @template_name)
@@ -109,7 +112,7 @@ module Volt
       size = @templates.size
       if size > 0
         start_index.upto(size - 1) do |index|
-          @templates[index].context.locals[:index=].call(index)
+          @templates[index].context.locals[:_index=].call(index)
         end
       end
     end

@@ -7,8 +7,9 @@
   <div id="count">{{ completed }} of {{ _todos.size }}</div>
 
   <table id="todos-table" class="table">
-    {{ _todos.each do |todo| }}
+    {{ _todos.each_with_index do |todo, idx| }}
       <tr>
+        <td>{{ idx+1 }}.</td>
         <td><input type="checkbox" checked="{{ todo._completed }}"></td>
         <td class="name {{ if todo._completed }}complete{{ end }}">{{todo._name}}</td>
         <td><button e-click="remove_todo(todo)">X</button></td>

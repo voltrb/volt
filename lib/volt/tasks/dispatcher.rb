@@ -2,7 +2,6 @@ module Volt
   # The task dispatcher is responsible for taking incoming messages
   # from the socket channel and dispatching them to the proper handler.
   class Dispatcher
-
     # Dispatch takes an incoming Task from the client and runs it on the
     # server, returning the result to the client.
     # Tasks returning a promise will wait to return.
@@ -66,7 +65,7 @@ module Volt
         end
       end
 
-      return false
+      false
     end
   end
 end

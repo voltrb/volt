@@ -1,6 +1,6 @@
 module Volt
   # The tasks class provides an interface to call tasks on
-  # the backend server.
+  # the backend server.  This class is setup as page.task (as a singleton)
   class Tasks
     def initialize(page)
       @page       = page
@@ -21,7 +21,6 @@ module Volt
       @promises[promise_id] = promise
 
       # TODO: Timeout on these callbacks
-
       @page.channel.send_message([promise_id, class_name, method_name, meta_data, *args])
 
       promise

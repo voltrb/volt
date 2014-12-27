@@ -2,7 +2,7 @@ module Volt
   class NumericalityValidator
     def self.validate(model, old_model, field_name, args)
       # Construct the class and return the errors
-      self.new(model, field_name, args).errors
+      new(model, field_name, args).errors
     end
 
     attr_reader :errors
@@ -34,7 +34,7 @@ module Volt
             case arg
             when :min
               if @value < val
-               add_error("number must be greater than #{val}")
+                add_error("number must be greater than #{val}")
               end
             when :max
               if @value > val

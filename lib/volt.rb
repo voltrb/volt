@@ -50,4 +50,3 @@ module Volt
     end
   end
 end
-

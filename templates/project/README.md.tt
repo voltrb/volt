@@ -1,3 +1,4 @@
-# Start your docs here.
+# Place your app's docs here.
 
-# See Volt docs at https://github.com/voltrb/volt/blob/master/Readme.md
+## New to Volt?
+Be sure to read the volt docs at http://docs.voltframework.com

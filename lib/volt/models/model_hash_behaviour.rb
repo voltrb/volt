@@ -29,7 +29,7 @@ module Volt
 
       keys = []
 
-      each_pair do |k,v|
+      each_pair do |k, v|
         keys << k
       end
 
@@ -75,8 +75,8 @@ module Volt
     end
 
     def each_pair
-      @attributes.each_pair do |k,v|
-        yield(k,v) unless v.is_a?(Model) && v.nil?
+      @attributes.each_pair do |k, v|
+        yield(k, v) unless v.is_a?(Model) && v.nil?
       end
     end
 
@@ -98,6 +98,5 @@ module Volt
         hash
       end
     end
-
   end
 end

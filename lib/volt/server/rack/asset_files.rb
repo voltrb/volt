@@ -35,11 +35,10 @@ module Volt
         component_path = @component_paths.component_paths(name)
 
         unless component_path
-          raise "Unable to find component '#{name}', make sure the gem is included in your Gemfile"
+          fail "Unable to find component '#{name}', make sure the gem is included in your Gemfile"
         end
 
         component_path.each do |path|
-
           # Load the dependencies
           load_dependencies(path)
 
