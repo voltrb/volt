@@ -21,7 +21,7 @@ if RUBY_PLATFORM != 'opal'
       logger.log(Logger::INFO, "message")
     end
 
-    it 'should convert an array of arguments into a comma separated string' do
+    it 'should convert an array of arguments into a string' do
       expect(logger_with_opts.args).to eq("[5, :arg2]")
     end
 
