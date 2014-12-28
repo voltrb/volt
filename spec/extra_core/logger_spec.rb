@@ -17,7 +17,7 @@ if RUBY_PLATFORM != 'opal'
     end
 
     it 'should log only severity and message wrapped in line breaks' do
-      expect(STDOUT).to receive(:write).with("\n\nINFO: message\n")
+      expect(STDOUT).to receive(:write).with("\n\n[INFO] message\n")
       logger.log(Logger::INFO, "message")
     end
 

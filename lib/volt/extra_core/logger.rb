@@ -74,15 +74,15 @@ else
       end
 
       def task_dispatch_message
-        "TASK #{class_name}##{method_name}\n" +
-        "WITH ARGS #{args}\n" +
-        "FINISHED in #{run_time}"
+        msg = "task #{class_name}##{method_name} in #{run_time}\n"
+        msg += "with args: #{args}\n" if args.size > 0
+        msg
       end
     end
 
     class VoltLoggerFormatter < Logger::Formatter
       def call(severity, time, progname, msg)
-        "\n\n#{severity}: #{msg2str(msg)}\n"
+        "\n\n[#{severity}] #{msg2str(msg)}\n"
       end
     end
   end
