@@ -36,7 +36,7 @@ else
       end
 
       def args
-        @current[:args].to_s
+        @current[:args]
       end
 
       def class_name
@@ -75,7 +75,10 @@ else
 
       def task_dispatch_message
         msg = "task #{class_name}##{method_name} in #{run_time}\n"
-        msg += "with args: #{args}\n" if args.size > 0
+        if args.size > 0
+          arg_str = args.map {|v| v.inspect }.join(', ')
+          msg += "with args: #{arg_str}\n"
+        end
         msg
       end
     end
