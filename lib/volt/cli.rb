@@ -48,7 +48,8 @@ module Volt
       # TODO: this is a work around for a bug when switching between
       # source maps and non-source maps.
       if File.exist?('config.ru') && File.exist?('Gemfile')
-        FileUtils.rm_rf('tmp/.')
+        FileUtils.rm_rf('tmp/sass/.')
+        FileUtils.rm_rf('tmp/sprockets/.')
       else
         say('Current folder is not a Volt project', :red)
         return
