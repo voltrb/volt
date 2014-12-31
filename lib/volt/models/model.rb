@@ -160,7 +160,7 @@ module Volt
         clear_server_errors(attribute_name) if @server_errors
 
         # Don't save right now if we're in a nosave block
-        if !defined?(Thread) || !Thread.current['nosave']
+        unless defined?(Thread) || Thread.current['nosave']
           # Let the persistor know something changed
           @persistor.changed(attribute_name) if @persistor
         end
