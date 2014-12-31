@@ -14,6 +14,8 @@ module Volt
 
       promise = Promise.new
 
+      start_time = Time.now.to_f
+
       # Check that we are calling on a TaskHandler class and a method provide at
       # TaskHandler or above in the ancestor chain.
       if safe_method?(klass, method_name)
@@ -34,15 +36,15 @@ module Volt
         # Unsafe method
         promise.reject(RuntimeError.new("unsafe method: #{method_name}"))
       end
-
-      if callback_id
         # Run the promise and pass the return value/error back to the client
-        promise.then do |result|
-          channel.send_message('response', callback_id, result, nil)
-        end.fail do |error|
-          channel.send_message('response', callback_id, nil, error)
-          Volt.logger.error(error)
-        end
+      promise.then do |result|
+        channel.send_message('response', callback_id, result, nil)
+
+        run_time = ((Time.now.to_f - start_time) * 1000).round(3)
+        Volt.logger.log_dispatch(class_name, method_name, run_time, args)
+      end.fail do |error|
+        Volt.logger.error(error)
+        channel.send_message('response', callback_id, nil, error)
       end
     end
 
@@ -67,3 +69,4 @@ module Volt
     end
   end
 end
+

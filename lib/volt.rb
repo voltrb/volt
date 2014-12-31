@@ -40,7 +40,7 @@ module Volt
     end
 
     def logger
-      @logger ||= Logger.new(STDOUT)
+      @logger ||= Volt::VoltLogger.new
     end
 
     attr_writer :logger
