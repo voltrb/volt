@@ -1,20 +1,15 @@
 unless RUBY_PLATFORM == 'opal'
   require 'spec_helper'
-
-  module Rack
-    class CommonLogger
-    end
-  end
-
   require 'volt/server/rack/quiet_common_logger'
 
   describe QuietCommonLogger do
+    subject { QuietCommonLogger.new(nil, nil) }
     let(:fake_class) { Class.new }
     let(:app) { double 'App', call: [:status, :header, :body] }
 
     before(:each) do
       allow(app).to receive(:call)
-      puts "SUBJECT: #{subject.inspect}"
+      # puts "SUBJECT: #{subject.inspect}"
       subject.instance_variable_set :@app, app
     end
 
