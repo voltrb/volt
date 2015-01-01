@@ -61,7 +61,10 @@ describe Volt::Computation do
     expect(values).to eq([nil, nil, 'inner', 'outer', 'inner'])
   end
 
-  describe '#invalidate!' do
+  # Currently Class#class_variable_set/get isn't in opal
+  # https://github.com/opal/opal/issues/677
+  unless RUBY_PLATFORM == 'opal'
+    describe '#invalidate!' do
 
     let(:computation) { Volt::Computation.new ->{} }
 
@@ -101,5 +104,6 @@ describe Volt::Computation do
         expect(Volt::Computation.class_variable_get :@@flush_queue).to match_array([computation])
       end
     end
+  end
   end
 end
