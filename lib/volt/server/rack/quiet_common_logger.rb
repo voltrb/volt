@@ -1,3 +1,4 @@
+require 'rack'
 class QuietCommonLogger < Rack::CommonLogger
   include Rack
 
