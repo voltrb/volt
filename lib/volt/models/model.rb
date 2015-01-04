@@ -25,13 +25,14 @@ module Volt
     include UserValidatorHelpers
     include Dirty
 
-    attr_reader :attributes
-    attr_reader :parent, :path, :persistor, :options
+    attr_reader :attributes, :parent, :path, :persistor, :options
 
     def initialize(attributes = {}, options = {}, initial_state = nil)
       @deps        = HashDependency.new
       @size_dep    = Dependency.new
       self.options = options
+
+      @new = (initial_state != :loaded)
 
       send(:attributes=, attributes, true)
 
@@ -49,6 +50,11 @@ module Volt
 
     def _id=(val)
       self.__id = val
+    end
+
+    # Return true if the model hasn't been saved yet
+    def new?
+      @new
     end
 
     # Update the options
@@ -93,15 +99,8 @@ module Volt
       @deps.changed_all!
       @deps = HashDependency.new
 
-      unless initial_setup
-
-        # Let the persistor know something changed
-        if @persistor
-          # the changed method on a persistor should return a promise that will
-          # be resolved when the save is complete, or fail with a hash of errors.
-          return @persistor.changed
-        end
-      end
+      # Save the changes
+      run_changed unless initial_setup
     end
 
     alias_method :assign_attributes, :attributes=
@@ -164,11 +163,8 @@ module Volt
         # (maybe move it to persistor, though thats weird since buffers don't have a persistor)
         clear_server_errors(attribute_name) if @server_errors
 
-        # Don't save right now if we're in a nosave block
-        if !defined?(Thread) || !Thread.current['nosave']
-          # Let the persistor know something changed
-          @persistor.changed(attribute_name) if @persistor
-        end
+        # Save the changes
+        run_changed(attribute_name)
       end
     end
 
@@ -308,6 +304,34 @@ module Volt
       if persistor
         @persistor = persistor.new(self)
       end
+    end
+
+    # Called when something in the model changes.  Saves
+    # the model if there is a persistor, and changes the
+    # model to not be new.
+    #
+    # @return [Promise|nil] a promise for when the save is
+    #         complete
+    def run_changed(attribute_name=nil)
+      result = nil
+
+      # Buffers don't save on changes.
+      # Don't save right now if we're in a nosave block
+      if !buffer? && (!defined?(Thread) || !Thread.current['nosave'])
+        # First check that all local validations pass
+        if errors.size > 0
+          # Some errors are present, revert changes
+        else
+          # No errors, tell the persistor to handle the change (usually save)
+
+          # the changed method on a persistor should return a promise that will
+          # be resolved when the save is complete, or fail with a hash of errors.
+          result = @persistor.changed(attribute_name) if @persistor
+          @new = false
+        end
+      end
+
+      return result
     end
   end
 end

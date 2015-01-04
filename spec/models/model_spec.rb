@@ -438,4 +438,26 @@ describe Volt::Model do
 
     expect(model._name).to eq('Jimmy')
   end
+
+  describe "model state" do
+    it 'should be new when created, then false after a change' do
+      a = Volt::Model.new
+      expect(a.new?).to eq(true)
+
+      a._name = 'Ryan'
+      expect(a.new?).to eq(false)
+    end
+
+    it 'should allow multiple assignments with attributes, changing new? to false after' do
+      a = Volt::Model.new
+      expect(a.new?).to eq(true)
+
+      a.attributes = {first: 'Jimmy', last: 'Dean'}
+      expect(a.new?).to eq(false)
+    end
+
+    it 'should load store models ' do
+
+    end
+  end
 end

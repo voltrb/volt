@@ -46,6 +46,10 @@ module Volt
       Promise.new.reject(errors)
     end
 
+    def buffer?
+      options[:buffer]
+    end
+
     # Returns a buffered version of the model
     def buffer
       model_path = options[:path]
@@ -57,7 +61,7 @@ module Volt
         model_klass = class_at_path(model_path)
       end
 
-      new_options = options.merge(path: model_path, save_to: self).reject { |k, _| k.to_sym == :persistor }
+      new_options = options.merge(path: model_path, save_to: self, buffer: true).reject { |k, _| k.to_sym == :persistor }
       model       = model_klass.new({}, new_options, :loading)
 
       if state == :loaded
