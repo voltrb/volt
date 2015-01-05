@@ -319,8 +319,9 @@ module Volt
       # Don't save right now if we're in a nosave block
       if !buffer? && (!defined?(Thread) || !Thread.current['nosave'])
         # First check that all local validations pass
-        if errors.size > 0
+        if error_in_changed_attributes?
           # Some errors are present, revert changes
+          revert_changes!
         else
           # No errors, tell the persistor to handle the change (usually save)
 

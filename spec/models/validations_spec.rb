@@ -85,6 +85,13 @@ describe Volt::Model do
         count: ['must be a number']
       )
     end
+
+    it 'should fail on non-numbers' do
+      model = TestModel.new
+
+      model._count = 'not a number'
+      expect(model.errors[:count]).to eq(['must be a number'])
+    end
   end
 
   describe 'email' do
@@ -113,5 +120,28 @@ describe Volt::Model do
         phone_number: ['must be a phone number with area or country code']
       )
     end
+  end
+
+  it 'should report if errors have happened in changed attributes' do
+    model = TestModel.new
+
+    # Prevent run_changed so it doesn't revert on failed values
+    allow(model).to receive(:run_changed)
+
+    expect(model.error_in_changed_attributes?).to eq(false)
+
+    model._not_validated_attr = 'yes'
+    expect(model.error_in_changed_attributes?).to eq(false)
+
+    model._name = '5' # fail, too short
+    expect(model.changed?(:name)).to eq(true)
+    expect(model.error_in_changed_attributes?).to eq(true)
+
+    model._name = 'Jimmy'
+    expect(model.error_in_changed_attributes?).to eq(false)
+  end
+
+  it 'should revert changes which fail a validation' do
+
   end
 end
