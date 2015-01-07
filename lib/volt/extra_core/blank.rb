@@ -70,7 +70,6 @@ class String
   #   '　'.blank?               # => true
   #   ' something here '.blank? # => false
   def blank?
-    # Works with large space not small, https://github.com/opal/opal/issues/685
     self !~ /\S/
   end
 end
