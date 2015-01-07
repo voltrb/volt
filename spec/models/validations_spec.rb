@@ -142,6 +142,12 @@ describe Volt::Model do
   end
 
   it 'should revert changes which fail a validation' do
+    model = TestModel.new
 
+    model._name = 'bob' # fails too short validation
+    expect(model._name).to eq(nil)
+
+    model._name = 'Jimmy' # long enough, passes
+    expect(model._name).to eq('Jimmy')
   end
 end
