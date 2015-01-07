@@ -70,9 +70,8 @@ class String
   #   '　'.blank?               # => true
   #   ' something here '.blank? # => false
   def blank?
-    # self !~ /[^[:space:]]/
-    # TODO: Opal fails with the previous regex
-    strip == ''
+    # Works with large space not small, https://github.com/opal/opal/issues/685
+    self !~ /\S/
   end
 end
 
