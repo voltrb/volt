@@ -9,6 +9,7 @@ require 'volt/models/field_helpers'
 require 'volt/reactive/reactive_hash'
 require 'volt/models/validators/user_validation'
 require 'volt/models/dirty'
+require 'volt/reactive/class_eventable'
 
 module Volt
   class NilMethodCall < NoMethodError
@@ -24,6 +25,7 @@ module Volt
     include FieldHelpers
     include UserValidatorHelpers
     include Dirty
+    include ClassEventable
 
     attr_reader :attributes, :parent, :path, :persistor, :options
 
@@ -41,6 +43,9 @@ module Volt
       @state = :loaded
 
       @persistor.loaded(initial_state) if @persistor
+
+      # Trigger the new event, pass in :new
+      trigger!(:new, :new)
     end
 
     # the id is stored in a field named _id, so we setup _id to proxy to this

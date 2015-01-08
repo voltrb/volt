@@ -8,22 +8,23 @@ module Volt
       #
       # @param key [Symbol] the name of the attribute to store
       def own_by_user(key=:user_id)
-        # Setup a validation that
-        validate do |old_model|
-          unless Volt.user_id
+        # When the model is created, assign it the user_id (if the user is logged in)
+        on(:new) do
+          if (user_id = Volt.user_id)
+            send(:"_#{key}=", user_id)
+          end
+        end
+
+        on(:create, :update) do
+          # Don't allow the key to be changed
+          deny(key)
+        end
+
+        # Setup a validation that requires a user_id
+        validate do
+          unless _user_id
             # Show an error that the user is not logged in
             next {key => ['requires a logged in user']}
-          end
-
-          if _user_id == nil
-            # Assign the user_id for the first time
-            send(:"_#{key}=", Volt.user_id)
-          end
-
-          # Lock the user_id so it can only be assigned once
-          if changed?(key) && user_id_was != nil
-            # No valid user, add an error
-            next {key => ['can not be changed']}
           end
         end
       end
@@ -52,22 +53,7 @@ module Volt
         end
 
         validate do
-          @__deny_fields = []
-
-          # Run the permissions
-          instance_eval(&self.class.__permissions__)
-
-          errors = {}
-
-          @__deny_fields.each do |deny_field|
-            if changed?(deny_field)
-              (errors[deny_field] ||= []) << 'can not be changed'
-            end
-          end
-
-          @__deny_fields = nil
-
-          errors
+          run_permissions
         end
       end
     end
@@ -77,9 +63,17 @@ module Volt
       base.class_attribute :__permissions__
     end
 
-    def deny_write(*fields)
+    def deny(*fields)
       if @__deny_fields
-        @__deny_fields += fields.map(&:to_sym)
+        if @__deny_fields != true
+          if fields.size == 0
+            # No field's were passed, this means we deny all
+            @__deny_fields = true
+          else
+            # Fields were specified, add them to the list
+            @__deny_fields += fields.map(&:to_sym)
+          end
+        end
       else
         raise "deny_write should be called inside of a permissions block"
       end
@@ -91,6 +85,33 @@ module Volt
     # @param key [Symbol] the name of the attribute where the user_id is stored
     def owner?(key=:user_id)
       send(:"_#{key}") == Volt.user_id
+    end
+
+    private
+    def run_permissions
+      @__deny_fields = []
+
+      # Run the permission blocks
+      action_name = new? ? :create : :update
+
+      # Run each of the permission blocks for this action
+      if (blocks = self.class.__permissions__[action_name])
+        blocks.each do |block|
+          instance_eval(&block)
+        end
+      end
+
+      errors = {}
+
+      @__deny_fields.each do |deny_field|
+        if changed?(deny_field)
+          (errors[deny_field] ||= []) << 'can not be changed'
+        end
+      end
+
+      @__deny_fields = nil
+
+      errors
     end
   end
 end

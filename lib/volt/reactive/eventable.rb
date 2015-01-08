@@ -2,9 +2,9 @@ module Volt
   # Listeners are returned from #on on a class with Eventable included.
   # Listeners can be stopped by calling #remove
   class Listener
-    def initialize(klass, event, callback)
+    def initialize(klass, events, callback)
       @klass    = klass
-      @event    = event
+      @events    = events
       @callback = callback
     end
 
@@ -12,10 +12,17 @@ module Volt
       @callback.call(*args) unless @removed
     end
 
+    # Call the callback with self set to instance
+    def instance_call(instance, *args)
+      instance.instance_exec(*args, &@callback)
+    end
+
     def remove
       @removed = true
 
-      @klass.remove_listener(@event, self)
+      @events.each do |event|
+        @klass.remove_listener(event, self)
+      end
 
       # Make things easier on the GC
       @klass    = nil
@@ -23,7 +30,7 @@ module Volt
     end
 
     def inspect
-      "<Listener:#{object_id} event=#{@event}>"
+      "<Listener:#{object_id} events=#{@events}>"
     end
   end
 
@@ -35,37 +42,44 @@ module Volt
     # the class, it will trigger any listener with the same event name.
     #
     # returns: a listener that has a #remove method to stop the listener.
-    def on(event, &callback)
-      event             = event.to_sym
-      listener          = Listener.new(self, event, callback)
+    def on(*events, &callback)
+      raise '.on requires an event' if events.size == 0
+
+      listener = Listener.new(self, events, callback)
+
       @listeners        ||= {}
-      @listeners[event] ||= []
-      @listeners[event] << listener
 
-      first_for_event = @listeners[event].size == 1
-      first           = first_for_event && @listeners.size == 1
+      events.each do |event|
+        event             = event.to_sym
+        @listeners[event] ||= []
+        @listeners[event] << listener
 
-      # Let the included class know that an event was registered. (if it cares)
-      if self.respond_to?(:event_added)
-        # call event added passing the event, the scope, and a boolean if it
-        # is the first time this event has been added.
-        event_added(event, first, first_for_event)
+        first_for_event = @listeners[event].size == 1
+        first           = first_for_event && @listeners.size == 1
+
+        # Let the included class know that an event was registered. (if it cares)
+        if self.respond_to?(:event_added)
+          # call event added passing the event, the scope, and a boolean if it
+          # is the first time this event has been added.
+          event_added(event, first, first_for_event)
+        end
       end
 
       listener
     end
+
 
     # Triggers event on the class the module was includeded.  Any .on listeners
     # will have their block called passing in *args.
     def trigger!(event, *args)
       event = event.to_sym
 
-      return unless @listeners && @listeners[event]
-
-      # TODO: We have to dup here because one trigger might remove another
-      @listeners[event].dup.each do |listener|
-        # Call the event on each listener
-        listener.call(*args)
+      if @listeners && @listeners[event]
+        # TODO: We have to dup here because one trigger might remove another
+        @listeners[event].dup.each do |listener|
+          # Call the event on each listener
+          listener.call(*args)
+        end
       end
     end
 
