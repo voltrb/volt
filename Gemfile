@@ -6,7 +6,6 @@ group :development do
   # For testing the kitchen sink app
   # Twitter bootstrap
   gem 'volt-bootstrap'
-  gem 'byebug'
 
   # Simple theme for bootstrap, remove to theme yourself.
   gem 'volt-bootstrap-jumbotron-theme'
@@ -22,5 +21,6 @@ group :development do
 end
 
 group :development, :test do
+  gem 'pry-byebug', '~> 2.0.0'
   gem 'bson_ext'
 end
