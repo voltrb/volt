@@ -131,7 +131,7 @@ describe Volt::PhoneNumberValidator do
     end
 
     context 'when provided a custom error message' do
-      let(:options) { { error_message: custom_message } }
+      let(:options) { { message: custom_message } }
       let(:custom_message) { 'this is a custom message' }
 
       context 'and the phone number is invalid' do
