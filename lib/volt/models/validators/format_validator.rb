@@ -2,9 +2,6 @@ module Volt
   class FormatValidator
     # Creates a new instance with the provided options and returns it's errors
     #
-    # @note the second param +old_model+ is unused and will soon be removed,
-    #   you can pass nil in the mean time
-    #
     # @example
     #   options = { with: /.+@.+/, message: 'must include an @ symobl' }
     #
@@ -22,14 +19,13 @@ module Volt
     #   FormatValidator.validate(user, nil, 'email', options)
     #
     # @param model [Volt::Model] the model being validated
-    # @param old_model [NilClass] no longer used, will be removed
     # @param field_name [String] the name of the field being validated
     #
     # @param options (see #apply)
     # @option options (see #apply)
     #
     # @return (see #errors)
-    def self.validate(model, old_model, field_name, options)
+    def self.validate(model, field_name, options)
       new(model, field_name).apply(options).errors
     end
 

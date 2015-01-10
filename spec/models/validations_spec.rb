@@ -95,21 +95,23 @@ describe Volt::Model do
     context 'when multiple fail' do
       before { model._special_field = 'nope' }
 
-      # TODO: Disabled for now, @lexun is fixing
-      # it 'returns an array of errors' do
-      #   expect(model.errors).to eq({
-      #     special_field: [ regex_message, proc_message ]
-      #   })
-      # end
+      it 'returns an array of errors' do
+        expect(model.errors).to eq({
+          special_field: [ regex_message, proc_message ]
+        })
+      end
     end
 
     context 'when one fails' do
-      before { model._special_field = 'regex' }
+      before do
+        # Prevent rollback
+        allow(model).to receive(:run_changed)
+        model._special_field = 'regex'
+      end
 
-      # TODO: Disabled for now, @lexun is fixing
-      # it 'returns an array with a single error' do
-      #   expect(model.errors).to eq({ special_field: [ proc_message ] })
-      # end
+      it 'returns an array with a single error' do
+        expect(model.errors).to eq({ special_field: [ proc_message ] })
+      end
     end
   end
 
