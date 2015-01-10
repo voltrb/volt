@@ -73,4 +73,36 @@ describe Volt::Model do
       it_should_behave_like 'a built in validation', :username, message
     end
   end
+
+  describe 'validators with multiple criteria' do
+    let(:regex_message) { 'regex failed' }
+    let(:proc_message) { 'proc failed' }
+
+    let(:test_model_class) do
+      Class.new(Volt::Model) do
+        validate :special_field, format: [
+          { with: /regex/, message: 'regex failed' },
+          { with: ->(x) {x == false}, message: 'proc failed' }
+        ]
+      end
+    end
+
+    context 'when multiple fail' do
+      before { model._special_field = 'nope' }
+
+      it 'returns an array of errors' do
+        expect(model.errors).to eq({
+          special_field: [ regex_message, proc_message ]
+        })
+      end
+    end
+
+    context 'when one fails' do
+      before { model._special_field = 'regex' }
+
+      it 'returns an array with a single error' do
+        expect(model.errors).to eq({ special_field: [ proc_message ] })
+      end
+    end
+  end
 end
