@@ -104,7 +104,7 @@ describe Volt::Model do
 
     context 'when one fails' do
       before do
-        # Prevent rollback
+        # Prevent rollback for testing
         allow(model).to receive(:run_changed)
         model._special_field = 'regex'
       end

@@ -54,12 +54,7 @@ module Volt
     def buffer
       model_path = options[:path]
 
-      # When we grab a buffer off of a plual class (subcollection), we get it as a model.
-      if model_path.last.plural? && model_path[-1] != :[]
-        model_klass = class_at_path(model_path + [:[]])
-      else
-        model_klass = class_at_path(model_path)
-      end
+      model_klass = self.class
 
       new_options = options.merge(path: model_path, save_to: self, buffer: true).reject { |k, _| k.to_sym == :persistor }
       model       = model_klass.new({}, new_options, :loading)
