@@ -2,7 +2,7 @@
 
 ## 0.8.27 - WIP
 ### Added
-- Added email validator
+- Added formats, email, phone validators (thanks @lexun and @kxcrl)
 - each_with_index is now supported in views and the ```index``` value is no longer provided by default.
 - fixed bug with cookie parsing with equals in them
 - fixed bug appending existing models to a collection
