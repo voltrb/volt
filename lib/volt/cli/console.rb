@@ -45,7 +45,7 @@ module Volt
       Pry.config.prompt_name = 'volt'
 
       # start a REPL session
-      Pry.start
+      # Pry.start
 
       $page.pry
     end
