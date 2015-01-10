@@ -108,6 +108,8 @@ module Volt
     end
 
     def test(criterion)
+      return false unless @value.respond_to? :match
+
       !!(criterion.try(:call, @value) || criterion.try(:match, @value))
     end
   end
