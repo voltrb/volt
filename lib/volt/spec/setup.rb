@@ -9,7 +9,6 @@ module Volt
         ENV['VOLT_ENV'] = 'test'
 
         require 'volt/boot'
-        require 'pry-byebug'
 
         # Require in app
         Volt.boot(app_path)

@@ -25,7 +25,7 @@ module Volt
 
       # Update the html in this section
       # TODO: Move the formatter into another class.
-      dom_section.html = value.gsub("\n", "<br />\n")
+      dom_section.text = value.gsub("\n", "<br />\n")
     end
 
     def remove

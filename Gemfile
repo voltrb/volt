@@ -21,6 +21,5 @@ group :development do
 end
 
 group :development, :test do
-  gem 'pry-byebug', '~> 2.0.0'
   gem 'bson_ext'
 end

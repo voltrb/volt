@@ -2,6 +2,7 @@
 
 ## 0.8.27 - WIP
 ### Added
+- Changed it so content bindings escape all html (for CSRF - thanks @ChaosData)
 - Added formats, email, phone validators (thanks @lexun and @kxcrl)
 - each_with_index is now supported in views and the ```index``` value is no longer provided by default.
 - fixed bug with cookie parsing with equals in them
