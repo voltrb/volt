@@ -3,6 +3,8 @@ require 'volt/extra_core/extra_core'
 require 'volt/reactive/computation'
 require 'volt/reactive/dependency'
 require 'volt/config'
+require 'volt/version'
+
 if RUBY_PLATFORM == 'opal'
 else
   require 'volt/data_stores/data_store'
