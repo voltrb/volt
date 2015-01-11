@@ -38,6 +38,9 @@ module Volt
 
       send(:attributes=, attributes, true)
 
+      # Run the initial validation
+      validate!
+
       # Models start in a loaded state since they are normally setup from an
       # ArrayModel, which will have the data when they get added.
       @state = :loaded
@@ -323,6 +326,9 @@ module Volt
       # Buffers don't save on changes.
       # Don't save right now if we're in a nosave block
       if !buffer? && (!defined?(Thread) || !Thread.current['nosave'])
+        # Run the validations for all fields
+        validate!
+
         # First check that all local validations pass
         if error_in_changed_attributes?
           # Some errors are present, revert changes

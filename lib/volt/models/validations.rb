@@ -1,4 +1,4 @@
-# require 'volt/models/validations/errors'
+require 'volt/models/errors'
 require 'volt/models/validators/email_validator'
 require 'volt/models/validators/format_validator'
 require 'volt/models/validators/length_validator'
@@ -66,26 +66,30 @@ module Volt
       @server_errors.delete(key)
     end
 
+    def errors(marked_only=false)
+      @errors ||= Errors.new
+
+      if marked_only
+        # Only return the fields that have been marked
+        @errors.to_h.select {|key,_| marked_fields[key] }
+      else
+        @errors
+      end
+    end
+
     # TODO: Errors is being called for any validation change.  We should have errors return a
     # hash like object that only calls the validation for each one.
-    def errors(marked_only = false)
-      errors = {}
+    def validate!
+      errors.clear
 
-      # Merge into errors, combining any error arrays
-      merge = proc do |new_errors|
-        errors.merge!(new_errors) do |key, new_val, old_val|
-          new_val + old_val
-        end
-      end
-
-      errors = run_validations(errors, merge, marked_only)
+      run_validations
 
       # See if any server errors are in place and merge them in if they are
       if Volt.client?
-        errors = merge.call(server_errors.to_h)
+        errors.merge!(server_errors.to_h)
       end
 
-      errors = run_custom_validations(errors, merge)
+      run_custom_validations
 
       errors
     end
@@ -106,22 +110,20 @@ module Volt
     private
 
     # Runs through each of the normal validations.
-    def run_validations(errors, merge, marked_only)
+    def run_validations
       validations = self.class.validations
       if validations
 
         # Run through each validation
         validations.each_pair do |field_name, options|
-          # When marked only, skip any validations on non-marked fields
-          next if marked_only && !marked_fields[field_name]
-
           options.each_pair do |validation, args|
             # Call the specific validator, then merge the results back
             # into one large errors hash.
             klass = validation_class(validation, args)
 
             if klass
-              validate_with(merge, klass, field_name, args)
+              result = klass.validate(self, field_name, args)
+              errors.merge!(result)
             else
               fail "validation type #{validation} is not specified."
             end
@@ -132,26 +134,16 @@ module Volt
       errors
     end
 
-    def run_custom_validations(errors, merge)
+    def run_custom_validations
       # Call all of the custom validations
       custom_validations = self.class.custom_validations
       if custom_validations
         custom_validations.each do |custom_validation|
           # Run the validator in the context of the model
           result = instance_exec(&custom_validation)
-
-          if result
-            errors = merge.call(result)
-          end
+          errors.merge!(result)
         end
       end
-
-      errors
-    end
-
-    # calls the validate method on the class, passing the right arguments.
-    def validate_with(merge, klass, field_name, args)
-      merge.call(klass.validate(self, field_name, args))
     end
 
     def validation_class(validation, args)
