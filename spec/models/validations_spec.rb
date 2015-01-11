@@ -140,5 +140,8 @@ describe Volt::Model do
 
     model._name = 'Jimmy' # long enough, passes
     expect(model._name).to eq('Jimmy')
+
+    model._name = 'ok' # fails again
+    expect(model._name).to eq('Jimmy')
   end
 end

@@ -1,7 +1,14 @@
 require 'spec_helper'
 
 describe "Volt::Dirty" do
-  let(:model) { Volt::Model.new }
+  let(:model) do
+    model = Volt::Model.new
+
+    # Run changed on the model will revert changes after each sync
+    allow(model).to receive(:run_changed)
+
+    model
+  end
 
   it 'should track changed attributes' do
     model._name = 'Bob'

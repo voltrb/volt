@@ -38,9 +38,6 @@ module Volt
 
       send(:attributes=, attributes, true)
 
-      # Run the initial validation
-      validate!
-
       # Models start in a loaded state since they are normally setup from an
       # ArrayModel, which will have the data when they get added.
       @state = :loaded
@@ -108,7 +105,12 @@ module Volt
       @deps = HashDependency.new
 
       # Save the changes
-      run_changed unless initial_setup
+      if initial_setup
+        # Run initial validation
+        validate!
+      else
+        run_changed
+      end
     end
 
     alias_method :assign_attributes, :attributes=
@@ -340,6 +342,9 @@ module Volt
           # be resolved when the save is complete, or fail with a hash of errors.
           result = @persistor.changed(attribute_name) if @persistor
           @new = false
+
+          # Clear the change tracking
+          clear_tracked_changes!
         end
       end
 
