@@ -171,7 +171,7 @@ module Volt
 
         # TODO: Can we make this so it doesn't need to be handled for non store collections
         # (maybe move it to persistor, though thats weird since buffers don't have a persistor)
-        clear_server_errors(attribute_name) if @server_errors
+        clear_server_errors(attribute_name) if @server_errors.present?
 
         # Save the changes
         run_changed(attribute_name)

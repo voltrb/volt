@@ -203,7 +203,7 @@ describe Volt::Model do
     a = Volt::Model.new
 
     count = 0
-    -> { a._blue && a._blue.respond_to?(:green) && a._blue._green; count += 1 }.watch!
+    -> { a._blue && a._blue.respond_to?(:_green) && a._blue._green; count += 1 }.watch!
     expect(count).to eq(1)
 
     a._blue._green = 5

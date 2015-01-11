@@ -13,10 +13,13 @@ module Volt
       @hash == val
     end
 
+    def blank?
+      @hash.blank?
+    end
+
     # TODO: We should finish off this class for reactivity
     def method_missing(method_name, *args, &block)
       @all_deps.depend
-
       @hash.send(method_name, *args, &block)
     end
 
