@@ -40,7 +40,9 @@ module Volt
     end
 
     def clear
-      @hash.each_pair do |key, _|
+      # Don't use .each_key so we get a clone here since we are
+      # deleting as we go.
+      @hash.keys.each do |key|
         delete(key)
       end
 
@@ -62,7 +64,7 @@ module Volt
 
     def inspect
       @all_deps.depend
-      "#<ReactiveHash #{@hash.inspect}>"
+      "#<#{self.class.name} #{@hash.inspect}>"
     end
   end
 end

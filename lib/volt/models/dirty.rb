@@ -51,6 +51,9 @@ module Volt
     end
 
     def attribute_will_change!(attribute_name, old_value)
+      # Don't track nil models
+      old_value = nil if old_value.nil?
+
       (changed_attributes[attribute_name] ||= []) << old_value
     end
 
