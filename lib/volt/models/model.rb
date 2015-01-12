@@ -335,6 +335,10 @@ module Volt
         if error_in_changed_attributes?
           # Some errors are present, revert changes
           revert_changes!
+
+          # After we revert, we need to validate again to get the error messages back
+          # TODO: Could probably cache the previous errors.
+          validate!
         else
           # No errors, tell the persistor to handle the change (usually save)
 
