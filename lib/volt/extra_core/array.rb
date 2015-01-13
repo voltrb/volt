@@ -1,10 +1,5 @@
 class Array
   def sum
-    total = 0
-    each do |val|
-      total += val
-    end
-
-    total
+    inject(0, :+)
   end
 end
