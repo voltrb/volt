@@ -5,7 +5,7 @@ module Volt
       user_id_signature = self.user_id_signature
 
       if user_id_signature.nil?
-        return nil
+        nil
       else
         index = user_id_signature.index(':')
         user_id = user_id_signature[0...index]
@@ -21,7 +21,7 @@ module Volt
 
         end
 
-        return user_id
+        user_id
       end
     end
 
@@ -34,9 +34,9 @@ module Volt
     def user
       user_id = self.user_id
       if user_id
-        return $page.store._users.find_one(_id: user_id)
+        $page.store._users.find_one(_id: user_id)
       else
-        return nil
+        nil
       end
     end
 

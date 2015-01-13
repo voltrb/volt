@@ -62,9 +62,9 @@ module Volt
 
       def save_changes?
         if RUBY_PLATFORM == 'opal'
-          return !(defined?($loading_models) && $loading_models) && @tasks
+          !(defined?($loading_models) && $loading_models) && @tasks
         else
-          return true
+          true
         end
       end
 

@@ -8,14 +8,14 @@ module Volt
 
     def find_by_comment(text, in_node = `document`)
       if NO_XPATH
-        return find_by_comment_without_xml(text, in_node)
+        find_by_comment_without_xml(text, in_node)
       else
         node = nil
 
         `
           node = document.evaluate("//comment()[. = ' " + text + " ']", in_node, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null).iterateNext();
         `
-        return node
+        node
       end
     end
 
