@@ -2,7 +2,7 @@ require 'bcrypt' if RUBY_PLATFORM != 'opal'
 
 module Volt
   class User < Model
-    # returns true if the user configured using the username
+    # returns login field name depending on config settings
     def self.login_field
       if Volt.config.public.try(:auth).try(:use_username)
         :username
