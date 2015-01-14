@@ -20,9 +20,16 @@ task :docs do
   # end
 end
 
-Opal::RSpec::RakeTask.new
+# Setup the opal:rspec task
+Opal::RSpec::RakeTask.new('opal:rspec') do |s|
+  # Add the app folder to the opal load path.
+  s.append_path('app')
+end
+
 
 task default: [:test]
+
+
 
 task :test do
   puts "--------------------------\nRun specs in Opal\n--------------------------"

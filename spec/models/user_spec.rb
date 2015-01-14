@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'volt/models/user'
 
 class FakeConfig
   def public; self; end
@@ -32,22 +33,24 @@ describe Volt::User do
 
     subject { user.password = 'test' }
 
-    context 'when it is a Volt server' do
-      before do
-        allow(BCrypt::Password).to receive(:create).with('test').
-          and_return 'hashed-password'
-      end
+    if RUBY_PLATFORM != 'opal'
+      context 'when it is a Volt server' do
+        before do
+          allow(BCrypt::Password).to receive(:create).with('test').
+            and_return 'hashed-password'
+        end
 
-      it "encrypts password" do
-        subject
+        it "encrypts password" do
+          subject
 
-        expect(BCrypt::Password).to have_received :create
-      end
+          expect(BCrypt::Password).to have_received :create
+        end
 
-      it 'sets _hashed_password to passed value' do
-        subject
+        it 'sets _hashed_password to passed value' do
+          subject
 
-        expect(user._hashed_password).to eq "hashed-password"
+          expect(user._hashed_password).to eq "hashed-password"
+        end
       end
     end
 

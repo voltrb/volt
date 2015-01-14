@@ -1,10 +1,12 @@
-require 'bcrypt' if RUBY_PLATFORM != 'opal'
+unless RUBY_PLATFORM == 'opal'
+  require 'bcrypt'
+end
 
 module Volt
   class User < Model
     # returns login field name depending on config settings
     def self.login_field
-      if Volt.config.public.try(:auth).try(:use_username)
+      if Volt.config.try(:public).try(:auth).try(:use_username)
         :username
       else
         :email
@@ -24,6 +26,7 @@ module Volt
         # on the server, we bcrypt the password and store the result
         self._hashed_password = BCrypt::Password.create(val)
       else
+        # Assign the attribute
         self._password = val
       end
     end
