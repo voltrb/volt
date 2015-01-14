@@ -1,7 +1,11 @@
 Contributing to Volt
 =====================
 
-Volt is work of [hundreds of contributors](https://github.com/voltrb/volt/graphs/contributors). You're encouraged to submit [pull requests](https://github.com/voltrb/volt/pulls), [propose features and discuss issues](https://github.com/voltrb/volt/issues). When in doubt, ask a question in the [Volt gitter.im chatroom](https://gitter.im/voltrb/volt).
+You want to contribute? Great! Thanks for being awesome!  Volt is work of [hundreds of contributors](https://github.com/voltrb/volt/graphs/contributors). You're encouraged to submit [pull requests](https://github.com/voltrb/volt/pulls), [propose features and discuss issues](https://github.com/voltrb/volt/issues). When in doubt, ask a question in the [Volt gitter.im chatroom](https://gitter.im/voltrb/volt).
+
+#### Find Something to Work on
+
+If you want to contribute, but aren't sure what to work on, we keep our list of current todos in Trello at https://trello.com/b/QdCx9Tqb/volt  Before starting, feel free to chat with me @ryanstout on [gitter](https://gitter.im/voltrb/volt).
 
 #### Fork the Project
 
