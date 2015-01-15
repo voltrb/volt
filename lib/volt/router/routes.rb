@@ -119,16 +119,16 @@ module Volt
         if node[part]
           # We found a match, replace the bindings and return
           # TODO: Handvle nested
-          return setup_bindings_in_params(original_parts, node[part])
+          setup_bindings_in_params(original_parts, node[part])
         else
-          return false
+          false
         end
       elsif (new_node = node[part])
         # Direct match for section, continue
-        return match_path(original_parts, parts, new_node)
+        match_path(original_parts, parts, new_node)
       elsif (new_node = node['*'])
         # Match on binding section
-        return match_path(original_parts, parts, new_node)
+        match_path(original_parts, parts, new_node)
       end
     end
 

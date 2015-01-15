@@ -21,7 +21,7 @@ module Volt
       if self.is_a?(DomSection)
         dom_template = (@@template_cache[template_name] ||= DomTemplate.new(page, template_name))
 
-        return set_template(dom_template)
+        set_template(dom_template)
       else
         template = page.templates[template_name]
 
@@ -33,7 +33,7 @@ module Volt
           bindings = {}
         end
 
-        return set_content_and_rezero_bindings(html, bindings)
+        set_content_and_rezero_bindings(html, bindings)
       end
     end
   end

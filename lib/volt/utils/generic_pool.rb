@@ -67,9 +67,9 @@ module Volt
       result = __lookup(*args) { nil }
 
       if result
-        return result.values
+        result.values
       else
-        return []
+        []
       end
     end
 

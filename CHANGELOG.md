@@ -8,6 +8,7 @@
 - fixed bug with cookie parsing with equals in them
 - fixed bug appending existing models to a collection
 - refactored TemplateBinding, moved code into ViewLookupForPath (SRP)
+- reserved fields now get a warning in models
 
 ## 0.8.24 - 2014-12-05
 ### Added

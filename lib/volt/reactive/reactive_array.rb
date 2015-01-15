@@ -39,9 +39,9 @@ module Volt
           end
         end
 
-        return count
+        count
       else
-        return size
+        size
       end
     end
 
@@ -67,9 +67,9 @@ module Volt
           end
         end
 
-        return false
+        false
       else
-        return @array.any?
+        @array.any?
       end
     end
 
@@ -83,9 +83,9 @@ module Volt
           end
         end
 
-        return true
+        true
       else
-        return @array.all?
+        @array.all?
       end
     end
 

@@ -15,6 +15,11 @@ module Volt
   class NilMethodCall < NoMethodError
   end
 
+  # The error is raised when a reserved field name is used in a
+  # volt model.
+  class InvalidFieldName < StandardError
+  end
+
   class Model
     include ModelWrapper
     include ModelHelpers
@@ -28,6 +33,14 @@ module Volt
     include ClassEventable
 
     attr_reader :attributes, :parent, :path, :persistor, :options
+
+    INVALID_FIELD_NAMES = {
+      :attributes => true,
+      :parent => true,
+      :path => true,
+      :options => true,
+      :persistor => true
+    }
 
     def initialize(attributes = {}, options = {}, initial_state = nil)
       @deps        = HashDependency.new
@@ -153,6 +166,8 @@ module Volt
       # Assign, without the =
       attribute_name = attribute_name.to_sym
 
+      check_valid_field_name(attribute_name)
+
       old_value = @attributes[attribute_name]
       new_value = wrap_value(value, [attribute_name])
 
@@ -185,6 +200,8 @@ module Volt
     def read_attribute(attr_name)
       # Reading an attribute, we may get back a nil model.
       attr_name = attr_name.to_sym
+
+      check_valid_field_name(attr_name)
 
       # Track dependency
       # @deps.depend(attr_name)
@@ -303,6 +320,15 @@ module Volt
     end
 
     private
+
+    # Volt provides a few access methods to get more data about the model,
+    # we want to prevent these from being assigned or accessed through
+    # underscore methods.
+    def check_valid_field_name(name)
+      if INVALID_FIELD_NAMES[name]
+        raise InvalidFieldName, "`#{name}` is reserved and can not be used as a field"
+      end
+    end
 
     def setup_buffer(model)
       model.attributes = attributes
