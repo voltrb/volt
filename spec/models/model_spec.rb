@@ -399,6 +399,19 @@ describe Volt::Model do
     end
   end
 
+  describe 'attributes' do
+
+    it 'should prevent reserved attributes from being assigned directly' do
+      model = Volt::Model.new
+
+      [:attributes, :parent, :path, :options, :persistor].each do |attr_name|
+        expect do
+          model.send(:"_#{attr_name}=", 'assign val')
+        end.to raise_error(Volt::InvalidFieldName, "`#{attr_name}` is reserved and can not be used as a field")
+      end
+    end
+  end
+
   describe 'persistors' do
     it 'should setup a new instance of the persistor with self' do
       persistor = double('volt/persistor')
