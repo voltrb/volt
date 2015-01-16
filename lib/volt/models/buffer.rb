@@ -1,6 +1,8 @@
 module Volt
   module Buffer
     def save!
+      # TODO::: because we're assigning from the buffer, we need to not check errors before we read
+
       # Compute the erros once
       errors = self.errors
 
