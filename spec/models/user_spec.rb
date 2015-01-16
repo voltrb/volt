@@ -59,12 +59,10 @@ describe Volt::User do
         allow(Volt).to receive(:server?).and_return false
       end
 
-      unless RUBY_PLATFORM == 'opal'
-        it 'sets _password to passed value' do
-          subject
+      it 'sets _password to passed value' do
+        subject
 
-          expect(user._password).to eq('test')
-        end
+        expect(user._password).to eq('test')
       end
     end
   end
