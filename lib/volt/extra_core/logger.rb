@@ -13,6 +13,9 @@ if RUBY_PLATFORM == 'opal'
       end
     end
   end
+
+  class VoltLogger < Logger
+  end
 else
   require 'logger'
 

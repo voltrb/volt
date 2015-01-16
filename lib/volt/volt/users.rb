@@ -1,3 +1,5 @@
+require 'thread'
+
 module Volt
   class << self
     # Get the user_id from the cookie
