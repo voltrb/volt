@@ -44,9 +44,6 @@ Gem::Specification.new do |spec|
 
   # For user passwords
   spec.add_dependency 'bcrypt', '~> 3.1.9'
-
-  spec.add_development_dependency 'guard', '2.6.0' # bug in current guard
-  spec.add_development_dependency 'guard-rspec', '~> 4.3.0'
   spec.add_development_dependency 'yard', '~> 0.8.7.0'
   spec.add_development_dependency 'sauce', '~> 3.5.3'
   spec.add_development_dependency 'sauce-connect', '~> 3.5.0'
