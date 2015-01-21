@@ -129,7 +129,9 @@ module Volt
       if @controller
         # Set the current section on the controller if it wants so it can manipulate
         # the dom if needed
-        if @controller.respond_to?(:section=)
+        # Only assign sections for action's, so we don't get AttributeSections bound
+        # also.
+        if @action && @controller.respond_to?(:section=)
           @controller.section = @current_template.dom_section
         end
 
@@ -138,6 +140,8 @@ module Volt
     end
 
     def remove
+      controller_send(:"before_#{@action}_remove") if @controller && @action
+
       clear_grouped_controller
 
       if @current_template
@@ -149,7 +153,7 @@ module Volt
       super
 
       if @controller
-        controller_send(:"#{@action}_removed") if @action
+        controller_send(:"after_#{@action}_remove") if @action
 
         @controller = nil
       end
