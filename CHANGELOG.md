@@ -2,6 +2,7 @@
 
 ## 0.8.27 - WIP
 ### Added
+- the {action}_remove method had been changed to before_{action}_remove and after_{action}_remove to provide more hooks and a clearer understanding of when it is happening.
 - Changed it so content bindings escape all html (for CSRF - thanks @ChaosData)
 - Added formats, email, phone validators (thanks @lexun and @kxcrl)
 - each_with_index is now supported in views and the ```index``` value is no longer provided by default.
