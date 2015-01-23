@@ -1,4 +1,6 @@
 module Volt
+  # Validates the format of a field against any number of block or regex
+  # criteria
   class FormatValidator
     # Creates a new instance with the provided options and returns it's errors
     #
