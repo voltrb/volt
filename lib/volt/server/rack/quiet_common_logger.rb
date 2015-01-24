@@ -24,7 +24,7 @@ class QuietCommonLogger < Rack::CommonLogger
 
     # Because of web sockets, the initial request doesn't finish, so we
     # can just trigger it now.
-    unless ext && path.start_with?('/channel')
+    unless ext || path.start_with?('/channel')
       log(env, status, header, began_at)
     end
 
