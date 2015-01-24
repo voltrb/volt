@@ -49,7 +49,7 @@ module Volt
       unless @invalidated
         @invalidated = true
 
-        unless @stopped && @computing
+        unless @stopped || @computing
           @@flush_queue << self
 
           # If we are in the browser, we queue a flush for the next tick
