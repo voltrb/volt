@@ -1,7 +1,7 @@
 if ENV['BROWSER']
   require 'spec_helper'
 
-  describe "user accounts", type: :feature, sauce: true do
+  describe 'user accounts', type: :feature, sauce: true do
     before(:each) do
       # Clear out db
       DataStore.new.drop_database
@@ -38,7 +38,7 @@ if ENV['BROWSER']
       visit '/'
 
       # Add the user
-      $page.store._users << {email: 'test@test.com', password: 'awes0mesEcRet', name: 'Test Account 9550'}
+      $page.store._users << { email: 'test@test.com', password: 'awes0mesEcRet', name: 'Test Account 9550' }
 
       click_link 'Login'
 

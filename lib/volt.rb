@@ -3,8 +3,7 @@ require 'volt/extra_core/extra_core'
 require 'volt/reactive/computation'
 require 'volt/reactive/dependency'
 require 'volt/config'
-if RUBY_PLATFORM == 'opal'
-else
+unless RUBY_PLATFORM == 'opal'
   require 'volt/data_stores/data_store'
 end
 require 'volt/volt/users'
@@ -40,7 +39,7 @@ module Volt
     end
 
     def logger
-      @logger ||= Logger.new(STDOUT)
+      @logger ||= Volt::VoltLogger.new
     end
 
     attr_writer :logger
@@ -50,4 +49,3 @@ module Volt
     end
   end
 end
-

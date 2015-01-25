@@ -1,13 +1,13 @@
 # Provides a method to setup a field on a model.
 module FieldHelpers
-  class InvalidFieldClass < RuntimeError ; end
+  class InvalidFieldClass < RuntimeError; end
 
   module ClassMethods
     # field lets you declare your fields instead of using the underscore syntax.
     # An optional class restriction can be passed in.
-    def field(name, klass=nil)
+    def field(name, klass = nil)
       if klass && ![String, Numeric].include?(klass)
-        raise FieldHelpers::InvalidFieldClass, "valid field types is currently limited to String or Numeric"
+        fail FieldHelpers::InvalidFieldClass, 'valid field types is currently limited to String or Numeric'
       end
 
       define_method(name) do
@@ -33,5 +33,4 @@ module FieldHelpers
   def self.included(base)
     base.send :extend, ClassMethods
   end
-
 end

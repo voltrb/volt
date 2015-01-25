@@ -32,7 +32,8 @@ module Volt
     end
 
     desc 'server', 'run the server on the project in the current directory'
-    method_option :port, type: :string, aliases: '-p', banner: 'specify which port the server should run on'
+    method_option :port, type: :string, aliases: '-p', banner: 'the port the server should run on'
+    method_option :bind, type: :string, aliases: '-b', banner: 'the ip the server should bind to'
 
     def server
       if RUBY_PLATFORM == 'java'
@@ -47,7 +48,8 @@ module Volt
       # TODO: this is a work around for a bug when switching between
       # source maps and non-source maps.
       if File.exist?('config.ru') && File.exist?('Gemfile')
-        FileUtils.rm_rf('tmp/.')
+        FileUtils.rm_rf('tmp/sass')
+        FileUtils.rm_rf('tmp/sprockets')
       else
         say('Current folder is not a Volt project', :red)
         return
@@ -61,9 +63,8 @@ module Volt
         ENV['SERVER'] = 'true'
         args = ['start', '--threaded', '--max-persistent-conns', '300']
         args += ['--max-conns', '400'] unless Gem.win_platform?
-        if options[:port]
-          args += ['-p', options[:port].to_s]
-        end
+        args += ['-p', options[:port].to_s] if options[:port]
+        args += ['-a', options[:bind]] if options[:bind]
 
         Thin::Runner.new(args).run!
       end
@@ -82,9 +83,9 @@ module Volt
     method_option :bin, type: :boolean, default: false, aliases: '-b', banner: 'Generate a binary for your library.'
     method_option :test, type: :string, lazy_default: 'rspec', aliases: '-t', banner: "Generate a test directory for your library: 'rspec' is the default, but 'minitest' is also supported."
     method_option :edit, type: :string, aliases: '-e',
-                  lazy_default: [ENV['BUNDLER_EDITOR'], ENV['VISUAL'], ENV['EDITOR']].find { |e| !e.nil? && !e.empty? },
-                  required: false, banner: '/path/to/your/editor',
-                  desc: 'Open generated gemspec in the specified editor (defaults to $EDITOR or $BUNDLER_EDITOR)'
+                         lazy_default: [ENV['BUNDLER_EDITOR'], ENV['VISUAL'], ENV['EDITOR']].find { |e| !e.nil? && !e.empty? },
+                         required: false, banner: '/path/to/your/editor',
+                         desc: 'Open generated gemspec in the specified editor (defaults to $EDITOR or $BUNDLER_EDITOR)'
 
     def gem(name)
       require 'volt/cli/new_gem'

@@ -10,8 +10,8 @@ gem 'volt-bootstrap'
 # Simple theme for bootstrap, remove to theme yourself.
 gem 'volt-bootstrap-jumbotron-theme'
 
-gem 'volt-fields', path: '/Users/ryanstout/Sites/volt/apps/volt-fields'
-gem 'volt-user-templates', path: '/Users/ryanstout/Sites/volt/apps/volt-user-templates'
+gem 'volt-fields'
+gem 'volt-user-templates'
 
 # Run 0.7 from master until it comes out
 gem 'opal', git: 'https://github.com/opal/opal.git'

@@ -7,7 +7,6 @@ class PoolTest < Volt::GenericPool
 end
 
 describe Volt::GenericPool do
-
   before do
     @pool_test = PoolTest.new
   end

@@ -1,6 +1,5 @@
 module Volt
   module Buffer
-
     def save!
       # Compute the erros once
       errors = self.errors

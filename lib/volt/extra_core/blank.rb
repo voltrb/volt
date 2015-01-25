@@ -70,9 +70,7 @@ class String
   #   '　'.blank?               # => true
   #   ' something here '.blank? # => false
   def blank?
-    # self !~ /[^[:space:]]/
-    # TODO: Opal fails with the previous regex
-    strip == ''
+    self !~ /\S/
   end
 end
 

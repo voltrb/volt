@@ -36,8 +36,9 @@ module Volt
 
       # Called the first time a value is assigned into this model
       def ensure_setup
-        if @model.attributes
-          @model.attributes[:_id] ||= generate_id
+        if (attrs = @model.attributes)
+          # Do a nil check incase there is a nil model there
+          @model.__id = generate_id if attrs[:_id].nil?
 
           add_to_identity_map
         end
@@ -61,9 +62,9 @@ module Volt
 
       def save_changes?
         if RUBY_PLATFORM == 'opal'
-          return !(defined?($loading_models) && $loading_models) && @tasks
+          !(defined?($loading_models) && $loading_models) && @tasks
         else
-          return true
+          true
         end
       end
 
@@ -125,13 +126,12 @@ module Volt
         StoreTasks.save(collection, @model.path, self_attributes).then do
           save_promises = @save_promises
           @save_promises = nil
-          save_promises.each {|promise|  promise.resolve(nil) }
+          save_promises.each { |promise|  promise.resolve(nil) }
         end.fail do |errors|
           save_promises = @save_promises
           @save_promises = nil
-          save_promises.each {|promise|  promise.reject(errors) }
+          save_promises.each { |promise|  promise.reject(errors) }
         end
-
       end
 
       def event_added(event, first, first_for_event)
@@ -205,7 +205,7 @@ module Volt
 
           # puts "Update Collection: #{collection.inspect} - #{values.inspect} -- #{Thread.current['in_channel'].inspect}"
           QueryTasks.live_query_pool.updated_collection(collection.to_s, Thread.current['in_channel'])
-          return {}
+          {}
         end
       end
     end

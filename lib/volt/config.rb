@@ -13,14 +13,12 @@ if RUBY_PLATFORM == 'opal'
   module Volt
     class << self
       # Returns the config
-      def config
-        @config
-      end
+      attr_reader :config
 
       # Called on page load to pass the backend config to the client
       def setup_client_config(config_hash)
         # Only Volt.config.public is passed from the server (for security reasons)
-        @config = wrap_config({public: config_hash})
+        @config = wrap_config(public: config_hash)
       end
 
       # Wraps the config hash in an OpenStruct so it can be accessed in the same way
@@ -49,17 +47,17 @@ else
       def defaults
         app_name = File.basename(Dir.pwd)
         {
-            app_name:  app_name,
-            db_name:   ENV['DB_NAME'] || (app_name + '_' + Volt.env.to_s),
-            db_host:   ENV['DB_HOST'] || 'localhost',
-            db_port:   (ENV['DB_PORT'] || 27_017).to_i,
-            db_driver: ENV['DB_DRIVER'] || 'mongo',
-          }
+          app_name:  app_name,
+          db_name:   ENV['DB_NAME'] || (app_name + '_' + Volt.env.to_s),
+          db_host:   ENV['DB_HOST'] || 'localhost',
+          db_port:   (ENV['DB_PORT'] || 27_017).to_i,
+          db_driver: ENV['DB_DRIVER'] || 'mongo'
+        }
       end
 
       # Resets the configuration to the default (empty hash)
       def reset_config!
-        self.configure do |c|
+        configure do |c|
           c.from_h(defaults)
         end
       end

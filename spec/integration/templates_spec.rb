@@ -9,7 +9,6 @@ if ENV['BROWSER']
       click_link 'Bindings'
 
       expect(page).to have_title 'Bindings - KitchenSink'
-
     end
   end
 end

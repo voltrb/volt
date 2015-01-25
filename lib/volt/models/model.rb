@@ -12,6 +12,11 @@ module Volt
   class NilMethodCall < NoMethodError
   end
 
+  # The error is raised when a reserved field name is used in a
+  # volt model.
+  class InvalidFieldName < StandardError
+  end
+
   class Model
     include ModelWrapper
     include ModelHelpers
@@ -23,6 +28,14 @@ module Volt
 
     attr_reader :attributes
     attr_reader :parent, :path, :persistor, :options
+
+    INVALID_FIELD_NAMES = {
+      :attributes => true,
+      :parent => true,
+      :path => true,
+      :options => true,
+      :persistor => true
+    }
 
     def initialize(attributes = {}, options = {}, initial_state = nil)
       @deps        = HashDependency.new
@@ -40,7 +53,7 @@ module Volt
 
     # the id is stored in a field named _id, so we setup _id to proxy to this
     def _id
-      @attributes && @attributes[:_id]
+      __id
     end
 
     def _id=(val)
@@ -64,7 +77,7 @@ module Volt
 
       if attrs
         # Assign id first
-        id       = attrs.delete(:_id)
+        id = attrs.delete(:_id)
 
         # When doing a mass-assign, we don't save until the end.
         Model.nosave do
@@ -141,6 +154,8 @@ module Volt
       # Assign, without the =
       attribute_name = method_name.to_sym
 
+      check_valid_field_name(attribute_name)
+
       value = args[0]
 
       old_value = @attributes[attribute_name]
@@ -174,6 +189,8 @@ module Volt
     def read_attribute(attr_name)
       # Reading an attribute, we may get back a nil model.
       attr_name = attr_name.to_sym
+
+      check_valid_field_name(attr_name)
 
       # Track dependency
       # @deps.depend(attr_name)
@@ -292,6 +309,15 @@ module Volt
     end
 
     private
+
+    # Volt provides a few access methods to get more data about the model,
+    # we want to prevent these from being assigned or accessed through
+    # underscore methods.
+    def check_valid_field_name(name)
+      if INVALID_FIELD_NAMES[name]
+        raise InvalidFieldName, "`#{name}` is reserved and can not be used as a field"
+      end
+    end
 
     def setup_buffer(model)
       model.attributes = attributes

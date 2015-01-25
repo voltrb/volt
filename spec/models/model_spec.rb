@@ -8,7 +8,6 @@ class Item < Volt::Model
 end
 
 describe Volt::Model do
-
   it 'should allow _ methods to be used to store values without predefining them' do
     a = Volt::Model.new
     a._stash = 'yes'
@@ -131,7 +130,6 @@ describe Volt::Model do
     Volt::Computation.flush!
 
     expect(values).to eq([nil, 'one'])
-
   end
 
   it 'should trigger changed for any indicies after a deleted index' do
@@ -398,6 +396,27 @@ describe Volt::Model do
 
       @model._items << test_item
       expect(@model._items[0].path).to eq([:items, :[]])
+    end
+  end
+
+  describe 'reserved attributes' do
+    let(:model) { Volt::Model.new }
+
+    it 'should prevent reserved attributes from being read with underscores' do
+      [:attributes, :parent, :path, :options, :persistor].each do |attr_name|
+        expect do
+          model.send(:"_#{attr_name}")
+        end.to raise_error(Volt::InvalidFieldName, "`#{attr_name}` is reserved and can not be used as a field")
+      end
+
+    end
+
+    it 'should prevent reserved attributes from being assigned directly' do
+      [:attributes, :parent, :path, :options, :persistor].each do |attr_name|
+        expect do
+          model.send(:"_#{attr_name}=", 'assign val')
+        end.to raise_error(Volt::InvalidFieldName, "`#{attr_name}` is reserved and can not be used as a field")
+      end
     end
   end
 

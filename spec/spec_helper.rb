@@ -1,10 +1,11 @@
 require 'volt/spec/setup'
 
-# Specs are run against the kitchen sink app
-kitchen_sink_path = File.expand_path(File.join(File.dirname(__FILE__), 'apps/kitchen_sink'))
-Volt.spec_setup(kitchen_sink_path)
-
 unless RUBY_PLATFORM == 'opal'
+  require 'pry-byebug'
+  # Specs are run against the kitchen sink app
+  kitchen_sink_path = File.expand_path(File.join(File.dirname(__FILE__), 'apps/kitchen_sink'))
+  Volt.spec_setup(kitchen_sink_path)
+
   RSpec.configure do |config|
     # config.before(:each) do
     #   DataStore.new.drop_database

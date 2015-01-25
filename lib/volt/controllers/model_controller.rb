@@ -6,6 +6,22 @@ module Volt
 
     reactive_accessor :current_model
 
+    # The section is assigned a reference to a "DomSection" which has
+    # the dom for the controllers view.
+    attr_accessor :section
+
+
+    # Container returns the node that is parent to all nodes in the section.
+    def container
+      section.container_node
+    end
+
+    def dom_nodes
+      section.range
+    end
+
+
+
     def self.model(val)
       @default_model = val
     end

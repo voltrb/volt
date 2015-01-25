@@ -1,19 +1,28 @@
 require 'pry'
 
 class Pry
-  # To make the console more useful, we make it so we flush the event registry
-  # after each line.  This makes it so events are triggered after each line.
-  # To accomplish this we monkey-patch pry.
-  def rep(target = TOPLEVEL_BINDING)
-    target = Pry.binding_for(target)
-    result = re(target)
+  class REPL
+    # To make the console more useful, we make it so we flush the event registry
+    # after each line.  This makes it so events are triggered after each line.
+    # To accomplish this we monkey-patch pry.
+    def repl
+      loop do
+        case val = read
+        when :control_c
+          output.puts ""
+          pry.reset_eval_string
+        when :no_more_input
+          output.puts "" if output.tty?
+          break
+        else
+          output.puts "" if val.nil? && output.tty?
+          return pry.exit_value unless pry.eval(val)
+        end
 
-    Pry.critical_section do
-      show_result(result)
+        # Flush after each line
+        Volt::Computation.flush!
+      end
     end
-
-    # Automatically flush after each line
-    Volt::Computation.flush!
   end
 end
 

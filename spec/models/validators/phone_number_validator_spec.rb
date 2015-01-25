@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Volt::PhoneNumberValidator do
   subject { Volt::PhoneNumberValidator.new(*params) }
-  let(:params) { [ model, field_name, options ] }
+  let(:params) { [model, field_name, options] }
 
   let(:model) { Volt::Model.new phone_number: phone_number }
   let(:field_name) { :phone_number }
@@ -131,14 +131,14 @@ describe Volt::PhoneNumberValidator do
     end
 
     context 'when provided a custom error message' do
-      let(:options) { { error_message: custom_message } }
+      let(:options) { { message: custom_message } }
       let(:custom_message) { 'this is a custom message' }
 
       context 'and the phone number is invalid' do
         let(:phone_number) { invalid_number }
 
         it 'returns errors with the custom message' do
-          expect(subject.errors).to eq(phone_number: [ custom_message ])
+          expect(subject.errors).to eq(phone_number: [custom_message])
         end
       end
     end

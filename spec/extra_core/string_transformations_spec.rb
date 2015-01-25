@@ -44,5 +44,4 @@ describe '#camelize' do
     expect('HTMLTidy'.underscore).to eq('html_tidy')
     expect('HTMLTidyGenerator'.underscore).to eq('html_tidy_generator')
   end
-
 end
