@@ -87,7 +87,7 @@ describe Volt::Model do
       end
     end
 
-    context 'when multiple fail' do
+    describe 'when multiple fail' do
       before { model._special_field = 'nope' }
 
       it 'returns an array of errors' do
@@ -97,7 +97,7 @@ describe Volt::Model do
       end
     end
 
-    context 'when one fails' do
+    describe 'when one fails' do
       before { model._special_field = 'regex' }
 
       it 'returns an array with a single error' do

@@ -9,15 +9,15 @@ describe Volt::LengthValidator do
   let(:name) { "John Doe" }
 
   describe '.validate' do
-    context 'when options is a Fixnum' do
+    describe 'when options is a Fixnum' do
       let(:options) { 5 }
 
-      context 'when name is "John Doe"' do
+      describe 'when name is "John Doe"' do
         let(:name) { "John Doe" }
         it { expect(subject).to eq({}) }
       end
 
-      context 'when name is "John"' do
+      describe 'when name is "John"' do
         let(:name) { "John" }
         it do
           expect(subject).to eq({
@@ -27,17 +27,17 @@ describe Volt::LengthValidator do
       end
     end
 
-    context 'when options is a Hash' do
+    describe 'when options is a Hash' do
       let(:options) do
         { length: 5, maximum: 10 }
       end
 
-      context 'when name is "John Doe"' do
+      describe 'when name is "John Doe"' do
         let(:name) { "John Doe" }
         it { expect(subject).to eq({}) }
       end
 
-      context 'when name is "John"' do
+      describe 'when name is "John"' do
         let(:name) { "John" }
         it do
           if RUBY_PLATFORM == 'opal'
@@ -52,7 +52,7 @@ describe Volt::LengthValidator do
         end
       end
 
-      context 'when name is "Zach Galifianakis"' do
+      describe 'when name is "Zach Galifianakis"' do
         let(:name) { "Zach Galifianakis" }
         it do
           if RUBY_PLATFORM == 'opal'
@@ -68,7 +68,7 @@ describe Volt::LengthValidator do
       end
     end
 
-    context 'when options not a Fixnum or a Hash' do
+    describe 'when options not a Fixnum or a Hash' do
       let(:options) { 'string' }
 
       it "raises an exception" do

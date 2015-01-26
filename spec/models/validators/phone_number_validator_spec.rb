@@ -37,74 +37,74 @@ describe Volt::PhoneNumberValidator do
   end
 
   describe '#valid?' do
-    context 'when using the default regex' do
+    describe 'when using the default regex' do
       let(:options) { true }
 
-      context 'when the phone number is a valid US number' do
+      describe 'when the phone number is a valid US number' do
         let(:phone_number) { valid_us_number }
 
         specify { expect(subject.valid?).to eq true }
       end
 
-      context 'when the phone number is a valid international number' do
+      describe 'when the phone number is a valid international number' do
         let(:phone_number) { valid_intl_number }
 
         specify { expect(subject.valid?).to eq true }
       end
 
-      context 'when the phone number uses dashes' do
+      describe 'when the phone number uses dashes' do
         let(:phone_number) { '123-123-1234' }
 
         specify { expect(subject.valid?).to eq true }
       end
 
-      context 'when the phone number uses periods' do
+      describe 'when the phone number uses periods' do
         let(:phone_number) { '123.123.1234' }
 
         specify { expect(subject.valid?).to eq true }
       end
 
-      context 'when the phone number uses spaces' do
+      describe 'when the phone number uses spaces' do
         let(:phone_number) { '123 123 1234' }
 
         specify { expect(subject.valid?).to eq true }
       end
 
-      context 'when the phone number uses parentheses and a space' do
+      describe 'when the phone number uses parentheses and a space' do
         let(:phone_number) { '(123) 123.1234' }
 
         specify { expect(subject.valid?).to eq true }
       end
 
-      context 'when an international number uses a plus' do
+      describe 'when an international number uses a plus' do
         let(:phone_number) { '+12 123 123 1234' }
 
         specify { expect(subject.valid?).to eq true }
       end
 
-      context 'when an international number does not use a plus' do
+      describe 'when an international number does not use a plus' do
         let(:phone_number) { '12 123 123 1234' }
 
         specify { expect(subject.valid?).to eq true }
       end
 
-      context 'when an international number is from the UK' do
+      describe 'when an international number is from the UK' do
         let(:phone_number) { '+12 123 1234 1234' }
 
         specify { expect(subject.valid?).to eq true }
       end
     end
 
-    context 'when using a custom regex' do
+    describe 'when using a custom regex' do
       let(:options) { { with: /\d{10}/ } }
 
-      context 'and the phone number qualifies' do
+      describe 'and the phone number qualifies' do
         let(:phone_number) { '1231231234' }
 
         specify { expect(subject.valid?).to eq true }
       end
 
-      context 'and the phone number does not qualify' do
+      describe 'and the phone number does not qualify' do
         let(:phone_number) { '123-123-1234' }
 
         specify { expect(subject.valid?).to eq false }
@@ -113,7 +113,7 @@ describe Volt::PhoneNumberValidator do
   end
 
   describe '#errors' do
-    context 'when the model has a valid phone number' do
+    describe 'when the model has a valid phone number' do
       let(:phone_number) { valid_us_number }
 
       it 'returns an empty error hash' do
@@ -121,7 +121,7 @@ describe Volt::PhoneNumberValidator do
       end
     end
 
-    context 'when the model has an invalid phone number' do
+    describe 'when the model has an invalid phone number' do
       let(:phone_number) { invalid_number }
 
       it 'returns an array of errors for phone number' do
@@ -130,11 +130,11 @@ describe Volt::PhoneNumberValidator do
       end
     end
 
-    context 'when provided a custom error message' do
+    describe 'when provided a custom error message' do
       let(:options) { { message: custom_message } }
       let(:custom_message) { 'this is a custom message' }
 
-      context 'and the phone number is invalid' do
+      describe 'and the phone number is invalid' do
         let(:phone_number) { invalid_number }
 
         it 'returns errors with the custom message' do

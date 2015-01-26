@@ -72,7 +72,7 @@ describe Volt::Computation do
       Volt::Computation.class_variable_set :@@flush_queue, []
     end
 
-    context 'when stopped' do
+    describe 'when stopped' do
       before(:each) { computation.instance_variable_set :@stopped, true }
 
       it "doesn't add self to flush queue" do
@@ -82,7 +82,7 @@ describe Volt::Computation do
       end
     end
 
-    context 'when computing' do
+    describe 'when computing' do
       before(:each) { computation.instance_variable_set :@computing, true }
 
       it "doesn't add self to flush queue" do
@@ -92,7 +92,7 @@ describe Volt::Computation do
       end
     end
 
-    context 'when not stopped and not computing' do
+    describe 'when not stopped and not computing' do
       before(:each) do
         computation.instance_variable_set :@stopped,   false
         computation.instance_variable_set :@computing, false

@@ -36,50 +36,50 @@ describe Volt::EmailValidator do
   end
 
   describe '#valid?' do
-    context 'when using the default regex' do
+    describe 'when using the default regex' do
       let(:options) { true }
 
-      context 'when the email is valid' do
+      describe 'when the email is valid' do
         let(:email) { valid_email }
 
         specify { expect(subject.valid?).to eq true }
       end
 
-      context 'when the email is missing a TLD' do
+      describe 'when the email is missing a TLD' do
         let(:email) { 'test@example' }
 
         specify { expect(subject.valid?).to eq false }
       end
 
-      context 'when the email TLD is only one character' do
+      describe 'when the email TLD is only one character' do
         let(:email) { 'test@example.c' }
 
         specify { expect(subject.valid?).to eq false }
       end
 
-      context 'when the email is missing an username' do
+      describe 'when the email is missing an username' do
         let(:email) { '@example.com' }
 
         specify { expect(subject.valid?).to eq false }
       end
 
-      context 'when the email is missing the @ symbol' do
+      describe 'when the email is missing the @ symbol' do
         let(:email) { 'test.example.com' }
 
         specify { expect(subject.valid?).to eq false }
       end
     end
 
-    context 'when using a custom regex' do
+    describe 'when using a custom regex' do
       let(:options) { { with: /.+\@.+/ } }
 
-      context 'and the email qualifies' do
+      describe 'and the email qualifies' do
         let(:email) { 'test@example' }
 
         specify { expect(subject.valid?).to eq true }
       end
 
-      context 'and the email does not qualify' do
+      describe 'and the email does not qualify' do
         let(:email) { 'test$example' }
 
         specify { expect(subject.valid?).to eq false }
@@ -88,7 +88,7 @@ describe Volt::EmailValidator do
   end
 
   describe '#errors' do
-    context 'when the model has a valid email' do
+    describe 'when the model has a valid email' do
       let(:email) { valid_email }
 
       it 'returns an empty error hash' do
@@ -96,7 +96,7 @@ describe Volt::EmailValidator do
       end
     end
 
-    context 'when the model has an invalid email' do
+    describe 'when the model has an invalid email' do
       let(:email) { invalid_email }
 
       it 'returns an array of errors for email' do
@@ -104,11 +104,11 @@ describe Volt::EmailValidator do
       end
     end
 
-    context 'when provided a custom error message' do
+    describe 'when provided a custom error message' do
       let(:options) { { message: custom_message } }
       let(:custom_message) { 'this is a custom message' }
 
-      context 'and the email is invalid' do
+      describe 'and the email is invalid' do
         let(:email) { invalid_email }
 
         it 'returns errors with the custom message' do

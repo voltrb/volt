@@ -30,7 +30,7 @@ describe Volt::FormatValidator do
     allow(described_class).to receive(:new).and_return subject
   end
 
-  context 'when no criteria is provided' do
+  describe 'when no criteria is provided' do
     before { validate }
 
     it 'should have no errors' do
@@ -40,12 +40,12 @@ describe Volt::FormatValidator do
     specify { expect(subject).to be_valid }
   end
 
-  context 'when the only criterion is a regex' do
+  describe 'when the only criterion is a regex' do
     let(:options) { regex_opts }
 
     before { validate }
 
-    context 'and the field matches' do
+    describe 'and the field matches' do
       let(:field_content) { valid_content }
 
       it 'should have no errors' do
@@ -55,7 +55,7 @@ describe Volt::FormatValidator do
       specify { expect(subject).to be_valid }
     end
 
-    context 'and the field does not match' do
+    describe 'and the field does not match' do
       let(:field_content) { invalid_content }
 
       it 'should report the related error message' do
@@ -66,12 +66,12 @@ describe Volt::FormatValidator do
     end
   end
 
-  context 'when the only criterion is a block' do
+  describe 'when the only criterion is a block' do
     let(:options) { proc_opts }
 
     before { validate }
 
-    context 'and the field passes the block' do
+    describe 'and the field passes the block' do
       let(:field_content) { valid_content }
 
       it 'should have no errors' do
@@ -81,7 +81,7 @@ describe Volt::FormatValidator do
       specify { expect(subject).to be_valid }
     end
 
-    context 'and the field fails the block' do
+    describe 'and the field fails the block' do
       let(:field_content) { invalid_content }
 
       it 'should report the related error message' do
@@ -92,12 +92,12 @@ describe Volt::FormatValidator do
     end
   end
 
-  context 'when there is both regex and block criteria' do
+  describe 'when there is both regex and block criteria' do
     let(:options) { [ regex_opts, proc_opts ] }
 
     before { validate }
 
-    context 'and the field passes all criteria' do
+    describe 'and the field passes all criteria' do
       let(:field_content) { valid_content }
 
       it 'should have no errors' do
@@ -107,7 +107,7 @@ describe Volt::FormatValidator do
       specify { expect(subject).to be_valid }
     end
 
-    context 'and the field fails the regex' do
+    describe 'and the field fails the regex' do
       let(:regex) { /^invalid/ }
 
       it 'should report the related error message' do
@@ -117,7 +117,7 @@ describe Volt::FormatValidator do
       specify { expect(subject).to_not be_valid }
     end
 
-    context 'and the field fails the block' do
+    describe 'and the field fails the block' do
       let(:proc_regex) { /^invalid/ }
 
       it 'should report the related error message' do
@@ -127,7 +127,7 @@ describe Volt::FormatValidator do
       specify { expect(subject).to_not be_valid }
     end
 
-    context 'and the field fails both the regex and the block' do
+    describe 'and the field fails both the regex and the block' do
       let(:field_content) { invalid_content }
 
       it 'should report the regex error message' do
