@@ -18,9 +18,8 @@ See some demo videos here:
 - [Volt Todos Example](https://www.youtube.com/watch?v=Tg-EtRnMz7o)
 - [Pagination Example](https://www.youtube.com/watch?v=1uanfzMLP9g)
 - [Routes and Templates](https://www.youtube.com/watch?v=1yNMP3XR6jU)
-- [Build a Blog with Volt](https://www.youtube.com/watch?v=c478sMlhx1o) ** Note: The blog video is outdated, expect an updated version soon.
-
 - [Isomorphic App Development - Rubyconf 2014](https://www.youtube.com/watch?v=7i6AL7Walc4)
+- [Build a Blog with Volt](https://www.youtube.com/watch?v=c478sMlhx1o) ** Note: The blog video is outdated, expect an updated version soon.
 
 Check out demo apps:
  - https://github.com/voltrb/todos3
