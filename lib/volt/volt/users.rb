@@ -26,18 +26,14 @@ module Volt
     end
 
     # True if the user is logged in and the user is loaded
-    def user?
-      !!user
+    def current_user?
+      !current_user.nil?
     end
 
     # Return the current user.
-    def user
+    def current_user
       user_id = self.user_id
-      if user_id
-        $page.store._users.find_one(_id: user_id)
-      else
-        nil
-      end
+      $page.store._users.find_one(_id: user_id) if user_id
     end
 
     # Login the user, return a promise for success
