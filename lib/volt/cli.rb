@@ -95,9 +95,8 @@ module Volt
 
     desc 'drop_collection NAME', 'Drop a Collection in your MongoDB'
 
-    def drop_collection(name)
+    def drop_collection(collection)
       ENV['SERVER'] = 'true'
-
       require 'mongo'
       require 'volt/boot'
 
@@ -105,10 +104,11 @@ module Volt
 
       host = Volt.config.db_host || 'localhost'
       port = Volt.config.db_port || Mongo::Connection::DEFAULT_PORT
+      name = Volt.config.db_name
 
       say("Connecting to #{host}:#{port}", :yellow)
-      db = Mongo::Connection.new(host, port).db(Volt.config.db_name)
-      drop = db.drop_collection(name)
+      db = Mongo::Connection.new(host, port).db(name)
+      drop = db.drop_collection(collection)
 
       say("Collection #{name} couldn't be dropped", :red) if drop == false
       say("Collection #{name} dropped", :green) if drop == true
