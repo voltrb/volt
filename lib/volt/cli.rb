@@ -103,15 +103,15 @@ module Volt
       Volt.boot(Dir.pwd)
 
       host = Volt.config.db_host || 'localhost'
-      port = Volt.config.db_port || Mongo::Connection::DEFAULT_PORT
+      port = Volt.config.db_port || Mongo::MongoClient::DEFAULT_PORT
       name = Volt.config.db_name
 
       say("Connecting to #{host}:#{port}", :yellow)
-      db = Mongo::Connection.new(host, port).db(name)
+      db = Mongo::MongoClient.new(host, port).db(name)
       drop = db.drop_collection(collection)
 
-      say("Collection #{name} couldn't be dropped", :red) if drop == false
-      say("Collection #{name} dropped", :green) if drop == true
+      say("Collection #{collection} on #{name} couldn't be dropped", :red) if drop == false
+      say("Collection #{collection} on #{name} dropped", :green) if drop == true
     end
 
     def self.source_root
