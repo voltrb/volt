@@ -93,6 +93,27 @@ module Volt
       NewGem.new(self, name, options)
     end
 
+    desc 'drop_collection NAME', 'Drop a Collection in your MongoDB'
+
+    def drop_collection(name)
+      ENV['SERVER'] = 'true'
+
+      require 'mongo'
+      require 'volt/boot'
+
+      Volt.boot(Dir.pwd)
+
+      host = Volt.config.db_host || 'localhost'
+      port = Volt.config.db_port || Mongo::Connection::DEFAULT_PORT
+
+      say("Connecting to #{host}:#{port}", :yellow)
+      db = Mongo::Connection.new(host, port).db(Volt.config.db_name)
+      drop = db.drop_collection(name)
+
+      say("Collection #{name} couldn't be dropped", :red) if drop == false
+      say("Collection #{name} dropped", :green) if drop == true
+    end
+
     def self.source_root
       File.expand_path(File.join(File.dirname(__FILE__), '../../templates'))
     end
