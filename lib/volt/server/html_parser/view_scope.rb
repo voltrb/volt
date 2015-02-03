@@ -110,6 +110,8 @@ module Volt
 
     def add_component(tag_name, attributes, unary)
       @handler.scope << ComponentViewScope.new(@handler, @path + "/__component#{@binding_number}", tag_name, attributes, unary)
+
+      @handler.last.close_scope if unary
     end
 
     def add_textarea(tag_name, attributes, unary)

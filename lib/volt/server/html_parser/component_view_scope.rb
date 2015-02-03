@@ -44,12 +44,12 @@ module Volt
     def close_scope
       binding_number                    = @handler.scope[-2].binding_number
       @handler.scope[-2].binding_number += 1
-      @path                             += "/__template/#{binding_number}"
+      # @path                             += "/__template/#{binding_number}"
 
       super
 
       @handler.html << "<!-- $#{binding_number} --><!-- $/#{binding_number} -->"
-      @handler.save_binding(binding_number, "lambda { |__p, __t, __c, __id| Volt::ComponentBinding.new(__p, __t, __c, __id, #{@path.inspect}, Proc.new { [#{@arguments}] }) }")
+      @handler.scope.last.save_binding(binding_number, "lambda { |__p, __t, __c, __id| Volt::ComponentBinding.new(__p, __t, __c, __id, #{@path.inspect}, Proc.new { [#{@arguments}] }) }")
     end
   end
 end
