@@ -109,48 +109,7 @@ module Volt
     end
 
     def add_component(tag_name, attributes, unary)
-      component_name = tag_name[1..-1].tr(':', '/')
-
-      @handler.html << "<!-- $#{@binding_number} --><!-- $/#{@binding_number} -->"
-
-      data_hash = []
-      attributes.each_pair do |name, value|
-        name = name.tr('-', '_')
-        parts, binding_count = binding_parts_and_count(value)
-
-        # if this attribute has bindings
-        if binding_count > 0
-          if binding_count > 1
-            # Multiple bindings
-          elsif parts.size == 1 && binding_count == 1
-            # A single binding
-            getter = value[2...-2].strip
-            data_hash << "#{name.inspect} => Proc.new { #{getter} }"
-
-            setter = getter_to_setter(getter)
-            data_hash << "#{(name + '=').inspect} => Proc.new { |val| #{setter} }"
-
-            # Add an _parent fetcher.  Useful for things like volt-fields to get the parent model.
-            parent = parent_fetcher(getter)
-
-            # TODO: This adds some overhead, perhaps there is a way to compute this dynamically on the
-            # front-end.
-            data_hash << "#{(name + '_parent').inspect} => Proc.new { #{parent} }"
-
-            # Add a _last_method property.  This is useful
-            data_hash << "#{(name + '_last_method').inspect} => #{last_method_name(getter).inspect}"
-          end
-        else
-          # String
-          data_hash << "#{name.inspect} => #{value.inspect}"
-        end
-      end
-
-      arguments = "#{component_name.inspect}, { #{data_hash.join(',')} }"
-
-      save_binding(@binding_number, "lambda { |__p, __t, __c, __id| Volt::ComponentBinding.new(__p, __t, __c, __id, #{@path.inspect}, Proc.new { [#{arguments}] }) }")
-
-      @binding_number += 1
+      @handler.scope << ComponentViewScope.new(@handler, @path + "/__component#{@binding_number}", tag_name, attributes, unary)
     end
 
     def add_textarea(tag_name, attributes, unary)

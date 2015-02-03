@@ -10,7 +10,6 @@ module Volt
     # the dom for the controllers view.
     attr_accessor :section
 
-
     # Container returns the node that is parent to all nodes in the section.
     def container
       section.container_node
