@@ -1,6 +1,6 @@
 [![Gem Version](https://badge.fury.io/rb/volt.svg)](http://badge.fury.io/rb/volt)
 [![Code Climate](https://codeclimate.com/github/voltrb/volt/badges/gpa.svg)](https://codeclimate.com/github/voltrb/volt)
-[![Build Status](http://img.shields.io/travis/voltrb/volt/master.svg)](https://travis-ci.org/voltrb/volt)
+[![Build Status](http://img.shields.io/travis/voltrb/volt/master.svg?style=flat)](https://travis-ci.org/voltrb/volt)
 [![Inline docs](http://inch-ci.org/github/voltrb/volt.svg?branch=master)](http://inch-ci.org/github/voltrb/volt)
 [![Volt Chat](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/voltrb/volt)
 
@@ -17,8 +17,9 @@ Pages HTML is written in a template language where you can put ruby between ```{
 See some demo videos here:
 - [Volt Todos Example](https://www.youtube.com/watch?v=Tg-EtRnMz7o)
 - [Pagination Example](https://www.youtube.com/watch?v=1uanfzMLP9g)
-- [Build a Blog with Volt](https://www.youtube.com/watch?v=c478sMlhx1o)
-** Note: The blog video is outdated, expect an updated version soon.
+- [Routes and Templates](https://www.youtube.com/watch?v=1yNMP3XR6jU)
+- [Isomorphic App Development - Rubyconf 2014](https://www.youtube.com/watch?v=7i6AL7Walc4)
+- [Build a Blog with Volt](https://www.youtube.com/watch?v=c478sMlhx1o) ** Note: The blog video is outdated, expect an updated version soon.
 
 Check out demo apps:
  - https://github.com/voltrb/todos3

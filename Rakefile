@@ -22,13 +22,14 @@ end
 
 task default: [:test]
 
-
+require 'rspec/core/rake_task'
+RSpec::Core::RakeTask.new('ruby:rspec')
 
 task :test do
   puts "--------------------------\nRun specs in Opal\n--------------------------"
   Rake::Task['opal:rspec'].invoke
   puts "--------------------------\nRun specs in normal ruby\n--------------------------"
-  system 'bundle exec rspec'
+  Rake::Task['ruby:rspec'].invoke
 end
 
 # Rubocop task
