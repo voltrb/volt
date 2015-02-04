@@ -4,6 +4,7 @@ require 'volt/models/model_helpers'
 require 'volt/models/model_hash_behaviour'
 require 'volt/models/validations'
 require 'volt/models/model_state'
+require 'volt/models/modes'
 require 'volt/models/buffer'
 require 'volt/models/field_helpers'
 require 'volt/reactive/reactive_hash'
@@ -32,6 +33,7 @@ module Volt
     include UserValidatorHelpers
     include Dirty
     include ClassEventable
+    include Modes
 
     attr_reader :attributes, :parent, :path, :persistor, :options
 
@@ -95,11 +97,10 @@ module Volt
         # Assign id first
         id = attrs.delete(:_id)
 
-        # When doing a mass-assign, we don't save until the end.
-        Model.nosave do
+        # When doing a mass-assign, we don't validate or save until the end.
+        Model.no_validate do
           self._id = id if id
 
-          puts "Assign: #{attrs.inspect}"
           # Assign each attribute using setters
           attrs.each_pair do |key, value|
             if self.respond_to?(:"#{key}=")
@@ -303,26 +304,17 @@ module Volt
       "<#{self.class}:#{object_id} #{attributes.inspect}>"
     end
 
-    # Takes a block that when run, changes to models will not save inside of
-    if RUBY_PLATFORM == 'opal'
-      # Temporary stub for no save on client
-      def self.nosave
-        yield
-      end
-    else
-      def self.nosave
-        previous = Thread.current['nosave']
-        Thread.current['nosave'] = true
-        begin
-          yield
-        ensure
-          Thread.current['nosave'] = previous
-        end
-      end
+    def self.no_save(&block)
+      run_in_mode(:no_save, &block)
     end
+
 
     private
 
+    # no_validate mode should only be used internally
+    def self.no_validate(&block)
+      run_in_mode(:no_validate, &block)
+    end
 
     # Volt provides a few access methods to get more data about the model,
     # we want to prevent these from being assigned or accessed through
@@ -354,31 +346,36 @@ module Volt
     def run_changed(attribute_name=nil)
       result = nil
 
-      # Run the validations for all fields
-      validate!
+      # no_validate mode should only be used internally.  no_validate mode is a
+      # performance optimization that prevents validation from running after each
+      # change when assigning multile attributes.
+      unless in_mode?(:no_validate)
+        # Run the validations for all fields
+        validate!
 
-      # Buffers are allowed to be in an invalid state
-      unless buffer?
-        # First check that all local validations pass
-        if error_in_changed_attributes?
-          # Some errors are present, revert changes
-          revert_changes!
+        # Buffers are allowed to be in an invalid state
+        unless buffer?
+          # First check that all local validations pass
+          if error_in_changed_attributes?
+            # Some errors are present, revert changes
+            revert_changes!
 
-          # After we revert, we need to validate again to get the error messages back
-          # TODO: Could probably cache the previous errors.
-          validate!
-        else
-          # No errors, tell the persistor to handle the change (usually save)
+            # After we revert, we need to validate again to get the error messages back
+            # TODO: Could probably cache the previous errors.
+            validate!
+          else
+            # No errors, tell the persistor to handle the change (usually save)
 
-          # Don't save right now if we're in a nosave block
-          if (!defined?(Thread) || !Thread.current['nosave'])
-            # the changed method on a persistor should return a promise that will
-            # be resolved when the save is complete, or fail with a hash of errors.
-            result = @persistor.changed(attribute_name) if @persistor
-            @new = false
+            # Don't save right now if we're in a nosave block
+            unless in_mode?(:no_save)
+              # the changed method on a persistor should return a promise that will
+              # be resolved when the save is complete, or fail with a hash of errors.
+              result = @persistor.changed(attribute_name) if @persistor
+              @new = false
 
-            # Clear the change tracking
-            clear_tracked_changes!
+              # Clear the change tracking
+              clear_tracked_changes!
+            end
           end
         end
       end
