@@ -36,7 +36,7 @@ class StoreTasks < Volt::TaskHandler
     data = data.symbolize_keys
     puts "SAVE: #{data.inspect}"
     model = nil
-    Volt::Model.no_save do
+    Volt::Model.nosave do
       model = load_model(collection, path, data)
     end
 
