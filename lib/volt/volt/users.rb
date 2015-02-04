@@ -1,7 +1,14 @@
+require 'thread'
+
 module Volt
   class << self
     # Get the user_id from the cookie
     def user_id
+      # Check for a user_id from with_user
+      if (user_id = Thread.current['with_user_id'])
+        return user_id
+      end
+
       user_id_signature = self.user_id_signature
 
       if user_id_signature.nil?
@@ -23,6 +30,18 @@ module Volt
 
         user_id
       end
+    end
+
+    # as_user lets you run a block as another user
+    #
+    # @param user_id [Integer]
+    def as_user(user_id)
+      previous_id = Thread.current['with_user_id']
+      Thread.current['with_user_id'] = user_id
+
+      yield
+
+      Thread.current['with_user_id'] = previous_id
     end
 
     # True if the user is logged in and the user is loaded

@@ -35,7 +35,7 @@ class StoreTasks < Volt::TaskHandler
   def save(collection, path, data)
     data = data.symbolize_keys
     model = nil
-    Volt::Model.nosave do
+    Volt::Model.no_save do
       model = load_model(collection, path, data)
     end
 

@@ -218,8 +218,13 @@ module Volt
     $page = Page.new
 
     # Call start once the page is loaded
-    Document.ready? do
+    # Document.ready? do
+    #   $page.start
+    # end
+
+    # For some reason Document.ready? (using opal-jquery) quit working.
+    `$(document).ready(function() {`
       $page.start
-    end
+    `});`
   end
 end

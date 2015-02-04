@@ -7,6 +7,13 @@ end
 class Item < Volt::Model
 end
 
+class TestAssignsMethod < Volt::Model
+  def name=(val)
+    puts "Assign #{val}"
+    self._name = val
+  end
+end
+
 describe Volt::Model do
   it 'should allow _ methods to be used to store values without predefining them' do
     a = Volt::Model.new
@@ -196,7 +203,7 @@ describe Volt::Model do
     a = Volt::Model.new
 
     count = 0
-    -> { a._blue && a._blue.respond_to?(:green) && a._blue._green; count += 1 }.watch!
+    -> { a._blue && a._blue.respond_to?(:_green) && a._blue._green; count += 1 }.watch!
     expect(count).to eq(1)
 
     a._blue._green = 5
@@ -442,6 +449,36 @@ describe Volt::Model do
         @model._items << { _name: 'Item 1' }
         expect(@model._items[0].class).to eq(Item)
       end
+    end
+  end
+
+  it 'should have assignments optionally go through a method' do
+    model = TestAssignsMethod.new
+
+    model._name = 'Jimmy'
+
+    expect(model._name).to eq('Jimmy')
+  end
+
+  describe "model state" do
+    it 'should be new when created, then false after a change' do
+      a = Volt::Model.new
+      expect(a.new?).to eq(true)
+
+      a._name = 'Ryan'
+      expect(a.new?).to eq(false)
+    end
+
+    it 'should allow multiple assignments with attributes, changing new? to false after' do
+      a = Volt::Model.new
+      expect(a.new?).to eq(true)
+
+      a.attributes = {first: 'Jimmy', last: 'Dean'}
+      expect(a.new?).to eq(false)
+    end
+
+    it 'should load store models ' do
+
     end
   end
 end

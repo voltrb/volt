@@ -1,6 +1,6 @@
 module Volt
   class NumericalityValidator
-    def self.validate(model, old_model, field_name, args)
+    def self.validate(model, field_name, args)
       # Construct the class and return the errors
       new(model, field_name, args).errors
     end
@@ -15,7 +15,11 @@ module Volt
       @value = model.read_attribute(field_name)
 
       # Convert to float if it is a string for a float
-      @value = Kernel.Float(@value) rescue nil
+      # The nil check and the nan? check are only require for opal 0.6
+      unless @value.nil?
+        @value = Kernel.Float(@value) rescue nil
+        @value = nil if RUBY_PLATFORM == 'opal' && @value.nan?
+      end
 
       check_errors
     end

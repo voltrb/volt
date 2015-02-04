@@ -59,10 +59,13 @@ describe Volt::User do
         allow(Volt).to receive(:server?).and_return false
       end
 
+      subject { user.password = 'a valid test password' }
+
+
       it 'sets _password to passed value' do
         subject
 
-        expect(user._password).to eq 'test'
+        expect(user._password).to eq('a valid test password')
       end
     end
   end

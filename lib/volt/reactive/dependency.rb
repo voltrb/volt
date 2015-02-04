@@ -28,9 +28,21 @@ class Set
 end
 
 module Volt
+  # Dependencies are used to track the current computation so it can be re-run
+  # at a later point if this dependency changes.
+  #
+  # You can also pass an on_dep and on_stop_dep proc's to #initialize.
   class Dependency
-    def initialize
+    # Setup a new dependency.
+    #
+    # @param on_dep [Proc] a proc to be called the first time a computation depends
+    #   on this dependency.
+    # @param on_stop_dep [Proc] a proc to be called when no computations are depending
+    #   on this dependency anymore.
+    def initialize(on_dep=nil, on_stop_dep=nil)
       @dependencies = Set.new
+      @on_dep = on_dep
+      @on_stop_dep = on_stop_dep
     end
 
     def depend
@@ -45,10 +57,19 @@ module Volt
           # puts "Added #{self.inspect} to #{current.inspect}"
           current.on_invalidate do
             # If @dependencies is nil, this Dependency has been removed
-            @dependencies.delete(current) if @dependencies
+            if @dependencies
+              previous_count = @dependencies.size
+              @dependencies.delete(current)
+
+              # Call on stop dep if no more deps
+              @on_stop_dep.call if @on_stop_dep && @dependencies.size == 0 && previous_count == 1
+            end
           end
         end
       end
+
+      # The first time the dependency is depended on, we call on_dep
+      @on_dep.call if @on_dep && @dependencies.size == 1
     end
 
     def changed!
@@ -60,6 +81,8 @@ module Volt
       @dependencies = Set.new
 
       deps.each(&:invalidate!)
+
+      @on_stop_dep.call if @on_stop_dep
     end
 
     # Called when a dependency is no longer needed

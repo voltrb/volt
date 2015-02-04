@@ -16,6 +16,7 @@ describe Volt::Model do
   end
 
   it 'should return errors for all failed validations' do
+    model.validate!
     expect(model.errors).to eq(
       count: ['must be a number'],
       description: ['needs to be longer'],
@@ -27,9 +28,10 @@ describe Volt::Model do
   end
 
   it 'should show all fields in marked errors once saved' do
-    model.save!
+    buffer = model.buffer
+    buffer.save!
 
-    expect(model.marked_errors.keys).to eq(
+    expect(buffer.marked_errors.keys).to eq(
       [:count, :description, :email, :name, :phone_number, :username]
     )
   end
@@ -72,6 +74,11 @@ describe Volt::Model do
       message = 'must be specified'
       it_should_behave_like 'a built in validation', :username, message
     end
+
+    it 'should fail on non-numbers' do
+      model._count = 'not a number'
+      expect(model.errors[:count]).to eq(['must be a number'])
+    end
   end
 
   describe 'validators with multiple criteria' do
@@ -98,11 +105,43 @@ describe Volt::Model do
     end
 
     context 'when one fails' do
-      before { model._special_field = 'regex' }
+      before do
+        # Prevent rollback for testing
+        allow(model).to receive(:revert_changes!)
+        model._special_field = 'regex'
+      end
 
       it 'returns an array with a single error' do
-        expect(model.errors).to eq({ special_field: [ proc_message ] })
+        expect(model.errors.to_h).to eq({ special_field: [ proc_message ] })
       end
     end
+  end
+
+  it 'should report if errors have happened in changed attributes' do
+    # Prevent revert_changes! so it doesn't revert on failed values
+    allow(model).to receive(:revert_changes!)
+
+    expect(model.error_in_changed_attributes?).to eq(false)
+
+    model._not_validated_attr = 'yes'
+    expect(model.error_in_changed_attributes?).to eq(false)
+
+    model._name = '5' # fail, too short
+    expect(model.changed?(:name)).to eq(true)
+    expect(model.error_in_changed_attributes?).to eq(true)
+
+    model._name = 'Jimmy'
+    expect(model.error_in_changed_attributes?).to eq(false)
+  end
+
+  it 'should revert changes which fail a validation' do
+    model._name = 'bob' # fails too short validation
+    expect(model._name).to eq(nil)
+
+    model._name = 'Jimmy' # long enough, passes
+    expect(model._name).to eq('Jimmy')
+
+    model._name = 'ok' # fails again
+    expect(model._name).to eq('Jimmy')
   end
 end
