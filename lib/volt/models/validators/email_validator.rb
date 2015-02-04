@@ -6,6 +6,7 @@ module Volt
     }
 
     def self.validate(model, field_name, options)
+      puts "V: #{model.inspect}"
       new(model, field_name, options).errors
     end
 

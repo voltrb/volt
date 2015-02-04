@@ -80,6 +80,7 @@ module Volt
     # TODO: Errors is being called for any validation change.  We should have errors return a
     # hash like object that only calls the validation for each one.
     def validate!
+      puts "VALIDATE---"
       errors.clear
 
       run_validations
@@ -123,6 +124,7 @@ module Volt
 
             if klass
               result = klass.validate(self, field_name, args)
+              puts "RUN #{field_name} #{args.inspect} #{result.inspect}"
               errors.merge!(result)
             else
               fail "validation type #{validation} is not specified."

@@ -3,8 +3,11 @@ module Volt
     def save!
       # TODO::: because we're assigning from the buffer, we need to not check errors before we read
 
+      validate!
+
       # Compute the erros once
-      errors = self.errors
+      errors = self.errors.to_h
+      puts "ERRORS: #{errors.inspect}!!!"
 
       if errors.size == 0
         save_to = options[:save_to]

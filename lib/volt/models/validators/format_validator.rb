@@ -34,6 +34,8 @@ module Volt
     def initialize(model, field_name)
       @name = field_name
       @value = model.read_attribute field_name
+
+      puts "VALID: #{@value.inspect} - #{self.inspect} - #{field_name.inspect}"
       @criteria = []
     end
 
