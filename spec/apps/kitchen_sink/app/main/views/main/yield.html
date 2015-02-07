@@ -1,0 +1,11 @@
+<:Title>
+  Yield Binding
+
+<:Body>
+  <:yield-test>My yielded content {{ @i ||= 0 ; @i += 1 }}</:yield-test>
+
+<:Yield-test>
+  <h1>Yield Section</h1>
+
+  <p>{{ yield }}</p>
+  <p>{{ yield }}</p>

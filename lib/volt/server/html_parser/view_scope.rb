@@ -40,8 +40,8 @@ module Volt
             end
           when 'template'
             add_template(args)
-          when 'yield_view'
-            add_yield_view(args)
+          when 'yield'
+            add_yield(args)
           else
             if content =~ /.each\s+do\s+\|/
               add_each(content, false)
@@ -58,8 +58,8 @@ module Volt
             close_scope
           when 'else'
             add_else(nil)
-          when 'yield_view'
-            add_yield_view
+          when 'yield'
+            add_yield
           else
             add_content_binding(content)
         end
@@ -96,7 +96,7 @@ module Volt
       @binding_number += 1
     end
 
-    def add_yield_view(content=nil)
+    def add_yield(content=nil)
       # Strip ( and ) from the outsides
       content ||= ''
       content = content.strip.gsub(/^\(/, '').gsub(/\)$/, '')
