@@ -3,10 +3,18 @@ require 'volt/page/template_renderer'
 require 'volt/page/bindings/template_binding/grouped_controllers'
 require 'volt/page/bindings/template_binding/view_lookup_for_path'
 
+
 module Volt
   class TemplateBinding < BaseBinding
-    def initialize(page, target, context, binding_name, binding_in_path, getter)
+
+    # @param [String]     binding_in_path is the path this binding was rendered from.  Used to
+    #                     lookup paths in ViewLookupForPath
+    # @param [String|nil] content_template_path is the path to the template for the content
+    #                     provided in the tag.
+    def initialize(page, target, context, binding_name, binding_in_path, getter, content_template_path=nil)
       super(page, target, context, binding_name)
+
+      @content_template_path = content_template_path
 
       # Setup the view lookup helper
       @view_lookup = Volt::ViewLookupForPath.new(page, binding_in_path)
@@ -47,6 +55,12 @@ module Volt
         else
           # Use the value passed in as the default arguments
           @arguments = section_or_arguments
+
+          # Include content_template_path in attrs
+          if @content_template_path
+            @arguments ||= {}
+            @arguments[:content_template_path] = @content_template_path
+          end
         end
 
         # Sometimes we want multiple template bindings to share the same controller (usually

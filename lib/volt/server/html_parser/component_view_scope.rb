@@ -1,7 +1,11 @@
 module Volt
   class ComponentViewScope < ViewScope
+    # The path passed in is the path used to lookup view's.  The path from the tag is passed in
+    # as tag_name
     def initialize(handler, path, tag_name, attributes, unary)
       super(handler, path)
+
+      @binding_in_path = path
 
       component_name = tag_name[1..-1].tr(':', '/')
 
@@ -44,12 +48,12 @@ module Volt
     def close_scope
       binding_number                    = @handler.scope[-2].binding_number
       @handler.scope[-2].binding_number += 1
-      # @path                             += "/__template/#{binding_number}"
+      @path                             += "/__template/#{binding_number}"
 
       super
 
       @handler.html << "<!-- $#{binding_number} --><!-- $/#{binding_number} -->"
-      @handler.scope.last.save_binding(binding_number, "lambda { |__p, __t, __c, __id| Volt::ComponentBinding.new(__p, __t, __c, __id, #{@path.inspect}, Proc.new { [#{@arguments}] }) }")
+      @handler.scope.last.save_binding(binding_number, "lambda { |__p, __t, __c, __id| Volt::ComponentBinding.new(__p, __t, __c, __id, #{@binding_in_path.inspect}, Proc.new { [#{@arguments}] }, #{@path.inspect}) }")
     end
   end
 end

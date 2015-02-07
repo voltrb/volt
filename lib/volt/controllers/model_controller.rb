@@ -19,6 +19,10 @@ module Volt
       section.range
     end
 
+    def yield_html
+      StringTemplateRender.new($page, self, attrs.content_template_path).html
+    end
+
 
 
     def self.model(val)
