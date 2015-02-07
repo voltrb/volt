@@ -5,7 +5,23 @@ require 'volt/page/template_renderer'
 
 module Volt
   class YieldBinding < BaseBinding
-    def initialize(page, target, context, binding_name, binding_in_path, getter, content_template_path=nil)
+    def initialize(page, target, context, binding_name)
+      super(page, target, context, binding_name)
+
+      # Get the path to the template to yield
+      full_path = @context.attrs.content_template_path
+
+      @current_template = TemplateRenderer.new(@page, @target, @context, @binding_name, full_path)
+    end
+
+    def remove
+      if @current_template
+        # Remove the template if one has been rendered, when the template binding is
+        # removed.
+        @current_template.remove
+      end
+
+      super
 
     end
   end

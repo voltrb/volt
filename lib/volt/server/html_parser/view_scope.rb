@@ -40,6 +40,8 @@ module Volt
             end
           when 'template'
             add_template(args)
+          when 'yield_view'
+            add_yield_view(args)
           else
             if content =~ /.each\s+do\s+\|/
               add_each(content, false)
@@ -56,6 +58,8 @@ module Volt
             close_scope
           when 'else'
             add_else(nil)
+          when 'yield_view'
+            add_yield_view
           else
             add_content_binding(content)
         end
@@ -88,6 +92,17 @@ module Volt
 
       @handler.html << "<!-- $#{@binding_number} --><!-- $/#{@binding_number} -->"
       save_binding(@binding_number, "lambda { |__p, __t, __c, __id| Volt::TemplateBinding.new(__p, __t, __c, __id, #{@path.inspect}, Proc.new { [#{content}] }) }")
+
+      @binding_number += 1
+    end
+
+    def add_yield_view(content=nil)
+      # Strip ( and ) from the outsides
+      content ||= ''
+      content = content.strip.gsub(/^\(/, '').gsub(/\)$/, '')
+
+      @handler.html << "<!-- $#{@binding_number} --><!-- $/#{@binding_number} -->"
+      save_binding(@binding_number, "lambda { |__p, __t, __c, __id| Volt::YieldBinding.new(__p, __t, __c, __id, Proc.new { [#{content}] }) }")
 
       @binding_number += 1
     end
