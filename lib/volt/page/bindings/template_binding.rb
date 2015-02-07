@@ -60,6 +60,7 @@ module Volt
           if @content_template_path
             @arguments ||= {}
             @arguments[:content_template_path] = @content_template_path
+            @arguments[:content_controller] = @context
           end
         end
 

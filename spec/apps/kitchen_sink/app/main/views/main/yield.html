@@ -4,6 +4,8 @@
 <:Body>
   <:yield-test>My yielded content {{ @i ||= 0 ; @i += 1 }}</:yield-test>
 
+  <:yield-component>This is my {{ content_string }}</:yield-component>
+
 <:Yield-test>
   <h1>Yield Section</h1>
 

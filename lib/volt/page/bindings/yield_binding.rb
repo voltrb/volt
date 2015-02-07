@@ -11,7 +11,10 @@ module Volt
       # Get the path to the template to yield
       full_path = @context.attrs.content_template_path
 
-      @current_template = TemplateRenderer.new(@page, @target, @context, @binding_name, full_path)
+      # Grab the controller for the content
+      controller = @context.attrs.content_controller
+
+      @current_template = TemplateRenderer.new(@page, @target, controller, @binding_name, full_path)
     end
 
     def remove
