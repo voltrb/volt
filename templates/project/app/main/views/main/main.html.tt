@@ -5,8 +5,8 @@
   <div class="container">
     <div class="header">
       <ul class="nav nav-pills pull-right">
-        <:nav href="/" text="Home" />
-        <:nav href="/about" text="About" />
+        <:nav href="/">Home</:nav>
+        <:nav href="/about">About</:nav>
         <:user-templates:menu />
       </ul>
       <h3 class="text-muted"><%= config[:name] %></h3>
@@ -24,6 +24,6 @@
 
 <:Nav>
   <li class="{{ if active_tab? }}active{{ end }}">
-    <a href="{{ attrs.href }}">{{ attrs.text }}</a>
+    <a href="{{ attrs.href }}">{{ yield }}</a>
   </li>
 
