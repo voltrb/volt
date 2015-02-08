@@ -56,6 +56,18 @@ module Volt
     # @return [self] returns itself for chaining
     def apply(options)
       return apply_list options if options.is_a? Array
+
+      options = case options
+                when true
+                  default_options
+                when Hash
+                  if default_options.is_a? Hash
+                    default_options.merge options
+                  else
+                    options
+                  end
+                end
+
       with options[:with], options[:message]
       self
     end
@@ -104,6 +116,10 @@ module Volt
     def apply_list(array)
       array.each { |options| apply options }
       self
+    end
+
+    def default_options
+      {}
     end
 
     def test(criterion)
