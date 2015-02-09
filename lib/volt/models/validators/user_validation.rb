@@ -75,7 +75,7 @@ module Volt
           end
         end
       else
-        raise "deny_write should be called inside of a permissions block"
+        raise "deny should be called inside of a permissions block"
       end
     end
 
