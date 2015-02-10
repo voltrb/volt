@@ -14,7 +14,7 @@ describe Volt::PhoneNumberValidator do
   let(:phone_number) { valid_us_number }
 
   describe '.validate' do
-    let(:result) { described_class.validate(*params.dup.insert(1, nil)) }
+    let(:result) { described_class.validate(*params) }
 
     before do
       allow(described_class).to receive(:new).and_return subject

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Volt::LengthValidator do
   subject { Volt::LengthValidator.validate(*params) }
-  let(:params) { [model, nil, field_name, options] }
+  let(:params) { [model, field_name, options] }
 
   let(:model) { Volt::Model.new name: name }
   let(:field_name) { :name }

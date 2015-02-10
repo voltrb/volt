@@ -10,7 +10,6 @@ module Volt
     # the dom for the controllers view.
     attr_accessor :section
 
-
     # Container returns the node that is parent to all nodes in the section.
     def container
       section.container_node
@@ -20,7 +19,18 @@ module Volt
       section.range
     end
 
-
+    # yield_html renders the content passed into a tag as a string.  You can ```.watch!```
+    # ```yield_html``` and it will be run again when anything in the template changes.
+    def yield_html
+      if (template_path = attrs.content_template_path)
+        # TODO: Don't use $page global
+        @yield_renderer ||= StringTemplateRender.new($page, self, template_path)
+        @yield_renderer.html
+      else
+        # no template, empty string
+        ''
+      end
+    end
 
     def self.model(val)
       @default_model = val

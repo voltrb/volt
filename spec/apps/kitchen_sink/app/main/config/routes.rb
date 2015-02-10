@@ -5,6 +5,7 @@ get '/bindings', _action: 'bindings'
 get '/store', _action: 'store'
 get '/cookie_test', _action: 'cookie_test'
 get '/flash', _action: 'flash'
+get '/yield', _action: 'yield'
 get '/todos', _controller: 'todos'
 
 # Signup/login routes

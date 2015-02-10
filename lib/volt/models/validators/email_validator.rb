@@ -5,7 +5,7 @@ module Volt
       message: 'must be an email address'
     }
 
-    def self.validate(model, old_model, field_name, options)
+    def self.validate(model, field_name, options)
       new(model, field_name, options).errors
     end
 

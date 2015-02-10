@@ -10,6 +10,7 @@ require 'volt/page/bindings/content_binding'
 require 'volt/page/bindings/each_binding'
 require 'volt/page/bindings/if_binding'
 require 'volt/page/bindings/template_binding'
+require 'volt/page/bindings/yield_binding'
 require 'volt/page/bindings/component_binding'
 require 'volt/page/bindings/event_binding'
 require 'volt/page/template_renderer'
@@ -218,8 +219,13 @@ module Volt
     $page = Page.new
 
     # Call start once the page is loaded
-    Document.ready? do
+    # Document.ready? do
+    #   $page.start
+    # end
+
+    # For some reason Document.ready? (using opal-jquery) quit working.
+    `$(document).ready(function() {`
       $page.start
-    end
+    `});`
   end
 end

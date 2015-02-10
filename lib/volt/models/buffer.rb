@@ -2,7 +2,7 @@ module Volt
   module Buffer
     def save!
       # Compute the erros once
-      errors = self.errors
+      errors = self.errors.to_h
 
       if errors.size == 0
         save_to = options[:save_to]
@@ -46,18 +46,17 @@ module Volt
       Promise.new.reject(errors)
     end
 
+    def buffer?
+      options[:buffer]
+    end
+
     # Returns a buffered version of the model
     def buffer
       model_path = options[:path]
 
-      # When we grab a buffer off of a plual class (subcollection), we get it as a model.
-      if model_path.last.plural? && model_path[-1] != :[]
-        model_klass = class_at_path(model_path + [:[]])
-      else
-        model_klass = class_at_path(model_path)
-      end
+      model_klass = self.class
 
-      new_options = options.merge(path: model_path, save_to: self).reject { |k, _| k.to_sym == :persistor }
+      new_options = options.merge(path: model_path, save_to: self, buffer: true).reject { |k, _| k.to_sym == :persistor }
       model       = model_klass.new({}, new_options, :loading)
 
       if state == :loaded

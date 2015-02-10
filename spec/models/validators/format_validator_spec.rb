@@ -4,7 +4,7 @@ describe Volt::FormatValidator do
   subject { described_class.new(*init_params) }
 
   let(:init_params) { [ model, field_name ] }
-  let(:validate_params) { [ model, nil, field_name, options ] }
+  let(:validate_params) { [ model, field_name, options ] }
 
   let(:model) { Volt::Model.new field: field_content }
   let(:field_name) { :field }
