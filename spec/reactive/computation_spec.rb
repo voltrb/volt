@@ -38,6 +38,38 @@ describe Volt::Computation do
     expect(values).to eq([nil, 'one'])
   end
 
+  it 'should watch_until! a value matches' do
+    a = Volt::ReactiveHash.new
+
+    a[:b] = 5
+
+    count = 0
+    -> do
+      a[:b]
+    end.watch_until!(10) do
+      count += 1
+    end
+
+    expect(count).to eq(0)
+
+    a[:b] = 7
+    Volt::Computation.flush!
+    expect(count).to eq(0)
+
+    a[:b] = 10
+    Volt::Computation.flush!
+    expect(count).to eq(1)
+
+    # Should only trigger once
+    a[:b] = 5
+    Volt::Computation.flush!
+    expect(count).to eq(1)
+
+    a[:b] = 10
+    Volt::Computation.flush!
+    expect(count).to eq(1)
+  end
+
   it 'should support nested watches' do
     a = Volt::ReactiveHash.new
 

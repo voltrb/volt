@@ -123,4 +123,28 @@ class Proc
       call
     end
   end
+
+  # Watches a proc until the value returned equals the passed
+  # in value.  When the value matches, the block is called.
+  #
+  # @param the value to match
+  # @return [Volt::Computation] the initial computation is returned.
+  def watch_until!(value, &block)
+    computation = -> do
+      # First fetch the value
+      result = self.call
+
+      if result == value
+        # Values match
+
+        # stop the computation
+        computation.stop
+
+        # call the block
+        block.call
+      end
+    end.watch!
+
+    computation
+  end
 end
