@@ -1,11 +1,13 @@
 module Volt
+  # Validates the format of a field against any number of block or regex
+  # criteria
   class FormatValidator
     # Creates a new instance with the provided options and returns it's errors
     #
     # @example
     #   options = { with: /.+@.+/, message: 'must include an @ symobl' }
     #
-    #   FormatValidator.validate(user, nil, 'email', options)
+    #   FormatValidator.validate(user, 'email', options)
     #
     # @example
     #   numbers_only = /^\d+$/
@@ -16,7 +18,7 @@ module Volt
     #     { with: sum_equals_ten, message: 'must add up to 10' }
     #   ]
     #
-    #   FormatValidator.validate(user, nil, 'email', options)
+    #   FormatValidator.validate(user, 'email', options)
     #
     # @param model [Volt::Model] the model being validated
     # @param field_name [String] the name of the field being validated
@@ -54,6 +56,18 @@ module Volt
     # @return [self] returns itself for chaining
     def apply(options)
       return apply_list options if options.is_a? Array
+
+      options = case options
+                when true
+                  default_options
+                when Hash
+                  if default_options.is_a? Hash
+                    default_options.merge options
+                  else
+                    options
+                  end
+                end
+
       with options[:with], options[:message]
       self
     end
@@ -102,6 +116,10 @@ module Volt
     def apply_list(array)
       array.each { |options| apply options }
       self
+    end
+
+    def default_options
+      {}
     end
 
     def test(criterion)
