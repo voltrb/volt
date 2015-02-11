@@ -1,5 +1,3 @@
-require "<%=config[:namespaced_path]%>/version"
-
 <%- config[:constant_array].each_with_index do |c,i| -%>
 <%= '  '*i %>class <%= c %>
 <%- end -%>
