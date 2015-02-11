@@ -65,14 +65,15 @@ module Volt
               @on_stop_dep.call if @on_stop_dep && @dependencies.size == 0 && previous_count == 1
             end
           end
+
+          # The first time the dependency is depended on by this computation, we call on_dep
+          @on_dep.call if @on_dep && @dependencies.size == 1
         end
       end
-
-      # The first time the dependency is depended on, we call on_dep
-      @on_dep.call if @on_dep && @dependencies.size == 1
     end
 
     def changed!
+      puts "CHANGED"
       deps = @dependencies
 
       # If no deps, dependency has been removed

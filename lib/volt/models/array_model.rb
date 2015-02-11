@@ -13,10 +13,13 @@ module Volt
 
     # For many methods, we want to call load data as soon as the model is interacted
     # with, so we proxy the method, then call super.
-    def self.proxy_with_load_data(*method_names)
+    def self.proxy_with_root_dep(*method_names)
       method_names.each do |method_name|
         define_method(method_name) do |*args|
-          load_data
+          # track on the root dep
+          puts "DEPEND: #{method_name}"
+          persistor.try(:root_dep).try(:depend)
+
           super(*args)
         end
       end
@@ -35,7 +38,7 @@ module Volt
       end
     end
 
-    proxy_with_load_data :[], :size, :first, :last
+    proxy_with_root_dep :[], :size, :first, :last
     proxy_to_persistor :find, :skip, :limit, :then
 
     def initialize(array = [], options = {})
@@ -57,8 +60,6 @@ module Volt
 
     # Make sure it gets wrapped
     def <<(model)
-      load_data
-
       if model.is_a?(Model)
         # Set the new path
         model.options = @options.merge(path: @options[:path] + [:[]])
@@ -123,8 +124,6 @@ module Volt
 
     def inspect
       # Just load the data on the server making it easier to work with
-      load_data if Volt.server?
-
       if @persistor && @persistor.is_a?(Persistors::ArrayStore) && state == :not_loaded
         # Show a special message letting users know it is not loaded yet.
         "#<#{self.class}:not loaded, access with [] or size to load>"
@@ -150,13 +149,6 @@ module Volt
     def setup_persistor(persistor)
       if persistor
         @persistor = persistor.new(self)
-      end
-    end
-
-    # Loads data in an array store persistor when data is requested.
-    def load_data
-      if @persistor && @persistor.is_a?(Persistors::ArrayStore)
-        @persistor.load_data
       end
     end
   end

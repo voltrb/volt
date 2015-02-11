@@ -9,7 +9,7 @@ module Volt
 
       @@query_pool = QueryListenerPool.new
 
-      attr_reader :model
+      attr_reader :model, :root_dep
 
       def self.query_pool
         @@query_pool
@@ -18,6 +18,16 @@ module Volt
       def initialize(model, tasks = nil)
         super
 
+        # The listener event counter keeps track of how many things are listening
+        # on this model and loads/unloads data when in use.
+        @listener_event_counter = EventCounter.new(
+          -> { load_data },
+          -> { stop_listening }
+        )
+
+        # The root dependency tracks how many listeners are on the ArrayModel
+        @root_dep = Dependency.new(@listener_event_counter.method(:add), @listener_event_counter.method(:remove))
+
         @query = @model.options[:query]
         @limit = @model.options[:limit]
         @skip = @model.options[:skip]
@@ -25,30 +35,40 @@ module Volt
         @skip = nil if @skip == 0
       end
 
+      # Called when an each binding is listening
       def event_added(event, first, first_for_event)
         # First event, we load the data.
         if first
-          @has_events = true
-          load_data
+          puts "Event added"
+          @listener_event_counter.remove
         end
       end
 
+      # Called when an each binding stops listening
       def event_removed(event, last, last_for_event)
         # Remove listener where there are no more events on this model
         if last
-          @has_events = false
-          stop_listening
+          puts "event removed"
+          @listener_event_counter.add
         end
+      end
+
+      # Called by child models to track their listeners
+      def listener_added
+        puts "ALA"
+        @listener_event_counter.add
+      end
+
+      # Called by child models to track their listeners
+      def listener_removed
+        puts "ALR"
+        @listener_event_counter.remove
       end
 
       # Called when an event is removed and we no longer want to keep in
       # sync with the database.
-      def stop_listening(stop_watching_query = true)
-        return if @has_events
-        return if @fetch_promises && @fetch_promises.size > 0
-
-        @query_computation.stop if @query_computation && stop_watching_query
-
+      def stop_listening
+        puts "Stop list"
         if @query_listener
           @query_listener.remove_store(self)
           @query_listener = nil
@@ -59,31 +79,20 @@ module Volt
 
       # Called the first time data is requested from this collection
       def load_data
+        puts "LOAD DATA"
         # Don't load data from any queried
         if @state == :not_loaded || @state == :dirty
           # puts "Load Data at #{@model.path.inspect} - query: #{@query.inspect} on #{self.inspect}"
-          change_state_to :loading
+          change_state_to :state, :loading
 
-          if @query.is_a?(Proc)
-            @query_computation = -> do
-              stop_listening(false)
-
-              change_state_to :loading
-
-              new_query = @query.call
-
-              run_query(@model, @query.call, @skip, @limit)
-            end.watch!
-          else
-            run_query(@model, @query, @skip, @limit)
-          end
+          run_query(@model, @query, @skip, @limit)
         end
       end
 
       # Clear out the models data, since we're not listening anymore.
       def unload_data
         puts 'Unload Data'
-        change_state_to :not_loaded
+        change_state_to :state, :not_loaded
         @model.clear
       end
 
@@ -147,10 +156,24 @@ module Volt
         if @state == :loaded
           promise.resolve(@model)
         else
-          @fetch_promises ||= []
-          @fetch_promises << promise
+          comp = -> do
+            puts "CHECK STATE: #{@state}"
+            if state == :loaded
+              puts "LOADED----"
 
-          load_data
+              promise.resolve(@model)
+
+              comp.stop
+            else
+              puts "STATE: #{@state}"
+            end
+
+          end.watch!
+
+          # -> { state }.watch_until!(:loaded) do
+            # Run when the state is changed to :loaded
+            # promise.resolve(@model)
+          # end
         end
 
         promise

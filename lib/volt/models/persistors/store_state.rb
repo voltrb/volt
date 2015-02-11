@@ -17,21 +17,10 @@ module Volt
         # Depend on the dep
         state_dep_for(state_name).depend
 
+        # Also depend on root for tracking
+        @root_dep.depend
+
         instance_variable_get(ivar_name)
-      end
-
-      # Get a state ivar for state_name
-      # @params [String] the name of the state variable
-      # @params [Boolean] if true, one will be created if it does not exist
-      def state_dep_for(state_name, create=true)
-        dep_ivar_name = :"@#{ivar_name}_dep"
-        dep = instance_variable_get(dep_ivar_name)
-        if !dep && create
-          dep = Dependency.new
-          instance_variable_set(dep_ivar_name, dep)
-        end
-
-        dep
       end
 
       # Called from the QueryListener when the data is loaded
@@ -48,14 +37,29 @@ module Volt
           dep.changed! if dep
         end
 
-        if new_state == :loaded && @fetch_promises
-          # Trigger each waiting fetch
-          @fetch_promises.compact.each { |fp| fp.resolve(@model) }
-          @fetch_promises = nil
+        # if new_state == :loaded && @fetch_promises
+        #   # Trigger each waiting fetch
+        #   @fetch_promises.compact.each { |fp| fp.resolve(@model) }
+        #   @fetch_promises = nil
+        #
+        #   # puts "STOP LIST---------"
+        #   stop_listening
+        # end
+      end
 
-          # puts "STOP LIST---------"
-          stop_listening
+      private
+      # Get a state ivar for state_name
+      # @params [String] the name of the state variable
+      # @params [Boolean] if true, one will be created if it does not exist
+      def state_dep_for(state_name, create=true)
+        dep_ivar_name = :"@#{state_name}_dep"
+        dep = instance_variable_get(dep_ivar_name)
+        if !dep && create
+          dep = Dependency.new
+          instance_variable_set(dep_ivar_name, dep)
         end
+
+        dep
       end
     end
   end

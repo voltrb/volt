@@ -46,6 +46,7 @@ module Volt
     # its dependencies.  This keeps its dependencies from
     # invalidating it again.
     def invalidate!
+      puts 'INV'
       unless @invalidated
         @invalidated = true
 
@@ -137,11 +138,11 @@ class Proc
       if result == value
         # Values match
 
-        # stop the computation
-        computation.stop
-
         # call the block
         block.call
+
+        # stop the computation
+        computation.stop
       end
     end.watch!
 

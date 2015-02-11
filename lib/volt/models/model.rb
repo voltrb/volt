@@ -10,7 +10,9 @@ require 'volt/models/field_helpers'
 require 'volt/reactive/reactive_hash'
 require 'volt/models/validators/user_validation'
 require 'volt/models/dirty'
+require 'volt/models/listener_tracker'
 require 'volt/reactive/class_eventable'
+require 'volt/utils/event_counter'
 require 'thread'
 
 module Volt
@@ -34,6 +36,7 @@ module Volt
     include Dirty
     include ClassEventable
     include Modes
+    include ListenerTracker
 
     attr_reader :attributes, :parent, :path, :persistor, :options
 
@@ -46,6 +49,17 @@ module Volt
     }
 
     def initialize(attributes = {}, options = {}, initial_state = nil)
+      # The listener event counter keeps track of how many computations are listening on this model
+      @listener_event_counter = EventCounter.new(
+        -> { parent.try(:persistor).try(:listener_added) },
+        -> { parent.try(:persistor).try(:listener_removed) }
+      )
+
+      # The root dependency is used to track if anything is using the data from this
+      # model.  That information is relayed to the ArrayModel so it knows when it can
+      # stop subscribing.
+      @root_dep    = Dependency.new(@listener_event_counter.method(:add), @listener_event_counter.method(:remove))
+
       @deps        = HashDependency.new
       @size_dep    = Dependency.new
       self.options = options
@@ -209,6 +223,9 @@ module Volt
       # Track dependency
       # @deps.depend(attr_name)
 
+      # Track that something is listening
+      @root_dep.depend
+
       # See if the value is in attributes
       if @attributes && @attributes.key?(attr_name)
         # Track dependency
@@ -327,7 +344,7 @@ module Volt
 
     def setup_buffer(model)
       model.attributes = attributes
-      model.change_state_to(:loaded)
+      model.change_state_to(:state, :loaded)
     end
 
     # Takes the persistor if there is one and

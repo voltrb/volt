@@ -30,7 +30,7 @@ module Volt
             store.add(index, data)
           end
 
-          store.change_state_to(:loaded)
+          store.change_state_to(:state, :loaded)
         end
       end.fail do |err|
         puts "Error adding listener: #{err.inspect}"
@@ -48,7 +48,7 @@ module Volt
           store.add(index, item.to_h)
         end
 
-        store.change_state_to(:loaded)
+        store.change_state_to(:state, :loaded)
       else
         # First time we've added a store, setup the listener and get
         # the initial data.
