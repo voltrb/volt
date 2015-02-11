@@ -7,7 +7,7 @@ module Volt
     # @example
     #   options = { with: /.+@.+/, message: 'must include an @ symobl' }
     #
-    #   FormatValidator.validate(user, nil, 'email', options)
+    #   FormatValidator.validate(user, 'email', options)
     #
     # @example
     #   numbers_only = /^\d+$/
@@ -18,7 +18,7 @@ module Volt
     #     { with: sum_equals_ten, message: 'must add up to 10' }
     #   ]
     #
-    #   FormatValidator.validate(user, nil, 'email', options)
+    #   FormatValidator.validate(user, 'email', options)
     #
     # @param model [Volt::Model] the model being validated
     # @param field_name [String] the name of the field being validated
