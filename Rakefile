@@ -1,6 +1,6 @@
 require 'bundler'
 require 'bundler/gem_tasks'
-Bundler.require(:development)
+require 'bundler/setup'
 require 'rubocop/rake_task'
 require 'opal'
 
