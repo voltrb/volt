@@ -3,12 +3,9 @@ require 'set'
 
 class Set
   def delete(o)
-    @hash.delete(o)
-  end
-
-  def delete?(o)
     if include?(o)
-      delete(o)
+      @hash.delete(o)
+      true
     else
       nil
     end
@@ -54,26 +51,24 @@ module Volt
         added = @dependencies.add?(current)
 
         if added
-          # puts "Added #{self.inspect} to #{current.inspect}"
+          # The first time the dependency is depended on by this computation, we call on_dep
+          @on_dep.call if @on_dep && @dependencies.size == 1
+
           current.on_invalidate do
             # If @dependencies is nil, this Dependency has been removed
             if @dependencies
-              previous_count = @dependencies.size
-              @dependencies.delete(current)
+              # For set, .delete returns a boolean if it was deleted
+              deleted = @dependencies.delete(current)
 
               # Call on stop dep if no more deps
-              @on_stop_dep.call if @on_stop_dep && @dependencies.size == 0 && previous_count == 1
+              @on_stop_dep.call if @on_stop_dep && deleted && @dependencies.size == 0
             end
           end
-
-          # The first time the dependency is depended on by this computation, we call on_dep
-          @on_dep.call if @on_dep && @dependencies.size == 1
         end
       end
     end
 
     def changed!
-      puts "CHANGED"
       deps = @dependencies
 
       # If no deps, dependency has been removed

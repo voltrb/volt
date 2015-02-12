@@ -36,15 +36,6 @@ module Volt
           dep = state_dep_for(state_name, false)
           dep.changed! if dep
         end
-
-        # if new_state == :loaded && @fetch_promises
-        #   # Trigger each waiting fetch
-        #   @fetch_promises.compact.each { |fp| fp.resolve(@model) }
-        #   @fetch_promises = nil
-        #
-        #   # puts "STOP LIST---------"
-        #   stop_listening
-        # end
       end
 
       private

@@ -58,7 +58,7 @@ module Volt
       # The root dependency is used to track if anything is using the data from this
       # model.  That information is relayed to the ArrayModel so it knows when it can
       # stop subscribing.
-      @root_dep    = Dependency.new(@listener_event_counter.method(:add), @listener_event_counter.method(:remove))
+      @root_dep    = Dependency.new#(@listener_event_counter.method(:add), @listener_event_counter.method(:remove))
 
       @deps        = HashDependency.new
       @size_dep    = Dependency.new

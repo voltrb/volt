@@ -17,7 +17,6 @@ module Volt
       method_names.each do |method_name|
         define_method(method_name) do |*args|
           # track on the root dep
-          puts "DEPEND: #{method_name}"
           persistor.try(:root_dep).try(:depend)
 
           super(*args)
@@ -123,14 +122,9 @@ module Volt
     end
 
     def inspect
-      # Just load the data on the server making it easier to work with
-      if @persistor && @persistor.is_a?(Persistors::ArrayStore) && state == :not_loaded
-        # Show a special message letting users know it is not loaded yet.
-        "#<#{self.class}:not loaded, access with [] or size to load>"
-      else
-        # Otherwise inspect normally
-        super
-      end
+      # Track on size
+      @size_dep.depend
+      "#<#{self.class}:#{object_id} state:#{state} #{@array.inspect}>"
     end
 
     def buffer

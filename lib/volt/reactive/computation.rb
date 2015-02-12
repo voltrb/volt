@@ -46,7 +46,6 @@ module Volt
     # its dependencies.  This keeps its dependencies from
     # invalidating it again.
     def invalidate!
-      puts 'INV'
       unless @invalidated
         @invalidated = true
 
@@ -119,9 +118,16 @@ end
 
 class Proc
   def watch!
-    Volt::Computation.new(self).run_in do
-      # run self
-      call
+    computation = Volt::Computation.new(self)
+
+    computation.run_in do
+      # run self, pass in computation if needed
+      if arity > 0
+        # Pass in the computation so it can be canceled from within
+        call(computation)
+      else
+        call
+      end
     end
   end
 

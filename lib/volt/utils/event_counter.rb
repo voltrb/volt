@@ -3,6 +3,8 @@ module Volt
   # will call the #start proc (passed to new), and when the last is removed will
   # call #stop.
   class EventCounter
+    attr_reader :count
+
     def initialize(start, stop)
       @start = start
       @stop = stop
@@ -12,14 +14,12 @@ module Volt
 
     def add
       @count += 1
-      puts "INC: #{@count}"
 
       @start.call if @count == 1
     end
 
     def remove
       @count -= 1
-      puts "REM: #{@count}"
 
       raise "count below 0" if @count < 0
 

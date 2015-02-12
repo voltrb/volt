@@ -21,6 +21,7 @@ class Pry
 
         # Flush after each line
         Volt::Computation.flush!
+        Volt::Timers.flush_next_tick_timers!
       end
     end
   end

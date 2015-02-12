@@ -10,8 +10,12 @@ module Volt
       end
     end
 
-    def change_state_to(state)
-      @state = state
+    def change_state_to(state_name, state)
+      if @persistor && @persistor.respond_to?(:state)
+        @persistor.change_state_to(state_name, state)
+      else
+        @state = state
+      end
     end
 
     def loaded?

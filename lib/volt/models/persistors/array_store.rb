@@ -1,6 +1,7 @@
 require 'volt/models/persistors/store'
 require 'volt/models/persistors/query/query_listener_pool'
 require 'volt/models/persistors/store_state'
+require 'volt/utils/timers'
 
 module Volt
   module Persistors
@@ -26,7 +27,8 @@ module Volt
         )
 
         # The root dependency tracks how many listeners are on the ArrayModel
-        @root_dep = Dependency.new(@listener_event_counter.method(:add), @listener_event_counter.method(:remove))
+        # @root_dep = Dependency.new(@listener_event_counter.method(:add), @listener_event_counter.method(:remove))
+        @root_dep = Dependency.new(method(:listener_added), method(:listener_removed))
 
         @query = @model.options[:query]
         @limit = @model.options[:limit]
@@ -55,33 +57,35 @@ module Volt
 
       # Called by child models to track their listeners
       def listener_added
-        puts "ALA"
         @listener_event_counter.add
       end
 
       # Called by child models to track their listeners
       def listener_removed
-        puts "ALR"
         @listener_event_counter.remove
       end
 
       # Called when an event is removed and we no longer want to keep in
       # sync with the database.
       def stop_listening
-        puts "Stop list"
-        if @query_listener
-          @query_listener.remove_store(self)
-          @query_listener = nil
-        end
+        Timers.next_tick do
+          if @listener_event_counter.count == 0
+            # puts "Stop list"
+            if @query_listener
+              @query_listener.remove_store(self)
+              @query_listener = nil
+            end
 
-        @state = :dirty
+            change_state_to :state, :dirty
+          end
+        end
       end
 
       # Called the first time data is requested from this collection
       def load_data
-        puts "LOAD DATA"
         # Don't load data from any queried
         if @state == :not_loaded || @state == :dirty
+          # puts "LOAD DATA"
           # puts "Load Data at #{@model.path.inspect} - query: #{@query.inspect} on #{self.inspect}"
           change_state_to :state, :loading
 
@@ -156,7 +160,7 @@ module Volt
         if @state == :loaded
           promise.resolve(@model)
         else
-          comp = -> do
+          Proc.new do |comp|
             puts "CHECK STATE: #{@state}"
             if state == :loaded
               puts "LOADED----"
