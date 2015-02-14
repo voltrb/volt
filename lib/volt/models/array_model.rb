@@ -124,7 +124,7 @@ module Volt
     def inspect
       # Track on size
       @size_dep.depend
-      "#<#{self.class}:#{object_id} state:#{state} #{@array.inspect}>"
+      "#<#{self.class}:#{object_id} loaded:#{loaded_state} #{@array.inspect}>"
     end
 
     def buffer

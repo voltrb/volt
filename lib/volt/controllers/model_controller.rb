@@ -143,7 +143,7 @@ module Volt
     end
 
     def loaded?
-      respond_to?(:state) && state == :loaded
+      self.model.respond_to?(:loaded?) && self.model.loaded?
     end
 
     # Check if this controller responds_to method, or the model

@@ -59,7 +59,7 @@ module Volt
       new_options = options.merge(path: model_path, save_to: self, buffer: true).reject { |k, _| k.to_sym == :persistor }
       model       = model_klass.new({}, new_options, :loading)
 
-      if state == :loaded
+      if loaded?
         setup_buffer(model)
       else
         parent.then do

@@ -4,7 +4,9 @@ class UserTasks < Volt::TaskHandler
   def login(login, password)
     query = { User.login_field => login }
 
+    puts "QUERY"
     store._users.find(query).then do |users|
+      puts "DONE"
       user = users.first
       fail 'User could not be found' unless user
 

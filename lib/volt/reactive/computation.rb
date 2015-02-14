@@ -84,11 +84,15 @@ module Volt
       self
     end
 
+    # Run a block without tracking any dependencies
     def self.run_without_tracking
       previous            = Computation.current
       Computation.current = nil
-      return_value        = yield
-      Computation.current = previous
+      begin
+        return_value        = yield
+      ensure
+        Computation.current = previous
+      end
       return_value
     end
 

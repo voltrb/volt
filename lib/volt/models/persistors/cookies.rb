@@ -55,8 +55,8 @@ module Volt
       def loaded(initial_state = nil)
         # When the main model is first loaded, we pull in the data from the
         # store if it exists
-        if !@loaded && @model.path == []
-          @loaded = true
+        if !@cookies_loaded && @model.path == []
+          @cookies_loaded = true
 
           writing_cookies do
             read_cookies.each_pair do |key, value|

@@ -58,7 +58,7 @@ module Volt
       # The root dependency is used to track if anything is using the data from this
       # model.  That information is relayed to the ArrayModel so it knows when it can
       # stop subscribing.
-      @root_dep    = Dependency.new#(@listener_event_counter.method(:add), @listener_event_counter.method(:remove))
+      @root_dep    = Dependency.new(@listener_event_counter.method(:add), @listener_event_counter.method(:remove))
 
       @deps        = HashDependency.new
       @size_dep    = Dependency.new
@@ -70,7 +70,7 @@ module Volt
 
       # Models start in a loaded state since they are normally setup from an
       # ArrayModel, which will have the data when they get added.
-      @state = :loaded
+      @loaded_state = :loaded
 
       @persistor.loaded(initial_state) if @persistor
 
@@ -325,7 +325,6 @@ module Volt
       run_in_mode(:no_save, &block)
     end
 
-
     private
 
     # no_validate mode should only be used internally
@@ -344,7 +343,7 @@ module Volt
 
     def setup_buffer(model)
       model.attributes = attributes
-      model.change_state_to(:state, :loaded)
+      model.change_state_to(:loaded_state, :loaded)
     end
 
     # Takes the persistor if there is one and

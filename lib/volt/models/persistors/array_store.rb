@@ -27,8 +27,8 @@ module Volt
         )
 
         # The root dependency tracks how many listeners are on the ArrayModel
-        # @root_dep = Dependency.new(@listener_event_counter.method(:add), @listener_event_counter.method(:remove))
-        @root_dep = Dependency.new(method(:listener_added), method(:listener_removed))
+        @root_dep = Dependency.new(@listener_event_counter.method(:add), @listener_event_counter.method(:remove))
+        # @root_dep = Dependency.new(method(:listener_added), method(:listener_removed))
 
         @query = @model.options[:query]
         @limit = @model.options[:limit]
@@ -76,7 +76,7 @@ module Volt
               @query_listener = nil
             end
 
-            change_state_to :state, :dirty
+            change_state_to :loaded_state, :dirty
           end
         end
       end
@@ -84,10 +84,10 @@ module Volt
       # Called the first time data is requested from this collection
       def load_data
         # Don't load data from any queried
-        if @state == :not_loaded || @state == :dirty
+        if @loaded_state == :not_loaded || @loaded_state == :dirty
           # puts "LOAD DATA"
           # puts "Load Data at #{@model.path.inspect} - query: #{@query.inspect} on #{self.inspect}"
-          change_state_to :state, :loading
+          change_state_to :loaded_state, :loading
 
           run_query(@model, @query, @skip, @limit)
         end
@@ -96,7 +96,7 @@ module Volt
       # Clear out the models data, since we're not listening anymore.
       def unload_data
         puts 'Unload Data'
-        change_state_to :state, :not_loaded
+        change_state_to :loaded_state, :not_loaded
         @model.clear
       end
 
@@ -157,24 +157,24 @@ module Volt
 
         promise = promise.then(&block)
 
-        if @state == :loaded
+        if loaded_state == :loaded
           promise.resolve(@model)
         else
           Proc.new do |comp|
-            puts "CHECK STATE: #{@state}"
-            if state == :loaded
+            puts "CHECK STATE: #{loaded_state}"
+            if loaded_state == :loaded
               puts "LOADED----"
 
               promise.resolve(@model)
 
               comp.stop
             else
-              puts "STATE: #{@state}"
+              puts "STATE: #{loaded_state}"
             end
 
           end.watch!
 
-          # -> { state }.watch_until!(:loaded) do
+          # -> { loaded }.watch_until!(:loaded) do
             # Run when the state is changed to :loaded
             # promise.resolve(@model)
           # end

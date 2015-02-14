@@ -4,11 +4,11 @@ module Volt
     module StoreState
       # Called when a collection loads
       def loaded(initial_state = nil)
-        change_state_to(:state, initial_state || :not_loaded)
+        change_state_to(:loaded_state, initial_state || :not_loaded)
       end
 
-      def state
-        state_for(:state)
+      def loaded_state
+        state_for(:loaded_state)
       end
 
       def state_for(state_name)
@@ -32,7 +32,7 @@ module Volt
         instance_variable_set(ivar_name, new_state)
 
         # Trigger changed on the 'state' method
-        if old_state != @state
+        if old_state != new_state
           dep = state_dep_for(state_name, false)
           dep.changed! if dep
         end
