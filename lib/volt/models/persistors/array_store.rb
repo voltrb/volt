@@ -161,10 +161,7 @@ module Volt
           promise.resolve(@model)
         else
           Proc.new do |comp|
-            puts "CHECK STATE: #{loaded_state}"
             if loaded_state == :loaded
-              puts "LOADED----"
-
               promise.resolve(@model)
 
               comp.stop
