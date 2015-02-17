@@ -2,9 +2,6 @@ source 'http://rubygems.org'
 
 gemspec
 
-# Run 0.7 from master until it comes out
-gem 'opal', git: 'https://github.com/opal/opal.git'
-
 group :development do
   # For testing the kitchen sink app
   # Twitter bootstrap
@@ -12,8 +9,6 @@ group :development do
 
   # Simple theme for bootstrap, remove to theme yourself.
   gem 'volt-bootstrap-jumbotron-theme'
-
-  gem 'opal-rspec', git: 'https://github.com/opal/opal-rspec.git'
 
   # For testing
   gem 'volt-fields'
