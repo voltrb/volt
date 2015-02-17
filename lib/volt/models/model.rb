@@ -3,8 +3,9 @@ require 'volt/models/array_model'
 require 'volt/models/model_helpers'
 require 'volt/models/model_hash_behaviour'
 require 'volt/models/validations'
-require 'volt/models/model_state'
 require 'volt/models/modes'
+require 'volt/models/state_manager'
+require 'volt/models/state_helpers'
 require 'volt/models/buffer'
 require 'volt/models/field_helpers'
 require 'volt/reactive/reactive_hash'
@@ -28,8 +29,9 @@ module Volt
     include ModelWrapper
     include ModelHelpers
     include ModelHashBehaviour
+    include StateManager
+    include StateHelpers
     include Validations
-    include ModelState
     include Buffer
     include FieldHelpers
     include UserValidatorHelpers
@@ -70,12 +72,17 @@ module Volt
 
       # Models start in a loaded state since they are normally setup from an
       # ArrayModel, which will have the data when they get added.
-      @loaded_state = :loaded
+      change_state_to(:loaded_state, :loaded, false)
 
       @persistor.loaded(initial_state) if @persistor
 
       # Trigger the new event, pass in :new
       trigger!(:new, :new)
+    end
+
+    def state_for(*args)
+      @root_dep.depend
+      super
     end
 
     # the id is stored in a field named _id, so we setup _id to proxy to this

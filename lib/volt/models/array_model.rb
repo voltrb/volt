@@ -1,13 +1,16 @@
 require 'volt/reactive/reactive_array'
 require 'volt/models/model_wrapper'
 require 'volt/models/model_helpers'
-require 'volt/models/model_state'
+require 'volt/models/state_manager'
+require 'volt/models/state_helpers'
 
 module Volt
   class ArrayModel < ReactiveArray
     include ModelWrapper
     include ModelHelpers
-    include ModelState
+    include StateManager
+    include StateHelpers
+
 
     attr_reader :parent, :path, :persistor, :options, :array
 
@@ -37,7 +40,7 @@ module Volt
       end
     end
 
-    proxy_with_root_dep :[], :size, :first, :last
+    proxy_with_root_dep :[], :size, :first, :last, :state_for
     proxy_to_persistor :find, :skip, :limit, :then
 
     def initialize(array = [], options = {})
@@ -89,6 +92,7 @@ module Volt
     # nil if there is no match.  Unlike #find, #find_one does not
     # return another cursor that you can call .then on.
     def find_one(*args, &block)
+      puts "OK: #{find(*args, &block).limit(1).inspect}"
       find(*args, &block).limit(1)[0]
     end
 

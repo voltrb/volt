@@ -1,6 +1,6 @@
 require 'volt/models/persistors/store'
-require 'volt/models/persistors/query/query_listener_pool'
 require 'volt/models/persistors/store_state'
+require 'volt/models/persistors/query/query_listener_pool'
 require 'volt/utils/timers'
 
 module Volt
@@ -27,8 +27,8 @@ module Volt
         )
 
         # The root dependency tracks how many listeners are on the ArrayModel
-        @root_dep = Dependency.new(@listener_event_counter.method(:add), @listener_event_counter.method(:remove))
-        # @root_dep = Dependency.new(method(:listener_added), method(:listener_removed))
+        # @root_dep = Dependency.new(@listener_event_counter.method(:add), @listener_event_counter.method(:remove))
+        @root_dep = Dependency.new(method(:listener_added), method(:listener_removed))
 
         @query = @model.options[:query]
         @limit = @model.options[:limit]
@@ -57,11 +57,13 @@ module Volt
 
       # Called by child models to track their listeners
       def listener_added
+        puts "LIST ADD"
         @listener_event_counter.add
       end
 
       # Called by child models to track their listeners
       def listener_removed
+        puts "LIST REMO"
         @listener_event_counter.remove
       end
 
@@ -76,18 +78,19 @@ module Volt
               @query_listener = nil
             end
 
-            change_state_to :loaded_state, :dirty
+            @model.change_state_to(:loaded_state, :dirty)
           end
         end
       end
 
       # Called the first time data is requested from this collection
       def load_data
+        loaded_state = @model.loaded_state
         # Don't load data from any queried
-        if @loaded_state == :not_loaded || @loaded_state == :dirty
+        if loaded_state == :not_loaded || loaded_state == :dirty
           # puts "LOAD DATA"
           # puts "Load Data at #{@model.path.inspect} - query: #{@query.inspect} on #{self.inspect}"
-          change_state_to :loaded_state, :loading
+          @model.change_state_to(:loaded_state, :loading)
 
           run_query(@model, @query, @skip, @limit)
         end
@@ -96,7 +99,7 @@ module Volt
       # Clear out the models data, since we're not listening anymore.
       def unload_data
         puts 'Unload Data'
-        change_state_to :loaded_state, :not_loaded
+        @model.change_state_to(:loaded_state, :not_loaded)
         @model.clear
       end
 
@@ -157,16 +160,16 @@ module Volt
 
         promise = promise.then(&block)
 
-        if loaded_state == :loaded
+        if @model.loaded_state == :loaded
           promise.resolve(@model)
         else
           Proc.new do |comp|
-            if loaded_state == :loaded
+            if @model.loaded_state == :loaded
               promise.resolve(@model)
 
               comp.stop
             else
-              puts "STATE: #{loaded_state}"
+              puts "STATE: #{@model.loaded_state}"
             end
 
           end.watch!
