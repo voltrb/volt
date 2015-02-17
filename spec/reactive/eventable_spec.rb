@@ -45,4 +45,25 @@ describe Volt::Eventable do
     test_eventable.trigger_works_event!
     expect(count).to eq(2)
   end
+
+  it 'should allow multiple events' do
+    test_eventable = TestEventable.new
+
+    called = false
+    listener = test_eventable.on(:broken, :works) do |arg|
+      expect(arg).to eq(20)
+      called = true
+    end
+
+    test_eventable.trigger_works_event!
+    expect(called).to eq(true)
+
+    # Stop the listener
+    listener.remove
+    called = false
+
+    # Shouldn't run now
+    test_eventable.trigger_works_event!
+    expect(called).to eq(false)
+  end
 end

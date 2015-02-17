@@ -1,6 +1,6 @@
 require 'bundler'
 require 'bundler/gem_tasks'
-Bundler.require(:development)
+require 'bundler/setup'
 require 'rubocop/rake_task'
 require 'opal'
 
@@ -10,14 +10,7 @@ Opal.append_path(File.expand_path('../lib', __FILE__))
 require 'opal/rspec/rake_task'
 
 task :docs do
-  `bundle exec yardoc 'lib/**/*.rb' - Readme.md docs/*`
-  # require 'yard'
-  # require 'yard-docco'
-  #
-  # YARD::Rake::YardocTask.new do |t|
-  #   t.files   = ['lib/**/*.rb']
-  #   # t.options = ['--any', '--extra', '--opts'] # optional
-  # end
+  `bundle exec yardoc -r Readme.md --markup-provider=redcarpet --markup=markdown 'lib/**/*.rb' - Readme.md docs/*.md`
 end
 
 # Setup the opal:rspec task

@@ -143,7 +143,7 @@ module Volt
       # Update the models based on the id/identity map.  Usually these requests
       # will come from the backend.
       def self.changed(model_id, data)
-        Model.nosave do
+        Model.no_save do
           model = @@identity_map.lookup(model_id)
 
           if model

@@ -33,6 +33,10 @@ class MainController < Volt::ModelController
     self.model = page._new_cookie.buffer
   end
 
+  def content_string
+    'content'
+  end
+
   private
 
   # the main template contains a #template binding that shows another

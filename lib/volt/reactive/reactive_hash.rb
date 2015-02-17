@@ -13,10 +13,13 @@ module Volt
       @hash == val
     end
 
+    def blank?
+      @hash.blank?
+    end
+
     # TODO: We should finish off this class for reactivity
     def method_missing(method_name, *args, &block)
       @all_deps.depend
-
       @hash.send(method_name, *args, &block)
     end
 
@@ -40,7 +43,9 @@ module Volt
     end
 
     def clear
-      @hash.each_pair do |key, _|
+      # Don't use .each_key so we get a clone here since we are
+      # deleting as we go.
+      @hash.keys.each do |key|
         delete(key)
       end
 
@@ -62,7 +67,7 @@ module Volt
 
     def inspect
       @all_deps.depend
-      "#<ReactiveHash #{@hash.inspect}>"
+      "#<#{self.class.name} #{@hash.inspect}>"
     end
   end
 end
