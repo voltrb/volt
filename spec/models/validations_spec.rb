@@ -94,7 +94,7 @@ describe Volt::Model do
       end
     end
 
-    describe 'when multiple fail' do
+    context 'when multiple fail' do
       before { model._special_field = 'nope' }
 
       it 'returns an array of errors' do
@@ -104,17 +104,12 @@ describe Volt::Model do
       end
     end
 
-<<<<<<< HEAD
-    describe 'when one fails' do
-      before { model._special_field = 'regex' }
-=======
     context 'when one fails' do
       before do
         # Prevent rollback for testing
         allow(model).to receive(:revert_changes!)
         model._special_field = 'regex'
       end
->>>>>>> master
 
       it 'returns an array with a single error' do
         expect(model.errors.to_h).to eq({ special_field: [ proc_message ] })

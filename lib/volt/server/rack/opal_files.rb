@@ -50,7 +50,7 @@ module Volt
 
       # opal-jquery gem
       spec = Gem::Specification.find_by_name('opal-jquery')
-      server.append_path(spec.gem_dir + '/opal')
+      server.append_path(spec.gem_dir + '/lib')
 
       builder.map '/assets' do
         run server
