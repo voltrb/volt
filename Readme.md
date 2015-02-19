@@ -1,5 +1,3 @@
-# Volt
-
 [![Gem Version](https://badge.fury.io/rb/volt.svg)](http://badge.fury.io/rb/volt)
 [![Code Climate](https://codeclimate.com/github/voltrb/volt/badges/gpa.svg)](https://codeclimate.com/github/voltrb/volt)
 [![Build Status](http://img.shields.io/travis/voltrb/volt/master.svg?style=flat)](https://travis-ci.org/voltrb/volt)
@@ -19,18 +17,17 @@ See some demo videos here:
 - [Routes and Templates](https://www.youtube.com/watch?v=1yNMP3XR6jU)
 - [Isomorphic App Development - RubyConf 2014](https://www.youtube.com/watch?v=7i6AL7Walc4)
 - [Build a Blog with Volt](https://www.youtube.com/watch?v=c478sMlhx1o)
-
 **Note:** The blog video is outdated, expect an updated version soon.
 
 Check out demo apps:
  - https://github.com/voltrb/todos3
  - https://github.com/voltrb/contactsdemo
 
-## Docs
+# Docs
 
 Read the [full docs on Volt here](http://voltframework.com/docs)
 
-## Contributing
+# Contributing
 
 You want to contribute? Great! Thanks for being awesome! At the moment, we have a big internal todo list, hop on https://gitter.im/voltrb/volt so we don't duplicate work. Pull requests are always welcome, but asking about helping on Gitter should save some duplication.
 
