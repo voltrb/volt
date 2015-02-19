@@ -44,8 +44,8 @@ class LiveQuery
   end
 
   def notify_changed(id, data, skip_channel)
-    # puts "Changed: #{id}, #{data}"
     notify!(skip_channel) do |channel|
+      # puts "Changed: #{id}, #{data} to #{channel.inspect}"
       channel.send_message('changed', nil, @collection, @query, id, data)
     end
   end

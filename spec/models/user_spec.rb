@@ -11,7 +11,7 @@ describe Volt::User do
   describe '.login_field' do
     subject { Volt::User.login_field }
 
-    context 'when use_username is set to true' do
+    describe 'when use_username is set to true' do
       before do
         allow(Volt).to receive(:config).and_return FakeConfig.new
       end
@@ -21,7 +21,7 @@ describe Volt::User do
       end
     end
 
-    context 'when use_username is not set' do
+    describe 'when use_username is not set' do
       it "returns :email" do
         expect(subject).to eq :email
       end
@@ -34,7 +34,7 @@ describe Volt::User do
     subject { user.password = 'test' }
 
     if RUBY_PLATFORM != 'opal'
-      context 'when it is a Volt server' do
+      describe 'when it is a Volt server' do
         before do
           allow(BCrypt::Password).to receive(:create).with('test').
             and_return 'hashed-password'
@@ -54,7 +54,7 @@ describe Volt::User do
       end
     end
 
-    context 'when it is not a Volt server' do
+    describe 'when it is not a Volt server' do
       before do
         allow(Volt).to receive(:server?).and_return false
       end

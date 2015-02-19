@@ -1,6 +1,12 @@
 class MainController < Volt::ModelController
   model :page
 
+  def index
+    a = {}
+    a[{}] = 5
+    puts a[{}].inspect
+  end
+
   def flash_notice
     flash._notices << 'A notice message'
   end
