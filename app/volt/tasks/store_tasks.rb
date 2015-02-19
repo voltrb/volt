@@ -46,7 +46,7 @@ class StoreTasks < Volt::TaskHandler
     # who sent the update.
     Thread.current['in_channel'] = @channel
     promise = model.save!.then do |result|
-      return nil
+      next nil
     end
 
     Thread.current['in_channel'] = nil
