@@ -91,14 +91,17 @@ module Volt
 
     # TODO: Handle a range
     def [](index)
-      # Handle a negative index
+      # Handle a negative index, depend on size
       index = size + index if index < 0
 
       # Get or create the dependency
       dep   = (@array_deps[index] ||= Dependency.new)
 
+      puts "DEP: #{index} - #{object_id} - #{dep.object_id}"
       # Track the dependency
       dep.depend
+
+      puts "LOOKUP: #{@array[index]._email}" rescue nil
 
       # Return the index
       @array[index]
@@ -212,6 +215,7 @@ module Volt
 
       # All objects from index to the end have "changed"
       index.upto(result.size) do |index|
+        puts "TRIGGER FOR INDEX: #{index}"
         trigger_for_index!(index)
       end
 
@@ -244,6 +248,9 @@ module Volt
     def trigger_for_index!(index)
       # Trigger a change for the cell
       dep = @array_deps[index]
+
+      puts "TFI: #{index} - #{object_id} - #{dep.object_id}"
+      puts "V: #{self.inspect}"
 
       dep.changed! if dep
     end

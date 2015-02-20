@@ -19,7 +19,6 @@ module Volt
 
       server = Opal::Server.new(prefix: '/')
 
-
       @component_paths                   = component_paths
       # @environment                       = Opal::Environment.new
       @environment                       = server.sprockets

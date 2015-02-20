@@ -79,8 +79,12 @@ module Volt
     def run_in
       previous            = Computation.current
       Computation.current = self
-      yield
-      Computation.current = previous
+      begin
+        yield
+      ensure
+        Computation.current = previous
+      end
+
       self
     end
 

@@ -60,7 +60,8 @@ module Volt
       # The root dependency is used to track if anything is using the data from this
       # model.  That information is relayed to the ArrayModel so it knows when it can
       # stop subscribing.
-      @root_dep    = Dependency.new(@listener_event_counter.method(:add), @listener_event_counter.method(:remove))
+      # @root_dep    = Dependency.new(@listener_event_counter.method(:add), @listener_event_counter.method(:remove))
+      @root_dep    = Dependency.new(-> { add_list }, -> { remove_list })
 
       @deps        = HashDependency.new
       @size_dep    = Dependency.new
@@ -78,6 +79,16 @@ module Volt
 
       # Trigger the new event, pass in :new
       trigger!(:new, :new)
+    end
+
+    def add_list
+      puts "ADD LIST MODEL #{object_id}"
+      @listener_event_counter.add
+    end
+
+    def remove_list
+      puts "REMOVE LIST MODEL #{object_id}"
+      @listener_event_counter.remove
     end
 
     def state_for(*args)
@@ -259,6 +270,10 @@ module Volt
         @deps.depend(attr_name)
         return new_model
       end
+    end
+
+    def respond_to_missing?(method_name, include_private=false)
+      method_name.to_s.start_with?('_') || super
     end
 
     # Get a new model, make it easy to override

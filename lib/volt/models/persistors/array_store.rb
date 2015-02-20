@@ -42,7 +42,7 @@ module Volt
         # First event, we load the data.
         if first
           puts "Event added"
-          @listener_event_counter.remove
+          @listener_event_counter.add
         end
       end
 
@@ -51,41 +51,43 @@ module Volt
         # Remove listener where there are no more events on this model
         if last
           puts "event removed"
-          @listener_event_counter.add
+          @listener_event_counter.remove
         end
       end
 
       # Called by child models to track their listeners
       def listener_added
-        puts "LIST ADD"
+        puts "LIST ADD: #{object_id}"
         @listener_event_counter.add
       end
 
       # Called by child models to track their listeners
       def listener_removed
-        puts "LIST REMO"
+        puts "LIST REMO #{object_id}"
         @listener_event_counter.remove
       end
 
       # Called when an event is removed and we no longer want to keep in
       # sync with the database.
       def stop_listening
-        Timers.next_tick do
-          if @listener_event_counter.count == 0
-            # puts "Stop list"
-            if @query_listener
-              @query_listener.remove_store(self)
-              @query_listener = nil
-            end
-
-            @model.change_state_to(:loaded_state, :dirty)
-          end
-        end
+        # Timers.next_tick do
+        #   if @listener_event_counter.count == 0
+        #     # puts "Stop list"
+        #     if @query_listener
+        #       puts "Stop Query"
+        #       @query_listener.remove_store(self)
+        #       @query_listener = nil
+        #     end
+        #
+        #     @model.change_state_to(:loaded_state, :dirty)
+        #   end
+        # end
       end
 
       # Called the first time data is requested from this collection
       def load_data
         loaded_state = @model.loaded_state
+        puts "LOAD DATA: #{loaded_state}"
         # Don't load data from any queried
         if loaded_state == :not_loaded || loaded_state == :dirty
           # puts "LOAD DATA"
@@ -104,6 +106,7 @@ module Volt
       end
 
       def run_query(model, query = {}, skip = nil, limit = nil)
+        puts "RUN QUERY: #{model.path.inspect} - #{query.inspect}, #{self.object_id}"
         @model.clear
 
         collection = model.path.last
@@ -185,6 +188,7 @@ module Volt
 
       # Called from backend
       def add(index, data)
+        puts "ADD1: #{index} - #{data.inspect} - #{object_id}"
         $loading_models = true
 
         data_id = data['_id'] || data[:_id]

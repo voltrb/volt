@@ -40,7 +40,7 @@ module Volt
       end
     end
 
-    proxy_with_root_dep :[], :size, :first, :last, :state_for, :limit, :find_one, :find
+    proxy_with_root_dep :[], :size, :first, :last, :state_for#, :limit, :find_one, :find
     proxy_to_persistor :find, :skip, :limit, :then
 
     def initialize(array = [], options = {})
