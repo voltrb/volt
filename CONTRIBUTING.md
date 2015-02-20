@@ -28,6 +28,7 @@ git checkout -b my-feature-branch
 ```
 
 #### Bundle Install and Test
+
 Ensure that PhantomJS is installed on your computer.
 
 ```
@@ -65,13 +66,13 @@ We definitely appreciate pull requests that highlight or reproduce a problem, ev
 
 Implement your feature or bug fix.
 
-Ruby style is enforced with [Rubocop](https://github.com/bbatsov/rubocop), run `bundle exec rubocop` and fix any style issues highlighted.
+Ruby style is enforced with [RuboCop](https://github.com/bbatsov/rubocop), run `bundle exec rubocop` and fix any style issues highlighted.
 
 Make sure that `bundle exec rake` completes without errors.
 
 #### Write Documentation
 
-Document any external behavior in the [README](Readme.md).
+Document any external behavior in the [README](README.md).
 
 #### Commit Changes
 
