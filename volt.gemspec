@@ -6,6 +6,8 @@ version = File.read(File.expand_path('../VERSION', __FILE__)).strip
 Gem::Specification.new do |spec|
   spec.name          = 'volt'
   spec.version       = version
+  spec.platform      = Gem::Platform::RUBY
+  spec.required_ruby_version = '>= 2.1'
   spec.authors       = ['Ryan Stout']
   spec.email         = ['ryan@agileproductions.com']
   spec.summary       = 'A reactive Ruby web framework.'
