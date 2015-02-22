@@ -1,6 +1,6 @@
 require 'json'
 require 'sockjs/session'
-require File.join(File.dirname(__FILE__), '../../../app/volt/tasks/query_tasks')
+require File.join(__dir__, '../../../app/volt/tasks/query_tasks')
 
 module Volt
   class SocketConnectionHandler < SockJS::Session

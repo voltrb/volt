@@ -4,7 +4,7 @@ if RUBY_PLATFORM != 'opal'
 
   describe Volt::AssetFiles do
     before do
-      spec_app_root = File.join(File.dirname(__FILE__), '../../apps/file_loading')
+      spec_app_root = File.join(__dir__, '../../apps/file_loading')
 
       @component_paths = Volt::ComponentPaths.new(spec_app_root)
     end
@@ -26,7 +26,7 @@ if RUBY_PLATFORM != 'opal'
       main = Volt::AssetFiles.new('main', @component_paths)
 
       relative_dep_path = '../../apps/file_loading/app/missing_deps'
-      path_to_missing_deps = File.join(File.dirname(__FILE__), relative_dep_path)
+      path_to_missing_deps = File.join(__dir__, relative_dep_path)
       expect do
         main.load_dependencies(path_to_missing_deps)
       end.to raise_error("Unable to find component 'a-gem-that-isnt-in-the-gemfile', make sure the gem is included in your Gemfile")
@@ -35,8 +35,8 @@ if RUBY_PLATFORM != 'opal'
     it 'should not raise an exception for a dependency file with valid components' do
       main = Volt::AssetFiles.new('main', @component_paths)
 
-      path_to_main = File.join(File.dirname(__FILE__), '../../apps/file_loading/app/main')
-      path_to_missing_deps = File.join(File.dirname(__FILE__), path_to_main)
+      path_to_main = File.join(__dir__, '../../apps/file_loading/app/main')
+      path_to_missing_deps = File.join(__dir__, path_to_main)
       expect do
         main.load_dependencies(path_to_missing_deps)
       end.to_not raise_error
