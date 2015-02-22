@@ -68,7 +68,7 @@ module Volt
     end
 
     def display_welcome
-      puts File.read(File.join(File.dirname(__FILE__), 'server/banner.txt'))
+      puts File.read(File.join(__dir__, 'server/banner.txt'))
     end
 
     def setup_change_listener

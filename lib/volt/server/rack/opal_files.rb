@@ -38,7 +38,7 @@ module Volt
 
       server.append_path(app_path)
 
-      volt_gem_lib_path = File.expand_path(File.join(File.dirname(__FILE__), '../../..'))
+      volt_gem_lib_path = File.expand_path('../../..', __dir__)
       server.append_path(volt_gem_lib_path)
 
       add_asset_folders(server)

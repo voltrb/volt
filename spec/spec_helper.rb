@@ -5,7 +5,7 @@ unless RUBY_PLATFORM == 'opal'
 end
 
 # Specs are run against the kitchen sink app
-kitchen_sink_path = File.expand_path(File.join(File.dirname(__FILE__), 'apps/kitchen_sink'))
+kitchen_sink_path = File.expand_path('apps/kitchen_sink', __dir__)
 Volt.spec_setup(kitchen_sink_path)
 
 unless RUBY_PLATFORM == 'opal'

@@ -176,7 +176,7 @@ describe Volt::SandlebarsParser do
   end
 
   it 'should be fast' do
-    html = File.read(File.join(File.dirname(__FILE__), 'sample_page.html'))
+    html = File.read(File.join(__dir__, 'sample_page.html'))
     handler = HTMLHandler.new
     time = Benchmark.measure do
       Volt::SandlebarsParser.new(html, handler)

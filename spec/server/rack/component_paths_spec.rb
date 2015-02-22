@@ -3,9 +3,9 @@ if RUBY_PLATFORM != 'opal'
 
   describe Volt::ComponentPaths do
     before do
-      spec_app_root = File.join(File.dirname(__FILE__), '../../apps/file_loading')
+      spec_app_root = File.join(__dir__, '../../apps/file_loading')
 
-      path_to_main = File.join(File.dirname(__FILE__), '../../apps/file_loading/app/main')
+      path_to_main = File.join(__dir__, '../../apps/file_loading/app/main')
       @component_paths = Volt::ComponentPaths.new(spec_app_root)
     end
 

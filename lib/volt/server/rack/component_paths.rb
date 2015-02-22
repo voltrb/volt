@@ -11,7 +11,7 @@ module Volt
     def app_folders
       # Find all app folders
       @app_folders ||= begin
-        volt_app    = File.expand_path(File.join(File.dirname(__FILE__), '../../../../app'))
+        volt_app    = File.expand_path('../../../../app', __dir__)
         app_folders = [volt_app, "#{@root}/app", "#{@root}/vendor/app"].map { |f| File.expand_path(f) }
 
         # Gem folders with volt in them
