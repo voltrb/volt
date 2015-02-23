@@ -82,12 +82,12 @@ module Volt
     end
 
     def add_list
-      puts "ADD LIST MODEL #{object_id}"
+      # puts "ADD LIST MODEL #{object_id}"
       @listener_event_counter.add
     end
 
     def remove_list
-      puts "REMOVE LIST MODEL #{object_id}"
+      # puts "REMOVE LIST MODEL #{object_id}"
       @listener_event_counter.remove
     end
 

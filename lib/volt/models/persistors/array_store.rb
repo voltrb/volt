@@ -41,7 +41,7 @@ module Volt
       def event_added(event, first, first_for_event)
         # First event, we load the data.
         if first
-          puts "Event added"
+          # puts "Event added"
           @listener_event_counter.add
         end
       end
@@ -50,20 +50,20 @@ module Volt
       def event_removed(event, last, last_for_event)
         # Remove listener where there are no more events on this model
         if last
-          puts "event removed"
+          # puts "event removed"
           @listener_event_counter.remove
         end
       end
 
       # Called by child models to track their listeners
       def listener_added
-        puts "LIST ADD: #{object_id}"
+        # puts "LIST ADD: #{object_id}"
         @listener_event_counter.add
       end
 
       # Called by child models to track their listeners
       def listener_removed
-        puts "LIST REMO #{object_id}"
+        # puts "LIST REMO #{object_id}"
         @listener_event_counter.remove
       end
 
@@ -188,7 +188,7 @@ module Volt
 
       # Called from backend
       def add(index, data)
-        puts "ADD1: #{index} - #{data.inspect} - #{object_id}"
+        # puts "ADD1: #{index} - #{data.inspect} - #{object_id}"
         $loading_models = true
 
         data_id = data['_id'] || data[:_id]

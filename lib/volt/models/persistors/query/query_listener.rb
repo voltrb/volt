@@ -19,7 +19,7 @@ module Volt
 
       # Call the backend and add the listner
       QueryTasks.add_listener(@collection, @query).then do |ret|
-        puts "Query: #{@query.inspect} - #{ret.inspect}"
+        # puts "Query: #{@query.inspect} - #{ret.inspect}"
         results, errors = ret
 
         # When the initial data comes back, add it into the stores.
