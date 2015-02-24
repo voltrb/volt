@@ -92,7 +92,6 @@ module Volt
     # nil if there is no match.  Unlike #find, #find_one does not
     # return another cursor that you can call .then on.
     def find_one(*args, &block)
-      puts "OK: #{find(*args, &block).limit(1).inspect}"
       find(*args, &block).limit(1)[0]
     end
 

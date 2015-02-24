@@ -74,18 +74,18 @@ module Volt
       # Called when an event is removed and we no longer want to keep in
       # sync with the database.
       def stop_listening
-        # Timers.next_tick do
-        #   if @listener_event_counter.count == 0
-        #     # puts "Stop list"
-        #     if @query_listener
-        #       puts "Stop Query"
-        #       @query_listener.remove_store(self)
-        #       @query_listener = nil
-        #     end
-        #
-        #     @model.change_state_to(:loaded_state, :dirty)
-        #   end
-        # end
+        Timers.next_tick do
+          if @listener_event_counter.count == 0
+            # puts "Stop list"
+            if @query_listener
+              puts "Stop Query"
+              @query_listener.remove_store(self)
+              @query_listener = nil
+            end
+
+            @model.change_state_to(:loaded_state, :dirty)
+          end
+        end
       end
 
       # Called the first time data is requested from this collection
@@ -93,7 +93,7 @@ module Volt
         Computation.run_without_tracking do
           loaded_state = @model.loaded_state
 
-          puts "LOAD DATA: #{loaded_state}"
+          # puts "LOAD DATA: #{loaded_state}"
           # Don't load data from any queried
           if loaded_state == :not_loaded || loaded_state == :dirty
             # puts "LOAD DATA"
@@ -116,6 +116,7 @@ module Volt
 
       def run_query(model, query = {}, skip = nil, limit = nil)
         @model.clear
+        puts "RUN QUERY: #{query.inspect}"
 
         collection = model.path.last
         # Scope to the parent
