@@ -71,11 +71,13 @@ module Volt
 
       send(:attributes=, attributes, true)
 
-      # Models start in a loaded state since they are normally setup from an
-      # ArrayModel, which will have the data when they get added.
-      # change_state_to(:loaded_state, :loaded, false)
-
-      @persistor.loaded(initial_state) if @persistor
+      # The persistor is usually responsible for setting up the loaded_state, if
+      # there is no persistor, we set it to loaded
+      if @persistor
+        @persistor.loaded(initial_state)
+      else
+        change_state_to(:loaded_state, :loaded, false)
+      end
 
       # Trigger the new event, pass in :new
       trigger!(:new, :new)

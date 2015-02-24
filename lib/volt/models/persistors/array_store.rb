@@ -72,18 +72,20 @@ module Volt
       end
 
       # Called when an event is removed and we no longer want to keep in
-      # sync with the database.
+      # sync with the database.  The data is kept in memory and the model's
+      # loaded_state is marked as "dirty" meaning it may not be in sync.
       def stop_listening
         Timers.next_tick do
-          if @listener_event_counter.count == 0
-            # puts "Stop list"
-            if @query_listener
-              puts "Stop Query"
-              @query_listener.remove_store(self)
-              @query_listener = nil
-            end
+          Computation.run_without_tracking do
+            if @listener_event_counter.count == 0
+              if @query_listener
+                # puts "Stop Query"
+                @query_listener.remove_store(self)
+                @query_listener = nil
+              end
 
-            @model.change_state_to(:loaded_state, :dirty)
+              @model.change_state_to(:loaded_state, :dirty)
+            end
           end
         end
       end
@@ -105,18 +107,9 @@ module Volt
         end
       end
 
-      # Clear out the models data, since we're not listening anymore.
-      def unload_data
-        Computation.run_without_tracking do
-          puts 'Unload Data'
-          @model.change_state_to(:loaded_state, :not_loaded)
-          @model.clear
-        end
-      end
-
       def run_query(model, query = {}, skip = nil, limit = nil)
         @model.clear
-        puts "RUN QUERY: #{query.inspect}"
+        # puts "RUN QUERY: #{query.inspect}"
 
         collection = model.path.last
         # Scope to the parent

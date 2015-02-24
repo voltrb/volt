@@ -53,7 +53,11 @@ module Volt
 
       super(array)
 
-      @persistor.loaded if @persistor
+      if @persistor
+        @persistor.loaded
+      else
+        change_state_to(:loaded_state, :loaded, false)
+      end
     end
 
     def attributes

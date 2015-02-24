@@ -70,6 +70,25 @@ describe Volt::Computation do
     expect(count).to eq(1)
   end
 
+  it 'should trigger a changed dependency only once on a flush' do
+    a = Volt::Dependency.new
+
+    count = 0
+    -> { count += 1 ; a.depend }.watch!
+
+    expect(count).to eq(1)
+
+    a.changed!
+    a.changed!
+    a.changed!
+
+    expect(count).to eq(1)
+
+    Volt::Computation.flush!
+
+    expect(count).to eq(2)
+  end
+
   it 'should support nested watches' do
     a = Volt::ReactiveHash.new
 

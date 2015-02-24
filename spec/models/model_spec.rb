@@ -209,16 +209,16 @@ describe Volt::Model do
     a._blue._green = 5
     Volt::Computation.flush!
 
-    expect(count).to eq(1)
+    expect(count).to eq(2)
 
     a._blue = 22
     Volt::Computation.flush!
-    expect(count).to eq(2)
+    expect(count).to eq(3)
 
     a._blue = { green: 50 }
     expect(a._blue._green).to eq(50)
     Volt::Computation.flush!
-    expect(count).to eq(3)
+    expect(count).to eq(4)
   end
 
   it 'should trigger changed when a value is deleted' do
@@ -388,13 +388,13 @@ describe Volt::Model do
     end
 
     it 'should set the model path for a sub array' do
-      @model._items << { _name: 'Bob' }
+      @model._items << { name: 'Bob' }
       expect(@model._items.path).to eq([:items])
       expect(@model._items[0].path).to eq([:items, :[]])
     end
 
     it 'should set the model path for sub sub arrays' do
-      @model._lists << { _name: 'List 1', _items: [] }
+      @model._lists << { name: 'List 1', items: [] }
       expect(@model._lists[0]._items.path).to eq([:lists, :[], :items])
     end
 
