@@ -29,8 +29,10 @@ module Volt
     end
 
     def remove
-      @computation.stop if @computation
-      @computation = nil
+      if @computation
+        @computation.stop
+        @computation = nil
+      end
 
       super
     end

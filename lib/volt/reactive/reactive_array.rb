@@ -101,8 +101,6 @@ module Volt
       # Track the dependency
       dep.depend
 
-      # puts "LOOKUP: #{@array[index]._email}" rescue nil
-
       # Return the index
       @array[index]
     end

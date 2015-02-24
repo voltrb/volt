@@ -52,6 +52,7 @@ module Volt
           @context.instance_exec(@selected_value, &@setter)
         end
       else
+        puts "SETTER ON #{@context.inspect}"
         @context.instance_exec(current_value, &@setter)
       end
     end
@@ -122,9 +123,13 @@ module Volt
           element.off('change.attrbind', nil)
       end
 
+      if @computation
+        @computation.stop
+        @computation = nil
+      end
+
       @string_template_renderer.remove if @string_template_renderer
       @string_template_renderer_computation.stop if @string_template_renderer_computation
-      @computation.stop if @computation
 
       # Clear any references
       @target  = nil

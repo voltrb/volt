@@ -10,7 +10,7 @@ module Volt
     attr_reader :environment
 
     def initialize(builder, app_path, component_paths)
-      Opal::Processor.source_map_enabled = true#Volt.source_maps?
+      Opal::Processor.source_map_enabled = Volt.source_maps?
       Opal::Processor.const_missing_enabled = true
 
       # Don't run arity checks in production

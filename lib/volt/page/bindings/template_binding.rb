@@ -32,7 +32,7 @@ module Volt
     end
 
     def update(path, section_or_arguments = nil, options = {})
-      Computation.run_without_tracking do
+      # Computation.run_without_tracking do
         # Remove existing template and call _removed
         controller_send(:"#{@action}_removed") if @action && @controller
         if @current_template
@@ -76,7 +76,7 @@ module Volt
         render_template(full_path, controller_path)
 
         queue_clear_grouped_controller
-      end
+      # end
     end
 
     # On the next tick, we clear the grouped controller so that any changes to template paths
@@ -155,6 +155,9 @@ module Volt
     end
 
     def remove
+      @computation.stop
+      @computation = nil
+
       controller_send(:"before_#{@action}_remove") if @controller && @action
 
       clear_grouped_controller

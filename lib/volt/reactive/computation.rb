@@ -11,12 +11,14 @@ module Volt
       @@current
     end
 
+    # @param [Proc] the code to run when the computation needs to compute
     def initialize(computation)
       @computation   = computation
       @invalidations = []
     end
 
-    # Runs the computation
+    # Runs the computation, called on initial run and
+    # when changed!
     def compute!
       @invalidated = false
 
@@ -24,7 +26,12 @@ module Volt
 
         @computing = true
         run_in do
-          @computation.call
+          if @computation.arity > 0
+            # Pass in the Computation so it can be canceled from within
+            @computation.call(self)
+          else
+            @computation.call
+          end
         end
         @computing = false
       end
@@ -128,15 +135,11 @@ class Proc
   def watch!
     computation = Volt::Computation.new(self)
 
-    computation.run_in do
-      # run self, pass in computation if needed
-      if arity > 0
-        # Pass in the computation so it can be canceled from within
-        call(computation)
-      else
-        call
-      end
-    end
+    # Initial run
+    computation.compute!
+
+    # return the computation
+    computation
   end
 
   # Watches a proc until the value returned equals the passed
