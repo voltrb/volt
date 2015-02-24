@@ -117,6 +117,7 @@ module Volt
     end
 
     def size
+      # puts "GET SIZE ON: #{self.inspect} - #{@size_dep.inspect} --- #{@array.size}"
       @size_dep.depend
 
       @array.size

@@ -37,6 +37,10 @@ module Volt
         @skip = nil if @skip == 0
       end
 
+      def inspect
+        "<#{self.class.to_s}:#{object_id} #{@query}, #{@skip}, #{@limit}>"
+      end
+
       # Called when an each binding is listening
       def event_added(event, first, first_for_event)
         # First event, we load the data.
@@ -86,27 +90,31 @@ module Volt
 
       # Called the first time data is requested from this collection
       def load_data
-        loaded_state = @model.loaded_state
-        puts "LOAD DATA: #{loaded_state}"
-        # Don't load data from any queried
-        if loaded_state == :not_loaded || loaded_state == :dirty
-          # puts "LOAD DATA"
-          # puts "Load Data at #{@model.path.inspect} - query: #{@query.inspect} on #{self.inspect}"
-          @model.change_state_to(:loaded_state, :loading)
+        Computation.run_without_tracking do
+          loaded_state = @model.loaded_state
 
-          run_query(@model, @query, @skip, @limit)
+          puts "LOAD DATA: #{loaded_state}"
+          # Don't load data from any queried
+          if loaded_state == :not_loaded || loaded_state == :dirty
+            # puts "LOAD DATA"
+            # puts "Load Data at #{@model.path.inspect} - query: #{@query.inspect} on #{self.inspect}"
+            @model.change_state_to(:loaded_state, :loading)
+
+            run_query(@model, @query, @skip, @limit)
+          end
         end
       end
 
       # Clear out the models data, since we're not listening anymore.
       def unload_data
-        puts 'Unload Data'
-        @model.change_state_to(:loaded_state, :not_loaded)
-        @model.clear
+        Computation.run_without_tracking do
+          puts 'Unload Data'
+          @model.change_state_to(:loaded_state, :not_loaded)
+          @model.clear
+        end
       end
 
       def run_query(model, query = {}, skip = nil, limit = nil)
-        puts "RUN QUERY: #{model.path.inspect} - #{query.inspect}, #{self.object_id}"
         @model.clear
 
         collection = model.path.last
@@ -123,11 +131,13 @@ module Volt
 
         # The full query contains the skip and limit
         full_query = [query, skip, limit]
+        # puts "RUN QUERY: #{model.path.inspect} - #{full_query.inspect}, #{self.object_id}"
         @query_listener = @@query_pool.lookup(collection, full_query) do
           # Create if it does not exist
           QueryListener.new(@@query_pool, @tasks, collection, full_query)
         end
 
+        # puts "ADD STORE: #{self.model.inspect}"
         @query_listener.add_store(self)
       end
 

@@ -4,7 +4,11 @@ module Volt
     module StoreState
       # Called when a collection loads
       def loaded(initial_state = nil)
-        @model.change_state_to(:loaded_state, initial_state || :not_loaded)
+        if initial_state
+          @model.change_state_to(:loaded_state, initial_state)
+        elsif !@loaded_state
+          @model.change_state_to(:loaded_state, :not_loaded)
+        end
       end
     end
   end

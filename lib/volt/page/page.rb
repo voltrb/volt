@@ -35,6 +35,7 @@ module Volt
     attr_reader :url, :params, :page, :templates, :routes, :events, :model_classes
 
     def initialize
+      puts "START"
       @model_classes = {}
 
       # Run the code to setup the page
@@ -73,6 +74,8 @@ module Volt
           `}, 2000);`
         end
       end
+
+      puts "BOOTED"
     end
 
     def flash

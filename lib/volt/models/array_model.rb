@@ -126,9 +126,16 @@ module Volt
     end
 
     def inspect
-      # Track on size
-      @size_dep.depend
-      "#<#{self.class}:#{object_id} loaded:#{loaded_state} #{@array.inspect}>"
+      Computation.run_without_tracking do
+        # Track on size
+        @size_dep.depend
+        str = "#<#{self.class}:#{object_id} #{loaded_state}"
+        str += " path:#{path.join('.')}" if path
+        str += " persistor:#{persistor.inspect}" if persistor
+        str += " #{@array.inspect}>"
+
+        str
+      end
     end
 
     def buffer

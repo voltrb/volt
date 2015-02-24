@@ -73,12 +73,13 @@ module Volt
 
       # Models start in a loaded state since they are normally setup from an
       # ArrayModel, which will have the data when they get added.
-      change_state_to(:loaded_state, :loaded, false)
+      # change_state_to(:loaded_state, :loaded, false)
 
       @persistor.loaded(initial_state) if @persistor
 
       # Trigger the new event, pass in :new
       trigger!(:new, :new)
+      # puts "CH TO L: #{self.inspect}"
     end
 
     def add_list
@@ -340,7 +341,22 @@ module Volt
     end
 
     def inspect
-      "<#{self.class}:#{object_id} #{attributes.inspect}>"
+      Computation.run_without_tracking do
+        str = "<#{self.class}:#{object_id}"
+
+        # Get path, loaded_state, and persistor, but cache in local var
+        path = self.path
+        str += " path:#{path}" if path
+
+        loaded_state = self.loaded_state
+        str += " state:#{loaded_state}" if loaded_state
+
+        persistor = self.persistor
+        str += " persistor:#{persistor.inspect}" if persistor
+        str += " #{attributes.inspect}>"
+
+        str
+      end
     end
 
     def self.no_save(&block)
