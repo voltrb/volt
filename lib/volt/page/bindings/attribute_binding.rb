@@ -52,7 +52,6 @@ module Volt
           @context.instance_exec(@selected_value, &@setter)
         end
       else
-        puts "SETTER ON #{@context.inspect}"
         @context.instance_exec(current_value, &@setter)
       end
     end

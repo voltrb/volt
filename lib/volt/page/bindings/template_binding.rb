@@ -32,7 +32,6 @@ module Volt
     end
 
     def update(path, section_or_arguments = nil, options = {})
-      puts "UPDATE TO #{path}"
       Computation.run_without_tracking do
         # Remove existing template and call _removed
         controller_send(:"#{@action}_removed") if @action && @controller

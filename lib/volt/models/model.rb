@@ -300,7 +300,7 @@ module Volt
     def new_array_model(attributes, options)
       # Start with an empty query
       options         = options.dup
-      options[:query] = {}
+      options[:query] = []
 
       ArrayModel.new(attributes, options)
     end

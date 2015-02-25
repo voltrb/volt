@@ -3,12 +3,15 @@ module Volt
   # a query have changed.  It then will make the necessary changes to any ArrayStore's
   # to get them to display the new data.
   class QueryListener
+    attr_reader :listening
+
     def initialize(query_listener_pool, tasks, collection, query)
       @query_listener_pool = query_listener_pool
       @tasks               = tasks
       @stores              = []
 
       @collection = collection
+      puts "QUERY LIST: #{query.inspect}"
       @query      = query
 
       @listening = false

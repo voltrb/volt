@@ -1,5 +1,6 @@
 require 'volt/models/persistors/store'
 require 'volt/models/persistors/store_state'
+require 'volt/models/persistors/query/normalizer'
 require 'volt/models/persistors/query/query_listener_pool'
 require 'volt/utils/timers'
 
@@ -31,14 +32,22 @@ module Volt
         @root_dep = Dependency.new(method(:listener_added), method(:listener_removed))
 
         @query = @model.options[:query]
-        @limit = @model.options[:limit]
-        @skip = @model.options[:skip]
+      end
 
-        @skip = nil if @skip == 0
+      def loaded(initial_state = nil)
+        super
+
+        # Setup up the query listener, and if it is already listening, then
+        # go ahead and load that data in.  This allows us to use it immediately
+        # if the data is loaded in another place.
+        if query_listener.listening
+          query_listener.add_store(self)
+          @added_to_query = true
+        end
       end
 
       def inspect
-        "<#{self.class.to_s}:#{object_id} #{@query}, #{@skip}, #{@limit}>"
+        "<#{self.class.to_s}:#{object_id} #{@query.inspect}>"
       end
 
       # Called when an each binding is listening
@@ -78,10 +87,12 @@ module Volt
         Timers.next_tick do
           Computation.run_without_tracking do
             if @listener_event_counter.count == 0
-              if @query_listener
+              if @added_to_query
                 # puts "Stop Query"
                 @query_listener.remove_store(self)
                 @query_listener = nil
+
+                @added_to_query = nil
               end
 
               @model.change_state_to(:loaded_state, :dirty)
@@ -102,61 +113,76 @@ module Volt
             # puts "Load Data at #{@model.path.inspect} - query: #{@query.inspect} on #{self.inspect}"
             @model.change_state_to(:loaded_state, :loading)
 
-            run_query(@model, @query, @skip, @limit)
+            run_query
           end
         end
       end
 
-      def run_query(model, query = {}, skip = nil, limit = nil)
-        @model.clear
-        # puts "RUN QUERY: #{query.inspect}"
+      def run_query
+        unless @added_to_query
+          @model.clear
 
-        collection = model.path.last
+          @added_to_query = true
+          query_listener.add_store(self)
+        end
+      end
+
+      # Looks up the query listener for this ArrayStore
+      # @query should be treated as immutable.
+      def query_listener
+        return @query_listener if @query_listener
+
+        collection = @model.path.last
+        query = @query
+
         # Scope to the parent
-        if model.path.size > 1
-          parent = model.parent
+        if @model.path.size > 1
+          parent = @model.parent
 
           parent.persistor.ensure_setup if parent.persistor
 
           if parent && (attrs = parent.attributes) && attrs[:_id].true?
-            query[:"#{model.path[-3].singularize}_id"] = attrs[:_id]
+            query = query.dup
+
+            query << [:find, {:"#{@model.path[-3].singularize}_id" => attrs[:_id]}]
           end
         end
 
-        # The full query contains the skip and limit
-        full_query = [query, skip, limit]
-        # puts "RUN QUERY: #{model.path.inspect} - #{full_query.inspect}, #{self.object_id}"
-        @query_listener = @@query_pool.lookup(collection, full_query) do
-          # Create if it does not exist
-          QueryListener.new(@@query_pool, @tasks, collection, full_query)
-        end
+        query = Query::Normalizer.normalize(query)
 
-        # puts "ADD STORE: #{self.model.inspect}"
-        @query_listener.add_store(self)
+        @query_listener ||= @@query_pool.lookup(collection, query) do
+          # Create if it does not exist
+          QueryListener.new(@@query_pool, @tasks, collection, query)
+        end
       end
 
-      # Find can take either a query object, or a block that returns a query object.  Use
-      # the block style if you need reactive updating queries
-      def find(query = nil, &block)
-        # Set a default query if there is no block
-        if block
-          if query
-            fail 'Query should not be passed in to a find if a block is specified'
-          end
-          query = block
-        else
-          query ||= {}
-        end
+      # Find takes a query object
+      def find(query = nil)
+        query ||= {}
 
-        Cursor.new([], @model.options.merge(query: query))
+        add_query_part(:find, query)
       end
 
       def limit(limit)
-        Cursor.new([], @model.options.merge(limit: limit))
+        add_query_part(:limit, limit)
       end
 
       def skip(skip)
-        Cursor.new([], @model.options.merge(skip: skip))
+        add_query_part(:skip, skip)
+      end
+
+      # Add query part adds a [method_name, *arguments] array to the query.
+      # This will then be passed to the backend to run the query.
+      #
+      # @return [Cursor] a new cursor
+      def add_query_part(*args)
+        opts = @model.options
+        query = opts[:query] ? opts[:query].deep_clone : []
+        query << args
+
+        # Make a new opts hash with changed query
+        opts = opts.merge(query: query)
+        Cursor.new([], opts)
       end
 
       # Returns a promise that is resolved/rejected when the query is complete.  Any

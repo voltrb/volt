@@ -30,7 +30,11 @@ class Object
 
   # TODO: Need a real implementation of this
   def deep_clone
-    Marshal.load(Marshal.dump(self))
+    if RUBY_PLATFORM == 'opal'
+      JSON.parse(self.to_json)
+    else
+      Marshal.load(Marshal.dump(self))
+    end
   end
 
   def try(*a, &b)

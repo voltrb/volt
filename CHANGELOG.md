@@ -12,6 +12,9 @@
 - refactored TemplateBinding, moved code into ViewLookupForPath (SRP)
 - reserved fields now get a warning in models
 
+### Changed
+- the underlying way queries are normalized and passed to the server has changed (no external api changes)
+
 ## 0.8.24 - 2014-12-05
 ### Added
 - Fix bug with validation inheritance
