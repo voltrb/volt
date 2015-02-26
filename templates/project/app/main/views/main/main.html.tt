@@ -17,7 +17,7 @@
     {{ template main_path, 'body', {controller_group: 'main'} }}
 
     <div class="footer">
-      <p>&copy; Company 2014</p>
+      <p>&copy; Company {{ Time.now.year }}</p>
     </div>
 
   </div>
