@@ -34,7 +34,11 @@ module Volt
 
           klass_name = path[index].singularize.camelize
 
-          klass = $page.model_classes[klass_name] || Model
+          # Lookup the class
+          klass = Object.const_get(klass_name)
+
+          # Use it if it is a model
+          klass = Model unless klass < Model
         rescue NameError => e
           # Ignore exception, just means the model isn't defined
           klass = Model

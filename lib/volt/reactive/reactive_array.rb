@@ -127,7 +127,7 @@ module Volt
       # Handle a negative index
       index = size + index if index < 0
 
-      model      = @array.delete_at(index)
+      model = @array.delete_at(index)
 
       # Remove the dependency for that cell, and #remove it
       index_deps = @array_deps.delete_at(index)

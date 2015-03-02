@@ -16,6 +16,9 @@ module Volt
           end
 
           return promise.then do |new_model|
+            # The main model saved, so mark the buffer as not new
+            @new = false
+
             if new_model
               # Set the buffer's id to track the main model's id
               attributes[:_id] = new_model._id

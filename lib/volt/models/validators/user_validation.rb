@@ -63,6 +63,22 @@ module Volt
       base.class_attribute :__permissions__
     end
 
+    def allow(*fields)
+      if @__allow_fields
+        if @__allow_fields != true
+          if fields.size == 0
+            # No field's were passed, this means we deny all
+            @__allow_fields = true
+          else
+            # Fields were specified, add them to the list
+            @__allow_fields += fields.map(&:to_sym)
+          end
+        end
+      else
+        raise "allow should be called inside of a permissions block"
+      end
+    end
+
     def deny(*fields)
       if @__deny_fields
         if @__deny_fields != true
@@ -87,31 +103,93 @@ module Volt
       send(:"_#{key}") == Volt.user_id
     end
 
+    # Returns boolean if the model can be deleted
+    def can_delete?
+      action_allowed?(:delete)
+    end
+
+    # Checks the read permissions
+    def can_read?
+      action_allowed?(:read)
+    end
+
+    # Checks if any denies are in place for an action (read or delete)
+    def action_allowed?(action_name)
+      # TODO: this does some unnecessary work
+      compute_allow_and_deny(action_name)
+
+      deny = @__deny_fields == true || @__deny_fields.size > 0
+
+      clear_allow_and_deny
+
+      return !deny
+    end
+
     private
-    def run_permissions
-      @__deny_fields = []
-
-      # Run the permission blocks
-      action_name = new? ? :create : :update
-
-      # Run each of the permission blocks for this action
-      if (blocks = self.class.__permissions__[action_name])
-        blocks.each do |block|
-          instance_eval(&block)
-        end
-      end
+    def run_permissions(action_name=nil)
+      compute_allow_and_deny(action_name)
 
       errors = {}
 
-      @__deny_fields.each do |deny_field|
-        if changed?(deny_field)
-          (errors[deny_field] ||= []) << 'can not be changed'
+      if @__allow_fields == true
+        # Allow all fields
+      elsif @__allow_fields.size > 0
+        # Deny all not specified in the allow list
+        changed_attributes.keys.each do |field_name|
+          unless @__allow_fields.include?(field_name)
+            add_error_if_changed(errors, field_name)
+          end
         end
       end
 
-      @__deny_fields = nil
+      if @__deny_fields == true
+        # Don't allow any field changes
+        changed_attributes.keys.each do |field_name|
+          add_error_if_changed(errors, field_name)
+        end
+      else
+        # Allow all except the denied
+        @__deny_fields.each do |field_name|
+          if changed?(field_name)
+            add_error_if_changed(errors, field_name)
+          end
+        end
+      end
+
+      clear_allow_and_deny
 
       errors
+    end
+
+    def clear_allow_and_deny
+      @__deny_fields = nil
+      @__allow_fields = nil
+    end
+
+    # Run through the permission blocks for the action name, acumulate
+    # all allow/deny fields.
+    def compute_allow_and_deny(action_name)
+      @__deny_fields = []
+      @__allow_fields = []
+
+      # Run the permission blocks
+      action_name ||= new? ? :create : :update
+
+      # Run each of the permission blocks for this action
+      permissions = self.class.__permissions__
+      if permissions && (blocks = permissions[action_name])
+        blocks.each do |block|
+          # Call the block, pass the action name
+          instance_exec(action_name, &block)
+        end
+      end
+
+    end
+
+    def add_error_if_changed(errors, field_name)
+      if changed?(field_name)
+        (errors[field_name] ||= []) << 'can not be changed'
+      end
     end
   end
 end

@@ -158,9 +158,11 @@ module Volt
       # Save the changes
       if initial_setup
         # Run initial validation
-        validate!
+        errs = validate!
+
+        return Promise.new.reject(errs)
       else
-        run_changed
+        return run_changed
       end
     end
 
@@ -361,6 +363,17 @@ module Volt
       end
     end
 
+    def destroy
+      if parent
+        result = parent.delete(self)
+
+        # Wrap result in a promise if it isn't one
+        return Promise.new.then { result }
+      else
+        fail "Model does not have a parent and cannot be deleted."
+      end
+    end
+
     def self.no_save(&block)
       run_in_mode(:no_save, &block)
     end
@@ -418,7 +431,9 @@ module Volt
 
             # After we revert, we need to validate again to get the error messages back
             # TODO: Could probably cache the previous errors.
-            validate!
+            errs = validate!
+
+            result = Promise.new.reject(errs)
           else
             # No errors, tell the persistor to handle the change (usually save)
 
@@ -426,7 +441,13 @@ module Volt
             unless in_mode?(:no_save)
               # the changed method on a persistor should return a promise that will
               # be resolved when the save is complete, or fail with a hash of errors.
-              result = @persistor.changed(attribute_name) if @persistor
+              if @persistor
+                result = @persistor.changed(attribute_name)
+              else
+                result = Promise.new.resolve(nil)
+              end
+
+              # Saved, no longer new
               @new = false
 
               # Clear the change tracking

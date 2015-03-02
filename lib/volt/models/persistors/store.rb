@@ -34,6 +34,10 @@ module Volt
         end
         model
       end
+
+      def inspect
+        "<#{self.class.to_s}:#{object_id}>"
+      end
     end
   end
 end

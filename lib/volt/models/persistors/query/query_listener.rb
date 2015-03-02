@@ -11,7 +11,6 @@ module Volt
       @stores              = []
 
       @collection = collection
-      puts "QUERY LIST: #{query.inspect}"
       @query      = query
 
       @listening = false

@@ -92,6 +92,16 @@ module Volt
       promise
     end
 
+    def delete(val)
+      # Check to make sure the models are allowed to be deleted
+      if !val.is_a?(Model) || val.can_delete?
+        result = super
+        Promise.new.resolve(result)
+      else
+        Promise.new.reject("Deletion of model was denied in permissions.")
+      end
+    end
+
     # Find one does a query, but only returns the first item or
     # nil if there is no match.  Unlike #find, #find_one does not
     # return another cursor that you can call .then on.
