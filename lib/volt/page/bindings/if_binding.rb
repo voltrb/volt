@@ -44,7 +44,6 @@ module Volt
           current_value = value
         end
 
-        # TODO: A bug in opal requires us to check == true
         if current_value && !current_value.nil? && !current_value.is_a?(Exception)
           # This branch is currently true
           true_template = template_name

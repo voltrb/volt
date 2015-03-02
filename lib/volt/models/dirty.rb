@@ -43,8 +43,10 @@ module Volt
     # Reverts the model attributes back to the pre-change values.
     def revert_changes!
       # Reassign the first value since we started tracking
-      @changed_attributes.each_pair do |key, value|
-        @attributes[key] = value.first
+      if @changed_attributes
+        @changed_attributes.each_pair do |key, value|
+          @attributes[key] = value.first
+        end
       end
 
       clear_tracked_changes!

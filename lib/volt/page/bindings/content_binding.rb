@@ -9,12 +9,14 @@ module Volt
       # Listen for changes
       @computation = -> do
         begin
-          update(@context.instance_eval(&getter))
+          res = @context.instance_eval(&getter)
         rescue => e
           Volt.logger.error("ContentBinding Error: #{e.inspect}")
-          update('')
+          ''
         end
-      end.watch!
+      end.watch_and_resolve! do |result|
+        update(result)
+      end
     end
 
     def update(value)

@@ -129,25 +129,19 @@ module Volt
       attrs = wrap_values(attrs)
 
       if attrs
-        # Assign id first
-        id = attrs.delete(:_id)
 
         # When doing a mass-assign, we don't validate or save until the end.
-        Model.no_validate do
-          self._id = id if id
-
-          # Assign each attribute using setters
-          attrs.each_pair do |key, value|
-            if self.respond_to?(:"#{key}=")
-              # If a method without an underscore is defined, call that.
-              send(:"#{key}=", value)
-            else
-              # Otherwise, use the _ version
-              send(:"_#{key}=", value)
+        Model.initial_setup do
+          if initial_setup
+            Model.no_change_tracking do
+              assign_all_attributes(attrs)
             end
+          else
+            assign_all_attributes(attrs)
           end
         end
       else
+        # Assign to nil
         @attributes = attrs
       end
 
@@ -212,8 +206,8 @@ module Volt
       new_value = wrap_value(value, [attribute_name])
 
       if old_value != new_value
-        # Track the old value
-        attribute_will_change!(attribute_name, old_value)
+        # Track the old value, skip if we are in initial_setup
+        attribute_will_change!(attribute_name, old_value) unless in_mode?(:no_change_tracking)
 
         # Assign the new value
         @attributes[attribute_name] = new_value
@@ -374,17 +368,14 @@ module Volt
       end
     end
 
-    def self.no_save(&block)
-      run_in_mode(:no_save, &block)
+    # Setup run mode helpers
+    [:no_save, :initial_setup, :no_change_tracking].each do |method_name|
+      define_singleton_method(method_name) do |&block|
+        run_in_mode(method_name, &block)
+      end
     end
 
     private
-
-    # no_validate mode should only be used internally
-    def self.no_validate(&block)
-      run_in_mode(:no_validate, &block)
-    end
-
     # Volt provides a few access methods to get more data about the model,
     # we want to prevent these from being assigned or accessed through
     # underscore methods.
@@ -397,12 +388,34 @@ module Volt
     def setup_buffer(model)
       model.attributes = attributes
       model.change_state_to(:loaded_state, :loaded)
+
+      # Set new to the same as the main model the buffer is from
+      model.instance_variable_set('@new', @new)
     end
 
     # Takes the persistor if there is one and
     def setup_persistor(persistor)
       if persistor
         @persistor = persistor.new(self)
+      end
+    end
+
+    # Used internally from other methods that assign all attributes
+    def assign_all_attributes(attrs)
+      # Assign id first
+      id = attrs.delete(:_id)
+
+      self._id = id if id
+
+      # Assign each attribute using setters
+      attrs.each_pair do |key, value|
+        if self.respond_to?(:"#{key}=")
+          # If a method without an underscore is defined, call that.
+          send(:"#{key}=", value)
+        else
+          # Otherwise, use the _ version
+          send(:"_#{key}=", value)
+        end
       end
     end
 
@@ -415,10 +428,10 @@ module Volt
     def run_changed(attribute_name=nil)
       result = nil
 
-      # no_validate mode should only be used internally.  no_validate mode is a
+      # initial_setup mode should only be used internally.  initial_setup mode is a
       # performance optimization that prevents validation from running after each
       # change when assigning multile attributes.
-      unless in_mode?(:no_validate)
+      unless in_mode?(:initial_setup)
         # Run the validations for all fields
         validate!
 

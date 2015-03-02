@@ -177,7 +177,7 @@ class Proc
       raise "watch_and_resolve! requires a block to call when the value is resolved or another value other than a promise is returned in the watch."
     end
 
-    Proc.new do
+    computation = Proc.new do
       result = self.call
 
       if result.is_a?(Promise)
@@ -189,6 +189,7 @@ class Proc
       end
     end.watch!
 
-    nil
+    # Return the computation
+    computation
   end
 end

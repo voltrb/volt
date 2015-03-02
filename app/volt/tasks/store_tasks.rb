@@ -45,6 +45,7 @@ class StoreTasks < Volt::TaskHandler
     # Pass the channel as a thread-local so that we don't update the client
     # who sent the update.
     Thread.current['in_channel'] = @channel
+    puts "MODEL: #{model.buffer?.inspect} - - #{model.new?.inspect}"
     promise = model.save!.then do |result|
       next nil
     end

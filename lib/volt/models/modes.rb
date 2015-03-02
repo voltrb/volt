@@ -1,5 +1,14 @@
 require 'thread'
 
+if RUBY_PLATFORM == 'opal'
+  # Stub thread class
+  class Thread
+    def self.current
+      @current ||= {}
+    end
+  end
+end
+
 module Volt
   # Modes provide a way to effect the state inside of a block that
   # can be checked from elsewhere.  This is very useful if you have
@@ -9,16 +18,12 @@ module Volt
     module ClassMethods
       # Takes a block that when run, changes to mode inside of it
       def run_in_mode(mode_name)
-        if RUBY_PLATFORM == 'opal'
+        previous = Thread.current[mode_name]
+        Thread.current[mode_name] = true
+        begin
           yield
-        else
-          previous = Thread.current[mode_name]
-          Thread.current[mode_name] = true
-          begin
-            yield
-          ensure
-            Thread.current[mode_name] = previous
-          end
+        ensure
+          Thread.current[mode_name] = previous
         end
       end
     end

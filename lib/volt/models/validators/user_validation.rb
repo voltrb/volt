@@ -175,6 +175,7 @@ module Volt
       # Run the permission blocks
       action_name ||= new? ? :create : :update
 
+      puts "COMPUTE ALL/DENY for #{action_name.inspect} - #{self.class.__permissions__.inspect}"
       # Run each of the permission blocks for this action
       permissions = self.class.__permissions__
       if permissions && (blocks = permissions[action_name])

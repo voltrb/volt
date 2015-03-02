@@ -11,6 +11,7 @@
 - fixed bug appending existing models to a collection
 - refactored TemplateBinding, moved code into ViewLookupForPath (SRP)
 - reserved fields now get a warning in models
+- bindings will now resolve any values that are promises. (currently only content and attribute, if, each, and template coming soon)
 
 ### Changed
 - the underlying way queries are normalized and passed to the server has changed (no external api changes)

@@ -218,20 +218,21 @@ module Volt
 
       # Called from backend
       def add(index, data)
-        # puts "ADD1: #{index} - #{data.inspect} - #{object_id}"
         $loading_models = true
 
-        data_id = data['_id'] || data[:_id]
+        Model.initial_setup do
+          data_id = data['_id'] || data[:_id]
 
-        # Don't add if the model is already in the ArrayModel
-        unless @model.array.find { |v| v._id == data_id }
-          # Find the existing model, or create one
-          new_model = @@identity_map.find(data_id) do
-            new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
-            @model.new_model(data, new_options, :loaded)
+          # Don't add if the model is already in the ArrayModel
+          unless @model.array.find { |v| v._id == data_id }
+            # Find the existing model, or create one
+            new_model = @@identity_map.find(data_id) do
+              new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
+              @model.new_model(data, new_options, :loaded)
+            end
+
+            @model.insert(index, new_model)
           end
-
-          @model.insert(index, new_model)
         end
 
         $loading_models = false
