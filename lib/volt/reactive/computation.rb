@@ -165,4 +165,30 @@ class Proc
 
     computation
   end
+
+  # Does an watch and if the result is a promise, resolves the promise.
+  # #watch_and_resolve! takes a block that will be passed the resolved results
+  # of the proc.
+  #
+  # Example:
+  #   -> { }
+  def watch_and_resolve!
+    unless block_given?
+      raise "watch_and_resolve! requires a block to call when the value is resolved or another value other than a promise is returned in the watch."
+    end
+
+    Proc.new do
+      result = self.call
+
+      if result.is_a?(Promise)
+        result.then do |final|
+          yield(final)
+        end
+      else
+        yield(result)
+      end
+    end.watch!
+
+    nil
+  end
 end

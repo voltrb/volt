@@ -58,7 +58,6 @@ class StoreTasks < Volt::TaskHandler
     # Load the model, then call .destroy on it
     store.send(:"_#{collection}").find(_id: id).limit(1).then do |model|
       # model[0].destroy
-      puts "CHECK CAN DELETE: #{model[0].inspect}"
       if model[0].can_delete?
         db[collection].remove('_id' => id)
       end

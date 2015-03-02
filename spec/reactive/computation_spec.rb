@@ -112,6 +112,20 @@ describe Volt::Computation do
     expect(values).to eq([nil, nil, 'inner', 'outer', 'inner'])
   end
 
+  describe "watch_and_resolve!" do
+    it 'should resolve any returnted promises' do
+      promise = Promise.new.resolve('resolved')
+      count = 0
+
+      -> { promise }.watch_and_resolve! do |result|
+        expect(result).to eq('resolved')
+        count += 1
+      end
+
+      expect(count).to eq(1)
+    end
+  end
+
   # Currently Class#class_variable_set/get isn't in opal
   # https://github.com/opal/opal/issues/677
   unless RUBY_PLATFORM == 'opal'

@@ -109,6 +109,19 @@ module Volt
       find(*args, &block).limit(1)[0]
     end
 
+    # returns a promise to fetch the first instance
+    def first
+      persistor = self.persistor
+
+      if persistor && persistor.is_a?(Persistors::ArrayStore)
+        limit(1).then do |res|
+          res[0]
+        end
+      else
+        super
+      end
+    end
+
     # Make sure it gets wrapped
     def inject(*args)
       args = wrap_values(args)
