@@ -5,10 +5,11 @@ class UserTasks < Volt::TaskHandler
     query = { User.login_field => login }
 
     puts "QUERY"
-    store._users.find(query).then do |users|
-      puts "DONE"
-      user = users.first
+    store._users.find(query).fetch_first do |user|
+      puts "FETCHED USER: #{user.inspect}"
       fail 'User could not be found' unless user
+
+      puts "LOGIN: #{user.inspect}"
 
       match_pass = BCrypt::Password.new(user._hashed_password)
       fail 'Password did not match' unless  match_pass == password

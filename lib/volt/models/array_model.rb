@@ -41,7 +41,7 @@ module Volt
     end
 
     proxy_with_root_dep :[], :size, :first, :last, :state_for#, :limit, :find_one, :find
-    proxy_to_persistor :find, :skip, :limit, :then
+    proxy_to_persistor :find, :skip, :limit, :then, :fetch, :fetch_first
 
     def initialize(array = [], options = {})
       @options   = options
@@ -73,23 +73,38 @@ module Volt
         model = wrap_values([model]).first
       end
 
+      if model.is_a?(Model) && !model.can_create?
+        raise "permissions did not allow create for #{model.inspect}"
+      end
+
       super(model)
 
       if @persistor
-        @persistor.added(model, @array.size - 1)
+        promise = @persistor.added(model, @array.size - 1)
+        if promise && promise.is_a?(Promise)
+          return promise.fail do |err|
+            # remove from the collection because it failed to save on the server
+            @array.delete(model)
+
+            # TODO: the model might be in at a different position already, so we should use a full delete
+            trigger_removed!(@array.size - 1)
+            trigger_size_change!
+            #
+            # re-raise, err might not be an Error object, so we use a rejected promise to re-raise
+            Promise.new.reject(err)
+          end
+        end
       else
         nil
       end
     end
 
-    # Works like << except it returns a promise
+    # Works like << except it always returns a promise
     def append(model)
-      promise, model = send(:<<, model)
-
-      # Return a promise if one doesn't exist
-      promise ||= Promise.new.resolve(model)
-
-      promise
+      # Wrap results in a promise
+      Promise.new.resolve(nil).then do
+        send(:<<, model)
+      end
     end
 
     def delete(val)
@@ -98,7 +113,7 @@ module Volt
         result = super
         Promise.new.resolve(result)
       else
-        Promise.new.reject("Deletion of model was denied in permissions.")
+        Promise.new.reject("permissions did not allow delete for #{val.inspect}.")
       end
     end
 
@@ -110,16 +125,25 @@ module Volt
     end
 
     # returns a promise to fetch the first instance
-    def first
+    def fetch_first(&block)
       persistor = self.persistor
 
       if persistor && persistor.is_a?(Persistors::ArrayStore)
-        limit(1).then do |res|
-          res[0]
+        promise = limit(1).fetch do |res|
+          puts "RES: #{res.inspect}"
+          result = res.first
+
+          puts "FIRST IS: #{result.inspect}"
+          next result
         end
       else
-        super
+        puts "NO ARRAY STORE"
+        promise = Promise.new.resolve(first)
       end
+
+      promise = promise.then(&block) if block
+
+      promise
     end
 
     # Make sure it gets wrapped

@@ -16,6 +16,9 @@ module Volt
             }, 5000);
           `
         end
+
+        # Need to return nil to prevent non-opal object return
+        nil
       end
 
       def clear_model(model)

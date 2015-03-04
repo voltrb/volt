@@ -113,6 +113,10 @@ module Volt
       action_allowed?(:read)
     end
 
+    def can_create?
+      action_allowed?(:create)
+    end
+
     # Checks if any denies are in place for an action (read or delete)
     def action_allowed?(action_name)
       # TODO: this does some unnecessary work
@@ -175,7 +179,7 @@ module Volt
       # Run the permission blocks
       action_name ||= new? ? :create : :update
 
-      puts "COMPUTE ALL/DENY for #{action_name.inspect} - #{self.class.__permissions__.inspect}"
+      puts "COMPUTE ALL/DENY for #{action_name.inspect} - #{self.class.__permissions__.inspect} - #{self.inspect}"
       # Run each of the permission blocks for this action
       permissions = self.class.__permissions__
       if permissions && (blocks = permissions[action_name])

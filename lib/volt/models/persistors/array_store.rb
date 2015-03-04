@@ -187,17 +187,19 @@ module Volt
 
       # Returns a promise that is resolved/rejected when the query is complete.  Any
       # passed block will be passed to the promises then.  Then will be passed the model.
-      def then(&block)
-        fail 'then must pass a block' unless block
+      def fetch(&block)
         promise = Promise.new
 
-        promise = promise.then(&block)
+        # Run the block after resolve if a block is passed in
+        promise = promise.then(&block) if block
 
         if @model.loaded_state == :loaded
+          puts "RESOLVE: #{@model.inspect}"
           promise.resolve(@model)
         else
           Proc.new do |comp|
             if @model.loaded_state == :loaded
+              puts "RESOLVE2: #{@model.inspect}"
               promise.resolve(@model)
 
               comp.stop
@@ -216,8 +218,13 @@ module Volt
         promise
       end
 
+      # Alias then for now
+      # TODO: Deprecate
+      alias_method :then, :fetch
+
       # Called from backend
       def add(index, data)
+        puts "ADD: #{index} - #{data.inspect}"
         $loading_models = true
 
         Model.initial_setup do
@@ -260,6 +267,7 @@ module Volt
       # When a model is added to this collection, we call its "changed"
       # method.  This should trigger a save.
       def added(model, index)
+        puts "ADDED"
         if model.persistor
           # Tell the persistor it was added, return the promise
           model.persistor.add_to_collection

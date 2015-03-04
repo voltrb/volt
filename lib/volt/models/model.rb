@@ -131,14 +131,12 @@ module Volt
       if attrs
 
         # When doing a mass-assign, we don't validate or save until the end.
-        Model.initial_setup do
-          if initial_setup
-            Model.no_change_tracking do
-              assign_all_attributes(attrs)
-            end
-          else
+        if initial_setup
+          Model.no_change_tracking do
             assign_all_attributes(attrs)
           end
+        else
+          assign_all_attributes(attrs)
         end
       else
         # Assign to nil
@@ -152,9 +150,13 @@ module Volt
       # Save the changes
       if initial_setup
         # Run initial validation
-        errs = validate!
+        errs = in_mode?(:initial_setup) ? nil : validate!
 
-        return Promise.new.reject(errs)
+        if errs && errs.size > 0
+          return Promise.new.reject(errs)
+        else
+          return Promise.new.resolve(nil)
+        end
       else
         return run_changed
       end

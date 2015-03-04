@@ -18,25 +18,26 @@ class StoreTasks < Volt::TaskHandler
     collection = store.send(:"_#{path[-2]}")
 
     # See if the model has already been made
-    model = collection.find_one(_id: data[:_id])
+    collection.find(_id: data[:_id]).fetch_first do |model|
 
-    # Otherwise assign to the collection
-    model ||= collection
+      # Otherwise assign to the collection
+      model ||= collection
 
-    # Create a buffer
-    buffer = model.buffer
+      # Create a buffer
+      buffer = model.buffer
 
-    # Assign the data
-    buffer.attributes = data
+      # Assign the data
+      buffer.attributes = data
 
-    buffer
+      buffer
+    end
   end
 
   def save(collection, path, data)
     data = data.symbolize_keys
-    model = nil
+    promise = nil
     Volt::Model.no_save do
-      model = load_model(collection, path, data)
+      promise = load_model(collection, path, data)
     end
 
     # On the backend, the promise is resolved before its returned, so we can
@@ -44,22 +45,25 @@ class StoreTasks < Volt::TaskHandler
     #
     # Pass the channel as a thread-local so that we don't update the client
     # who sent the update.
-    Thread.current['in_channel'] = @channel
-    puts "MODEL: #{model.buffer?.inspect} - - #{model.new?.inspect}"
-    promise = model.save!.then do |result|
-      next nil
+    #
+    # return another promise
+    return promise.then do |model|
+      Thread.current['in_channel'] = @channel
+      save_promise = model.save!.then do |result|
+        next nil
+      end
+
+      Thread.current['in_channel'] = nil
+
+      next save_promise
     end
-
-    Thread.current['in_channel'] = nil
-
-    promise
   end
 
   def delete(collection, id)
     # Load the model, then call .destroy on it
-    store.send(:"_#{collection}").find(_id: id).limit(1).then do |model|
+    store.send(:"_#{collection}").find(_id: id).fetch_first do |model|
       # model[0].destroy
-      if model[0].can_delete?
+      if model.can_delete?
         db[collection].remove('_id' => id)
       end
 
