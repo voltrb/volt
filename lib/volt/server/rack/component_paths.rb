@@ -66,15 +66,6 @@ module Volt
             path = ruby_file.gsub(/^#{app_folder}\//, '')[0..-4]
             require(path)
           end
-
-          if Volt.server?
-            # Add models to page
-            Dir["#{app_folder}/*/models/*.rb"].each do |ruby_file|
-              class_name = File.basename(ruby_file).gsub(/[.]rb$/, '')
-
-              $page.add_model(class_name)
-            end
-          end
         end
 
         load_views_and_routes

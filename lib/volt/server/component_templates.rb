@@ -76,8 +76,6 @@ module Volt
         code << File.read(model_path) + "\n\n"
 
         model_name = model_path.match(/([^\/]+)[.]rb$/)[1]
-
-        code << "#{page_reference}.add_model(#{model_name.inspect})\n\n"
       end
 
       code

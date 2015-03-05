@@ -438,8 +438,6 @@ describe Volt::Model do
   if RUBY_PLATFORM != 'opal'
     describe 'class loading' do
       it 'should load classes for models' do
-        $page.add_model('Item')
-
         @model = Volt::Model.new
 
         # Should return a buffer of the right type
