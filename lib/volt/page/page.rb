@@ -32,11 +32,9 @@ require 'volt/page/tasks'
 
 module Volt
   class Page
-    attr_reader :url, :params, :page, :templates, :routes, :events, :model_classes
+    attr_reader :url, :params, :page, :templates, :routes, :events
 
     def initialize
-      @model_classes = {}
-
       # Run the code to setup the page
       @page          = Model.new
 
@@ -139,14 +137,6 @@ module Volt
     end
 
     attr_reader :events
-
-    def add_model(model_name)
-      model_name                 = model_name.camelize.to_sym
-      @model_classes[model_name] = Object.const_get(model_name)
-    rescue NameError => e
-      # Handle if the model is user (Volt's provided user model is scoped under Volt::)
-      raise unless model_name == :User
-    end
 
     def add_template(name, template, bindings)
       @templates ||= {}
