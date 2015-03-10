@@ -48,7 +48,15 @@ describe "model permissions" do
     end
   end
 
+  # it 'should deny an insert/create if a deny without fields' do
+  #   puts "THIS ONE"
+  #   store._todos << {name: 'Ryan'}
+  #   puts store._todos.size
+  # end
+
+
   if RUBY_PLATFORM != 'opal'
+
     it 'should prevent delete if denied' do
       model = $page.store._test_deny_deletes.buffer
 

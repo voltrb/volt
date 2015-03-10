@@ -60,6 +60,12 @@ class LiveQuery
     end
   end
 
+  # Lookup the model class
+  def model_class
+    # recreate the "path" from the collection
+    Volt::Model.class_at_path([collection, :[]])
+  end
+
   def add_channel(channel)
     @channels << channel
   end

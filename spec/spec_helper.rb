@@ -24,4 +24,5 @@ unless RUBY_PLATFORM == 'opal'
     config.order = 'random'
     # config.seed = '31241'
   end
+
 end

@@ -159,7 +159,7 @@ module Volt
     end
 
     def new_model(*args)
-      class_at_path(options[:path]).new(*args)
+      Volt::Model.class_at_path(options[:path]).new(*args)
     end
 
     def new_array_model(*args)
@@ -190,7 +190,7 @@ module Volt
 
     def buffer
       model_path  = options[:path] + [:[]]
-      model_klass = class_at_path(model_path)
+      model_klass = Volt::Model.class_at_path(model_path)
 
       new_options = options.merge(path: model_path, save_to: self, buffer: true).reject { |k, _| k.to_sym == :persistor }
       model       = model_klass.new({}, new_options)

@@ -292,7 +292,7 @@ module Volt
     end
 
     def new_model(attributes, options)
-      class_at_path(options[:path]).new(attributes, options)
+      Volt::Model.class_at_path(options[:path]).new(attributes, options)
     end
 
     def new_array_model(attributes, options)
