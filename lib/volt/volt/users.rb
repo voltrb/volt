@@ -53,7 +53,7 @@ module Volt
     def user
       user_id = self.user_id
       if user_id
-        $page.store._users.find_one(_id: user_id)
+        $page.store._users.find(_id: user_id)
       else
         nil
       end

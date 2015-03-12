@@ -36,6 +36,18 @@ module Volt
         if value.is_a?(Proc)
           begin
             current_value = @context.instance_eval(&value)
+
+            puts "CVAL: #{current_value.inspect}"
+            if current_value.is_a?(Promise)
+              if current_value.resolved?
+                current_value = current_value.value
+              else
+                current_value.then do |val|
+                  # Run update again
+                  update
+                end
+              end
+            end
           rescue => e
             Volt.logger.error("IfBinding:#{object_id} error: #{e.inspect}\n" + `value.toString()`)
             current_value = false

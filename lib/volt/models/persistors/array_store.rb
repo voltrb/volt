@@ -224,7 +224,7 @@ module Volt
 
       # Called from backend
       def add(index, data)
-        puts "ADD: #{index} - #{data.inspect}"
+        # puts "ADD: #{index} - #{data.inspect}"
         $loading_models = true
 
         Model.initial_setup do

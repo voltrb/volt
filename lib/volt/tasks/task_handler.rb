@@ -10,6 +10,7 @@ module Volt
 
         user_id = $page.cookies._user_id
         unless user_id.nil?
+          puts "SET USER ID: #{user_id.inspect}"
           meta_data['user_id'] = user_id
         end
 
