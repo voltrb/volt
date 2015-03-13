@@ -37,8 +37,6 @@ module Volt
           begin
             current_value = @context.instance_eval(&value)
 
-            puts "GOT VAL: #{current_value.inspect}"
-
             if current_value.is_a?(Promise)
               # If we got a promise, use its value if resolved.
               if current_value.resolved?

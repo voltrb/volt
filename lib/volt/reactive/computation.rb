@@ -54,7 +54,6 @@ module Volt
     # its dependencies.  This keeps its dependencies from
     # invalidating it again.
     def invalidate!
-      puts "INVALIDATE: #{self.inspect}"
       unless @invalidated
         @invalidated = true
 

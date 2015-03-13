@@ -53,7 +53,6 @@ module Volt
       end
 
       def loaded(initial_state = nil)
-        puts "LOAD C"
         # When the main model is first loaded, we pull in the data from the
         # store if it exists
         if !@cookies_loaded && @model.path == []
@@ -65,7 +64,6 @@ module Volt
             end
           end
         end
-        puts "LOADED"
       end
 
       # Callled when an cookies value is changed

@@ -237,8 +237,6 @@ module Volt
       # Reading an attribute, we may get back a nil model.
       attr_name = attr_name.to_sym
 
-      puts "READ ATTR: #{attr_name}"
-
       check_valid_field_name(attr_name)
 
       # Track that something is listening

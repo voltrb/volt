@@ -89,9 +89,7 @@ module Volt
     # or server, does not verify it.
     def user_id_signature
       if Volt.client?
-        puts "GET COOKIES"
         user_id_signature = $page.cookies._user_id
-        puts "GOT COOKIE"
       else
         # Check meta for the user id and validate it
         meta_data = Thread.current['meta']

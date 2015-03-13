@@ -196,17 +196,13 @@ module Volt
         promise = promise.then(&block) if block
 
         if @model.loaded_state == :loaded
-          puts "RESOLVE: #{@model.inspect}"
           promise.resolve(@model)
         else
           Proc.new do |comp|
             if @model.loaded_state == :loaded
-              puts "RESOLVE2: #{@model.inspect}"
               promise.resolve(@model)
 
               comp.stop
-            else
-              puts "STATE: #{@model.loaded_state}"
             end
 
           end.watch!
@@ -226,7 +222,6 @@ module Volt
 
       # Called from backend
       def add(index, data)
-        puts "ADD: #{index} - #{data.inspect}"
         $loading_models = true
 
         Model.initial_setup do
@@ -245,7 +240,7 @@ module Volt
         end
 
         $loading_models = false
-        puts "MODEL: " + @model.inspect
+        # puts "MODEL: " + @model.inspect
       end
 
       def remove(ids)
@@ -270,7 +265,6 @@ module Volt
       # When a model is added to this collection, we call its "changed"
       # method.  This should trigger a save.
       def added(model, index)
-        puts "ADDED"
         if model.persistor
           # Tell the persistor it was added, return the promise
           model.persistor.add_to_collection
