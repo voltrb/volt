@@ -21,7 +21,7 @@ module Volt
 
       # Call the backend and add the listner
       QueryTasks.add_listener(@collection, @query).then do |ret|
-        # puts "Query: #{@query.inspect} - #{ret.inspect}"
+        puts "Query: #{@query.inspect} - #{ret.inspect}"
         results, errors = ret
 
         # When the initial data comes back, add it into the stores.
@@ -30,7 +30,7 @@ module Volt
           store.model.clear if store.model.size > 0
 
           results.each do |index, data|
-            # puts "ADD to #{store.inspect} - #{index} - #{data.inspect}"
+            puts "ADD to #{store.inspect} - #{index} - #{data.inspect}"
             store.add(index, data)
           end
 

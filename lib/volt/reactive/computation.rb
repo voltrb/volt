@@ -38,6 +38,7 @@ module Volt
     end
 
     def on_invalidate(&callback)
+      # puts "ADD ON INV: #{@invalidated.inspect}"
       if @invalidated
         # Call invalidate now, since its already invalidated
         Computation.run_without_tracking do
@@ -53,6 +54,7 @@ module Volt
     # its dependencies.  This keeps its dependencies from
     # invalidating it again.
     def invalidate!
+      puts "INVALIDATE: #{self.inspect}"
       unless @invalidated
         @invalidated = true
 

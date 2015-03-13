@@ -97,9 +97,11 @@ module Volt
       # Get or create the dependency
       dep   = (@array_deps[index] ||= Dependency.new)
 
-      # puts "DEP: #{index} - #{object_id} - #{dep.object_id}"
+      puts "DEP: #{index} --- #{object_id} - #{dep.object_id} -!!- #{Computation.current}"
       # Track the dependency
       dep.depend
+
+      puts "COMP: #{Computation.current.instance_variable_get('@invalidations').inspect}"
 
       # Return the index
       @array[index]
@@ -248,7 +250,7 @@ module Volt
       # Trigger a change for the cell
       dep = @array_deps[index]
 
-      # puts "TFI: #{index} - #{object_id} - #{dep.object_id}"
+      puts "TFI: #{index} - #{object_id} - #{dep.object_id}"
 
       dep.changed! if dep
     end

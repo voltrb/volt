@@ -84,6 +84,7 @@ module Volt
       # sync with the database.  The data is kept in memory and the model's
       # loaded_state is marked as "dirty" meaning it may not be in sync.
       def stop_listening
+        return
         Timers.next_tick do
           Computation.run_without_tracking do
             if @listener_event_counter.count == 0
@@ -157,11 +158,12 @@ module Volt
       end
 
       # Find takes a query object
-      def find(query = nil)
+      def where(query = nil)
         query ||= {}
 
         add_query_part(:find, query)
       end
+      alias_method :find, :where
 
       def limit(limit)
         add_query_part(:limit, limit)
@@ -224,7 +226,7 @@ module Volt
 
       # Called from backend
       def add(index, data)
-        # puts "ADD: #{index} - #{data.inspect}"
+        puts "ADD: #{index} - #{data.inspect}"
         $loading_models = true
 
         Model.initial_setup do
@@ -243,6 +245,7 @@ module Volt
         end
 
         $loading_models = false
+        puts "MODEL: " + @model.inspect
       end
 
       def remove(ids)

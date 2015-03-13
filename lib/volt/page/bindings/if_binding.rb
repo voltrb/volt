@@ -37,11 +37,15 @@ module Volt
           begin
             current_value = @context.instance_eval(&value)
 
-            puts "CVAL: #{current_value.inspect}"
+            puts "GOT VAL: #{current_value.inspect}"
+
             if current_value.is_a?(Promise)
+              # If we got a promise, use its value if resolved.
               if current_value.resolved?
                 current_value = current_value.value
               else
+                # if its not, resolve it and try again.
+                # TODO: we maybe could cache this so we don't have to run a full update again
                 current_value.then do |val|
                   # Run update again
                   update

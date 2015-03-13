@@ -19,6 +19,7 @@ module Volt
     def self.proxy_with_root_dep(*method_names)
       method_names.each do |method_name|
         define_method(method_name) do |*args|
+          puts "ROOT DEP"
           # track on the root dep
           persistor.try(:root_dep).try(:depend)
 
@@ -41,7 +42,7 @@ module Volt
     end
 
     proxy_with_root_dep :[], :size, :first, :last, :state_for#, :limit, :find_one, :find
-    proxy_to_persistor :find, :skip, :limit, :then, :fetch, :fetch_first
+    proxy_to_persistor :find, :where, :skip, :limit, :then, :fetch, :fetch_first
 
     def initialize(array = [], options = {})
       @options   = options
@@ -124,23 +125,27 @@ module Volt
       find(*args, &block).limit(1)[0]
     end
 
+    def first
+      self[0]
+    end
+
     # returns a promise to fetch the first instance
     def fetch_first(&block)
       persistor = self.persistor
 
       if persistor && persistor.is_a?(Persistors::ArrayStore)
+        # On array store, we wait for the result to be loaded in.
         promise = limit(1).fetch do |res|
-          puts "RES: #{res.inspect}"
           result = res.first
 
-          puts "FIRST IS: #{result.inspect}"
           next result
         end
       else
-        puts "NO ARRAY STORE"
+        # On all other persistors, it should be loaded already
         promise = Promise.new.resolve(first)
       end
 
+      # Run any passed in blocks after fetch
       promise = promise.then(&block) if block
 
       promise
