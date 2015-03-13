@@ -9,21 +9,21 @@ end
 describe Volt::Routes do
   it 'should setup direct routes' do
     routes do
-      get '/', view: 'index'
-      get '/page1', view: 'first_page'
+      client '/', view: 'index'
+      client '/page1', view: 'first_page'
     end
 
-    direct_routes = @routes.instance_variable_get(:@direct_routes)
+    direct_routes = @routes.instance_variable_client(:@direct_routes)
     expect(direct_routes).to eq('/' => { view: 'index' }, '/page1' => { view: 'first_page' })
   end
 
   it 'should setup indirect routes' do
     routes do
-      get '/blog/{{ id }}/edit', view: 'blog/edit'
-      get '/blog/{{ id }}', view: 'blog/show'
+      client '/blog/{{ id }}/edit', view: 'blog/edit'
+      client '/blog/{{ id }}', view: 'blog/show'
     end
 
-    indirect_routes = @routes.instance_variable_get(:@indirect_routes)
+    indirect_routes = @routes.instance_variable_client(:@indirect_routes)
     expect(indirect_routes).to eq(
       'blog' => {
         '*' => {
@@ -38,12 +38,12 @@ describe Volt::Routes do
 
   it 'should match routes' do
     routes do
-      get '/blog', view: 'blog'
-      get '/blog/{{ id }}', view: 'blog/show'
-      get '/blog/{{ id }}/draft', view: 'blog/draft', action: 'draft'
-      get '/blog/{{ id }}/edit', view: 'blog/edit'
-      get '/blog/tags/{{ _tag }}', view: 'blog/tag'
-      get '/login/{{ name }}/user/{{ id }}', view: 'login', action: 'user'
+      client '/blog', view: 'blog'
+      client '/blog/{{ id }}', view: 'blog/show'
+      client '/blog/{{ id }}/draft', view: 'blog/draft', action: 'draft'
+      client '/blog/{{ id }}/edit', view: 'blog/edit'
+      client '/blog/tags/{{ _tag }}', view: 'blog/tag'
+      client '/login/{{ name }}/user/{{ id }}', view: 'login', action: 'user'
     end
 
     params = @routes.url_to_params('/blog')
@@ -70,14 +70,14 @@ describe Volt::Routes do
 
   it 'should setup param matchers' do
     routes do
-      get '/blog', view: 'blog'
-      get '/blog/{{ id }}', view: 'blog/show'
-      get '/blog/{{ id }}/edit', view: 'blog/edit'
-      get '/blog/tags/{{ _tag }}', view: 'blog/tag'
-      get '/login/{{ name }}/user/{{ id }}', view: 'login', action: 'user'
+      client '/blog', view: 'blog'
+      client '/blog/{{ id }}', view: 'blog/show'
+      client '/blog/{{ id }}/edit', view: 'blog/edit'
+      client '/blog/tags/{{ _tag }}', view: 'blog/tag'
+      client '/login/{{ name }}/user/{{ id }}', view: 'login', action: 'user'
     end
 
-    param_matches = @routes.instance_variable_get(:@param_matches)
+    param_matches = @routes.instance_variable_client(:@param_matches)
     expect(param_matches.map { |v| v[0] }).to eq([
       { view: 'blog' },
       { view: 'blog/show', id: nil },
@@ -89,11 +89,11 @@ describe Volt::Routes do
 
   it 'should go from params to url' do
     routes do
-      get '/blog', view: 'blog'
-      get '/blog/{{ id }}', view: 'blog/show'
-      get '/blog/{{ id }}/edit', view: 'blog/edit'
-      get '/blog/tags/{{ _tag }}', view: 'blog/tag'
-      get '/login/{{ name }}/user/{{ id }}', view: 'login', action: 'user'
+      client '/blog', view: 'blog'
+      client '/blog/{{ id }}', view: 'blog/show'
+      client '/blog/{{ id }}/edit', view: 'blog/edit'
+      client '/blog/tags/{{ _tag }}', view: 'blog/tag'
+      client '/login/{{ name }}/user/{{ id }}', view: 'login', action: 'user'
     end
 
     url, params = @routes.params_to_url(view: 'blog/show', id: '55')
@@ -142,8 +142,8 @@ describe Volt::Routes do
     params._index = '5'
 
     routes do
-      get '/', controller: 'index'
-      get '/blog', controller: 'blog'
+      client '/', controller: 'index'
+      client '/blog', controller: 'blog'
     end
 
     path, cleaned_params = @routes.params_to_url(params.to_h)
@@ -155,8 +155,8 @@ describe Volt::Routes do
     params = Volt::Model.new({}, persistor: Volt::Persistors::Params)
 
     routes do
-      get '/', controller: 'index'
-      get '/blog/{{ id }}', controller: 'blog'
+      client '/', controller: 'index'
+      client '/blog/{{ id }}', controller: 'blog'
     end
 
     params = @routes.url_to_params('/blog/20')

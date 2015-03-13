@@ -4,12 +4,12 @@ module Volt
   # The Routes class takes a set of routes and sets up methods to go from
   # a url to params, and params to url.
   # routes do
-  #   get "/about", _view: 'about'
-  #   get "/blog/{_id}/edit", _view: 'blog/edit', _action: 'edit'
-  #   get "/blog/{_id}", _view: 'blog/show', _action: 'show'
-  #   get "/blog", _view: 'blog'
-  #   get "/blog/new", _view: 'blog/new', _action: 'new'
-  #   get "/cool/{_name}", _view: 'cool'
+  #   client "/about", _view: 'about'
+  #   client "/blog/{_id}/edit", _view: 'blog/edit', _action: 'edit'
+  #   client "/blog/{_id}", _view: 'blog/show', _action: 'show'
+  #   client "/blog", _view: 'blog'
+  #   client "/blog/new", _view: 'blog/new', _action: 'new'
+  #   client "/cool/{_name}", _view: 'cool'
   # end
   #
   # Using the routes above, we would generate the following:
@@ -57,7 +57,7 @@ module Volt
     end
 
     # Add a route
-    def get(path, params = {})
+    def client(path, params = {})
       params = params.symbolize_keys
       if has_binding?(path)
         add_indirect_path(path, params)
