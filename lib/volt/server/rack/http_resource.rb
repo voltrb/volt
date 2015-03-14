@@ -1,5 +1,6 @@
 require 'volt'
 require 'volt/router/routes'
+require 'volt/server/rack/http_request'
 require 'rack'
 
 module Volt
@@ -18,7 +19,7 @@ module Volt
     def call(env)
       path = env['PATH_INFO']
       if controller_name = routes_match?(path)
-        controller = Object.const_get(controller_name.camelize.to_sym).new
+        controller = Object.const_get(controller_name.camelize.to_sym).new(HttpRequest.new(env))
         controller.perform(:index)
       else
         @app.call env
