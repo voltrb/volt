@@ -16,7 +16,6 @@ class QueryTasks < Volt::TaskHandler
   end
 
   def add_listener(collection, query)
-    puts Thread.current['meta'].inspect
     live_query = @@live_query_pool.lookup(collection, query)
     track_channel_in_live_query(live_query)
 

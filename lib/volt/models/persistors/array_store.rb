@@ -173,6 +173,11 @@ module Volt
         add_query_part(:skip, skip)
       end
 
+      # .sort is already a ruby method, so we use order instead
+      def order(sort)
+        add_query_part(:sort, sort)
+      end
+
       # Add query part adds a [method_name, *arguments] array to the query.
       # This will then be passed to the backend to run the query.
       #

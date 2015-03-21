@@ -4,6 +4,12 @@ Volt.configure do |config|
   # Your app secret is used for signing things like the user cookie so it can't
   # be tampered with.  A random value is generated on new projects that will work
   # without the need to customize.  Make sure this value doesn't leave your server.
+  #
+  # For added security we reccomend moving the app secret into an enviromnet.  You can
+  # setup that like so:
+  #
+  # config.app_secret = ENV['APP_SECRET']
+  #
   config.app_secret = '<%= SecureRandom.urlsafe_base64(50) %>'
 
   # Database config all start with db_ and can be set either in the config

@@ -61,13 +61,16 @@ class StoreTasks < Volt::TaskHandler
 
   def delete(collection, id)
     # Load the model, then call .destroy on it
-    store.send(:"_#{collection}").find(_id: id).fetch_first do |model|
-      # model[0].destroy
-      if model.can_delete?
-        db[collection].remove('_id' => id)
-      end
+    store.send(:"_#{collection}").where(_id: id).fetch_first do |model|
+      if model
+        if model.can_delete?
+          db[collection].remove('_id' => id)
+        end
 
-      QueryTasks.live_query_pool.updated_collection(collection, @channel)
+        QueryTasks.live_query_pool.updated_collection(collection, @channel)
+      else
+        raise "Could not find #{id} in #{collection}"
+      end
     end
   end
 end
