@@ -8,7 +8,6 @@ module Volt
 
       if Volt.client?
         that = self
-
         # Setup popstate on the dom ready event.  Prevents an extra
         # popstate trigger
         `

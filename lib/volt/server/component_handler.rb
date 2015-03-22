@@ -9,11 +9,13 @@ module Volt
     end
 
     def call(env)
+
       req            = Rack::Request.new(env)
 
       # TODO: Sanatize template path
-      component_name = req.path.strip.gsub(/^\/components\//, '').gsub(/[.]js$/, '')
 
+      component_name = req.path.strip.gsub(/^\/volt\/components\//, '').gsub(/[.]js$/, '')
+      binding.pry if component_name == "/volt/components/main"
       javascript_code = compile_for_component(component_name)
 
       [200, { 'Content-Type' => 'application/javascript; charset=utf-8' }, StringIO.new(javascript_code)]

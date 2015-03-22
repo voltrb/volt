@@ -53,14 +53,21 @@ end
 
 module Volt
   class Server
+    
+    class << self
+      attr_writer :index_files # so that rails can access the index files object
+      def index_files
+        @index_files
+      end
+    end
+    
     def initialize(root_path = nil)
-      root_path ||= Dir.pwd
-      Volt.root = root_path
+      Volt.root ||= root_path
 
-      @app_path        = File.expand_path(File.join(root_path, 'app'))
+      @app_path        = File.expand_path(File.join(Volt.root, 'app'))
 
       # Boot the volt app
-      @component_paths = Volt.boot(root_path)
+      @component_paths = Volt.boot(Volt.root) # was root_path
 
       setup_change_listener
 
@@ -105,6 +112,9 @@ module Volt
 
       # Serve the opal files
       opal_files = OpalFiles.new(@app, @app_path, @component_paths)
+      
+      # save the index file object for access from the rails app
+      Server.index_files = IndexFiles.new(@app, @component_paths, opal_files)
 
       # Serve the main html files from public, also figure out
       # which JS/CSS files to serve.
@@ -120,7 +130,7 @@ module Volt
           run Rack::SockJS.new(SocketConnectionHandler) # , :websocket => false
         end
       end
-
+      
       @app.use Rack::Static,
                urls: ['/'],
                root: 'config/base',
@@ -129,9 +139,10 @@ module Volt
                  [:all, { 'Cache-Control' => 'public, max-age=86400' }]
                ]
 
-      @app.run lambda { |env| [404, { 'Content-Type' => 'text/html; charset=utf-8' }, ['404 - page not found']] }
+      @app.run lambda { |env| puts 'page not found'; [404, { 'Content-Type' => 'text/html; charset=utf-8' }, ['404 - page not found']] }
 
       @app
     end
+    
   end
 end

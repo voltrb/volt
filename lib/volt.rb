@@ -10,6 +10,7 @@ end
 require 'volt/volt/users'
 
 module Volt
+  puts 'initializing volt'
   @in_browser = if RUBY_PLATFORM == 'opal'
                   `!!document && !window.OPAL_SPEC_PHANTOM`
                 else
@@ -18,7 +19,10 @@ module Volt
 
   class << self
     def root
-      @root ||= File.expand_path(Dir.pwd)
+      # if running inside of a rails app we add the directory voltage otherwise the root is current directory
+      # however it looks like we can actually get rid of this, since the server will initialize this for us
+      @root ||= File.expand_path("#{Dir.pwd}#{'/voltage' if defined? Rails}")
+      #@root ||= File.expand_path(Dir.pwd)
     end
 
     attr_writer :root

@@ -6,17 +6,21 @@ class String
 
   # Turns a string into the camel case version.  If it is already camel case, it should
   # return the same string.
-  def camelize(first_letter = :upper)
-    new_str = gsub(/_[a-z]/) { |a| a[1].upcase }
-    new_str = new_str[0].capitalize + new_str[1..-1] if first_letter == :upper
+  unless String.method_defined?(:camelize)
+    def camelize(first_letter = :upper)
+      new_str = gsub(/_[a-z]/) { |a| a[1].upcase }
+      new_str = new_str[0].capitalize + new_str[1..-1] if first_letter == :upper
 
-    new_str
+      new_str
+    end
   end
 
   # Returns the underscore version of a string.  If it is already underscore, it should
   # return the same string.
-  def underscore
-    gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z])/, '\1_\2').downcase
+  unless String.method_defined?(:underscore)
+    def underscore
+      gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z])/, '\1_\2').downcase
+    end
   end
 
   def dasherize

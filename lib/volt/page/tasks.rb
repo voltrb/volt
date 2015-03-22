@@ -71,6 +71,7 @@ module Volt
       end
 
       $page.page._reloading = true
+      #`history.replaceState(null, null, '/volt'+window.location.pathname);`
       `window.location.reload(false);`
     end
   end

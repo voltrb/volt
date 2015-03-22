@@ -28,7 +28,7 @@ module Volt
 
     def connect!
       `
-        this.socket = new SockJS('/channel');
+        this.socket = new SockJS('/volt/channel');
 
         this.socket.onopen = function() {
           self.$opened();

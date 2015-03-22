@@ -7,6 +7,7 @@ module Volt
     end
 
     def call(env)
+      binding.pry
       req            = Rack::Request.new(env)
       path           = req.path
 
