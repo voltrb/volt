@@ -33,9 +33,9 @@ class QueryTasks < Volt::TaskHandler
     end
 
     if initial_data[0]
-      puts "BEFORE: #{initial_data.inspect} - #{Thread.current['meta'].inspect}"
+      # Remove any attributes the user doesn't have permissions to see
+      # TODO: locally, we should just reuse this model
       initial_data[0][1] = filter_attributes(collection, initial_data[0][1])
-      puts "AFTER: #{initial_data.inspect}"
     end
 
     [initial_data, error]
