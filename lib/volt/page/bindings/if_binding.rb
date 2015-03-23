@@ -24,7 +24,15 @@ module Volt
         @branches << [value, template_name]
       end
 
-      @computation = -> { update }.watch!
+      # The promise dependency can be invalidated when we need to rerun the update
+      # manually because a promise resolved.
+      @promise_dependency = Dependency.new
+
+      @computation = -> do
+        @promise_dependency.depend
+
+        update
+      end.watch!
     end
 
     def update
@@ -46,8 +54,10 @@ module Volt
                 # TODO: we maybe could cache this so we don't have to run a full update again
                 current_value.then do |val|
                   # Run update again
-                  update
+                  @promise_dependency.changed!
                 end
+
+                current_value = nil
               end
             end
           rescue => e

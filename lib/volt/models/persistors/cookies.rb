@@ -59,8 +59,11 @@ module Volt
           @cookies_loaded = true
 
           writing_cookies do
+            # Assign directly so we don't trigger the callbacks on the initial load
+            attrs = @model.attributes
+
             read_cookies.each_pair do |key, value|
-              @model.assign_attribute(key, value)
+              attrs[key.to_sym] = value
             end
           end
         end
