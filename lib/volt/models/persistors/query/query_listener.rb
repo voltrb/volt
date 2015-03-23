@@ -36,6 +36,7 @@ module Volt
         end
       end.fail do |err|
         puts "Error adding listener: #{err.inspect}"
+        puts err.backtrace
       end
     end
 

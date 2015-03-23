@@ -44,6 +44,12 @@ module Volt
       Thread.current['with_user_id'] = previous_id
     end
 
+    def skip_permissions
+      Volt.run_in_mode(:skip_permissions) do
+        yield
+      end
+    end
+
     # True if the user is logged in and the user is loaded
     def user?
       !!user

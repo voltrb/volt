@@ -16,6 +16,14 @@ module Volt
     validate login_field, unique: true, length: 8
     validate :email, email: true
 
+    permissions(:read) do
+      # Never pass the hashed_password to the client
+      deny :hashed_password
+
+      # Deny all if this isn't the owner
+      deny if !_id == Volt.user_id && !new?
+    end
+
     if RUBY_PLATFORM == 'opal'
       # Don't validate on the server
       validate :password, length: 8

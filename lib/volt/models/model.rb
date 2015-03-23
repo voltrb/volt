@@ -3,7 +3,7 @@ require 'volt/models/array_model'
 require 'volt/models/model_helpers'
 require 'volt/models/model_hash_behaviour'
 require 'volt/models/validations'
-require 'volt/models/modes'
+require 'volt/utils/modes'
 require 'volt/models/state_manager'
 require 'volt/models/state_helpers'
 require 'volt/models/buffer'
@@ -12,6 +12,7 @@ require 'volt/reactive/reactive_hash'
 require 'volt/models/validators/user_validation'
 require 'volt/models/dirty'
 require 'volt/models/listener_tracker'
+require 'volt/models/permissions'
 require 'volt/reactive/class_eventable'
 require 'volt/utils/event_counter'
 require 'thread'
@@ -39,6 +40,7 @@ module Volt
     include ClassEventable
     include Modes
     include ListenerTracker
+    include Permissions
 
     attr_reader :attributes, :parent, :path, :persistor, :options
 
@@ -150,7 +152,7 @@ module Volt
       # Save the changes
       if initial_setup
         # Run initial validation
-        errs = in_mode?(:initial_setup) ? nil : validate!
+        errs = Volt.in_mode?(:initial_setup) ? nil : validate!
 
         if errs && errs.size > 0
           return Promise.new.reject(errs)
@@ -209,7 +211,7 @@ module Volt
 
       if old_value != new_value
         # Track the old value, skip if we are in initial_setup
-        attribute_will_change!(attribute_name, old_value) unless in_mode?(:no_change_tracking)
+        attribute_will_change!(attribute_name, old_value) unless Volt.in_mode?(:no_change_tracking)
 
         # Assign the new value
         @attributes[attribute_name] = new_value
@@ -370,7 +372,7 @@ module Volt
     # Setup run mode helpers
     [:no_save, :initial_setup, :no_change_tracking].each do |method_name|
       define_singleton_method(method_name) do |&block|
-        run_in_mode(method_name, &block)
+        Volt.run_in_mode(method_name, &block)
       end
     end
 
@@ -430,7 +432,7 @@ module Volt
       # initial_setup mode should only be used internally.  initial_setup mode is a
       # performance optimization that prevents validation from running after each
       # change when assigning multile attributes.
-      unless in_mode?(:initial_setup)
+      unless Volt.in_mode?(:initial_setup)
         # Run the validations for all fields
         validate!
 
@@ -450,7 +452,7 @@ module Volt
             # No errors, tell the persistor to handle the change (usually save)
 
             # Don't save right now if we're in a nosave block
-            unless in_mode?(:no_save)
+            unless Volt.in_mode?(:no_save)
               # the changed method on a persistor should return a promise that will
               # be resolved when the save is complete, or fail with a hash of errors.
               if @persistor

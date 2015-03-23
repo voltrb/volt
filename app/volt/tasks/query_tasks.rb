@@ -20,7 +20,7 @@ class QueryTasks < Volt::TaskHandler
     track_channel_in_live_query(live_query)
 
     # puts "Load data on #{collection.inspect} - #{query.inspect}"
-    live_query.add_channel(@channel)
+    live_query.add_channel(@channel, Volt.user)
 
     errors = {}
 
@@ -32,7 +32,25 @@ class QueryTasks < Volt::TaskHandler
       error = { error: exception.message }
     end
 
+    if initial_data[0]
+      puts "BEFORE: #{initial_data.inspect} - #{Thread.current['meta'].inspect}"
+      initial_data[0][1] = filter_attributes(collection, initial_data[0][1])
+      puts "AFTER: #{initial_data.inspect}"
+    end
+
     [initial_data, error]
+  end
+
+  # Loads up an instance of the class and runs the read permissions on it
+  # and removes and denied or not allowed fields.
+  def filter_attributes(path, data)
+    # Load the model and check its permissions
+    klass = Volt::Model.class_at_path([path])
+    inst = klass.new(data, {}, :loaded)
+
+    inst.filter_fields!
+
+    return inst.attributes
   end
 
   def initial_data

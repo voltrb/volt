@@ -66,8 +66,8 @@ class LiveQuery
     Volt::Model.class_at_path([collection, :[]])
   end
 
-  def add_channel(channel)
-    @channels << channel
+  def add_channel(channel, user)
+    @channels << [channel, user]
   end
 
   def remove_channel(channel)

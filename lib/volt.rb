@@ -2,6 +2,8 @@ require 'volt/volt/environment'
 require 'volt/extra_core/extra_core'
 require 'volt/reactive/computation'
 require 'volt/reactive/dependency'
+require 'volt/utils/modes'
+
 require 'volt/config'
 unless RUBY_PLATFORM == 'opal'
   require 'volt/data_stores/data_store'
@@ -14,6 +16,8 @@ module Volt
                 else
                   false
                 end
+
+  include Modes
 
   class << self
     def root

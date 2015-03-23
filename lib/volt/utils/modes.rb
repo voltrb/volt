@@ -26,15 +26,15 @@ module Volt
           Thread.current[mode_name] = previous
         end
       end
+
+      # Check to see if we are in the specified mode
+      def in_mode?(mode_name)
+        return defined?(Thread) && Thread.current[mode_name]
+      end
     end
 
     def self.included(base)
       base.send :extend, ClassMethods
-    end
-
-    # Check to see if we are in the specified mode
-    def in_mode?(mode_name)
-      return defined?(Thread) && Thread.current[mode_name]
     end
   end
 end
