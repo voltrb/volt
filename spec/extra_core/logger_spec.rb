@@ -26,6 +26,8 @@ if RUBY_PLATFORM != 'opal'
     end
 
     describe 'when STDOUT is a TTY' do
+      before { allow(STDOUT).to receive(:tty?).and_return(true) }
+      
       it 'should return a blue class name' do
         expect(logger_with_opts.class_name).to eq("\e[1;34m#{class_name}\e[0;37m")
       end
