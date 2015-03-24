@@ -24,5 +24,16 @@ if RUBY_PLATFORM != 'opal'
       main_path = @component_paths.component_paths('main').first
       expect(main_path).to match(/spec\/apps\/file_loading\/app\/main$/)
     end
+
+    it 'should not return paths to non-volt gems' do
+      Gem.loaded_specs['fake-gem'] = Gem::Specification.new do |s|
+        s.name = 'fake-gem'
+        s.version = Gem::Version.new('1.0')
+        s.full_gem_path = '/home/volt/projects/volt-app'
+      end
+      app_folders = @component_paths.app_folders { |f| f }
+      expect(app_folders).to_not include('/home/volt/projects/volt-app/app')
+      Gem.loaded_specs.delete 'fake-gem'
+    end
   end
 end
