@@ -31,8 +31,14 @@ class LiveQuery
 
   def notify_added(index, data, skip_channel)
     # puts "Added: #{index} - #{data.inspect}"
+    # Make model for testing permissions against
+    model = model_for_filter(data)
+
     notify! do |channel|
-      channel.send_message('added', nil, @collection, @query, index, data)
+      Volt.as_user(channel.user_id) do
+        filtered_data = model.filtered_attributes
+      end
+      channel.send_message('added', nil, @collection, @query, index, filtered_data)
     end
   end
 
@@ -44,9 +50,14 @@ class LiveQuery
   end
 
   def notify_changed(id, data, skip_channel)
+    model = model_for_filter(data)
+
     notify!(skip_channel) do |channel|
+      Volt.as_user(channel.user_id) do
+        filtered_data = model.filtered_attributes
+      end
       # puts "Changed: #{id}, #{data} to #{channel.inspect}"
-      channel.send_message('changed', nil, @collection, @query, id, data)
+      channel.send_message('changed', nil, @collection, @query, id, filtered_data)
     end
   end
 
@@ -66,8 +77,8 @@ class LiveQuery
     Volt::Model.class_at_path([collection, :[]])
   end
 
-  def add_channel(channel, user)
-    @channels << [channel, user]
+  def add_channel(channel)
+    @channels << channel
   end
 
   def remove_channel(channel)
@@ -89,5 +100,12 @@ class LiveQuery
     channels.each do |channel|
       yield(channel)
     end
+  end
+
+  # Takes in data to be sent to the client and sets up a model to test
+  # field permissions against
+  def model_for_filter(data)
+    klass = Volt::Model.class_at_path([@collection])
+    return klass.new(data, {}, :loaded)
   end
 end

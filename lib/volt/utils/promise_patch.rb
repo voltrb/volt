@@ -44,4 +44,23 @@ class Promise
       @delayed = [value]
     end
   end
+
+  # Waits for the promise to resolve (assuming it is blocking on
+  # the server) and returns the result.
+  def sync
+    result = nil
+    error = nil
+
+    self.then do |val|
+      result = val
+    end.fail do |err|
+      error = err
+    end
+
+    if error
+      raise error
+    else
+      return result
+    end
+  end
 end

@@ -21,6 +21,22 @@ module Volt
 
       def event_removed(event, last, last_for_event)
       end
+
+      # Find the root for this model
+      def root_model
+        node = @model
+
+        loop do
+          parent = node.parent
+          if parent
+            node = parent
+          else
+            break
+          end
+        end
+
+        node
+      end
     end
   end
 end

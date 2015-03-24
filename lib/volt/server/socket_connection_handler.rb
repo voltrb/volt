@@ -6,6 +6,10 @@ module Volt
   class SocketConnectionHandler < SockJS::Session
     # Create one instance of the dispatcher
 
+    # We track the connected user_id with the channel for use with permissions.
+    # This may be changed as new listeners connect, which is fine.
+    attr_accessor :user_id
+
     def self.dispatcher=(val)
       @@dispatcher = val
     end

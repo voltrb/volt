@@ -13,6 +13,7 @@ require 'volt/models/validators/user_validation'
 require 'volt/models/dirty'
 require 'volt/models/listener_tracker'
 require 'volt/models/permissions'
+require 'volt/models/associations'
 require 'volt/reactive/class_eventable'
 require 'volt/utils/event_counter'
 require 'thread'
@@ -41,6 +42,7 @@ module Volt
     include Modes
     include ListenerTracker
     include Permissions
+    include Associations
 
     attr_reader :attributes, :parent, :path, :persistor, :options
 

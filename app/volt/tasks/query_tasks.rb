@@ -20,7 +20,8 @@ class QueryTasks < Volt::TaskHandler
     track_channel_in_live_query(live_query)
 
     # puts "Load data on #{collection.inspect} - #{query.inspect}"
-    live_query.add_channel(@channel, Volt.user)
+    @channel.user_id = Volt.user_id if @channel
+    live_query.add_channel(@channel)
 
     errors = {}
 
@@ -33,24 +34,11 @@ class QueryTasks < Volt::TaskHandler
     end
 
     if initial_data[0]
-      # Remove any attributes the user doesn't have permissions to see
-      # TODO: locally, we should just reuse this model
-      initial_data[0][1] = filter_attributes(collection, initial_data[0][1])
+      # Only send the filtered attributes for this user
+      initial_data[0][1] = live_query.model_for_filter(initial_data[0][1]).filtered_attributes
     end
 
     [initial_data, error]
-  end
-
-  # Loads up an instance of the class and runs the read permissions on it
-  # and removes and denied or not allowed fields.
-  def filter_attributes(path, data)
-    # Load the model and check its permissions
-    klass = Volt::Model.class_at_path([path])
-    inst = klass.new(data, {}, :loaded)
-
-    inst.filter_fields!
-
-    return inst.attributes
   end
 
   def initial_data

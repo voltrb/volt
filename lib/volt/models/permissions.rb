@@ -143,26 +143,29 @@ module Volt
         return result
       end
 
-      # Filter fields removes any denied or not allowed fields based on the current
-      # user.
+      # Filter fields returns the attributes with any denied or not allowed fields
+      # removed based on the current user.
       #
       # Run with Volt.as_user(...) to change the user
-      def filter_fields!
+      def filtered_attributes
         # Run the read permission check
         allow, deny = allow_and_deny_fields(:read)
-        puts "ALLOW: #{allow.inspect} - DENY: #{deny.inspect}"
 
         if allow && allow != true && allow.size > 0
           # always keep id
           allow << :_id
 
           # Only keep fields in the allow list
-          @attributes = @attributes.select {|key| allow.include?(key) }
+          return @attributes.select {|key| allow.include?(key) }
         elsif deny == true
-          @attributes = {}
+          # Only keep id
+          # TODO: Should this be a full reject?
+          return @attributes.reject {|key| key != :_id }
         elsif deny && deny.size > 0
           # Reject any in the deny list
-          @attributes = @attributes.reject {|key| deny.include?(key) }
+          return @attributes.reject {|key| deny.include?(key) }
+        else
+          return @attributes
         end
       end
 
