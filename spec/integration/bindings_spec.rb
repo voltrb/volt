@@ -3,14 +3,7 @@ if ENV['BROWSER']
 
   describe 'bindings test', type: :feature, sauce: true do
     it 'should load the page' do
-      puts "CONT: #{self.inspect} -- #{respond_to?(:visit).inspect}"
-      # self.send(:visit, '/')
-      begin
-        visit '/'
-      rescue => e
-        puts "ERR: #{e.inspect}"
-        puts e.backtrace
-      end
+      visit '/'
 
       expect(page).to have_content('Kitchen Sink')
     end
