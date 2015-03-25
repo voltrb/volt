@@ -61,9 +61,7 @@ describe "model permissions" do
   if RUBY_PLATFORM != 'opal'
     describe "read permissions" do
       it 'should deny read on a field' do
-        DataStore.new.drop_database
-
-        model = $page.store._test_deny_read_names.buffer
+        model = store._test_deny_read_names.buffer
         model._name = 'Jimmy'
         model._other = 'should be visible'
 
@@ -72,7 +70,7 @@ describe "model permissions" do
         # Clear the identity map, so we can load up a fresh copy
         model.save_to.persistor.clear_identity_map
 
-        reloaded = $page.store._test_deny_read_names.fetch_first.sync
+        reloaded = store._test_deny_read_names.fetch_first.sync
 
         expect(reloaded._name).to eq(nil)
         expect(reloaded._other).to eq('should be visible')
@@ -80,13 +78,13 @@ describe "model permissions" do
     end
 
     it 'should prevent delete if denied' do
-      model = $page.store._test_deny_deletes.buffer
+      model = store._test_deny_deletes.buffer
 
       model.save!.then do
         # Saved
         count = 0
 
-        $page.store._test_deny_deletes.delete(model).then do
+        store._test_deny_deletes.delete(model).then do
           # deleted
           count += 1
         end

@@ -5,12 +5,12 @@ if RUBY_PLATFORM != 'opal'
 
   describe Volt::Model do
     it 'should stay loaded while a computaiton is watching some data' do
-      expect($page.store._items.loaded_state).to eq(:not_loaded)
+      expect(store._items.loaded_state).to eq(:not_loaded)
 
-      comp = -> { $page.store._items.size }.watch!
+      comp = -> { store._items.size }.watch!
 
       # On the server models do a blocking load
-      expect($page.store._items.loaded_state).to eq(:loaded)
+      expect(store._items.loaded_state).to eq(:loaded)
 
       comp.stop
 
@@ -18,11 +18,7 @@ if RUBY_PLATFORM != 'opal'
 
       # Computation stopped listening, so the collection should unload and be set to
       # a dirty state
-      expect($page.store._items.loaded_state).to eq(:dirty)
-    end
-
-    it 'should load data when' do
-
+      expect(store._items.loaded_state).to eq(:dirty)
     end
   end
 end
