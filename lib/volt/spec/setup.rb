@@ -20,22 +20,27 @@ module Volt
 
       # Setup the spec collection accessors
       # RSpec.shared_context "volt collections", {} do
-      #   let(:page) { Model.new }
-      #   let(:store) do
-      #     @__store_accessed = true
-      #     $page ||= Page.new
-      #     # Model.new({}, persistor: Persistors::StoreFactory.new($page.tasks))
-      #     $page.store
-      #   end
-      #
-      #   after do
-      #     if @__store_accessed
-      #       # Clear the database after each spec where we use store
-      #       @@db ||= Volt::DataStore.fetch
-      #       # @@db.drop_database
-      #     end
-      #   end
-      # end
+      RSpec.shared_examples_for 'volt collections', {} do
+        # Page conflicts with capybara's page method
+        # let(:page) { Model.new }
+        let(:store) do
+          @__store_accessed = true
+          $page ||= Page.new
+          $page.store
+        end
+
+        after do
+          if @__store_accessed
+            # Clear the database after each spec where we use store
+            # @@db ||= Volt::DataStore.fetch
+            # puts "DB CLASS: #{@@db.inspect}"
+            # @@db.drop_database
+            ::DataStore.new.drop_database
+
+            $page.instance_variable_set('@store', nil)
+          end
+        end
+      end
 
     end
   end
