@@ -35,6 +35,10 @@ module Volt
         model
       end
 
+      def clear_identity_map
+        @@identity_map.clear
+      end
+
       def inspect
         "<#{self.class.to_s}:#{object_id}>"
       end

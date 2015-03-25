@@ -8,14 +8,16 @@ class ::Address < Volt::Model
 end
 
 describe Volt::Associations do
-  it 'should associate via belongs_to' do
-    DataStore.new.drop_database
-    $page.store._people << {name: 'Jimmy'}
-    person = $page.store._people[0]
-    person._addresses << {city: 'Bozeman'}
+  if RUBY_PLATFORM != 'opal'
+    it 'should associate via belongs_to' do
+      DataStore.new.drop_database
+      $page.store._people << {name: 'Jimmy'}
+      person = $page.store._people[0]
+      person._addresses << {city: 'Bozeman'}
 
-    address = $page.store._addresses.fetch_first.sync
+      address = $page.store._addresses.fetch_first.sync
 
-    expect(address.person.sync._id).to eq(person._id)
+      expect(address.person.sync._id).to eq(person._id)
+    end
   end
 end

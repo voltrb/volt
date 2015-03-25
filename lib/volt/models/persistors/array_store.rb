@@ -70,13 +70,11 @@ module Volt
 
       # Called by child models to track their listeners
       def listener_added
-        # puts "LIST ADD: #{object_id}"
         @listener_event_counter.add
       end
 
       # Called by child models to track their listeners
       def listener_removed
-        # puts "LIST REMO #{object_id}"
         @listener_event_counter.remove
       end
 

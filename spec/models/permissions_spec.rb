@@ -24,7 +24,6 @@ end
 
 class ::TestDenyReadName < Volt::Model
   permissions(:read) do
-    puts "CHEK PERM"
     deny :name
   end
 end
@@ -63,20 +62,23 @@ describe "model permissions" do
 
   if RUBY_PLATFORM != 'opal'
     describe "read permissions" do
-      # TODO: Randomly fails, not sure why
-      # it 'should deny read on a field' do
-      #   model = $page.store._test_deny_read_names.buffer
-      #   model._name = 'Jimmy'
-      #   model._other = 'should be visible'
-      #
-      #   puts "OBJ ID: #{model.object_id}"
-      #   model.save!.sync
-      #   reloaded = $page.store._test_deny_read_names.fetch_first.sync
-      #   puts "REL ID: #{reloaded.object_id}"
-      #
-      #   expect(reloaded._name).to eq(nil)
-      #   expect(reloaded._other).to eq('should be visible')
-      # end
+      it 'should deny read on a field' do
+        DataStore.new.drop_database
+
+        model = $page.store._test_deny_read_names.buffer
+        model._name = 'Jimmy'
+        model._other = 'should be visible'
+
+        model.save!.sync
+
+        # Clear the identity map, so we can load up a fresh copy
+        model.save_to.persistor.clear_identity_map
+
+        reloaded = $page.store._test_deny_read_names.fetch_first.sync
+
+        expect(reloaded._name).to eq(nil)
+        expect(reloaded._other).to eq('should be visible')
+      end
     end
 
     it 'should prevent delete if denied' do

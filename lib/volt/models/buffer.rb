@@ -53,6 +53,10 @@ module Volt
       options[:buffer]
     end
 
+    def save_to
+      options[:save_to]
+    end
+
     # Returns a buffered version of the model
     def buffer
       model_path = options[:path]
