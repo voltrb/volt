@@ -1,6 +1,8 @@
 language: ruby
 sudo: false
 cache: bundler
+services:
+  - mongodb
 rvm:
 - 2.1.0
 - 2.1.1
