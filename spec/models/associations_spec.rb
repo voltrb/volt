@@ -23,15 +23,15 @@ describe Volt::Associations do
     it 'should associate via belongs_to' do
       address = store._addresses.fetch_first.sync
 
-      # puts "ADDRESS: #{address.inspect} - #{@person._id}"
-
       expect(address.person.sync._id).to eq(@person._id)
     end
 
     it 'should associate via has_many' do
       person = store._people.fetch_first.sync
 
-      expect(person.addresses.fetch.sync.size).to eq(2)
+      addresses = person.addresses.fetch.sync
+      expect(addresses.size).to eq(2)
+      expect(addresses[0]._city).to eq('Bozeman')
     end
   end
 end

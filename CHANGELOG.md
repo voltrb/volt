@@ -2,6 +2,10 @@
 
 ## 0.8.27 - WIP
 ### Added
+- added .order for sorting on the data store (since .sort is a ruby Enum method)
+- changed .find to .where to not conflict with ruby Enum's .find
+- added .fetch and .fetch_first for waiting on store model loads
+- added .sync for synchronusly waiting on promises on the server only
 - added the ability to pass content into tags: (https://github.com/voltrb/docs/blob/master/en/docs/yield_binding.md)
 - the {action}_remove method had been changed to before_{action}_remove and after_{action}_remove to provide more hooks and a clearer understanding of when it is happening.
 - Changed it so content bindings escape all html (for CSRF - thanks @ChaosData)
