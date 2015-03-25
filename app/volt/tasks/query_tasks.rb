@@ -19,7 +19,6 @@ class QueryTasks < Volt::TaskHandler
     live_query = @@live_query_pool.lookup(collection, query)
     track_channel_in_live_query(live_query)
 
-    # puts "Load data on #{collection.inspect} - #{query.inspect}"
     @channel.user_id = Volt.user_id if @channel
     live_query.add_channel(@channel)
 

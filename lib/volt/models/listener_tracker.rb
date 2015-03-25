@@ -6,15 +6,11 @@ module Volt
     def listener_added
       @listener_count ||= 0
       @listener_count += 1
-
-      puts "ADDED #{@listener_count}"
     end
 
     def listener_removed
       @listener_count ||= 0
       @listener_count -= 1
-
-      puts "REMOVED #{@listener_count}"
     end
 
   end

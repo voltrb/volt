@@ -35,8 +35,11 @@ module Volt
           store.model.change_state_to(:loaded_state, :loaded)
         end
       end.fail do |err|
-        puts "Error adding listener: #{err.inspect}"
-        puts err.backtrace
+        # TODO: need to make it so we can re-raise out of this promise
+        Volt.logger.error("Error adding listener: #{err.inspect}")
+        Volt.logger.error(err.backtrace)
+
+        raise err
       end
     end
 
@@ -89,7 +92,6 @@ module Volt
 
     def changed(model_id, data)
       $loading_models = true
-      puts "new data: #{data.inspect}"
       Persistors::ModelStore.changed(model_id, data)
       $loading_models = false
     end

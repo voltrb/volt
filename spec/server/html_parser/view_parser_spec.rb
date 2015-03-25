@@ -186,7 +186,6 @@ describe Volt::ViewParser do
 
     view = Volt::ViewParser.new(html, 'main/main/main/body')
 
-    # puts view.templates.inspect
   end
   it 'should setup a href single attribute binding correctly' do
     html = <<-END
@@ -194,8 +193,6 @@ describe Volt::ViewParser do
     END
 
     view = Volt::ViewParser.new(html, 'main/main/main/body')
-
-    # puts view.templates.inspect
   end
 
   it 'should parse components' do

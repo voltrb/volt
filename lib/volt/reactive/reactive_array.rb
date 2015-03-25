@@ -97,7 +97,6 @@ module Volt
       # Get or create the dependency
       dep   = (@array_deps[index] ||= Dependency.new)
 
-      # puts "DEP: #{index} --- #{object_id} - #{dep.object_id} -!!- #{Computation.current}"
       # Track the dependency
       dep.depend
 
@@ -115,7 +114,6 @@ module Volt
     end
 
     def size
-      # puts "GET SIZE ON: #{self.inspect} - #{@size_dep.inspect} --- #{@array.size}"
       @size_dep.depend
 
       @array.size
@@ -214,7 +212,6 @@ module Volt
 
       # All objects from index to the end have "changed"
       index.upto(result.size) do |index|
-        # puts "TRIGGER FOR INDEX: #{index}"
         trigger_for_index!(index)
       end
 
@@ -247,9 +244,6 @@ module Volt
     def trigger_for_index!(index)
       # Trigger a change for the cell
       dep = @array_deps[index]
-
-      # puts "TFI: #{index} - #{object_id} - #{dep.object_id}"
-
       dep.changed! if dep
     end
 

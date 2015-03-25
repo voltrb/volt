@@ -150,7 +150,6 @@ module Volt
       unless @templates[name]
         @templates[name] = { 'html' => template, 'bindings' => bindings }
       end
-      # puts "Add Template: #{name}"
     end
 
     def add_routes(&block)
@@ -201,7 +200,7 @@ module Volt
         end
       end
     rescue => e
-      puts "Unable to restore: #{e.inspect}"
+      Volt.logger.error("Unable to restore: #{e.inspect}")
     end
   end
 

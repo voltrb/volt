@@ -203,7 +203,6 @@ module Volt
             end
           end
 
-          # puts "Update Collection: #{collection.inspect} - #{values.inspect} -- #{Thread.current['in_channel'].inspect}"
           QueryTasks.live_query_pool.updated_collection(collection.to_s, Thread.current['in_channel'])
           {}
         end

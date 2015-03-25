@@ -54,7 +54,6 @@ module Volt
       def event_added(event, first, first_for_event)
         # First event, we load the data.
         if first
-          # puts "Event added"
           @listener_event_counter.add
         end
       end
@@ -63,7 +62,6 @@ module Volt
       def event_removed(event, last, last_for_event)
         # Remove listener where there are no more events on this model
         if last
-          # puts "event removed"
           @listener_event_counter.remove
         end
       end
@@ -86,7 +84,6 @@ module Volt
           Computation.run_without_tracking do
             if @listener_event_counter.count == 0
               if @added_to_query
-                # puts "Stop Query"
                 @query_listener.remove_store(self)
                 @query_listener = nil
 
@@ -104,11 +101,8 @@ module Volt
         Computation.run_without_tracking do
           loaded_state = @model.loaded_state
 
-          # puts "LOAD DATA: #{loaded_state}"
           # Don't load data from any queried
           if loaded_state == :not_loaded || loaded_state == :dirty
-            # puts "LOAD DATA"
-            # puts "Load Data at #{@model.path.inspect} - query: #{@query.inspect} on #{self.inspect}"
             @model.change_state_to(:loaded_state, :loading)
 
             run_query
@@ -237,7 +231,6 @@ module Volt
         end
 
         $loading_models = false
-        # puts "MODEL: " + @model.inspect
       end
 
       def remove(ids)

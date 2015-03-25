@@ -9,7 +9,6 @@ unless RUBY_PLATFORM == 'opal'
 
     before(:each) do
       allow(app).to receive(:call)
-      # puts "SUBJECT: #{subject.inspect}"
       subject.instance_variable_set :@app, app
     end
 

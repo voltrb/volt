@@ -9,7 +9,6 @@ end
 
 class TestAssignsMethod < Volt::Model
   def name=(val)
-    puts "Assign #{val}"
     self._name = val
   end
 end

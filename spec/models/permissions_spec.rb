@@ -54,9 +54,7 @@ describe "model permissions" do
   end
 
   # it 'should deny an insert/create if a deny without fields' do
-  #   puts "THIS ONE"
   #   store._todos << {name: 'Ryan'}
-  #   puts store._todos.size
   # end
 
 

@@ -1,7 +1,6 @@
 module Volt
   module StateManager
     def state_for(state_name)
-      # puts "GET STATE FOR: #{state_name}"
       ivar_name = :"@#{state_name}"
 
       # Depend on the dep
@@ -23,8 +22,6 @@ module Volt
         dep = state_dep_for(state_name, false)
         dep.changed! if dep
       end
-
-      # puts "CHANGED to #{new_state} for #{self.inspect}"
     end
 
     private

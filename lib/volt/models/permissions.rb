@@ -213,7 +213,6 @@ module Volt
       # Run through the permission blocks for the action name, acumulate
       # all allow/deny fields.
       def compute_allow_and_deny(action_name)
-        # puts "SKIP PERM" if Volt.in_mode?(:skip_permissions)
         # Skip permissions can be run on the server to ignore the permissions
         return if Volt.in_mode?(:skip_permissions)
 
@@ -223,7 +222,6 @@ module Volt
         # Run the permission blocks
         action_name ||= new? ? :create : :update
 
-        # puts "COMPUTE ALL/DENY for #{action_name.inspect} - #{self.class.__permissions__.inspect} - #{self.inspect}"
         # Run each of the permission blocks for this action
         permissions = self.class.__permissions__
         if permissions && (blocks = permissions[action_name])

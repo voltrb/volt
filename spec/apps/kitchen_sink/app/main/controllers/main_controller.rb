@@ -4,7 +4,6 @@ class MainController < Volt::ModelController
   def index
     a = {}
     a[{}] = 5
-    puts a[{}].inspect
   end
 
   def flash_notice
