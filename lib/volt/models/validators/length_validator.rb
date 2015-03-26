@@ -2,7 +2,7 @@ module Volt
   class LengthValidator
     def self.validate(model, field_name, args)
       errors = {}
-      value  = model.read_attribute(field_name)
+      value  = model.get(field_name)
 
       if args.is_a?(Fixnum)
         min     = args

@@ -176,7 +176,7 @@ module Volt
         else
           # assign value
           if old_val != new_val
-            params.assign_attribute(name, new_val)
+            params.set(name, new_val)
           end
           new_params.delete(name)
         end
@@ -189,10 +189,10 @@ module Volt
     def assign_new(params, new_params)
       new_params.each_pair do |name, value|
         if value.is_a?(Hash)
-          assign_new(params.read_attribute(name), value)
+          assign_new(params.get(name), value)
         else
           # assign
-          params.assign_attribute(name, value)
+          params.set(name, value)
         end
       end
     end

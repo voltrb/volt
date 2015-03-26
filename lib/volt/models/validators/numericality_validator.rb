@@ -12,7 +12,7 @@ module Volt
       @args = args
       @errors = {}
 
-      @value = model.read_attribute(field_name)
+      @value = model.get(field_name)
 
       # Convert to float if it is a string for a float
       # The nil check and the nan? check are only require for opal 0.6

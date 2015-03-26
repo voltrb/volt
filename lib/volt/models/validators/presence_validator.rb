@@ -2,7 +2,7 @@ module Volt
   class PresenceValidator
     def self.validate(model, field_name, args)
       errors = {}
-      value  = model.read_attribute(field_name)
+      value  = model.get(field_name)
       if !value || value.blank?
         if args.is_a?(Hash) && args[:message]
           message = args[:message]

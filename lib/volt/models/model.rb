@@ -187,9 +187,9 @@ module Volt
         method_name = method_name[1..-1]
         if method_name[-1] == '='
           # Assigning an attribute without the =
-          assign_attribute(method_name[0..-2], args[0], &block)
+          set(method_name[0..-2], args[0], &block)
         else
-          read_attribute(method_name)
+          get(method_name)
         end
       else
         # Call on parent
@@ -198,7 +198,7 @@ module Volt
     end
 
     # Do the assignment to a model and trigger a changed event
-    def assign_attribute(attribute_name, value, &block)
+    def set(attribute_name, value, &block)
       self.expand!
       # Assign, without the =
       attribute_name = attribute_name.to_sym
@@ -234,7 +234,7 @@ module Volt
     # 1) a nil model, which returns a wrapped error
     # 2) reading directly from attributes
     # 3) trying to read a key that doesn't exist.
-    def read_attribute(attr_name)
+    def get(attr_name)
       # Reading an attribute, we may get back a nil model.
       attr_name = attr_name.to_sym
 

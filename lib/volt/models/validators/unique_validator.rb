@@ -5,7 +5,7 @@ module Volt
 
       if RUBY_PLATFORM != 'opal'
         if args
-          value  = model.read_attribute(field_name)
+          value  = model.get(field_name)
 
           query = {}
           # Check to see if any other documents have this value.

@@ -73,7 +73,7 @@ module Volt
       def changed(attribute_name)
         # TODO: Make sure we're only assigning directly, not sub models
         unless $writing_cookies
-          value = @model.read_attribute(attribute_name)
+          value = @model.get(attribute_name)
 
           # Temp, expire in 1 year, going to expand this api
           write_cookie(attribute_name, value.to_s, expires: Time.now + (356 * 24 * 60 * 60))

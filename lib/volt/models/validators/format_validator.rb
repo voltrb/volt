@@ -35,7 +35,7 @@ module Volt
     # @param field_name [String] the name of the field being validated
     def initialize(model, field_name)
       @name = field_name
-      @value = model.read_attribute field_name
+      @value = model.get field_name
 
       @criteria = []
     end
