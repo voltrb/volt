@@ -76,7 +76,7 @@ module Volt
     def params_to_url(test_params)
       # Add in underscores
       test_params = test_params.each_with_object({}) do |(k, v), obj|
-        obj[:"_#{k}"] = v
+        obj[k.to_sym] = v
       end
 
       @param_matches.each do |param_matcher|

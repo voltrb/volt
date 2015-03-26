@@ -2,6 +2,8 @@
 
 ## 0.8.27 - WIP
 ### Added
+- _'s are no longer required for route constraints (so just use ```controller: 'main', action: 'index'``` now)
+- fixed generated component code
 - added .order for sorting on the data store (since .sort is a ruby Enum method)
 - changed .find to .where to not conflict with ruby Enum's .find
 - added .fetch and .fetch_first for waiting on store model loads
