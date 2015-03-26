@@ -74,7 +74,7 @@ module Volt
         nested_params_hash(params).each_pair do |key, value|
           # remove the _ from the front
           value = `encodeURI(value)`
-          query_parts << "#{key[1..-1]}=#{value}"
+          query_parts << "#{key}=#{value}"
         end
 
         if query_parts.size > 0

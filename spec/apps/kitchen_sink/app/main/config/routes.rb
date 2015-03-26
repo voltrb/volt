@@ -1,16 +1,16 @@
 # See https://github.com/voltrb/volt#routes for more info on routes
 
-get '/bindings/{{_route_test}}', _action: 'bindings'
-get '/bindings', _action: 'bindings'
-get '/store', _action: 'store'
-get '/cookie_test', _action: 'cookie_test'
-get '/flash', _action: 'flash'
-get '/yield', _action: 'yield'
-get '/todos', _controller: 'todos'
+get '/bindings/{{ route_test }}', action: 'bindings'
+get '/bindings', action: 'bindings'
+get '/store', action: 'store'
+get '/cookie_test', action: 'cookie_test'
+get '/flash', action: 'flash'
+get '/yield', action: 'yield'
+get '/todos', controller: 'todos'
 
 # Signup/login routes
-get '/signup', _controller: 'user-templates', _action: 'signup'
-get '/login', _controller: 'user-templates', _action: 'login'
+get '/signup', controller: 'user-templates', action: 'signup'
+get '/login', controller: 'user-templates', action: 'login'
 
 # The main route, this should be last.  It will match any params not previously matched.
 get '/', {}

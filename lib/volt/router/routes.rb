@@ -160,6 +160,7 @@ module Volt
 
       parts.each_with_index do |part, index|
         if has_binding?(part)
+          # Strip off {{ and }}
           params[part[2...-2].strip.to_sym] = index
 
           # Set the part to be '*' (anything matcher)
