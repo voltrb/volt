@@ -20,6 +20,6 @@
 
   <ul>
     {{ cookies.keys.each do |key| }}
-      <li>{{ key }}: {{ cookies.read_attribute(key) }} <button class="cookieDelete" e-click="cookies.delete(key)">X</button></li>
+      <li>{{ key }}: {{ cookies.get(key) }} <button class="cookieDelete" e-click="cookies.delete(key)">X</button></li>
     {{ end }}
   </ul>
