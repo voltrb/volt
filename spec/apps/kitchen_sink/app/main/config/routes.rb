@@ -12,5 +12,8 @@ client '/todos', controller: 'todos'
 client '/signup', controller: 'user-templates', action: 'signup'
 client '/login', controller: 'user-templates', action: 'login'
 
+#Simple REST endpoint
+get '/rest', _controller: 'rest', _action: 'index'
+
 # The main route, this should be last.  It will match any params not previously matched.
 client '/', {}
