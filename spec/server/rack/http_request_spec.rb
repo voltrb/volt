@@ -33,5 +33,11 @@ if RUBY_PLATFORM != 'opal'
 			request = Volt::HttpRequest.new(env)
 			expect(request.method).to eq(:put)
 		end
+
+		it "should return the params with symbolized keys" do
+			env = env_for("http://example.com/test.html", method: "POST", params: { "some" => "params", "as" => "strings", and: "symbols" })
+			request = Volt::HttpRequest.new(env)
+			expect(request.params).to eq({ some:"params", as: "strings", and: "symbols" })
+		end
 	end
 end

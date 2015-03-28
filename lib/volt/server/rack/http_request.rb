@@ -26,19 +26,19 @@ module Volt
       end
     end
 
-    #Returns the format given in the path_info
-    # http://example.com/test.html => html
-    # http://example.com/test => nil
-    def path_format
-      @path_format ||= extract_format_from_path
-    end
-
     #The request params with symbolized keys
     def params
       super.symbolize_keys
     end
 
     private
+
+    #Returns the format given in the path_info
+    # http://example.com/test.html => html
+    # http://example.com/test => nil
+    def path_format
+      @path_format ||= extract_format_from_path
+    end
 
     #Extract from the path
     def extract_format_from_path
