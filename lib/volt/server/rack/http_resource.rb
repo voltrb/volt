@@ -1,26 +1,20 @@
+require 'rack'
 require 'volt'
 require 'volt/router/routes'
 require 'volt/server/rack/http_request'
-require 'rack'
 
 module Volt
   # Rack middleware for HttpController
   class HttpResource
-    def initialize(app)
+    def initialize(app, router)
       @app = app
-      #@@router ||= Routes.new.define do
-        # Find the route file
-        #home_path  = component_paths.component_paths('main').first
-        #route_file = File.read("#{home_path}/config/routes.rb")
-        #eval(route_file)
-      #end
+      @router = router
     end
 
     def call(env)
-      path = env['PATH_INFO']
-      if controller_name = routes_match?(path)
-        controller = Object.const_get(controller_name.camelize.to_sym).new(HttpRequest.new(env))
-        controller.perform(:index)
+      request = HttpRequest.new(env)
+      if params = routes_match?(request)
+        dispatch_to_controller(params, request)
       else
         @app.call env
       end
@@ -28,9 +22,15 @@ module Volt
 
     private
 
-    def routes_match?(path)
-      matched = path.match(/^\/http_controller_test\/(.+)/)
-      matched.present? ? matched[1] : false
+    def routes_match?(request)
+      @router.url_to_params(request.method, request.path)
+    end
+
+    def dispatch_to_controller(params, request)
+      controller_name = params[:_controller] + "_controller"
+      action = params[:_action]
+      controller = Object.const_get(controller_name.camelize.to_sym).new(params, request)
+      controller.perform(action)
     end
   end
 end

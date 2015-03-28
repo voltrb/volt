@@ -2,37 +2,61 @@ if RUBY_PLATFORM != 'opal'
   require 'volt/server/rack/http_resource'
   require 'volt/controllers/http_controller'
   require 'volt/server/rack/http_request'
+  require 'volt/router/routes'
 
   describe Volt::HttpResource do
+
+    def routes(&block)
+      @routes = Volt::Routes.new
+      @routes.define(&block)
+    end
 
     class SimpleController < Volt::HttpController
       attr_reader :action_called
 
       def index
         @action_called = true
-        render "just some text"
+        render plain: "just some text"
       end
+
+      def show
+        render plain: "show with id #{params[:stuff_id]} and #{params[:test]} called"
+      end
+
     end
 
     let(:app) { lambda {|env| [404, env, "app"] } }
-    let(:http_resource) { Volt::HttpResource.new(app) }
-    let(:env) { Rack::MockRequest.env_for("http://example.com/http_controller_test/simple_controller") }
-    let(:request) { Volt::HttpRequest.new(env) }
-
-    let! :test_controller do
-      SimpleController.new(request)
-    end
 
     before(:each) do
-      allow(SimpleController).to receive(:new).and_return(test_controller)
+      routes do
+        get '/stuff', _controller: 'simple', _action: 'index'
+        get '/stuff/{{ stuff_id }}', _controller: 'simple', _action: 'show'
+      end      
     end
 
-    it "should initialize the correct controller" do
-      expect(SimpleController).to receive(:new).and_return(test_controller)
+
+    it "should initialize the correct controller and call the correct action" do
+      http_resource = Volt::HttpResource.new(app, @routes)
+      env = Rack::MockRequest.env_for("http://example.com/stuff")
+      request = Volt::HttpRequest.new(env)
+      controller = SimpleController.new({}, request)
+      expect(SimpleController).to receive(:new).and_return(controller)
+
       response = http_resource.call(env)
-      expect(response.body).to eq(["just some text"])
       expect(response.status).to eq(200)
-      expect(test_controller.action_called).to eq(true)
+      expect(response.body).to eq(["just some text"])
+      expect(controller.action_called).to eq(true)
     end
+
+    it "should parse the correct params to the controller" do
+      http_resource = Volt::HttpResource.new(app, @routes)
+      env = Rack::MockRequest.env_for("http://example.com/stuff/99?test=another_param")
+      request = Volt::HttpRequest.new(env)
+
+      response = http_resource.call(env)
+      expect(response.status).to eq(200)
+      expect(response.body).to eq(["show with id 99 and another_param called"])
+    end
+
   end
 end
