@@ -130,13 +130,14 @@ module Volt
       attrs = wrap_values(attrs)
 
       if attrs
-
         # When doing a mass-assign, we don't validate or save until the end.
         if initial_setup
+          puts "INIT NO CH TR: #{inspect}"
           Model.no_change_tracking do
             assign_all_attributes(attrs)
           end
         else
+          puts "INIT WITH CH TR"
           assign_all_attributes(attrs)
         end
       else
@@ -151,7 +152,7 @@ module Volt
       # Save the changes
       if initial_setup
         # Run initial validation
-        errs = Volt.in_mode?(:initial_setup) ? nil : validate!
+        errs = Volt.in_mode?(:no_validate) ? nil : validate!
 
         if errs && errs.size > 0
           return Promise.new.reject(errs)
@@ -209,7 +210,7 @@ module Volt
       new_value = wrap_value(value, [attribute_name])
 
       if old_value != new_value
-        # Track the old value, skip if we are in initial_setup
+        # Track the old value, skip if we are in no_validate
         attribute_will_change!(attribute_name, old_value) unless Volt.in_mode?(:no_change_tracking)
 
         # Assign the new value
@@ -226,7 +227,7 @@ module Volt
         clear_server_errors(attribute_name) if @server_errors.present?
 
         # Save the changes
-        run_changed(attribute_name)
+        run_changed(attribute_name) unless Volt.in_mode?(:no_change_tracking)
       end
     end
 
@@ -369,7 +370,7 @@ module Volt
     end
 
     # Setup run mode helpers
-    [:no_save, :initial_setup, :no_change_tracking].each do |method_name|
+    [:no_save, :no_validate, :no_change_tracking].each do |method_name|
       define_singleton_method(method_name) do |&block|
         Volt.run_in_mode(method_name, &block)
       end
@@ -428,10 +429,10 @@ module Volt
     def run_changed(attribute_name=nil)
       result = nil
 
-      # initial_setup mode should only be used internally.  initial_setup mode is a
+      # no_validate mode should only be used internally.  no_validate mode is a
       # performance optimization that prevents validation from running after each
       # change when assigning multile attributes.
-      unless Volt.in_mode?(:initial_setup)
+      unless Volt.in_mode?(:no_validate)
         # Run the validations for all fields
         validate!
 

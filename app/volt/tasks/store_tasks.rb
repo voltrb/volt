@@ -26,17 +26,20 @@ class StoreTasks < Volt::TaskHandler
       # Create a buffer
       buffer = model.buffer
 
+      puts "ASSIGN"
       # Assign the data
       buffer.attributes = data
 
+      puts "DONE"
       buffer
     end
   end
 
   def save(collection, path, data)
+    puts "SAVE---"
     data = data.symbolize_keys
     promise = nil
-    Volt::Model.no_save do
+    Volt::Model.no_validate do
       promise = load_model(collection, path, data)
     end
 
@@ -55,6 +58,7 @@ class StoreTasks < Volt::TaskHandler
 
       Thread.current['in_channel'] = nil
 
+      puts "DONE--"
       next save_promise
     end
   end

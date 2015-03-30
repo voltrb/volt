@@ -21,7 +21,8 @@ module Volt
           hash = user_id_signature[(index + 1)..-1]
 
           # Make sure the user hash matches
-          if BCrypt::Password.new(hash) != "#{Volt.config.app_secret}::#{user_id}"
+          # TODO: We could cache the digest generation for even faster comparisons
+          if hash != Digest::SHA256.hexdigest("#{Volt.config.app_secret}::#{user_id}")
             # user id has been tampered with, reject
             fail 'user id or hash has been tampered with'
           end

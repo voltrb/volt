@@ -215,7 +215,7 @@ module Volt
       def add(index, data)
         $loading_models = true
 
-        Model.initial_setup do
+        Model.no_validate do
           data_id = data['_id'] || data[:_id]
 
           # Don't add if the model is already in the ArrayModel

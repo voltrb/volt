@@ -1,3 +1,5 @@
+# require 'ruby-prof'
+
 module Volt
   # The task dispatcher is responsible for taking incoming messages
   # from the socket channel and dispatching them to the proper handler.
@@ -25,7 +27,16 @@ module Volt
         promise = promise.then do
           Thread.current['meta'] = meta_data
 
+          # # Profile the code
+          # RubyProf.start
+
           result = klass.new(channel, self).send(method_name, *args)
+
+          # res = RubyProf.stop
+          #
+          # # Print a flat profile to text
+          # printer = RubyProf::FlatPrinter.new(res)
+          # printer.print(STDOUT)
 
           Thread.current['meta'] = nil
 

@@ -9,6 +9,7 @@ class UserTasks < Volt::TaskHandler
       store._users.find(query).fetch_first do |user|
         fail 'User could not be found' unless user
 
+        puts "LOGIN BCRYPT"
         match_pass = BCrypt::Password.new(user._hashed_password)
         fail 'Password did not match' unless  match_pass == password
         fail 'app_secret is not configured' unless Volt.config.app_secret
@@ -16,7 +17,7 @@ class UserTasks < Volt::TaskHandler
         # TODO: returning here should be possible, but causes some issues
         # Salt the user id with the app_secret so the end user can't
         # tamper with the cookie
-        signature = BCrypt::Password.create(salty_password(user._id))
+        signature = Digest::SHA256.hexdigest(salty_user_id(user._id))
 
         # Return user_id:hash on user id
         next "#{user._id}:#{signature}"
@@ -26,7 +27,7 @@ class UserTasks < Volt::TaskHandler
 
   private
 
-  def salty_password(user_id)
+  def salty_user_id(user_id)
     "#{Volt.config.app_secret}::#{user_id}"
   end
 end

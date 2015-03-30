@@ -35,6 +35,7 @@ class LiveQuery
     model = model_for_filter(data)
 
     notify! do |channel|
+      filtered_data = nil
       Volt.as_user(channel.user_id) do
         filtered_data = model.filtered_attributes
       end
@@ -53,6 +54,7 @@ class LiveQuery
     model = model_for_filter(data)
 
     notify!(skip_channel) do |channel|
+      filtered_data = nil
       Volt.as_user(channel.user_id) do
         filtered_data = model.filtered_attributes
       end
@@ -106,6 +108,16 @@ class LiveQuery
   # field permissions against
   def model_for_filter(data)
     klass = Volt::Model.class_at_path([@collection])
-    return klass.new(data, {}, :loaded)
+    model = nil
+
+    # Skip read validations when loading the model, no need to check read when checking
+    # permissions.
+    # TODO: We should probably document the possibility of data leak here, though really you
+    # shouldn't be storing anything inside of the permissions block.
+    Volt::Model.no_validate do
+      model = klass.new(data, {}, :loaded)
+    end
+
+    model
   end
 end
