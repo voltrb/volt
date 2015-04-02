@@ -73,8 +73,7 @@ module Volt
 
       @new = (initial_state != :loaded)
 
-      puts "NEW MODEL"
-      send(:attributes=, attributes, true)
+      assign_attributes(attributes, true)
 
       # The persistor is usually responsible for setting up the loaded_state, if
       # there is no persistor, we set it to loaded
@@ -125,20 +124,14 @@ module Volt
     end
 
     # Assign multiple attributes as a hash, directly.
-    def attributes=(attrs, initial_setup = false)
+    def assign_attributes(attrs, initial_setup = false)
       @attributes = {}
-
-      puts "IN::: #{attrs.inspect}"
 
       attrs = wrap_values(attrs)
 
       if attrs
         # When doing a mass-assign, we don't validate or save until the end.
-        if initial_setup
-          Model.no_change_tracking do
-            assign_all_attributes(attrs)
-          end
-        else
+        Model.no_change_tracking do
           assign_all_attributes(attrs)
         end
       else
@@ -165,7 +158,7 @@ module Volt
       end
     end
 
-    alias_method :assign_attributes, :attributes=
+    alias_method :attributes=, :assign_attributes
 
     # Pass the comparison through
     def ==(val)
@@ -201,7 +194,6 @@ module Volt
 
     # Do the assignment to a model and trigger a changed event
     def set(attribute_name, value, &block)
-      puts "SET: #{attribute_name}"
       self.expand!
       # Assign, without the =
       attribute_name = attribute_name.to_sym
@@ -211,7 +203,6 @@ module Volt
       old_value = @attributes[attribute_name]
       new_value = wrap_value(value, [attribute_name])
 
-      puts "HERE"
       if old_value != new_value
         # Track the old value, skip if we are in no_validate
         attribute_will_change!(attribute_name, old_value) unless Volt.in_mode?(:no_change_tracking)
@@ -229,10 +220,8 @@ module Volt
         # (maybe move it to persistor, though thats weird since buffers don't have a persistor)
         clear_server_errors(attribute_name) if @server_errors.present?
 
-        puts "POST"
         # Save the changes
         run_changed(attribute_name) unless Volt.in_mode?(:no_change_tracking)
-        puts "B"
       end
     end
 
@@ -392,11 +381,9 @@ module Volt
     end
 
     def setup_buffer(model)
-      puts "SETUP BUFFER: #{model.attributes.inspect} - #{attributes.inspect}"
       Volt::Model.no_validate do
         model.assign_attributes(attributes, true)
       end
-      puts "BUFFER SETUP"
 
       model.change_state_to(:loaded_state, :loaded)
 
@@ -413,23 +400,17 @@ module Volt
 
     # Used internally from other methods that assign all attributes
     def assign_all_attributes(attrs)
-      puts "ASSIGN ALL: #{attrs.inspect}"
-      # Assign id first
-      id = attrs.delete(:_id) || attrs.delete('_id')
-      puts "GOT ID: #{id.inspect}"
-      self._id = id if id
-
-      puts "SET ID"
-
       # Assign each attribute using setters
       attrs.each_pair do |key, value|
-        puts "CHECK RESP: #{key}"
+        key = key.to_sym
+
+        # Track the change, since assign_all_attributes runs with no_change_tracking
+        attribute_will_change!(key, @attributes[key])
+
         if self.respond_to?(:"#{key}=")
-          puts "ASSIGN KEY: #{key} - #{value.inspect}"
           # If a method without an underscore is defined, call that.
           send(:"#{key}=", value)
         else
-          puts "ASSIGN _KEY: #{key} - #{value.inspect}"
           # Otherwise, use the _ version
           send(:"_#{key}=", value)
         end

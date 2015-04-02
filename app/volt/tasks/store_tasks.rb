@@ -25,17 +25,14 @@ class StoreTasks < Volt::TaskHandler
       # Create a buffer
       buffer = model.buffer
 
-      puts "BUFFER: #{buffer.inspect} - #{buffer.save_to.inspect}"
-
       # Assign the data
-      buffer.attributes = data
+      buffer.assign_attributes(data, true)
 
       buffer
     end
   end
 
   def save(collection, path, data)
-    puts "SAVE: #{collection.inspect} - #{path.inspect} - #{data.inspect}"
     data = data.symbolize_keys
     promise = nil
     Volt::Model.no_validate do
@@ -50,7 +47,6 @@ class StoreTasks < Volt::TaskHandler
     #
     # return another promise
     return promise.then do |model|
-      puts "MODEL TO SAVE ON: #{model.inspect}---------------------#{model.save_to.inspect}"
       Thread.current['in_channel'] = @channel
       save_promise = model.save!.then do |result|
 

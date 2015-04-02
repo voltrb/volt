@@ -54,7 +54,6 @@ module Volt
 
       # Create a random unique id that can be used as the mongo id as well
       def generate_id
-        puts "GENERATE ID ON #{@model.inspect}"
         id = []
         24.times { id << ID_CHARS.sample }
 
