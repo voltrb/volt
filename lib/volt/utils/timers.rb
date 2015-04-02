@@ -15,6 +15,8 @@ module Volt
       end
     end
 
+    # On the server, we need to manually flush next tick timers.
+    # This is done automatically in the console after each enter.
     def self.flush_next_tick_timers!
       tick_timers = Thread.current['tick_timers']
 

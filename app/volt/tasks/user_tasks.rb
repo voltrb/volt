@@ -9,7 +9,6 @@ class UserTasks < Volt::TaskHandler
       store._users.find(query).fetch_first do |user|
         fail 'User could not be found' unless user
 
-        puts "LOGIN BCRYPT"
         match_pass = BCrypt::Password.new(user._hashed_password)
         fail 'Password did not match' unless  match_pass == password
         fail 'app_secret is not configured' unless Volt.config.app_secret

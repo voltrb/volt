@@ -19,8 +19,14 @@ class QueryTasks < Volt::TaskHandler
     live_query = @@live_query_pool.lookup(collection, query)
     track_channel_in_live_query(live_query)
 
-    @channel.user_id = Volt.user_id if @channel
-    live_query.add_channel(@channel)
+    if @channel
+      # For requests from the client (with @channel), we track the channel
+      # so we can send the results back.  Server side requests don't stay live,
+      # they simply return to :dirty once the query is issued.
+      @channel.user_id = Volt.user_id
+
+      live_query.add_channel(@channel)
+    end
 
     errors = {}
 
@@ -37,6 +43,8 @@ class QueryTasks < Volt::TaskHandler
       initial_data[0][1] = live_query.model_for_filter(initial_data[0][1]).filtered_attributes
     end
 
+    # @@live_query_pool.print
+
     [initial_data, error]
   end
 
@@ -52,6 +60,9 @@ class QueryTasks < Volt::TaskHandler
   def remove_listener(collection, query)
     live_query = @@live_query_pool.lookup(collection, query)
     live_query.remove_channel(@channel)
+    #
+    # puts "REMOVE LIST1"
+    # @@live_query_pool.print
   end
 
   # Removes a channel from all associated live queries

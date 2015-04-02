@@ -96,5 +96,17 @@ module Volt
         end
       end
     end
+
+    def print
+      puts '--- Running Queries ---'
+
+      @pool.each_pair do |table, query_hash|
+        query_hash.each_key do |query|
+          puts "#{table.inspect}: #{query.inspect}"
+        end
+      end
+
+      puts '---------------------'
+    end
   end
 end

@@ -478,4 +478,28 @@ describe Volt::Model do
 
     end
   end
+
+
+  it 'should update other queries on the server when a new model is created' do
+    query1 = store._todos
+    query2 = store._todos.limit(1)
+
+    count = 0
+
+    # count the number of todos
+    query2.fetch {|v| count += v.size }
+
+    expect(count).to eq(0)
+
+    query1 << {label: 'One'}
+    puts "inserted"
+
+    puts "QUERY2: #{query2.loaded_state.inspect}"
+
+    count = 0
+    query2.fetch {|v| puts 'FETCHED---' ; count += v.size }
+
+    puts "COMP1"
+    expect(count).to eq(1)
+  end
 end

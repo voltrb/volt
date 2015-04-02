@@ -19,24 +19,23 @@ class StoreTasks < Volt::TaskHandler
 
     # See if the model has already been made
     collection.find(_id: data[:_id]).fetch_first do |model|
-
       # Otherwise assign to the collection
       model ||= collection
 
       # Create a buffer
       buffer = model.buffer
 
-      puts "ASSIGN"
+      puts "BUFFER: #{buffer.inspect} - #{buffer.save_to.inspect}"
+
       # Assign the data
       buffer.attributes = data
 
-      puts "DONE"
       buffer
     end
   end
 
   def save(collection, path, data)
-    puts "SAVE---"
+    puts "SAVE: #{collection.inspect} - #{path.inspect} - #{data.inspect}"
     data = data.symbolize_keys
     promise = nil
     Volt::Model.no_validate do
@@ -51,8 +50,10 @@ class StoreTasks < Volt::TaskHandler
     #
     # return another promise
     return promise.then do |model|
+      puts "MODEL TO SAVE ON: #{model.inspect}---------------------#{model.save_to.inspect}"
       Thread.current['in_channel'] = @channel
       save_promise = model.save!.then do |result|
+
         next nil
       end
 
@@ -69,6 +70,8 @@ class StoreTasks < Volt::TaskHandler
       if model
         if model.can_delete?
           db[collection].remove('_id' => id)
+        else
+          raise "Permissions did not allow #{collection} #{id} to be deleted."
         end
 
         QueryTasks.live_query_pool.updated_collection(collection, @channel)

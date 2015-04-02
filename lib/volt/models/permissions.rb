@@ -12,7 +12,6 @@ module Volt
         def own_by_user(key=:user_id)
           # When the model is created, assign it the user_id (if the user is logged in)
           on(:new) do
-            puts "NEW"
             if !(user_id = Volt.user_id).nil?
               send(:"_#{key}=", user_id)
             end
@@ -25,7 +24,9 @@ module Volt
 
           # Setup a validation that requires a user_id
           validate do
-            unless _user_id
+            # Lookup directly in @attributes to optimize and prevent the need
+            # for a nil model.
+            unless @attributes[:user_id]
               # Show an error that the user is not logged in
               next {key => ['requires a logged in user']}
             end
@@ -124,7 +125,6 @@ module Volt
 
       # Checks if any denies are in place for an action (read or delete)
       def action_allowed?(action_name)
-        puts "ALLOW ACT: #{action_name.inspect} - #{self.inspect}"
         # TODO: this does some unnecessary work
         compute_allow_and_deny(action_name)
 
@@ -137,7 +137,6 @@ module Volt
 
       # Return the list of allowed fields
       def allow_and_deny_fields(action_name)
-        puts "ALLOW DENY FIELDS: #{action_name.inspect} - #{self.inspect}"
         compute_allow_and_deny(action_name)
 
         result = [@__allow_fields, @__deny_fields]
@@ -175,7 +174,6 @@ module Volt
 
       private
       def run_permissions(action_name=nil)
-        # puts "RUN PERMISSIONS: #{action_name} - #{self.inspect}"
         compute_allow_and_deny(action_name)
 
         errors = {}

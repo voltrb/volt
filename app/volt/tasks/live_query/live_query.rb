@@ -39,6 +39,7 @@ class LiveQuery
       Volt.as_user(channel.user_id) do
         filtered_data = model.filtered_attributes
       end
+
       channel.send_message('added', nil, @collection, @query, index, filtered_data)
     end
   end
@@ -119,5 +120,9 @@ class LiveQuery
     end
 
     model
+  end
+
+  def inspect
+    "<#{self.class.to_s} #{@collection}: #{@query.inspect}>"
   end
 end

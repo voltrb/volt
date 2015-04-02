@@ -47,7 +47,7 @@ module Volt
       end
 
       def inspect
-        "<#{self.class.to_s}:#{object_id} #{@query.inspect}>"
+        "<#{self.class.to_s}:#{object_id} #{@model.path.inspect} #{@query.inspect}>"
       end
 
       # Called when an each binding is listening
@@ -69,19 +69,23 @@ module Volt
       # Called by child models to track their listeners
       def listener_added
         @listener_event_counter.add
+        # puts "LIST ADDED: #{inspect} - #{@listener_event_counter.count} #{@model.path.inspect}"
       end
 
       # Called by child models to track their listeners
       def listener_removed
         @listener_event_counter.remove
+        # puts "LIST REMOVED: #{inspect} - #{@query.inspect} - #{@listener_event_counter.count} #{@model.path.inspect}"
       end
 
       # Called when an event is removed and we no longer want to keep in
       # sync with the database.  The data is kept in memory and the model's
       # loaded_state is marked as "dirty" meaning it may not be in sync.
       def stop_listening
+        # puts "Stop LIST1"
         Timers.next_tick do
           Computation.run_without_tracking do
+            # puts "STOP LIST2"
             if @listener_event_counter.count == 0
               if @added_to_query
                 @query_listener.remove_store(self)
@@ -94,10 +98,13 @@ module Volt
             end
           end
         end
+
+        Timers.flush_next_tick_timers! if Volt.server?
       end
 
       # Called the first time data is requested from this collection
       def load_data
+        # puts "LOAD DATA: #{@model.path.inspect}: #{@model.options[:query].inspect}"
         Computation.run_without_tracking do
           loaded_state = @model.loaded_state
 
@@ -146,6 +153,10 @@ module Volt
           # Create if it does not exist
           QueryListener.new(@@query_pool, @tasks, collection, query)
         end
+
+        # @@query_pool.print
+
+        @query_listener
       end
 
       # Find takes a query object

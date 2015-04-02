@@ -12,10 +12,13 @@ module Volt
             promise = save_to.append(attributes)
           else
             # We have a saved model
-            promise = save_to.assign_attributes(attributes)
+            puts "!!!!!!!!!!!!!!!! THE SAVE: #{save_to.inspect} !! ASSIGN: #{attributes.inspect}"
+            promise = save_to.assign_attributes(attributes, true)
+            puts "!!!!!!! AFTER !!!!!!"
           end
 
           return promise.then do |new_model|
+            puts "!!!!!!!!!!!!!!! SAVED"
             # The main model saved, so mark the buffer as not new
             @new = false
 
@@ -66,11 +69,17 @@ module Volt
       new_options = options.merge(path: model_path, save_to: self, buffer: true).reject { |k, _| k.to_sym == :persistor }
       model       = model_klass.new({}, new_options, :loading)
 
+      puts "CREATE BUFFER"
       if loaded?
+        puts "LOADED"
         setup_buffer(model)
       else
+        puts "WAIT"
         parent.then do
           setup_buffer(model)
+          puts "DONE: #{model.inspect}"
+        end.fail do |err|
+          puts "SETUP BUF ERR: #{err.inspect}\n\n\n!!"
         end
       end
 

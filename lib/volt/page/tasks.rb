@@ -56,6 +56,7 @@ module Volt
     # Called when the backend sends a notification to change the results of
     # a query.
     def notify_query(method_name, collection, query, *args)
+      puts "NOTIFY QUERY: #{method_name.inspect} - #{collection.inspect} - #{query.inspect} - #{args.inspect}"
       query_obj = Persistors::ArrayStore.query_pool.lookup(collection, query)
       query_obj.send(method_name, *args)
     end
