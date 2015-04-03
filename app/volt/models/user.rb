@@ -30,7 +30,6 @@ module Volt
     end
 
     def password=(val)
-      puts "ASSIGN PASSWORD"
       if Volt.server?
         # on the server, we bcrypt the password and store the result
         self._hashed_password = BCrypt::Password.create(val)
