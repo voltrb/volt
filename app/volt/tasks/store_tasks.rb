@@ -55,7 +55,6 @@ class StoreTasks < Volt::TaskHandler
 
       Thread.current['in_channel'] = nil
 
-      puts "DONE--"
       next save_promise
     end
   end
