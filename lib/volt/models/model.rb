@@ -184,7 +184,20 @@ module Volt
           # Assigning an attribute without the =
           set(method_name[0..-2], args[0], &block)
         else
-          get(method_name)
+          # If the method has an ! on the end, then we assign an empty
+          # collection if no result exists already.
+          expand = (method_name[-1] == '!')
+          method_name = method_name[0..-2] if expand
+
+          result = get(method_name)
+
+          if expand && !result
+            # Set to an empty hash
+            result = set(method_name, {})
+          end
+
+          # return result
+          result
         end
       else
         # Call on parent
@@ -194,7 +207,6 @@ module Volt
 
     # Do the assignment to a model and trigger a changed event
     def set(attribute_name, value, &block)
-      self.expand!
       # Assign, without the =
       attribute_name = attribute_name.to_sym
 
@@ -223,6 +235,8 @@ module Volt
         # Save the changes
         run_changed(attribute_name) unless Volt.in_mode?(:no_change_tracking)
       end
+
+      new_value
     end
 
     # When reading an attribute, we need to handle reading on:
@@ -238,31 +252,14 @@ module Volt
       # Track that something is listening
       @root_dep.depend
 
+      # Track dependency
+      @deps.depend(attr_name)
+
       # See if the value is in attributes
       if @attributes && @attributes.key?(attr_name)
-        # Track dependency
-        @deps.depend(attr_name)
-
         return @attributes[attr_name]
       else
-        new_model              = read_new_model(attr_name)
-        @attributes            ||= {}
-        @attributes[attr_name] = new_model
-
-        # Trigger size change
-        # TODO: We can probably improve Computations to just make this work
-        # without the delay
-        if Volt.in_browser?
-          `setImmediate(function() {`
-            @size_dep.changed!
-          `});`
-        else
-          @size_dep.changed!
-        end
-
-        # Depend on attribute
-        @deps.depend(attr_name)
-        return new_model
+        return nil
       end
     end
 
@@ -296,36 +293,23 @@ module Volt
       ArrayModel.new(attributes, options)
     end
 
-    # If this model is nil, it makes it into a hash model, then
-    # sets it up to track from the parent.
-    def expand!
-      if attributes.nil?
-        @attributes = {}
-        if @parent
-          @parent.expand!
-
-          @parent.send(:"_#{@path.last}=", self)
-        end
-      end
-    end
-
     # Initialize an empty array and append to it
     def <<(value)
-      if @parent
-        @parent.expand!
-      else
+      unless @parent
         fail 'Model data should be stored in sub collections.'
       end
 
-      # Grab the last section of the path, so we can do the assign on the parent
-      path   = @path.last
-      result = @parent.send(path)
-
-      if result.nil?
-        # If this isn't a model yet, instantiate it
-        @parent.send(:"#{path}=", new_array_model([], @options))
-        result = @parent.send(path)
-      end
+      # # Grab the last section of the path, so we can do the assign on the parent
+      # path   = @path.last
+      # puts "SEND: #{path.inspect} to #{@parent.inspect}"
+      # result = @parent.send(path)
+      # puts "AFTER"
+      #
+      # if result.nil?
+      #   # If this isn't a model yet, instantiate it
+      #   @parent.send(:"#{path}=", new_array_model([], @options))
+      #   result = @parent.send(path)
+      # end
 
       # Add the new item
       result << value

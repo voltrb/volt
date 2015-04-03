@@ -5,7 +5,7 @@ if RUBY_PLATFORM != 'opal'
 
   describe Volt::Model do
     it 'should stay loaded while a computaiton is watching some data' do
-      expect(store._items.loaded_state).to eq(:not_loaded)
+      expect(store._items!.loaded_state).to eq(:not_loaded)
 
       comp = -> { store._items.size }.watch!
 
