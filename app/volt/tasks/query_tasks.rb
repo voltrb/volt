@@ -38,9 +38,11 @@ class QueryTasks < Volt::TaskHandler
       error = { error: exception.message }
     end
 
-    if initial_data[0]
+    if initial_data
       # Only send the filtered attributes for this user
-      initial_data[0][1] = live_query.model_for_filter(initial_data[0][1]).filtered_attributes
+      initial_data.map! do |data|
+        [data[0], live_query.model_for_filter(data[1]).filtered_attributes]
+      end
     end
 
     # @@live_query_pool.print

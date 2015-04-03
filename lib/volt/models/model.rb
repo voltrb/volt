@@ -345,7 +345,7 @@ module Volt
         str += " state:#{loaded_state}" if loaded_state
 
         persistor = self.persistor
-        str += " persistor:#{persistor.inspect}" if persistor
+        # str += " persistor:#{persistor.inspect}" if persistor
         str += " #{attributes.inspect}>"
 
         str

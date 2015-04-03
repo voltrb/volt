@@ -185,7 +185,7 @@ module Volt
         @size_dep.depend
         str = "#<#{self.class}:#{object_id} #{loaded_state}"
         str += " path:#{path.join('.')}" if path
-        str += " persistor:#{persistor.inspect}" if persistor
+        # str += " persistor:#{persistor.inspect}" if persistor
         str += " #{@array.inspect}>"
 
         str
