@@ -131,7 +131,11 @@ module Volt
 
       if attrs
         # When doing a mass-assign, we don't validate or save until the end.
-        Model.no_change_tracking do
+        if initial_setup
+          Model.no_change_tracking do
+            assign_all_attributes(attrs)
+          end
+        else
           assign_all_attributes(attrs)
         end
       else
@@ -405,7 +409,7 @@ module Volt
         key = key.to_sym
 
         # Track the change, since assign_all_attributes runs with no_change_tracking
-        attribute_will_change!(key, @attributes[key])
+        # attribute_will_change!(key, @attributes[key])
 
         if self.respond_to?(:"#{key}=")
           # If a method without an underscore is defined, call that.

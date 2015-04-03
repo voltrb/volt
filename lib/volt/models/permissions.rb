@@ -105,7 +105,8 @@ module Volt
       #
       # @param key [Symbol] the name of the attribute where the user_id is stored
       def owner?(key=:user_id)
-        owner_id = send(:"_#{key}")
+        # Lookup the original user_id
+        owner_id = was(key) || send(:"_#{key}")
         owner_id != nil && owner_id == Volt.user_id
       end
 
@@ -216,11 +217,11 @@ module Volt
       # Run through the permission blocks for the action name, acumulate
       # all allow/deny fields.
       def compute_allow_and_deny(action_name)
-        # Skip permissions can be run on the server to ignore the permissions
-        return if Volt.in_mode?(:skip_permissions)
-
         @__deny_fields = []
         @__allow_fields = []
+
+        # Skip permissions can be run on the server to ignore the permissions
+        return if Volt.in_mode?(:skip_permissions)
 
         # Run the permission blocks
         action_name ||= new? ? :create : :update
