@@ -22,6 +22,7 @@ module Volt
       end
 
       def write_cookie(key, value, options = {})
+        options[:path] ||= '/'
         parts = []
 
         parts << `encodeURIComponent(key)`
@@ -29,12 +30,13 @@ module Volt
         parts << `encodeURIComponent(value)`
         parts << '; '
 
+        parts << 'path='    << options[:path] << '; '           if options[:path]
         parts << 'max-age=' << options[:max_age] << '; '        if options[:max_age]
-        if options[:expires]
-          expires = options[:expires]
+
+        if (expires = options[:expires])
           parts << 'expires=' << `expires.toGMTString()` << '; '
         end
-        parts << 'path='    << options[:path] << '; '           if options[:path]
+
         parts << 'domain='  << options[:domain] << '; '         if options[:domain]
         parts << 'secure'                                       if options[:secure]
 
@@ -76,13 +78,13 @@ module Volt
           value = @model.get(attribute_name)
 
           # Temp, expire in 1 year, going to expand this api
-          write_cookie(attribute_name, value.to_s, expires: Time.now + (356 * 24 * 60 * 60))
+          write_cookie(attribute_name, value.to_s, expires: Time.now + (356 * 24 * 60 * 60), path: '/')
         end
       end
 
       def removed(attribute_name)
         writing_cookies do
-          write_cookie(attribute_name, '', expires: Time.now)
+          write_cookie(attribute_name, '', max_age: 0, path: '/')
         end
       end
 
