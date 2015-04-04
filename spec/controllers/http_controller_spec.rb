@@ -1,6 +1,7 @@
 if RUBY_PLATFORM != 'opal'
   require 'volt/controllers/http_controller'
   require 'volt/server/rack/http_request'
+  require 'volt/server/rack/http_resource'
 
   describe Volt::HttpController do
 
@@ -40,7 +41,13 @@ if RUBY_PLATFORM != 'opal'
         render json: { some: "json" }, status: :created, location: "/test/location"
       end
 
+      def access_body
+        render json: JSON.parse(request.body.read)
+      end
+
     end
+
+    let(:app) { lambda {|env| [404, env, "app"] } }
 
     let(:request) {
       Volt::HttpRequest.new(Rack::MockRequest.env_for("http://example.com/test.html", "CONTENT_TYPE" => "text/plain;charset=utf-8"))
@@ -107,6 +114,14 @@ if RUBY_PLATFORM != 'opal'
     it "should include the custum headers" do
       response = controller.perform(:render_json_with_custom_headers)
       expect(response['Location']).to eq('/test/location')
+    end
+
+    it "should have access to the body" do
+      http_app = Volt::HttpResource.new(app, nil)
+      allow(http_app).to receive(:routes_match?).and_return(_controller: 'test_http', _action: 'access_body')
+      request = Rack::MockRequest.new(http_app)
+      response = request.post("http://example.com/test.html", input: { test: "params" }.to_json)
+      expect(response.body).to eq({ test: "params" }.to_json)
     end
   end
 end
