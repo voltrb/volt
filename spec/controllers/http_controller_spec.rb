@@ -35,10 +35,19 @@ if RUBY_PLATFORM != 'opal'
       def render_json
         render json: { "this" => "is_json", "another" => "pair" }
       end
+
+      def render_json_with_custom_headers
+        render json: { some: "json" }, status: :created, location: "/test/location"
+      end
+
     end
 
     let(:request) {
       Volt::HttpRequest.new(Rack::MockRequest.env_for("http://example.com/test.html", "CONTENT_TYPE" => "text/plain;charset=utf-8"))
+    }
+
+    let(:controller) {
+      TestHttpController.new({}, request)
     }
 
     it "should merge the request params and the url params" do
@@ -51,14 +60,12 @@ if RUBY_PLATFORM != 'opal'
     end
 
     it "should perform the correct action" do
-      controller = TestHttpController.new({}, request)
       expect(controller.action_called).not_to be(true)
       controller.perform(:just_call_an_action)
       expect(controller.action_called).to be(true)
     end
 
     it "should redirect" do
-      controller = TestHttpController.new({}, request)
       expect(controller.action_called).not_to be(true)
       response = controller.perform(:redirect_action)
       expect(response.location).to eq("http://path.to/example")
@@ -66,7 +73,6 @@ if RUBY_PLATFORM != 'opal'
     end
 
     it "should respond with head" do
-      controller = TestHttpController.new({}, request)
       response = controller.perform(:ok_head_action)
       expect(response.status).to eq(200)
       expect(response.body).to eq([])
@@ -80,8 +86,6 @@ if RUBY_PLATFORM != 'opal'
     end
 
     it "should render plain text" do
-      controller = TestHttpController.new({}, request)
-      expect(controller.action_called).not_to be(true)
       response = controller.perform(:render_plain_text)
       expect(response.status).to eq(200)      
       expect(response['Content-Type']).to eq("text/plain")
@@ -89,12 +93,20 @@ if RUBY_PLATFORM != 'opal'
     end
 
     it "should render json" do
-      controller = TestHttpController.new({}, request)
-      expect(controller.action_called).not_to be(true)
       response = controller.perform(:render_json)
       expect(response.status).to eq(200)      
       expect(response['Content-Type']).to eq("application/json")
       expect(JSON.parse(response.body.first)).to eq({ "this" => "is_json", "another" => "pair" })
+    end
+
+    it "should set the correct status for rendered responses" do
+      response = controller.perform(:render_json_with_custom_headers)
+      expect(response.status).to eq(201)
+    end
+
+    it "should include the custum headers" do
+      response = controller.perform(:render_json_with_custom_headers)
+      expect(response['Location']).to eq('/test/location')
     end
   end
 end

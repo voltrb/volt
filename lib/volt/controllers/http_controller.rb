@@ -36,9 +36,9 @@ module Volt
       head(status, location: target)
     end
 
-    def render(val, status = :ok)
-      renderer = HttpResponseRenderer.new
-      body, additional_headers = renderer.render(val)
+    def render(content)
+      status = content.delete(:status) || :ok
+      body, additional_headers = HttpResponseRenderer.new.render(content)
       head(status, additional_headers)
       response_body << body
     end
