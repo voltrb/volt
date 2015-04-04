@@ -15,11 +15,11 @@ if RUBY_PLATFORM != 'opal'
 
       def index
         @action_called = true
-        render plain: 'just some text'
+        render text: 'just some text'
       end
 
       def show
-        render plain: "show with id #{params[:stuff_id]} " \
+        render text: "show with id #{params[:stuff_id]} " \
                       "and #{params[:test]} called"
       end
     end
@@ -28,8 +28,8 @@ if RUBY_PLATFORM != 'opal'
 
     before(:each) do
       routes do
-        get '/stuff', _controller: 'simple', _action: 'index'
-        get '/stuff/{{ stuff_id }}', _controller: 'simple', _action: 'show'
+        get '/stuff', controller: 'simple', action: 'index'
+        get '/stuff/{{ stuff_id }}', controller: 'simple', action: 'show'
       end
     end
 

@@ -17,7 +17,7 @@ module Volt
 
     # Default renderers for json and plain text
     register_renderer(:json, 'application/json', proc { |data| data.to_json })
-    register_renderer(:plain, 'text/plain', proc { |data| data.to_s })
+    register_renderer(:text, 'text/plain', proc { |data| data.to_s })
 
     # Iterate through @renderes to find a matching renderer for the given
     # content and call the given proc.

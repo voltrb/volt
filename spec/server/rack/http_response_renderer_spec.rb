@@ -12,7 +12,7 @@ describe Volt::HttpResponseRenderer do
 
   it 'should render plain text' do
     text = 'just some text'
-    body, additional_headers = renderer.render(plain: text)
+    body, additional_headers = renderer.render(text: text)
     expect(body).to eq(text)
     expect(additional_headers[:content_type]).to eq('text/plain')
   end
@@ -25,7 +25,7 @@ describe Volt::HttpResponseRenderer do
 
   it 'should add all remaining keys as additional_headers' do
     text = 'just some text'
-    body, additional_headers = renderer.render(plain: text,
+    body, additional_headers = renderer.render(text: text,
                                                additional: 'headers')
     expect(body).to eq(text)
     expect(additional_headers[:additional]).to eq('headers')

@@ -28,7 +28,7 @@ if RUBY_PLATFORM != 'opal'
       end
 
       def render_plain_text
-        render plain: 'just plain text'
+        render text: 'just plain text'
       end
 
       def render_json
@@ -119,8 +119,8 @@ if RUBY_PLATFORM != 'opal'
     it 'should have access to the body' do
       http_app = Volt::HttpResource.new(app, nil)
       allow(http_app).to receive(:routes_match?)
-        .and_return(_controller: 'test_http',
-                    _action: 'access_body')
+        .and_return(controller: 'test_http',
+                    action: 'access_body')
       request = Rack::MockRequest.new(http_app)
       response = request.post('http://example.com/test.html', input:
         { test: 'params' }.to_json)
