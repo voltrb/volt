@@ -125,7 +125,7 @@ module Volt
 
     # Assign multiple attributes as a hash, directly.
     def assign_attributes(attrs, initial_setup=false, skip_changes=false)
-      @attributes = {}
+      @attributes ||= {}
 
       attrs = wrap_values(attrs)
 
@@ -409,9 +409,8 @@ module Volt
         key = key.to_sym
 
         # Track the change, since assign_all_attributes runs with no_change_tracking
-        attribute_will_change!(key, @attributes[key]) if track_changes
-
-        puts "TRACK PREV VALUE: #{key.inspect} - #{@attributes.inspect}" if @attributes[key]
+        old_val = @attributes[key]
+        attribute_will_change!(key, old_val) if track_changes && old_val != value
 
         if self.respond_to?(:"#{key}=")
           # If a method without an underscore is defined, call that.

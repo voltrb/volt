@@ -1,7 +1,6 @@
 module Volt
   module Buffer
     def save!
-      puts "START SAVE"
       # Compute the erros once
       errors = self.errors.to_h
 
@@ -13,11 +12,10 @@ module Volt
             promise = save_to.append(attributes)
           else
             # We have a saved model
-            promise = save_to.assign_attributes(attributes, false, true)
+            promise = save_to.assign_attributes(attributes)
           end
 
           return promise.then do |new_model|
-            puts "AFTER"
             # The main model saved, so mark the buffer as not new
             @new = false
 
@@ -66,20 +64,12 @@ module Volt
       model_klass = self.class
 
       new_options = options.merge(path: model_path, save_to: self, buffer: true).reject { |k, _| k.to_sym == :persistor }
-      model       = model_klass.new({}, new_options, :loading)
 
-      if loaded?
-        setup_buffer(model)
-      else
-        parent.then do
-          setup_buffer(model)
-        end.fail do |err|
-          # TODO: right now this error gets ignored a lot, so lets log.
-          Volt.logger.error("error setting up buffer: #{err.inspect}")
-          Volt.logger.error(err.backtrace)
+      model = nil
+      Volt::Model.no_validate do
+        model = model_klass.new(attributes, new_options, :loaded)
 
-          raise err
-        end
+        model.instance_variable_set('@new', @new)
       end
 
       model

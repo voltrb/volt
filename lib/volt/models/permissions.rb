@@ -12,7 +12,8 @@ module Volt
         def own_by_user(key=:user_id)
           # When the model is created, assign it the user_id (if the user is logged in)
           on(:new) do
-            if !(user_id = Volt.user_id).nil?
+            # Only assign the user_id if there isn't already one and the user is logged in.
+            if _user_id.nil? && !(user_id = Volt.user_id).nil?
               send(:"_#{key}=", user_id)
             end
           end
