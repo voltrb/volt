@@ -88,13 +88,13 @@ if RUBY_PLATFORM != 'opal'
       expect(response.body).to eq(["just plain text"])
     end
 
-    # it "should render json" do
-    #   controller = TestHttpController.new({}, request)
-    #   expect(controller.action_called).not_to be(true)
-    #   response = controller.perform(:render_plain_text)
-    #   expect(response.status).to eq(200)      
-    #   expect(response['Content-Type']).to eq("application/json")
-    #   expect(JSON.parse(response.body.first)).to eq({ "this" => "is_json", "another" => "pair" })
-    # end
+    it "should render json" do
+      controller = TestHttpController.new({}, request)
+      expect(controller.action_called).not_to be(true)
+      response = controller.perform(:render_json)
+      expect(response.status).to eq(200)      
+      expect(response['Content-Type']).to eq("application/json")
+      expect(JSON.parse(response.body.first)).to eq({ "this" => "is_json", "another" => "pair" })
+    end
   end
 end

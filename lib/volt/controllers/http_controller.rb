@@ -1,4 +1,5 @@
-require 'volt/server/rack/http_resonse_header'
+require 'volt/server/rack/http_response_header'
+require 'volt/server/rack/http_response_renderer'
 
 module Volt
   class HttpController
@@ -14,31 +15,32 @@ module Volt
     end
 
     def perform(action)
-      #TODO before actions
+      #TODO: before actions
       self.send(action.to_sym)
-      #TODO after actions / around actions
+      #TODO: after actions / around actions
       respond
     end
 
     private
 
+    def store
+      $page.store
+    end
+
+    def head(status, additional_headers = {})
+      @response_status = status
+      response_headers.merge!(additional_headers)
+    end
+
     def redirect_to(target, status = :found)
-      response_headers[:location] = target
-      @response_status = status
+      head(status, location: target)
     end
 
-    def head(status, options = {})
-      @response_status = status
-      response_headers.merge!(options)
-    end
-
-    def render(val)
-      # val[:status] = :ok unless val[:status]
-      # renderer = Renderer.for(val)
-      response_body << val[:plain]
-      #response_headers = response_headers.merge(renderer.headers)      
-      response_headers['Content-Type'] = "text/plain"
-      @response_status = :ok
+    def render(val, status = :ok)
+      renderer = HttpResponseRenderer.new
+      body, additional_headers = renderer.render(val)
+      head(status, additional_headers)
+      response_body << body
     end
 
     def respond

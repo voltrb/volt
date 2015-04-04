@@ -1,4 +1,4 @@
-require 'volt/server/rack/http_resonse_header'
+require 'volt/server/rack/http_response_header'
 
 describe Volt::HttpResponseHeader do
 
@@ -6,7 +6,10 @@ describe Volt::HttpResponseHeader do
     header = Volt::HttpResponseHeader.new
     header[:content_type] = 'test'
     expect(header['Content-Type']).to eq('test')
+    expect(header['content-type']).to eq('test')
+    expect(header['content_type']).to eq('test')
     expect(header[:content_type]).to eq('test')
+    expect(header.keys).to eq(['Content-Type'])
   end
 
   it "should delete keys" do
@@ -23,7 +26,7 @@ describe Volt::HttpResponseHeader do
     hash = Hash.new
     hash[:transfer_encoding] = 'encoding'
 
-    expect(header.merge(hash)).to be_kind_of(Volt::HttpResponseHeader)
+    expect(header.merge(hash)).to be_a(Volt::HttpResponseHeader)
     expect(header.merge(hash)['Transfer-Encoding']).to eq('encoding')
 
     header.merge!(hash)
