@@ -2,11 +2,14 @@ require 'volt/server/rack/http_response_header'
 require 'volt/server/rack/http_response_renderer'
 
 module Volt
+
+  # Allow you to create controllers that act as http endpoints
   class HttpController
 
     attr_accessor :response_body
-    attr_reader :params, :response_headers
+    attr_reader :params, :response_headers, :request
 
+    # Initialzed with the params parsed from the route and the HttpRequest
     def initialize(params, request)
       @response_headers = HttpResponseHeader.new
       @response_body = []

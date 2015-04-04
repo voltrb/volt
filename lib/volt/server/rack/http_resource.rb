@@ -26,6 +26,8 @@ module Volt
       @router.url_to_params(request.method, request.path)
     end
 
+    #Find the correct controller and call the correct action on it.
+    #The controller name and actions need to be set as params for the matching route
     def dispatch_to_controller(params, request)
       controller_name = params[:_controller] + "_controller"
       action = params[:_action]

@@ -1,7 +1,8 @@
 require 'volt'
 
 module Volt
-  #Wrapper around a simple Hash for easy http header creation / manipulation
+  # Wrapper around a Hash for easy http header creation / manipulation with indifferent access.
+  # header[:content_type] == header['Content-Type'] == header['content-type'] == header ['Content_Type']
   class HttpResponseHeader < Hash
     def []=(key, value)
       super(key.to_s.headerize, value)
