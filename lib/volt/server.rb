@@ -91,7 +91,6 @@ module Volt
       @component_paths.app_folders do |app_folder|
         # Sort so we get consistent load order across platforms
         Dir["#{app_folder}/*/{http_controllers}/*.rb"].each do |ruby_file|
-          puts "requiring #{ruby_file.to_s}"
           #path = ruby_file.gsub(/^#{app_folder}\//, '')[0..-4]
           #require(path)
           load ruby_file
@@ -111,8 +110,6 @@ module Volt
     end
 
     def app
-      puts "Im getting called"
-      
       @app = Rack::Builder.new
 
       # Should only be used in production
