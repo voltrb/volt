@@ -2,10 +2,8 @@ require 'volt/server/rack/http_response_header'
 require 'volt/server/rack/http_response_renderer'
 
 module Volt
-
   # Allow you to create controllers that act as http endpoints
   class HttpController
-
     attr_accessor :response_body
     attr_reader :params, :response_headers, :request
 
@@ -18,9 +16,9 @@ module Volt
     end
 
     def perform(action)
-      #TODO: before actions
-      self.send(action.to_sym)
-      #TODO: after actions / around actions
+      # TODO: before actions
+      send(action.to_sym)
+      # TODO: after actions / around actions
       respond
     end
 
@@ -47,10 +45,10 @@ module Volt
     end
 
     def respond
-      Rack::Response.new(response_body, response_status, response_headers) 
+      Rack::Response.new(response_body, response_status, response_headers)
     end
 
-    #Get the http status code as integer
+    # Get the http status code as integer
     def response_status
       if @response_status.is_a?(Symbol)
         Rack::Utils::SYMBOL_TO_STATUS_CODE[@response_status]
@@ -58,6 +56,5 @@ module Volt
         @response_status.try(:to_i) || 200
       end
     end
-
   end
 end

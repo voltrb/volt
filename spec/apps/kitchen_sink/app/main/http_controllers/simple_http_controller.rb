@@ -1,7 +1,6 @@
 class SimpleHttpController < Volt::HttpController
-
   def index
-    render plain: "this is just some text"
+    render plain: 'this is just some text'
   end
 
   def show
@@ -10,8 +9,7 @@ class SimpleHttpController < Volt::HttpController
 
   def upload
     uploaded = params[:file][:tempfile]
-    File.open('tmp/uploaded_file', "wb") { |f| f.write(uploaded.read) }
-    render plain: "Thanks for uploading"
+    File.open('tmp/uploaded_file', 'wb') { |f| f.write(uploaded.read) }
+    render plain: 'Thanks for uploading'
   end
-
 end

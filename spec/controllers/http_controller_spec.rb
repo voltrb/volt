@@ -4,9 +4,7 @@ if RUBY_PLATFORM != 'opal'
   require 'volt/server/rack/http_resource'
 
   describe Volt::HttpController do
-
     class TestHttpController < Volt::HttpController
-
       attr_reader :action_called
 
       def just_call_an_action
@@ -14,7 +12,7 @@ if RUBY_PLATFORM != 'opal'
       end
 
       def ok_head_action
-        head :ok, location: "http://example.com"
+        head :ok, location: 'http://example.com'
       end
 
       def created_head_action
@@ -22,64 +20,65 @@ if RUBY_PLATFORM != 'opal'
       end
 
       def head_with_http_headers
-        head :ok, location: "http://path.to/example"
+        head :ok, location: 'http://path.to/example'
       end
 
       def redirect_action
-        redirect_to "http://path.to/example"
+        redirect_to 'http://path.to/example'
       end
 
       def render_plain_text
-        render plain: "just plain text"
+        render plain: 'just plain text'
       end
 
       def render_json
-        render json: { "this" => "is_json", "another" => "pair" }
+        render json: { 'this' => 'is_json', 'another' => 'pair' }
       end
 
       def render_json_with_custom_headers
-        render json: { some: "json" }, status: :created, location: "/test/location"
+        render json: { some: 'json' },
+               status: :created, location: '/test/location'
       end
 
       def access_body
         render json: JSON.parse(request.body.read)
       end
-
     end
 
-    let(:app) { lambda {|env| [404, env, "app"] } }
+    let(:app) { ->(env) { [404, env, 'app'] } }
 
-    let(:request) {
-      Volt::HttpRequest.new(Rack::MockRequest.env_for("http://example.com/test.html", "CONTENT_TYPE" => "text/plain;charset=utf-8"))
-    }
+    let(:request) do
+      Volt::HttpRequest.new(
+        Rack::MockRequest.env_for('http://example.com/test.html',
+                                  'CONTENT_TYPE' => 'text/plain;charset=utf-8'))
+    end
 
-    let(:controller) {
-      TestHttpController.new({}, request)
-    }
+    let(:controller) { TestHttpController.new({}, request) }
 
-    it "should merge the request params and the url params" do
+    it 'should merge the request params and the url params' do
       request = Volt::HttpRequest.new(
-        Rack::MockRequest.env_for("http://example.com/test.html?this=is_a&test=param"))
-      controller = TestHttpController.new({another: 'params', "and_a" => "string"}, request)
+        Rack::MockRequest.env_for('http://example.com/test.html?this=is_a&test=param'))
+      controller = TestHttpController.new(
+        { another: 'params', 'and_a' => 'string' }, request)
       expect(controller.params.size).to eq(4)
-      expect(controller.params[:and_a]).to eq("string")
+      expect(controller.params[:and_a]).to eq('string')
       expect(controller.params[:this]).to eq('is_a')
     end
 
-    it "should perform the correct action" do
+    it 'should perform the correct action' do
       expect(controller.action_called).not_to be(true)
       controller.perform(:just_call_an_action)
       expect(controller.action_called).to be(true)
     end
 
-    it "should redirect" do
+    it 'should redirect' do
       expect(controller.action_called).not_to be(true)
       response = controller.perform(:redirect_action)
-      expect(response.location).to eq("http://path.to/example")
+      expect(response.location).to eq('http://path.to/example')
       expect(response.status).to eq(302)
     end
 
-    it "should respond with head" do
+    it 'should respond with head' do
       response = controller.perform(:ok_head_action)
       expect(response.status).to eq(200)
       expect(response.body).to eq([])
@@ -92,36 +91,40 @@ if RUBY_PLATFORM != 'opal'
       expect(response.location).to eq('http://path.to/example')
     end
 
-    it "should render plain text" do
+    it 'should render plain text' do
       response = controller.perform(:render_plain_text)
-      expect(response.status).to eq(200)      
-      expect(response['Content-Type']).to eq("text/plain")
-      expect(response.body).to eq(["just plain text"])
+      expect(response.status).to eq(200)
+      expect(response['Content-Type']).to eq('text/plain')
+      expect(response.body).to eq(['just plain text'])
     end
 
-    it "should render json" do
+    it 'should render json' do
       response = controller.perform(:render_json)
-      expect(response.status).to eq(200)      
-      expect(response['Content-Type']).to eq("application/json")
-      expect(JSON.parse(response.body.first)).to eq({ "this" => "is_json", "another" => "pair" })
+      expect(response.status).to eq(200)
+      expect(response['Content-Type']).to eq('application/json')
+      expect(JSON.parse(response.body.first)).to eq('this' => 'is_json',
+                                                    'another' => 'pair')
     end
 
-    it "should set the correct status for rendered responses" do
+    it 'should set the correct status for rendered responses' do
       response = controller.perform(:render_json_with_custom_headers)
       expect(response.status).to eq(201)
     end
 
-    it "should include the custum headers" do
+    it 'should include the custum headers' do
       response = controller.perform(:render_json_with_custom_headers)
       expect(response['Location']).to eq('/test/location')
     end
 
-    it "should have access to the body" do
+    it 'should have access to the body' do
       http_app = Volt::HttpResource.new(app, nil)
-      allow(http_app).to receive(:routes_match?).and_return(_controller: 'test_http', _action: 'access_body')
+      allow(http_app).to receive(:routes_match?)
+        .and_return(_controller: 'test_http',
+                    _action: 'access_body')
       request = Rack::MockRequest.new(http_app)
-      response = request.post("http://example.com/test.html", input: { test: "params" }.to_json)
-      expect(response.body).to eq({ test: "params" }.to_json)
+      response = request.post('http://example.com/test.html', input:
+        { test: 'params' }.to_json)
+      expect(response.body).to eq({ test: 'params' }.to_json)
     end
   end
 end

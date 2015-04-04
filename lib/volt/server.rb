@@ -153,16 +153,16 @@ module Volt
       end
 
       @app.use Rack::Static,
-      urls: ['/'],
-      root: 'config/base',
-      index: '',
-      header_rules: [
-       [:all, { 'Cache-Control' => 'public, max-age=86400' }]
-     ]
+        urls: ['/'],
+        root: 'config/base',
+        index: '',
+        header_rules: [
+          [:all, { 'Cache-Control' => 'public, max-age=86400' }]
+        ]
 
-     @app.run lambda { |env| [404, { 'Content-Type' => 'text/html; charset=utf-8' }, ['404 - page not found']] }
+      @app.run lambda { |env| [404, { 'Content-Type' => 'text/html; charset=utf-8' }, ['404 - page not found']] }
 
-     @app
-   end
- end
+      @app
+    end
+  end
 end

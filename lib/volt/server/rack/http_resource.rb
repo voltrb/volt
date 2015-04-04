@@ -13,7 +13,8 @@ module Volt
 
     def call(env)
       request = HttpRequest.new(env)
-      if params = routes_match?(request)
+      params = routes_match?(request)
+      if params
         dispatch_to_controller(params, request)
       else
         @app.call env
@@ -26,12 +27,14 @@ module Volt
       @router.url_to_params(request.method, request.path)
     end
 
-    #Find the correct controller and call the correct action on it.
-    #The controller name and actions need to be set as params for the matching route
+    # Find the correct controller and call the correct action on it.
+    # The controller name and actions need to be set as params for the
+    # matching route
     def dispatch_to_controller(params, request)
-      controller_name = params[:_controller] + "_controller"
+      controller_name = params[:_controller] + '_controller'
       action = params[:_action]
-      controller = Object.const_get(controller_name.camelize.to_sym).new(params, request)
+      klass = Object.const_get(controller_name.camelize.to_sym)
+      controller = klass.new(params, request)
       controller.perform(action)
     end
   end

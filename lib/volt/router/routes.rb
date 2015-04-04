@@ -64,15 +64,15 @@ module Volt
 
     # Add a route
     def client(path, params = {})
-      create_route(:client, path, params)     
+      create_route(:client, path, params)
     end
 
-    #Add server side routes
+    # Add server side routes
     def get(path, params)
       create_route(:get, path, params)
     end
 
-    def post(path, params) 
+    def post(path, params)
       create_route(:post, path, params)
     end
 
@@ -88,15 +88,13 @@ module Volt
       create_route(:delete, path, params)
     end
 
-
     # Takes in params and generates a path and the remaining params
     # that should be shown in the url.  The extra "unused" params
     # will be tacked onto the end of the url ?param1=value1, etc...
     #
     # returns the url and new params, or nil, nil if no match is found.
     def params_to_url(test_params)
-
-      #Extract the desired method from the params
+      # Extract the desired method from the params
       method = test_params.delete(:method) || :client
       method = method.to_sym
 
@@ -109,9 +107,7 @@ module Volt
         # TODO: Maybe a deep dup?
         result, new_params = check_params_match(test_params.dup, param_matcher[0])
 
-        if result
-          return param_matcher[1].call(new_params)
-        end
+        return param_matcher[1].call(new_params) if result
       end
 
       [nil, nil]
@@ -138,7 +134,6 @@ module Volt
       match_path(parts, parts, @indirect_routes[method])
     end
 
-
     private
 
     def create_route(method, path, params)
@@ -147,7 +142,7 @@ module Volt
       if has_binding?(path)
         add_indirect_path(@indirect_routes[method], path, params)
       else
-        @direct_routes[method][path] = params      
+        @direct_routes[method][path] = params
       end
 
       add_param_matcher(method, path, params)
@@ -244,12 +239,12 @@ module Volt
 
         url = parts.map do |part|
           val = if has_binding?(part)
-            # Get the
-            binding = part[2...-2].strip.to_sym
-            input_params.delete(binding)
-          else
-            part
-          end
+                  # Get the
+                  binding = part[2...-2].strip.to_sym
+                  input_params.delete(binding)
+                else
+                  part
+                end
 
           val
         end.join('/')

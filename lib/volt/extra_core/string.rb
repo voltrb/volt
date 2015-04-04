@@ -36,7 +36,9 @@ class String
   end
 
   def headerize
-    split(/[_-]/).map{|new_str| new_str[0].capitalize + new_str[1..-1] }.join('-')
+    split(/[_-]/)
+      .map { |new_str| new_str[0].capitalize + new_str[1..-1] }
+      .join('-')
   end
 
   def plural?
