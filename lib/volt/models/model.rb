@@ -124,16 +124,16 @@ module Volt
     end
 
     # Assign multiple attributes as a hash, directly.
-    def assign_attributes(attrs, initial_setup = false)
+    def assign_attributes(attrs, initial_setup=false, skip_changes=false)
       @attributes = {}
 
       attrs = wrap_values(attrs)
 
       if attrs
         # When doing a mass-assign, we don't validate or save until the end.
-        if initial_setup
+        if initial_setup || skip_changes
           Model.no_change_tracking do
-            assign_all_attributes(attrs)
+            assign_all_attributes(attrs, skip_changes)
           end
         else
           assign_all_attributes(attrs)
@@ -403,13 +403,15 @@ module Volt
     end
 
     # Used internally from other methods that assign all attributes
-    def assign_all_attributes(attrs)
+    def assign_all_attributes(attrs, track_changes=false)
       # Assign each attribute using setters
       attrs.each_pair do |key, value|
         key = key.to_sym
 
         # Track the change, since assign_all_attributes runs with no_change_tracking
-        # attribute_will_change!(key, @attributes[key])
+        attribute_will_change!(key, @attributes[key]) if track_changes
+
+        puts "TRACK PREV VALUE: #{key.inspect} - #{@attributes.inspect}" if @attributes[key]
 
         if self.respond_to?(:"#{key}=")
           # If a method without an underscore is defined, call that.

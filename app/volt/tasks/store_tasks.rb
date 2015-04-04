@@ -25,8 +25,10 @@ class StoreTasks < Volt::TaskHandler
       # Create a buffer
       buffer = model.buffer
 
+      puts "BUFFER: #{model.inspect}::\n#{buffer.inspect} - #{buffer.changed_attributes.inspect}"
+
       # Assign the data
-      buffer.assign_attributes(data, true)
+      # buffer.assign_attributes(data, true)
 
       buffer
     end

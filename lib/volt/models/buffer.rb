@@ -1,6 +1,7 @@
 module Volt
   module Buffer
     def save!
+      puts "START SAVE"
       # Compute the erros once
       errors = self.errors.to_h
 
@@ -12,10 +13,11 @@ module Volt
             promise = save_to.append(attributes)
           else
             # We have a saved model
-            promise = save_to.assign_attributes(attributes, true)
+            promise = save_to.assign_attributes(attributes, false, true)
           end
 
           return promise.then do |new_model|
+            puts "AFTER"
             # The main model saved, so mark the buffer as not new
             @new = false
 
