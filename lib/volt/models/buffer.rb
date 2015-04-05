@@ -1,7 +1,11 @@
 module Volt
   module Buffer
     def save!
-      # Compute the erros once
+      # TODO: this shouldn't need to be run, but if no attributes are assigned, then
+      # if needs to be run.  Maybe there's a better way to handle it.
+      validate!
+
+      # Get errors from validate
       errors = self.errors.to_h
 
       if errors.size == 0
