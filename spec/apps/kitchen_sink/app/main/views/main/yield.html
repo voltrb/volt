@@ -13,6 +13,6 @@
   <p>{{ yield }}</p>
 
 
-  {{ if Volt.user }}
-    Email: {{ Volt.user._email }}
+  {{ if Volt.current_user }}
+    Email: {{ Volt.current_user._email }}
   {{ end }}

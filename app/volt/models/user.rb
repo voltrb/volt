@@ -21,7 +21,7 @@ module Volt
       deny :hashed_password
 
       # Deny all if this isn't the owner
-      deny if !_id == Volt.user_id && !new?
+      deny if !_id == Volt.current_user_id && !new?
     end
 
     if RUBY_PLATFORM == 'opal'

@@ -23,7 +23,7 @@ class QueryTasks < Volt::TaskHandler
       # For requests from the client (with @channel), we track the channel
       # so we can send the results back.  Server side requests don't stay live,
       # they simply return to :dirty once the query is issued.
-      @channel.user_id = Volt.user_id
+      @channel.user_id = Volt.current_user_id
 
       live_query.add_channel(@channel)
     end
