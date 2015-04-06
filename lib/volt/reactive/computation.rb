@@ -40,9 +40,10 @@ module Volt
     def on_invalidate(&callback)
       if @invalidated
         # Call invalidate now, since its already invalidated
-        Computation.run_without_tracking do
+        # Computation.run_without_tracking do
+          queue_flush!
           callback.call
-        end
+        # end
       else
         # Store the invalidation
         @invalidations << callback
@@ -57,14 +58,7 @@ module Volt
         @invalidated = true
 
         unless @stopped || @computing
-          @@flush_queue << self
-
-          # If we are in the browser, we queue a flush for the next tick
-          if Volt.in_browser?
-            self.class.queue_flush!
-          end
-
-          # If we are not in the browser, the user must manually flush
+          queue_flush!
         end
 
         invalidations  = @invalidations
@@ -112,7 +106,7 @@ module Volt
 
       @flushing = true
       # clear any timers
-      @timer    = nil
+      @@timer    = nil
 
       computations  = @@flush_queue
       @@flush_queue = []
@@ -122,10 +116,16 @@ module Volt
       @flushing = false
     end
 
-    def self.queue_flush!
-      unless @timer
-        # Flush once everything else has finished running
-        @timer = `setImmediate(function() { self['$flush!'](); });`
+    def queue_flush!
+      @@flush_queue << self
+
+      # If we are in the browser, we queue a flush for the next tick
+      # If we are not in the browser, the user must manually flush
+      if Volt.in_browser?
+        unless @@timer
+          # Flush once everything else has finished running
+          @@timer = `setImmediate(function() { self.$class()['$flush!'](); })`
+        end
       end
     end
   end

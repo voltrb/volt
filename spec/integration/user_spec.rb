@@ -38,7 +38,7 @@ if ENV['BROWSER']
       visit '/'
 
       # Add the user
-      store._users << { email: 'test@test.com', password: 'awes0mesEcRet', name: 'Test Account 9550' }
+      store._users! << { email: 'test@test.com', password: 'awes0mesEcRet', name: 'Test Account 9550' }
 
       click_link 'Login'
 

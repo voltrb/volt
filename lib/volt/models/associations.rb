@@ -21,7 +21,7 @@ module Volt
             # The key will be "{this class name}_id"
             remote_key_name ||= :"#{path[-2].singularize}_id"
 
-            root.send(:"_#{method_name.pluralize}").where(remote_key_name => id)
+            root.send(:"_#{method_name.pluralize}!").where(remote_key_name => id)
           end
         end
       end

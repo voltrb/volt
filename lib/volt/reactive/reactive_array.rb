@@ -33,6 +33,7 @@ module Volt
     def count(&block)
       if block
         count = 0
+
         size.times do |index|
           if block.call(self[index]).true?
             count += 1

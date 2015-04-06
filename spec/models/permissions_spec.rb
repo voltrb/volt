@@ -80,7 +80,7 @@ describe "model permissions" do
   if RUBY_PLATFORM != 'opal'
     describe "read permissions" do
       it 'should deny read on a field' do
-        model = store._test_deny_read_names.buffer
+        model = store._test_deny_read_names!.buffer
         model._name = 'Jimmy'
         model._other = 'should be visible'
 
@@ -97,7 +97,7 @@ describe "model permissions" do
     end
 
     it 'should prevent delete if denied' do
-      model = store._test_deny_deletes.buffer
+      model = store._test_deny_deletes!.buffer
 
       model.save!.then do
         # Saved
@@ -113,7 +113,7 @@ describe "model permissions" do
     end
 
     it 'should not check the read permissions when updating (so that all fields are present for the permissions check)' do
-      model = store._test_update_read_checks.append({name: 'Ryan'}).sync
+      model = store._test_update_read_checks!.append({name: 'Ryan'}).sync
 
       expect(model.create_check).to eq(true)
       expect(model.read_check).to eq(nil)
@@ -126,7 +126,7 @@ describe "model permissions" do
     end
 
     it 'should not check read permissions on buffer save on server' do
-      model = store._test_update_read_checks.buffer
+      model = store._test_update_read_checks!.buffer
 
       model._name = 'Ryan'
 
@@ -146,7 +146,7 @@ describe "model permissions" do
     end
 
     it 'should not check read on delete, so all fields are available to the permissions block' do
-      model = store._test_update_read_checks.append({name: 'Ryan'}).sync
+      model = store._test_update_read_checks!.append({name: 'Ryan'}).sync
 
       expect(model.read_check).to eq(nil)
 

@@ -6,7 +6,7 @@
 - you can now serve http/rest from Volt.  Thanks to @jfahrer for his great work.  Docs coming soon.
 - fixed generated component code
 - added .order for sorting on the data store (since .sort is a ruby Enum method)
-- added .fetch and .fetch_first for waiting on store model loads
+- calling .then on ArrayModels has been changed to calling .fetch and .fetch_first.  These both return a promise, and take an optional block
 - added .sync for synchronusly waiting on promises on the server only
 - added the ability to pass content into tags: (https://github.com/voltrb/docs/blob/master/en/docs/yield_binding.md)
 - the {action}_remove method had been changed to before_{action}_remove and after_{action}_remove to provide more hooks and a clearer understanding of when it is happening.
@@ -22,6 +22,13 @@
 - ```the_page``` is a shortcut to the page collection inside of specs.  (Unfortunately, ```page``` is used by capybara, so for now we're using ```the_page```, we'll find a better solution in the future.)
 
 ### Changed
+- model attributes no longer return NilModels.  Instead they just return nil.  You can however add an ! to the end to "expand" the model to an empty model.
+
+```page._new_todo # => now returns nil```
+
+```page._new_todo! # => returns an empty model```
+
+So if you wanted to use a property on ```_new_todo``` without initializing ```_new_todo```, you could add the ! to the lookup.
 - Volt.user has been renamed to Volt.current_user so its clearer what it returns
 - _'s are no longer required for route constraints (so just use ```controller: 'main', action: 'index'``` now)
 - the underlying way queries are normalized and passed to the server has changed (no external api changes)

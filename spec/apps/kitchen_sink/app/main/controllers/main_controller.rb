@@ -23,13 +23,13 @@ class MainController < Volt::ModelController
   end
 
   def cookie_test
-    self.model = page._new_cookie.buffer
+    self.model = page._new_cookie!.buffer
   end
 
   def add_cookie
     cookies.send(:"_#{_name.to_s}=", _value)
 
-    self.model = page._new_cookie.buffer
+    self.model = page._new_cookie!.buffer
   end
 
   def content_string

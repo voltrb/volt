@@ -8,7 +8,7 @@ describe Volt::Persistors::Store do
     expect(persistor_instance).to receive(:loaded)
     expect(persistor).to receive(:new).and_return(persistor_instance)
 
-    @model = Volt::Model.new(nil, persistor: persistor)
+    @model = Volt::Model.new({}, persistor: persistor)
 
     expect(persistor_instance).to receive(:changed)
 

@@ -52,9 +52,9 @@ describe Volt::Model do
     expect(!a._false1).to eq(true)
   end
 
-  it "should return a nil model for an underscore value that doesn't exist" do
+  it "should return an empty model for an underscore value that doesn't exist" do
     a = Volt::Model.new
-    expect(a._something.attributes).to eq(nil)
+    expect(a._something!.attributes).to eq({})
   end
 
   it 'should trigger changed once when a new value is assigned.' do
@@ -140,7 +140,7 @@ describe Volt::Model do
   it 'should trigger changed for any indicies after a deleted index' do
     model = Volt::Model.new
 
-    model._items << { _name: 'One' }
+    model._items! << { _name: 'One' }
     model._items << { _name: 'Two' }
     model._items << { _name: 'Three' }
 
@@ -156,7 +156,7 @@ describe Volt::Model do
   it 'should change the size and length when an item gets added' do
     model = Volt::Model.new
 
-    model._items << { _name: 'One' }
+    model._items! << { _name: 'One' }
     size = model._items.size
     length = model._items.length
 
@@ -177,30 +177,73 @@ describe Volt::Model do
   it 'should add doubly nested arrays' do
     model = Volt::Model.new
 
-    model._items << { name: 'Cool', lists: [] }
-    model._items[0]._lists << { name: 'worked' }
+    model._items! << { name: 'Cool', lists: [] }
+    model._items[0]._lists! << { name: 'worked' }
     expect(model._items[0]._lists[0]._name).to eq('worked')
   end
 
   it 'should make pushed subarrays into ArrayModels' do
     model = Volt::Model.new
 
-    model._items << { _name: 'Test', _lists: [] }
+    model._items! << { _name: 'Test', _lists: [] }
     expect(model._items[0]._lists.class).to eq(Volt::ArrayModel)
   end
 
   it 'should make assigned subarrays into ArrayModels' do
     model = Volt::Model.new
 
-    model._item._name = 'Test'
+    model._item!._name = 'Test'
     model._item._lists = []
     expect(model._item._lists.class).to eq(Volt::ArrayModel)
+  end
+
+  it 'should call changed when an expanded reference changes' do
+    a = Volt::Model.new
+
+    count = 0
+    -> { a._blue ; count += 1 }.watch!
+
+    expect(count).to eq(1)
+
+    a._blue!
+    Volt::Computation.flush!
+
+    expect(count).to eq(2)
+  end
+
+  it 'should call size changed when adding to an ArrayModel' do
+    a = Volt::Model.new
+
+    count = 0
+    -> { count = a._todos.size }.watch!
+
+    expect(count).to eq(0)
+
+    a._todos << {label: 'Be active'}
+    Volt::Computation.flush!
+
+    expect(count).to eq(1)
+  end
+
+  it 'should track changes through an expansion' do
+    a = Volt::Model.new
+
+    last_count = 0
+    -> { last_count = a._todos.count(&:_checked) }.watch!
+
+    expect(last_count).to eq(0)
+
+    a._todos! << {checked: true}
+    Volt::Computation.flush!
+
+    expect(last_count).to eq(1)
   end
 
   it 'should call changed when a the reference to a submodel is assigned to another value' do
     a = Volt::Model.new
 
     count = 0
+    a._blue!
     -> { a._blue && a._blue.respond_to?(:_green) && a._blue._green; count += 1 }.watch!
     expect(count).to eq(1)
 
@@ -214,7 +257,7 @@ describe Volt::Model do
     expect(count).to eq(3)
 
     a._blue = { green: 50 }
-    expect(a._blue._green).to eq(50)
+    expect(a._blue!._green).to eq(50)
     Volt::Computation.flush!
     expect(count).to eq(4)
   end
@@ -238,14 +281,16 @@ describe Volt::Model do
   it 'should let you append nested hashes' do
     a = Volt::Model.new
 
-    a._items << { name: { text: 'Name' } }
+    a._items! << { name: { text: 'Name' } }
 
-    expect(a._items[0]._name._text).to eq('Name')
+    puts "ITEMS: #{a.inspect}"
+
+    expect(a._items[0]._name!._text).to eq('Name')
   end
 
   it 'should not call added too many times' do
     a = Volt::Model.new
-    a._lists << 1
+    a._lists! << 1
 
     count = 0
     a._lists.on('added') { count += 1 }
@@ -257,6 +302,9 @@ describe Volt::Model do
 
   it 'should propigate to different branches' do
     a = Volt::Model.new
+
+    # Expand first
+    a._new_item!
     count = 0
     -> do
       count += 1
@@ -272,11 +320,11 @@ describe Volt::Model do
   describe 'paths' do
     it 'should store the path' do
       a = Volt::Model.new
-      expect(a._test.path).to eq([:test])
+      expect(a._test!.path).to eq([:test])
       a._test = { _name: 'Yes' }
       expect(a._test.path).to eq([:test])
 
-      a._items << { _name: 'Yes' }
+      a._items! << { _name: 'Yes' }
       expect(a._items.path).to eq([:items])
       expect(a._items[0].path).to eq([:items, :[]])
     end
@@ -293,7 +341,7 @@ describe Volt::Model do
     it 'should handle nested paths' do
       a = Volt::Model.new
 
-      a._items << { name: 'Cool', lists: [{ name: 'One' }, { name: 'Two' }] }
+      a._items! << { name: 'Cool', lists: [{ name: 'One' }, { name: 'Two' }] }
 
       expect(a._items[0]._lists.path).to eq([:items, :[], :lists])
       expect(a._items[0]._lists[1].path).to eq([:items, :[], :lists, :[]])
@@ -302,7 +350,7 @@ describe Volt::Model do
     it 'should trigger added when added' do
       a = Volt::Model.new
       count = 0
-      b = a._items
+      b = a._items!
 
       b.on('added') { count += 1 }
       expect(count).to eq(0)
@@ -359,7 +407,7 @@ describe Volt::Model do
 
   it 'should convert to a hash, and unwrap all of the way down' do
     a = Volt::Model.new
-    a._items << { name: 'Test1', other: { time: 'Now' } }
+    a._items! << { name: 'Test1', other: { time: 'Now' } }
     a._items << { name: 'Test2', other: { time: 'Later' } }
 
     item1 = a._items[0].to_h
@@ -381,25 +429,25 @@ describe Volt::Model do
     end
 
     it 'should set the model path' do
-      @model._object._name = 'Test'
+      @model._object!._name = 'Test'
       expect(@model._object.path).to eq([:object])
     end
 
     it 'should set the model path for a sub array' do
-      @model._items << { name: 'Bob' }
+      @model._items! << { name: 'Bob' }
       expect(@model._items.path).to eq([:items])
       expect(@model._items[0].path).to eq([:items, :[]])
     end
 
     it 'should set the model path for sub sub arrays' do
-      @model._lists << { name: 'List 1', items: [] }
-      expect(@model._lists[0]._items.path).to eq([:lists, :[], :items])
+      @model._lists! << { name: 'List 1', items: [] }
+      expect(@model._lists[0]._items!.path).to eq([:lists, :[], :items])
     end
 
     it 'should update the path when added from a model instance to a collection' do
       test_item = TestItem.new
 
-      @model._items << test_item
+      @model._items! << test_item
       expect(@model._items[0].path).to eq([:items, :[]])
     end
   end
@@ -439,7 +487,7 @@ describe Volt::Model do
         @model = Volt::Model.new
 
         # Should return a buffer of the right type
-        expect(@model._items.buffer.class).to eq(Item)
+        expect(@model._items!.buffer.class).to eq(Item)
 
         # Should insert as the right type
         @model._items << { _name: 'Item 1' }
@@ -481,7 +529,7 @@ describe Volt::Model do
 
   if RUBY_PLATFORM != 'opal'
     it 'should update other queries on the server when a new model is created' do
-      query1 = store._todos
+      query1 = store._todos!
       query2 = store._todos.limit(1)
 
       count = 0

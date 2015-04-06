@@ -193,15 +193,7 @@ module Volt
           expand = (method_name[-1] == '!')
           method_name = method_name[0..-2] if expand
 
-          result = get(method_name)
-
-          if expand && !result
-            # Set to an empty hash
-            result = set(method_name, {})
-          end
-
-          # return result
-          result
+          get(method_name, expand)
         end
       else
         # Call on parent
@@ -247,7 +239,7 @@ module Volt
     # 1) a nil model, which returns a wrapped error
     # 2) reading directly from attributes
     # 3) trying to read a key that doesn't exist.
-    def get(attr_name)
+    def get(attr_name, expand=false)
       # Reading an attribute, we may get back a nil model.
       attr_name = attr_name.to_sym
 
@@ -263,7 +255,22 @@ module Volt
       if @attributes && @attributes.key?(attr_name)
         return @attributes[attr_name]
       else
-        return nil
+        # If we're expanding, or the get is for a collection, in which
+        # case we always expand.
+        if expand || attr_name.plural?
+          new_value = read_new_model(attr_name)
+
+          # A value was generated, store it
+          if new_value
+            # Assign directly.  Since this is the first time
+            # we're loading, we can just assign.
+            set(attr_name, new_value)
+          end
+
+          return new_value
+        else
+          return nil
+        end
       end
     end
 
@@ -277,10 +284,11 @@ module Volt
         return @persistor.read_new_model(method_name)
       else
         opts = @options.merge(parent: self, path: path + [method_name])
+
         if method_name.plural?
           return new_array_model([], opts)
         else
-          return new_model(nil, opts)
+          return new_model({}, opts)
         end
       end
     end
@@ -295,30 +303,6 @@ module Volt
       options[:query] = []
 
       ArrayModel.new(attributes, options)
-    end
-
-    # Initialize an empty array and append to it
-    def <<(value)
-      unless @parent
-        fail 'Model data should be stored in sub collections.'
-      end
-
-      # # Grab the last section of the path, so we can do the assign on the parent
-      # path   = @path.last
-      # puts "SEND: #{path.inspect} to #{@parent.inspect}"
-      # result = @parent.send(path)
-      # puts "AFTER"
-      #
-      # if result.nil?
-      #   # If this isn't a model yet, instantiate it
-      #   @parent.send(:"#{path}=", new_array_model([], @options))
-      #   result = @parent.send(path)
-      # end
-
-      # Add the new item
-      result << value
-
-      nil
     end
 
     def inspect
