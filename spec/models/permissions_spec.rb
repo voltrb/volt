@@ -28,6 +28,25 @@ class ::TestDenyReadName < Volt::Model
   end
 end
 
+class ::TestUpdateReadCheck < Volt::Model
+  attr_accessor :create_check, :update_check, :read_check
+
+  permissions(:create) do
+    self.create_check = true
+    allow
+  end
+
+  permissions(:update) do
+    self.update_check = true
+    allow
+  end
+
+  permissions(:read) do
+    self.read_check = true
+    allow
+  end
+end
+
 describe "model permissions" do
   it 'should follow CRUD states when checking permissions' do
     todo = TestUserTodoWithCrudStates.new.buffer
@@ -91,6 +110,49 @@ describe "model permissions" do
 
         expect(count).to eq(1)
       end
+    end
+
+    it 'should not check the read permissions when updating (so that all fields are present for the permissions check)' do
+      model = store._test_update_read_checks.append({name: 'Ryan'}).sync
+
+      expect(model.create_check).to eq(true)
+      expect(model.read_check).to eq(nil)
+
+      # Update
+      model._name = 'Jimmy'
+
+      expect(model.read_check).to eq(nil)
+      expect(model.update_check).to eq(true)
+    end
+
+    it 'should not check read permissions on buffer save on server' do
+      model = store._test_update_read_checks.buffer
+
+      model._name = 'Ryan'
+
+      # Create
+      model.save!
+
+      # Create happens on the save_to, not the buffer
+      expect(model.save_to.create_check).to eq(true)
+      expect(model.save_to.read_check).to eq(nil)
+
+      # Update
+      model._name = 'Jimmy'
+      model.save!
+
+      expect(model.save_to.read_check).to eq(nil)
+      expect(model.save_to.update_check).to eq(true)
+    end
+
+    it 'should not check read on delete, so all fields are available to the permissions block' do
+      model = store._test_update_read_checks.append({name: 'Ryan'}).sync
+
+      expect(model.read_check).to eq(nil)
+
+      model.destroy
+
+      expect(model.read_check).to eq(nil)
     end
   end
 end

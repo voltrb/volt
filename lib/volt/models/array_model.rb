@@ -82,7 +82,10 @@ module Volt
       if @persistor
         promise = @persistor.added(model, @array.size - 1)
         if promise && promise.is_a?(Promise)
-          return promise.fail do |err|
+          return promise.then do
+            # return the model
+            model
+          end.fail do |err|
             # remove from the collection because it failed to save on the server
             @array.delete(model)
 
@@ -95,7 +98,8 @@ module Volt
           end
         end
       else
-        nil
+        # Return this model
+        model
       end
     end
 

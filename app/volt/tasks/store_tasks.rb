@@ -35,8 +35,12 @@ class StoreTasks < Volt::TaskHandler
   def save(collection, path, data)
     data = data.symbolize_keys
     promise = nil
-    Volt::Model.no_validate do
-      promise = load_model(collection, path, data)
+
+    # Don't check the permissions when we load the model, since we want all fields
+    Volt.skip_permissions do
+      Volt::Model.no_validate do
+        promise = load_model(collection, path, data)
+      end
     end
 
     # On the backend, the promise is resolved before its returned, so we can
@@ -61,7 +65,13 @@ class StoreTasks < Volt::TaskHandler
 
   def delete(collection, id)
     # Load the model, then call .destroy on it
-    store.send(:"_#{collection}").where(_id: id).fetch_first do |model|
+    query = nil
+
+    Volt.skip_permissions do
+      query = store.send(:"_#{collection}").where(_id: id)
+    end
+
+    query.fetch_first do |model|
       if model
         if model.can_delete?
           db[collection].remove('_id' => id)

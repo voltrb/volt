@@ -108,7 +108,11 @@ module Volt
 
     # Change the url params, similar to redirecting to a new url
     def go(url)
-      self.url.parse(url)
+      # We might be in the rendering loop, so wait until the next tick before
+      # we change the url
+      Timers.next_tick do
+        self.url.parse(url)
+      end
     end
 
     def page
