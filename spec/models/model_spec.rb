@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'volt/models'
 
 class TestItem < Volt::Model
 end
