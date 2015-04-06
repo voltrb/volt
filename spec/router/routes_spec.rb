@@ -9,41 +9,91 @@ end
 describe Volt::Routes do
   it 'should setup direct routes' do
     routes do
-      get '/', view: 'index'
-      get '/page1', view: 'first_page'
+      client '/', view: 'index'
+      client '/page1', view: 'first_page'
+      get '/page2', controller: 'page', action: 'show'
     end
 
     direct_routes = @routes.instance_variable_get(:@direct_routes)
-    expect(direct_routes).to eq('/' => { view: 'index' }, '/page1' => { view: 'first_page' })
+    expect(direct_routes[:client]).to eq('/' => { view: 'index' }, '/page1' => { view: 'first_page' })
+    expect(direct_routes[:get]).to eq('/page2' => { controller: 'page', action: 'show' })
   end
 
   it 'should setup indirect routes' do
     routes do
-      get '/blog/{{ id }}/edit', view: 'blog/edit'
-      get '/blog/{{ id }}', view: 'blog/show'
+      client '/blog/{{ id }}/edit', view: 'blog/edit'
+      client '/blog/{{ id }}', view: 'blog/show'
+      get '/comments/{{ id }}/edit', controller: 'comments', action: 'edit'
+      get '/comments/{{ id }}', controller: 'comments', action: 'show'
     end
 
     indirect_routes = @routes.instance_variable_get(:@indirect_routes)
-    expect(indirect_routes).to eq(
+    expect(indirect_routes[:client]).to eq(
       'blog' => {
         '*' => {
           'edit' => {
             nil => { view: 'blog/edit', id: 1 }
-          },
-          nil => { view: 'blog/show', id: 1 }
+            },
+            nil => { view: 'blog/show', id: 1 }
+          }
         }
-      }
-    )
+        )
+
+    expect(indirect_routes[:get]).to eq(
+      'comments' => {
+        '*' => {
+          'edit' => {
+            nil => { controller: 'comments', action: 'edit', id: 1 }
+            },
+            nil => { controller: 'comments', action: 'show', id: 1 }
+          }
+        }
+        )      
   end
+
+  it 'should setup param matchers' do
+    routes do
+      client '/blog', view: 'blog'
+      client '/blog/{{ id }}', view: 'blog/show'
+      client '/blog/{{ id }}/edit', view: 'blog/edit'
+      client '/blog/tags/{{ tag }}', view: 'blog/tag'
+      client '/login/{{ name }}/user/{{ id }}', view: 'login', action: 'user'
+      get '/articles', controller: 'articles', action: 'index'
+      get '/articles/{{ id }}', controller: 'articles', action: 'show'
+    end
+
+    param_matches = @routes.instance_variable_get(:@param_matches)
+    expect(param_matches[:client].map { |v| v[0] }).to eq([
+      { view: 'blog' },
+      { view: 'blog/show', id: nil },
+      { view: 'blog/edit', id: nil },
+      { view: 'blog/tag', tag: nil },
+      { view: 'login', action: 'user', name: nil, id: nil }
+      ])
+
+    expect(param_matches[:get].map { |v| v[0] }).to eq([
+      { controller: 'articles', action: 'index' },
+      { controller: 'articles', action: 'show', id: nil },
+      ])    
+  end
+
 
   it 'should match routes' do
     routes do
-      get '/blog', view: 'blog'
-      get '/blog/{{ id }}', view: 'blog/show'
-      get '/blog/{{ id }}/draft', view: 'blog/draft', action: 'draft'
-      get '/blog/{{ id }}/edit', view: 'blog/edit'
-      get '/blog/tags/{{ _tag }}', view: 'blog/tag'
-      get '/login/{{ name }}/user/{{ id }}', view: 'login', action: 'user'
+      client '/blog', view: 'blog'
+      client '/blog/{{ id }}', view: 'blog/show'
+      client '/blog/{{ id }}/draft', view: 'blog/draft', action: 'draft'
+      client '/blog/{{ id }}/edit', view: 'blog/edit'
+      client '/blog/tags/{{ tag }}', view: 'blog/tag'
+      client '/login/{{ name }}/user/{{ id }}', view: 'login', action: 'user'
+      get '/articles', controller: 'articles', action: 'index'
+      get '/articles/{{ id }}', controller: 'articles', action: 'show'
+      put '/articles/{{ articles_id }}/comments/{{ id }}', controller: 'comments', action: 'update'
+      post '/comments', controller: 'comments', action: 'create'
+      put '/people', controller: 'people', action: 'update'
+      patch '/people/1', controller: 'people', action: 'update'
+      delete '/people/2', controller: 'people', action: 'destroy'
+
     end
 
     params = @routes.url_to_params('/blog')
@@ -56,7 +106,7 @@ describe Volt::Routes do
     expect(params).to eq(view: 'blog/show', id: '55')
 
     params = @routes.url_to_params('/blog/tags/good')
-    expect(params).to eq(view: 'blog/tag', _tag: 'good')
+    expect(params).to eq(view: 'blog/tag', tag: 'good')
 
     params = @routes.url_to_params('/blog/55/draft')
     expect(params).to eq(view: 'blog/draft', id: '55', action: 'draft')
@@ -66,34 +116,44 @@ describe Volt::Routes do
 
     params = @routes.url_to_params('/login/cool')
     expect(params).to eq(false)
-  end
 
-  it 'should setup param matchers' do
-    routes do
-      get '/blog', view: 'blog'
-      get '/blog/{{ id }}', view: 'blog/show'
-      get '/blog/{{ id }}/edit', view: 'blog/edit'
-      get '/blog/tags/{{ _tag }}', view: 'blog/tag'
-      get '/login/{{ name }}/user/{{ id }}', view: 'login', action: 'user'
-    end
+    params = @routes.url_to_params(:get, '/articles')
+    expect(params).to eq(controller: 'articles', action: 'index')
 
-    param_matches = @routes.instance_variable_get(:@param_matches)
-    expect(param_matches.map { |v| v[0] }).to eq([
-      { view: 'blog' },
-      { view: 'blog/show', id: nil },
-      { view: 'blog/edit', id: nil },
-      { view: 'blog/tag', _tag: nil },
-      { view: 'login', action: 'user', name: nil, id: nil }
-    ])
+    params = @routes.url_to_params('get', '/articles')
+    expect(params).to eq(controller: 'articles', action: 'index')
+
+    params = @routes.url_to_params(:post, '/articles')
+    expect(params).to be_nil
+
+    params = @routes.url_to_params(:post, '/comments')
+    expect(params).to eq(controller: 'comments', action: 'create')
+
+    params = @routes.url_to_params(:put, '/people')
+    expect(params).to eq(controller: 'people', action: 'update')
+
+    params = @routes.url_to_params(:patch, '/people/1')
+    expect(params).to eq(controller: 'people', action: 'update')
+
+    params = @routes.url_to_params(:delete, '/people/2')
+    expect(params).to eq(controller: 'people', action: 'destroy') 
+
+    params = @routes.url_to_params(:get, '/articles/2')
+    expect(params).to eq(controller: 'articles', action: 'show', id: '2')
+
+    params = @routes.url_to_params(:put, '/articles/2/comments/9')
+    expect(params).to eq(controller: 'comments', action: 'update', articles_id: '2', id: '9') 
   end
 
   it 'should go from params to url' do
     routes do
-      get '/blog', view: 'blog'
-      get '/blog/{{ id }}', view: 'blog/show'
-      get '/blog/{{ id }}/edit', view: 'blog/edit'
-      get '/blog/tags/{{ _tag }}', view: 'blog/tag'
-      get '/login/{{ name }}/user/{{ id }}', view: 'login', action: 'user'
+      client '/blog', view: 'blog'
+      client '/blog/{{ id }}', view: 'blog/show'
+      client '/blog/{{ id }}/edit', view: 'blog/edit'
+      client '/blog/tags/{{ tag }}', view: 'blog/tag'
+      client '/login/{{ name }}/user/{{ id }}', view: 'login', action: 'user'
+      get '/articles/{{ id }}', controller: 'articles', action: 'show'
+      put '/articles/{{ id }}', controller: 'articles', action: 'update'
     end
 
     url, params = @routes.params_to_url(view: 'blog/show', id: '55')
@@ -107,6 +167,14 @@ describe Volt::Routes do
     url, params = @routes.params_to_url(view: 'blog/edit', id: '100', other: 'should_pass')
     expect(url).to eq('/blog/100/edit')
     expect(params).to eq(other: 'should_pass')
+
+    url, params = @routes.params_to_url(controller: 'articles', action: 'show', method: :get, id: 10)
+    expect(url).to eq('/articles/10')
+    expect(params).to eq({})
+
+    url, params = @routes.params_to_url(controller: 'articles', action: 'update', method: :put, id: 99, other: 'xyz')
+    expect(url).to eq('/articles/99')
+    expect(params).to eq({other: 'xyz'})    
   end
 
   it 'should test that params match a param matcher' do
@@ -142,8 +210,8 @@ describe Volt::Routes do
     params._index = '5'
 
     routes do
-      get '/', controller: 'index'
-      get '/blog', controller: 'blog'
+      client '/', controller: 'index'
+      client '/blog', controller: 'blog'
     end
 
     path, cleaned_params = @routes.params_to_url(params.to_h)
@@ -155,8 +223,8 @@ describe Volt::Routes do
     params = Volt::Model.new({}, persistor: Volt::Persistors::Params)
 
     routes do
-      get '/', controller: 'index'
-      get '/blog/{{ id }}', controller: 'blog'
+      client '/', controller: 'index'
+      client '/blog/{{ id }}', controller: 'blog'
     end
 
     params = @routes.url_to_params('/blog/20')

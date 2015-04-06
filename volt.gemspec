@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'opal-jquery', '~> 0.3.0'
   spec.add_dependency 'rspec-core', '~> 3.1.0'
   spec.add_dependency 'capybara', '~> 2.4.2'
-  spec.add_dependency 'selenium-webdriver', '~> 2.43.0'
+  spec.add_dependency 'selenium-webdriver', '~> 2.45.0'
   spec.add_dependency 'chromedriver2-helper', '~> 0.0.8'
   spec.add_dependency 'poltergeist', '~> 1.5.0'
   spec.add_dependency 'opal-rspec', '0.4.0'
