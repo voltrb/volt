@@ -2,6 +2,7 @@
 
 ## 0.8.27 - WIP
 ### Added
+- added has_many and belongs_to on models.  See docs.
 - you can now serve http/rest from Volt.  Thanks to @jfahrer for his great work.  Docs coming soon.
 - fixed generated component code
 - added .order for sorting on the data store (since .sort is a ruby Enum method)
