@@ -92,6 +92,7 @@ module Volt
 
               queue_client_save
             else
+              # puts "SAVE TO DB: #{@model.inspect} - #{self_attributes.inspect} - #{@model.changed_attributes.inspect}"
               errors = save_to_db!(self_attributes)
               if errors.size == 0
                 promise.resolve(nil)

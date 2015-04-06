@@ -3,7 +3,7 @@ require 'thread'
 module Volt
   class << self
     # Get the user_id from the cookie
-    def user_id
+    def current_user_id
       # Check for a user_id from with_user
       if (user_id = Thread.current['with_user_id'])
         return user_id
@@ -52,17 +52,23 @@ module Volt
     end
 
     # True if the user is logged in and the user is loaded
-    def user?
-      !!user
+    def current_user?
+      !!current_user
     end
 
     # Return the current user.
-    def user
+    def current_user
       # Run first on the query, or return nil
       user_query.try(:first)
     end
 
-    def fetch_user
+    # Put in a deprecation placeholder
+    def user
+      Volt.logger.warning("deprication: Volt.user has been renamed to Volt.current_user (to be more clear about what it returns).  Volt.user will be deprecated in the future.")
+      current_user
+    end
+
+    def fetch_current_user
       u_query = user_query
       if u_query
         u_query.fetch_first
@@ -108,7 +114,7 @@ module Volt
     private
     # Returns a query for the current user_id or nil if there is no user_id
     def user_query
-      user_id = self.user_id
+      user_id = self.current_user_id
       if user_id
         $page.store._users.where(_id: user_id)
       else

@@ -21,8 +21,10 @@ module Volt
       # Setup the spec collection accessors
       # RSpec.shared_context "volt collections", {} do
       RSpec.shared_examples_for 'volt collections', {} do
-        # Page conflicts with capybara's page method
-        # let(:page) { Model.new }
+        # Page conflicts with capybara's page method, so we call it the_page for now.
+        # TODO: we need a better solution for page
+
+        let(:the_page) { Model.new }
         let(:store) do
           @__store_accessed = true
           $page ||= Page.new

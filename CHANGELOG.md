@@ -2,10 +2,10 @@
 
 ## 0.8.27 - WIP
 ### Added
-- _'s are no longer required for route constraints (so just use ```controller: 'main', action: 'index'``` now)
+- added has_many and belongs_to on models.  See docs.
+- you can now serve http/rest from Volt.  Thanks to @jfahrer for his great work.  Docs coming soon.
 - fixed generated component code
 - added .order for sorting on the data store (since .sort is a ruby Enum method)
-- changed .find to .where to not conflict with ruby Enum's .find
 - added .fetch and .fetch_first for waiting on store model loads
 - added .sync for synchronusly waiting on promises on the server only
 - added the ability to pass content into tags: (https://github.com/voltrb/docs/blob/master/en/docs/yield_binding.md)
@@ -18,9 +18,15 @@
 - refactored TemplateBinding, moved code into ViewLookupForPath (SRP)
 - reserved fields now get a warning in models
 - bindings will now resolve any values that are promises. (currently only content and attribute, if, each, and template coming soon)
+- ```store``` is now available inside of specs.  If it is accessed in a spec, the database will be cleaned after the spec.
+- ```the_page``` is a shortcut to the page collection inside of specs.  (Unfortunately, ```page``` is used by capybara, so for now we're using ```the_page```, we'll find a better solution in the future.)
 
 ### Changed
+- Volt.user has been renamed to Volt.current_user so its clearer what it returns
+- _'s are no longer required for route constraints (so just use ```controller: 'main', action: 'index'``` now)
 - the underlying way queries are normalized and passed to the server has changed (no external api changes)
+- changed .find to .where to not conflict with ruby Enum's .find
+- Volt::TaskHandler is now Volt::Task
 
 ## 0.8.24 - 2014-12-05
 ### Added

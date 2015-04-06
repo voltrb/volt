@@ -45,3 +45,15 @@ describe '#camelize' do
     expect('HTMLTidyGenerator'.underscore).to eq('html_tidy_generator')
   end
 end
+
+describe '#headerize' do
+  it "headerizes" do
+    expect('test_case'.headerize).to eq('Test-Case')
+  end
+
+  UnderscoresToHeaders.each do |underscored, headerized|
+    it 'underscores' do
+      expect(underscored.headerize).to eq(headerized)
+    end
+  end  
+end

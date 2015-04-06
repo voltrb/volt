@@ -4,7 +4,7 @@ module Volt
     # The permissions module provides helpers for working with Volt permissions.
     module Permissions
       module ClassMethods
-        # Own by user requires a logged in user (Volt.user) to save a model.  If
+        # Own by user requires a logged in user (Volt.current_user) to save a model.  If
         # the user is not logged in, an validation error will occur.  Once created
         # the user can not be changed.
         #
@@ -12,7 +12,8 @@ module Volt
         def own_by_user(key=:user_id)
           # When the model is created, assign it the user_id (if the user is logged in)
           on(:new) do
-            if !(user_id = Volt.user_id).nil?
+            # Only assign the user_id if there isn't already one and the user is logged in.
+            if _user_id.nil? && !(user_id = Volt.current_user_id).nil?
               send(:"_#{key}=", user_id)
             end
           end
@@ -101,12 +102,13 @@ module Volt
       end
 
       # owner? can be called on a model to check if the currently logged
-      # in user (```Volt.user```) is the owner of this instance.
+      # in user (```Volt.current_user```) is the owner of this instance.
       #
       # @param key [Symbol] the name of the attribute where the user_id is stored
       def owner?(key=:user_id)
-        owner_id = send(:"_#{key}")
-        owner_id != nil && owner_id == Volt.user_id
+        # Lookup the original user_id
+        owner_id = was(key) || send(:"_#{key}")
+        owner_id != nil && owner_id == Volt.current_user_id
       end
 
       # Returns boolean if the model can be deleted
@@ -216,11 +218,11 @@ module Volt
       # Run through the permission blocks for the action name, acumulate
       # all allow/deny fields.
       def compute_allow_and_deny(action_name)
-        # Skip permissions can be run on the server to ignore the permissions
-        return if Volt.in_mode?(:skip_permissions)
-
         @__deny_fields = []
         @__allow_fields = []
+
+        # Skip permissions can be run on the server to ignore the permissions
+        return if Volt.in_mode?(:skip_permissions)
 
         # Run the permission blocks
         action_name ||= new? ? :create : :update

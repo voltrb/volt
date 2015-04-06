@@ -1,8 +1,18 @@
 module Volt
   module Buffer
-    def save!
-      # Compute the erros once
+    # Save saves the contents of a buffer to the save_to location.  If the buffer is new, it will create a new
+    # model to save to.  Otherwise it will be an existing model.  Save returns a promise that may fail with
+    # validation errors from the server (or the client).  You can also pass a block as a shortcut to calling
+    # ```.save!.then do```
+    def save!(&block)
+      # TODO: this shouldn't need to be run, but if no attributes are assigned, then
+      # if needs to be run.  Maybe there's a better way to handle it.
+      validate!
+
+      # Get errors from validate
       errors = self.errors.to_h
+
+      result = nil
 
       if errors.size == 0
         save_to = options[:save_to]
@@ -15,7 +25,7 @@ module Volt
             promise = save_to.assign_attributes(attributes)
           end
 
-          return promise.then do |new_model|
+          result = promise.then do |new_model|
             # The main model saved, so mark the buffer as not new
             @new = false
 
@@ -38,8 +48,13 @@ module Volt
         end
       else
         # Some errors, mark all fields
-        promise_for_errors(errors)
+        result = promise_for_errors(errors)
       end
+
+      # If passed a block, call then on it with the block.
+      result = result.then(&block) if block
+
+      return result
     end
 
     # When errors come in, we mark all fields and return a rejected promise.
@@ -64,20 +79,12 @@ module Volt
       model_klass = self.class
 
       new_options = options.merge(path: model_path, save_to: self, buffer: true).reject { |k, _| k.to_sym == :persistor }
-      model       = model_klass.new({}, new_options, :loading)
 
-      if loaded?
-        setup_buffer(model)
-      else
-        parent.then do
-          setup_buffer(model)
-        end.fail do |err|
-          # TODO: right now this error gets ignored a lot, so lets log.
-          Volt.logger.error("error setting up buffer: #{err.inspect}")
-          Volt.logger.error(err.backtrace)
+      model = nil
+      Volt::Model.no_validate do
+        model = model_klass.new(attributes, new_options, :loaded)
 
-          raise err
-        end
+        model.instance_variable_set('@new', @new)
       end
 
       model

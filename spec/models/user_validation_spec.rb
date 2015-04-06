@@ -4,7 +4,7 @@ require 'spec_helper'
 describe Volt::UserValidatorHelpers do
   context "with user" do
     before do
-      allow(Volt).to receive(:user_id) { 294 }
+      allow(Volt).to receive(:current_user_id) { 294 }
     end
 
     it 'should assign user_id when owning by a user' do

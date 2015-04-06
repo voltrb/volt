@@ -29,6 +29,7 @@ describe Volt::Model do
 
   it 'should show all fields in marked errors once saved' do
     buffer = model.buffer
+
     buffer.save!
 
     expect(buffer.marked_errors.keys).to eq(

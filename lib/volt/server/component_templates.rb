@@ -95,8 +95,8 @@ module Volt
     end
 
     def generate_tasks_code
-      TaskHandler.known_handlers.map do |handler|
-        "class #{handler.name} < Volt::TaskHandler; end"
+      Task.known_handlers.map do |handler|
+        "class #{handler.name} < Volt::Task; end"
       end.join "\n"
     end
   end

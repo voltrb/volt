@@ -38,6 +38,23 @@ module Volt
 
     # Sets the current model on this controller
     def model=(val)
+      if val.is_a?(Promise)
+        # Resolve the promise before setting
+        @last_promise = val
+
+        val.then do |result|
+          # Only assign if nothing else has been assigned since we started the resolve
+          self.model = result if @last_promise == val
+        end.fail do |err|
+          Volt.logger.error("Unable to resolve promise assigned to model on #{inspect}")
+        end
+
+        return
+      end
+
+      # Clear
+      @last_promise = nil
+
       # Start with a nil reactive value.
       self.current_model ||= Model.new
 
@@ -91,7 +108,11 @@ module Volt
 
     # Change the url params, similar to redirecting to a new url
     def go(url)
-      self.url.parse(url)
+      # We might be in the rendering loop, so wait until the next tick before
+      # we change the url
+      Timers.next_tick do
+        self.url.parse(url)
+      end
     end
 
     def page

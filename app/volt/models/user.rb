@@ -21,7 +21,7 @@ module Volt
       deny :hashed_password
 
       # Deny all if this isn't the owner
-      deny if !_id == Volt.user_id && !new?
+      deny if !_id == Volt.current_user_id && !new?
     end
 
     if RUBY_PLATFORM == 'opal'
@@ -30,7 +30,6 @@ module Volt
     end
 
     def password=(val)
-      puts "ASSIGN PASSWORD"
       if Volt.server?
         # on the server, we bcrypt the password and store the result
         self._hashed_password = BCrypt::Password.create(val)

@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'volt/models'
 
 class TestItem < Volt::Model
 end
@@ -498,6 +497,10 @@ describe Volt::Model do
       query2.fetch {|v| count += v.size }
 
       expect(count).to eq(1)
+    end
+
+    it 'should skip read permissions when checking create/update' do
+
     end
   end
 end
