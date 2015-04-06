@@ -62,7 +62,13 @@ module Volt
       user_query.try(:first)
     end
 
-    def fetch_user
+    # Put in a deprecation placeholder
+    def user
+      Volt.logger.warning("deprication: Volt.user has been renamed to Volt.current_user (to be more clear about what it returns).  Volt.user will be deprecated in the future.")
+      current_user
+    end
+
+    def fetch_current_user
       u_query = user_query
       if u_query
         u_query.fetch_first

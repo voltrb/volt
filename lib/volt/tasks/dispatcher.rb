@@ -18,8 +18,8 @@ module Volt
 
       start_time = Time.now.to_f
 
-      # Check that we are calling on a TaskHandler class and a method provide at
-      # TaskHandler or above in the ancestor chain.
+      # Check that we are calling on a Task class and a method provide at
+      # Task or above in the ancestor chain.
       if safe_method?(klass, method_name)
         promise.resolve(nil)
 
@@ -61,17 +61,17 @@ module Volt
 
     # Check if it is safe to use this method
     def safe_method?(klass, method_name)
-      # Make sure the class being called is a TaskHandler.
-      return false unless klass.ancestors.include?(TaskHandler)
+      # Make sure the class being called is a Task.
+      return false unless klass.ancestors.include?(Task)
 
       # Make sure the method is defined on the klass we're using and not up the hiearchy.
       #   ^ This check prevents methods like #send, #eval, #instance_eval, #class_eval, etc...
       klass.ancestors.each do |ancestor_klass|
         if ancestor_klass.instance_methods(false).include?(method_name)
           return true
-        elsif ancestor_klass == TaskHandler
-          # We made it to TaskHandler and didn't find the method, that means it
-          # was defined above TaskHandler, so we reject the call.
+        elsif ancestor_klass == Task
+          # We made it to Task and didn't find the method, that means it
+          # was defined above Task, so we reject the call.
           return false
         end
       end
