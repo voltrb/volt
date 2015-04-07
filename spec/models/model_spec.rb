@@ -283,8 +283,6 @@ describe Volt::Model do
 
     a._items! << { name: { text: 'Name' } }
 
-    puts "ITEMS: #{a.inspect}"
-
     expect(a._items[0]._name!._text).to eq('Name')
   end
 
