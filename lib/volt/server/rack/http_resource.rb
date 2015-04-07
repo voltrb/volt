@@ -31,9 +31,13 @@ module Volt
     # The controller name and actions need to be set as params for the
     # matching route
     def dispatch_to_controller(params, request)
+      namespace = params[:component] || 'main'
+
       controller_name = params[:controller] + '_controller'
       action = params[:action]
-      klass = Object.const_get(controller_name.camelize.to_sym)
+
+      namespace_module = Object.const_get(namespace.camelize.to_sym)
+      klass = namespace_module.const_get(controller_name.camelize.to_sym)
       controller = klass.new(params, request)
       controller.perform(action)
     end

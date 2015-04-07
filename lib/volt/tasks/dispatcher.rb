@@ -19,7 +19,7 @@ module Volt
       start_time = Time.now.to_f
 
       # Check that we are calling on a Task class and a method provide at
-      # Task or above in the ancestor chain.
+      # Task or above in the ancestor chain. (so no :send or anything)
       if safe_method?(klass, method_name)
         promise.resolve(nil)
 

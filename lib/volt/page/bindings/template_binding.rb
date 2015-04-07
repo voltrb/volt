@@ -195,11 +195,6 @@ module Volt
       # Get the constant parts
       parts  = controller_path[0..-2].map { |v| v.tr('-', '_').camelize }
 
-      # Home doesn't get namespaced
-      if parts.first == 'Main'
-        parts.shift
-      end
-
       # Do const lookups starting at object and working our way down.
       # So Volt::ProgressBar would lookup Volt, then ProgressBar on Volt.
       obj = Object

@@ -22,6 +22,8 @@
 - ```the_page``` is a shortcut to the page collection inside of specs.  (Unfortunately, ```page``` is used by capybara, so for now we're using ```the_page```, we'll find a better solution in the future.)
 
 ### Changed
+- main_path in generated projects now includes the a component param that can be used to easily point at controllers/views in other components.
+- previously the main component's controllers were not namespaced.  We changed it so all controllers (including those in main) are namespaced.  This is makes things more consistent and keeps expectations when working with components.
 - model attributes no longer return NilModels.  Instead they just return nil.  You can however add an ! to the end to "expand" the model to an empty model.
 
 ```page._new_todo # => now returns nil```

@@ -167,7 +167,7 @@ module Volt
       # Do the initial url params parse
       @url_tracker.url_updated(true)
 
-      main_controller = MainController.new
+      main_controller = Main::MainController.new
 
       # Setup main page template
       TemplateRenderer.new(self, DomTarget.new, main_controller, 'CONTENT', 'main/main/main/body')
