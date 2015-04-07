@@ -1,0 +1,4 @@
+class <%= config[:task_name] %> < Volt::Task
+
+end
+
