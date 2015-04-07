@@ -64,7 +64,7 @@ module Volt
 
     # Put in a deprecation placeholder
     def user
-      Volt.logger.warning("deprication: Volt.user has been renamed to Volt.current_user (to be more clear about what it returns).  Volt.user will be deprecated in the future.")
+      Volt.logger.warn("deprication: Volt.user has been renamed to Volt.current_user (to be more clear about what it returns).  Volt.user will be deprecated in the future.")
       current_user
     end
 
