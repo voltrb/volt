@@ -72,6 +72,6 @@ class Generate < Thor
 
   def controller?(name, component = 'main')
     dir = Dir.pwd + "/app/#{component}/controllers/"
-    true ? `ls #{dir}`.downcase.include?(name.downcase.underscore.singularize + '.rb') : false
+    true ? File.exists?(dir + name.downcase.underscore.singularize + '.rb') : false
   end
 end
