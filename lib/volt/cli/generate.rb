@@ -66,12 +66,12 @@ class Generate < Thor
   method_option :component, type: :string, default: 'main', banner: 'The component the view should be created in.', required: false
   def view(name, component = 'main')
     output_file = Dir.pwd + "/app/#{component}/views/#{component}/#{name.underscore.singularize}.html"
-    controller(name, component) if !controller?(name, component)
+    controller(name, component) unless controller?(name, component)
     template('view/view.rb.tt', output_file, view_name: name.camelize.singularize)
   end
 
   def controller?(name, component = 'main')
     dir = Dir.pwd + "/app/#{component}/controllers/"
-    true ? File.exists?(dir + name.downcase.underscore.singularize + '.rb') : false
+    File.exists?(dir + name.downcase.underscore.singularize + '.rb')
   end
 end
