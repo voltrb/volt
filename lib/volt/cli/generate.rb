@@ -48,9 +48,16 @@ class Generate < Thor
   desc 'controller NAME COMPONENT', 'Creates a model controller named NAME in the app folder of the component named COMPONENT.'
   method_option :name, type: :string, banner: 'The name of the model controller.'
   method_option :component, type: :string, default: 'main', banner: 'The component the controller should be created in.', required: false
-  def controller(name, component = 'main')
+  def model_controller(name, component = 'main')
     output_file = Dir.pwd + "/app/#{component}/controllers/#{name.underscore.singularize}.rb"
     template('controller/model_controller.rb.tt', output_file, model_controller_name: name.camelize.singularize)
   end
 
+  desc 'task NAME COMPONENT', 'Creates a task named NAME in the app folder of the component named COMPONENT.'
+  method_option :name, type: :string, banner: 'The name of the task.'
+  method_option :component, type: :string, default: 'main', banner: 'The component the task should be created in.', required: false
+  def task(name, component = 'main')
+    output_file = Dir.pwd + "/app/#{component}/tasks/#{name.underscore.singularize}.rb"
+    template('task/task.rb.tt', output_file, task_name: name.camelize.singularize)
+  end
 end
