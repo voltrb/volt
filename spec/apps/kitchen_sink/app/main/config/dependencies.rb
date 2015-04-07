@@ -11,4 +11,4 @@ component 'bootstrap-jumbotron-theme'
 component 'fields'
 
 # For testing
-component 'user-templates'
+component 'user_templates'

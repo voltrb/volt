@@ -9,8 +9,8 @@ client '/yield', action: 'yield'
 client '/todos', controller: 'todos'
 
 # Signup/login routes
-client '/signup', component: 'user-templates', controller: 'signup'
-client '/login', component: 'user-templates', controller: 'login'
+client '/signup', component: 'user_templates', controller: 'signup'
+client '/login', component: 'user_templates', controller: 'login'
 
 # HTTP endpoints
 get '/simple_http', controller: 'simple_http', action: 'index'

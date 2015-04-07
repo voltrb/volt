@@ -14,7 +14,7 @@ group :development do
   gem 'volt-fields'
 
   # For testing
-  gem 'volt-user-templates'
+  gem 'volt-user_templates'
 
   # For running rubocop
   gem 'rubocop', require: false
