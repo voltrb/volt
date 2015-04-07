@@ -8,7 +8,7 @@ gem 'volt', path: '../../../'
 gem 'volt-bootstrap'
 
 # Simple theme for bootstrap, remove to theme yourself.
-gem 'volt-bootstrap-jumbotron-theme'
+gem 'volt-bootstrap_jumbotron_theme'
 
 gem 'volt-fields'
 gem 'volt-user_templates'

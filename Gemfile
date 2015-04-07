@@ -8,7 +8,7 @@ group :development do
   gem 'volt-bootstrap'
 
   # Simple theme for bootstrap, remove to theme yourself.
-  gem 'volt-bootstrap-jumbotron-theme'
+  gem 'volt-bootstrap_jumbotron_theme'
 
   # For testing
   gem 'volt-fields'
