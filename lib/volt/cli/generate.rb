@@ -30,6 +30,11 @@ class Generate < Thor
   def gem(name)
     require 'volt/cli/new_gem'
 
+    if name =~ /[-]/
+      Volt.logger.error("Gem names should use underscores for their names.  Currently volt only supports a single namespace for a compoennt.")
+      return
+    end
+
     NewGem.new(self, name, options)
   end
 
