@@ -1,4 +1,4 @@
-class <% config[:http_controller_name] %> < Volt::HttpController
+class <%= config[:http_controller_name] %> < Volt::HttpController
 
 end
 
