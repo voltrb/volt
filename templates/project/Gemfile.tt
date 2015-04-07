@@ -2,17 +2,15 @@ source 'https://rubygems.org'
 
 gem 'volt', '<%= config[:version] %>'
 
-
 # The following gem's are optional for themeing
-
 # Twitter bootstrap
-gem 'volt-bootstrap'
+gem 'volt-bootstrap', '~> 0.0.10'
 
 # Simple theme for bootstrap, remove to theme yourself.
-gem 'volt-bootstrap-jumbotron-theme'
+gem 'volt-bootstrap-jumbotron-theme', '~> 0.0.5'
 
 # User templates for login, signup, and logout menu.
-gem 'volt-user-templates'
+gem 'volt-user-templates', '~> 0.1.0'
 
 # Server for MRI
 platform :mri do
