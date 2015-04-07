@@ -37,22 +37,22 @@ class Generate < Thor
     File.expand_path(File.join(File.dirname(__FILE__), '../../../templates'))
   end
 
-  desc 'http_controller NAME COMPONENT', 'Creates an HTTP Controller named NAME in the app folder of the component named COMPONENT.'
+  desc 'http_controller NAME COMPONENT', 'Creates an HTTP Controller named NAME in the .'
   method_option :name, type: :string, banner: 'The name of the HTTP Controller.'
+  method_option :component, type: :string, default: 'main', banner: 'The component the http_controller should be created in.', required: false
   def http_controller(name)
     name = name.underscore
     component_folder = Dir.pwd + "/app/#{name}"
     @http_controller_name = name
-    directory('component', component_folder, http_controller_name: name)
   end
 
-  desc 'controller NAME COMPONENT', 'Creates a Controller named NAME in the app folder of the component named COMPONENT.'
-  method_option :name, type: :string, banner: 'The name of the Controller.'
-  def http_controller(name)
+  desc 'controller NAME COMPONENT', 'Creates a controller named NAME in the app folder of the component named COMPONENT.'
+  method_option :name, type: :string, banner: 'The name of the controller.'
+  method_option :component, type: :string, default: 'main', banner: 'The component the controller should be created in.', required: false
+  def controller(name)
     name = name.underscore
     component_folder = Dir.pwd + "/app/#{name}"
     @controller_name = name
-    directory('component', component_folder, controller_name: name)
   end
 
 end
