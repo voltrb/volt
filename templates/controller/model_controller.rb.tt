@@ -1,0 +1,4 @@
+class <%= config[:model_controller_name] %> < Volt::ModelController
+
+end
+
