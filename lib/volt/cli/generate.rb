@@ -42,7 +42,7 @@ class Generate < Thor
   method_option :component, type: :string, default: 'main', banner: 'The component the http_controller should be created in.', required: false
   def http_controller(name, component = 'main')
     output_file = Dir.pwd + "/app/#{component}/controllers/#{name.underscore.singularize}.rb"
-    template('controller/http_controller.rb.tt', output_file, http_controller_name: name.camelize.singularize)
+    template('controller/http_controller.rb.tt', output_file, component_module: component.camelize, http_controller_name: name.camelize.singularize)
   end
 
   desc 'controller NAME COMPONENT', 'Creates a model controller named NAME in the app folder of the component named COMPONENT.'
@@ -50,7 +50,7 @@ class Generate < Thor
   method_option :component, type: :string, default: 'main', banner: 'The component the controller should be created in.', required: false
   def controller(name, component = 'main')
     output_file = Dir.pwd + "/app/#{component}/controllers/#{name.underscore.singularize}.rb"
-    template('controller/model_controller.rb.tt', output_file, model_controller_name: name.camelize.singularize)
+    template('controller/model_controller.rb.tt', output_file, component_module: component.camelize, model_controller_name: name.camelize.singularize)
   end
 
 end
