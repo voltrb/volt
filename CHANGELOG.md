@@ -4,6 +4,10 @@
 ### Added
 - added has_many and belongs_to on models.  See docs.
 - you can now serve http/rest from Volt.  Thanks to @jfahrer for his great work.  Docs coming soon.
+- there is now a generator for controllers and HttpControllers.
+- the following were renamed to follow gem naming conventions:
+  - volt-user-templates (now volt-user_templates)
+  - volt-bootstrap-jumbotron-theme (now volt-bootstrap_jumbotron_theme)
 - fixed generated component code
 - added .order for sorting on the data store (since .sort is a ruby Enum method)
 - calling .then on ArrayModels has been changed to calling .fetch and .fetch_first.  These both return a promise, and take an optional block
@@ -36,6 +40,9 @@ So if you wanted to use a property on ```_new_todo``` without initializing ```_n
 - the underlying way queries are normalized and passed to the server has changed (no external api changes)
 - changed .find to .where to not conflict with ruby Enum's .find
 - Volt::TaskHandler is now Volt::Task
+
+### Removed
+- .false?, .true?, .or, and .and were removed since NilModels were removed.  This means you get back a real nil value when accessing an undefined model attribute.
 
 ## 0.8.24 - 2014-12-05
 ### Added

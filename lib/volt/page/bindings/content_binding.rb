@@ -20,7 +20,7 @@ module Volt
     end
 
     def update(value)
-      value            = value.or('')
+      value            = value || ''
 
       # Exception values display the exception as a string
       value            = value.to_s

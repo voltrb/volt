@@ -140,7 +140,7 @@ module Volt
 
           parent.persistor.ensure_setup if parent.persistor
 
-          if parent && (attrs = parent.attributes) && attrs[:_id].true?
+          if parent && (attrs = parent.attributes) && attrs[:_id]
             query = query.dup
 
             query << [:find, {:"#{@model.path[-3].singularize}_id" => attrs[:_id]}]

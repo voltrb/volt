@@ -45,14 +45,6 @@ module Volt
       !@attributes || @attributes.size == 0
     end
 
-    def false?
-      @attributes.false?
-    end
-
-    def true?
-      @attributes.true?
-    end
-
     def clear
       @attributes.each_pair do |key, _|
         delete(key)

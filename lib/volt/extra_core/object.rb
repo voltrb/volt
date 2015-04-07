@@ -6,24 +6,6 @@ class Object
     Hash[instance_variables.map { |name| [name[1..-1], instance_variable_get(name)] }]
   end
 
-  # Provides the same functionality as ||, but treats a nil model as falsy
-  def or(other)
-    if self && !self.nil?
-      self
-    else
-      other
-    end
-  end
-
-  # Provides the same functionality as &&, treats a nil model as falsy
-  def and(other)
-    if self && !self.nil?
-      other
-    else
-      self
-    end
-  end
-
   def html_inspect
     inspect.gsub('<', '&lt;').gsub('>', '&gt;')
   end
