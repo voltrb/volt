@@ -17,5 +17,16 @@ module Volt
         end
       end
     end
+
+    # Generate a string version of all of the errors
+    def to_s
+      str = []
+
+      each_pair do |field, error|
+        str << "#{field} #{error}"
+      end
+
+      str.join
+    end
   end
 end

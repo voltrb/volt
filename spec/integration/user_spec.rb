@@ -5,13 +5,11 @@ if ENV['BROWSER']
     before(:each) do
       # Clear out db
       DataStore.new.drop_database
-      # Volt::Persistors::ArrayStore.query_pool.clear
     end
 
     after(:each) do
       # Clear out db
       DataStore.new.drop_database
-      # Volt::Persistors::ArrayStore.query_pool.clear
     end
 
     it 'should create an account' do

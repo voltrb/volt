@@ -61,6 +61,9 @@ module Volt
     def promise_for_errors(errors)
       mark_all_fields!
 
+      # Wrap in an Errors class unless it already is one
+      errors = errors.is_a?(Errors) ? errors : Errors.new(errors)
+
       Promise.new.reject(errors)
     end
 

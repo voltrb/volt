@@ -94,13 +94,14 @@ module Volt
             trigger_size_change!
             #
             # re-raise, err might not be an Error object, so we use a rejected promise to re-raise
+
             Promise.new.reject(err)
           end
         end
-      else
-        # Return this model
-        model
       end
+
+      # Return this model
+      Promise.new.resolve(model)
     end
 
     # Works like << except it always returns a promise
