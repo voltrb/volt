@@ -58,4 +58,25 @@ class Generate < Thor
     template('controller/model_controller.rb.tt', output_file, component_module: component.camelize, model_controller_name: name.camelize.singularize)
   end
 
+  desc 'task NAME COMPONENT', 'Creates a task named NAME in the app folder of the component named COMPONENT.'
+  method_option :name, type: :string, banner: 'The name of the task.'
+  method_option :component, type: :string, default: 'main', banner: 'The component the task should be created in.', required: false
+  def task(name, component = 'main')
+    output_file = Dir.pwd + "/app/#{component}/tasks/#{name.underscore.singularize}.rb"
+    template('task/task.rb.tt', output_file, task_name: name.camelize.singularize)
+  end
+
+  desc 'view NAME COMPONENT', 'Creates a view named NAME in the app folder of the component named COMPONENT.'
+  method_option :name, type: :string, banner: 'The name of the view.'
+  method_option :component, type: :string, default: 'main', banner: 'The component the view should be created in.', required: false
+  def view(name, component = 'main')
+    output_file = Dir.pwd + "/app/#{component}/views/#{component}/#{name.underscore.singularize}.html"
+    controller(name, component) unless controller?(name, component)
+    template('view/view.rb.tt', output_file, view_name: name.camelize.singularize)
+  end
+
+  def controller?(name, component = 'main')
+    dir = Dir.pwd + "/app/#{component}/controllers/"
+    File.exists?(dir + name.downcase.underscore.singularize + '.rb')
+  end
 end
