@@ -75,6 +75,7 @@ class Generate < Thor
     template('view/view.rb.tt', output_file, view_name: name.camelize.singularize)
   end
 
+  private
   def controller?(name, component = 'main')
     dir = Dir.pwd + "/app/#{component}/controllers/"
     File.exists?(dir + name.downcase.underscore.singularize + '.rb')
