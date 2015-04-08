@@ -26,6 +26,7 @@
 - ```the_page``` is a shortcut to the page collection inside of specs.  (Unfortunately, ```page``` is used by capybara, so for now we're using ```the_page```, we'll find a better solution in the future.)
 
 ### Changed
+- all plural attributes now return an empty ArrayModel.  This is to simplify implementation and to unify store's interface.
 - main_path in generated projects now includes the a component param that can be used to easily point at controllers/views in other components.
 - previously the main component's controllers were not namespaced.  We changed it so all controllers (including those in main) are namespaced.  This is makes things more consistent and keeps expectations when working with components.
 - model attributes no longer return NilModels.  Instead they just return nil.  You can however add an ! to the end to "expand" the model to an empty model.
@@ -40,6 +41,7 @@ So if you wanted to use a property on ```_new_todo``` without initializing ```_n
 - the underlying way queries are normalized and passed to the server has changed (no external api changes)
 - changed .find to .where to not conflict with ruby Enum's .find
 - Volt::TaskHandler is now Volt::Task
+- Move testing gems to the generated Gemfile for projects
 
 ### Removed
 - .false?, .true?, .or, and .and were removed since NilModels were removed.  This means you get back a real nil value when accessing an undefined model attribute.
