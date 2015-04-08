@@ -1,6 +1,6 @@
 # Change Log
 
-## 0.8.27 - WIP
+## 0.9.0.pre1
 ### Added
 - added has_many and belongs_to on models.  See docs.
 - you can now serve http/rest from Volt.  Thanks to @jfahrer for his great work.  Docs coming soon.
