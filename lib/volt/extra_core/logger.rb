@@ -79,10 +79,14 @@ else
       def task_dispatch_message
         msg = "task #{class_name}##{method_name} in #{run_time}\n"
         if args.size > 0
-          arg_str = args.map {|v| v.inspect }.join(', ')
+          arg_str = parse_args(args)
           msg += "with args: #{arg_str}\n"
         end
         msg
+      end
+
+      def parse_args(args, filters = ['password'])
+        args.map { |arg| arg.inspect unless filters.include?(arg.to_s) }.compact!.join(', ')
       end
     end
 
