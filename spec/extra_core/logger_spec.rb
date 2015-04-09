@@ -23,7 +23,7 @@ if RUBY_PLATFORM != 'opal'
     end
 
     it 'should not log password credentials' do
-        msg = "\n\n[INFO] task \e[1;34mClassName\e[0;37m#\e[0;32mmethod_name\e[0;37m in \e[0;32m50ms\e[0;37m\nwith args: \"1\", \"2\"\n\n"
+       msg = "\n\n[INFO] task \e[1;34mClassName\e[0;37m#\e[0;32mmethod_name\e[0;37m in \e[0;32m50ms\e[0;37m\nwith args: \"1\", \"2\"\n\n"
        expect(STDOUT).to receive(:write).with msg
        logger.log_dispatch(class_name, method_name, run_time, bad_args)
     end
