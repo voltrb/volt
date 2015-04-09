@@ -42,7 +42,13 @@ module Volt
       end.fail do |err|
         # TODO: need to make it so we can re-raise out of this promise
         Volt.logger.error("Error adding listener: #{err.inspect}")
-        Volt.logger.error(err.backtrace)
+        Volt.logger.error(err.backtrace) if err.respond_to?(:backtrace)
+
+        # If we get back that the user signature is wrong, log the user out.
+        if err.to_s.start_with?('user id or hash is incorrectly signed')
+          # Delete the invalid cookie
+          $page.cookies.delete(:user_id)
+        end
 
         raise err
       end

@@ -1,4 +1,5 @@
 # require 'ruby-prof'
+require 'volt/utils/logging/task_logger'
 
 module Volt
   # The task dispatcher is responsible for taking incoming messages
@@ -47,14 +48,20 @@ module Volt
         # Unsafe method
         promise.reject(RuntimeError.new("unsafe method: #{method_name}"))
       end
+
+      # Called after task runs or fails
+      finish = proc do |error|
+        run_time = ((Time.now.to_f - start_time) * 1000).round(3)
+        Volt.logger.log_dispatch(class_name, method_name, run_time, args, error)
+      end
+
         # Run the promise and pass the return value/error back to the client
       promise.then do |result|
         channel.send_message('response', callback_id, result, nil)
 
-        run_time = ((Time.now.to_f - start_time) * 1000).round(3)
-        Volt.logger.log_dispatch(class_name, method_name, run_time, args)
+        finish.call
       end.fail do |error|
-        Volt.logger.error(error)
+        finish.call(error)
         channel.send_message('response', callback_id, nil, error)
       end
     end

@@ -24,7 +24,7 @@ module Volt
           # TODO: We could cache the digest generation for even faster comparisons
           if hash != Digest::SHA256.hexdigest("#{Volt.config.app_secret}::#{user_id}")
             # user id has been tampered with, reject
-            fail 'user id or hash has been tampered with'
+            fail VoltUserError, 'user id or hash is incorrectly signed.  It may have been tampered with, the app secret changed, or generated in a different app.'
           end
 
         end
@@ -80,7 +80,7 @@ module Volt
 
     # Login the user, return a promise for success
     def login(username, password)
-      UserTasks.login(username, password).then do |result|
+      UserTasks.login({login: username, password: password}).then do |result|
         # Assign the user_id cookie for the user
         $page.cookies._user_id = result
 

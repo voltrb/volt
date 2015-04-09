@@ -12,6 +12,11 @@ Volt.configure do |config|
   #
   config.app_secret = '<%= SecureRandom.urlsafe_base64(50) %>'
 
+  # Data updates from the client come in via Tasks.  The task dispatcher logs all calls to tasks.
+  # By default hashes in the arguments can be filtered based on keys.  So any hash with a key of
+  # password will be filtered.  You can add more fields to filter below:
+  config.filter_keys = [:password]
+
   # Database config all start with db_ and can be set either in the config
   # file or with an environment variable (DB_NAME for example).
 
