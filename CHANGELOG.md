@@ -24,6 +24,7 @@
 - bindings will now resolve any values that are promises. (currently only content and attribute, if, each, and template coming soon)
 - ```store``` is now available inside of specs.  If it is accessed in a spec, the database will be cleaned after the spec.
 - ```the_page``` is a shortcut to the page collection inside of specs.  (Unfortunately, ```page``` is used by capybara, so for now we're using ```the_page```, we'll find a better solution in the future.)
+- Add filtering to logging on password, and option to configure filtered args.  Also, improve the way errors are displayed.
 
 ### Changed
 - all plural attributes now return an empty ArrayModel.  This is to simplify implementation and to unify store's interface.

@@ -80,7 +80,7 @@ module Volt
 
     # Login the user, return a promise for success
     def login(username, password)
-      UserTasks.login(username, password).then do |result|
+      UserTasks.login({login: username, password: password}).then do |result|
         # Assign the user_id cookie for the user
         $page.cookies._user_id = result
 

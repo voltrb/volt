@@ -3,6 +3,7 @@ require 'volt/extra_core/extra_core'
 require 'volt/reactive/computation'
 require 'volt/reactive/dependency'
 require 'volt/utils/modes'
+require 'volt/utils/volt_user_error'
 
 require 'volt/config'
 unless RUBY_PLATFORM == 'opal'
