@@ -12,11 +12,19 @@ module Volt
       Volt.boot(app_path)
 
       unless RUBY_PLATFORM == 'opal'
-        require 'volt/spec/capybara'
+        begin
+          require 'volt/spec/capybara'
 
-        setup_capybara(app_path)
+          setup_capybara(app_path)
+        rescue LoadError => e
+          Volt.logger.warn("unable to load capybara, if you wish to use it for tests, be sure it is in the app's Gemfile")
+        end
       end
 
+      unless ENV['BROWSER']
+        # Not running integration tests with ENV['BROWSER']
+        RSpec.configuration.filter_run_excluding :type => :feature
+      end
 
       # Setup the spec collection accessors
       # RSpec.shared_context "volt collections", {} do

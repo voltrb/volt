@@ -42,6 +42,7 @@ So if you wanted to use a property on ```_new_todo``` without initializing ```_n
 - changed .find to .where to not conflict with ruby Enum's .find
 - Volt::TaskHandler is now Volt::Task
 - Move testing gems to the generated Gemfile for projects
+- ```if ENV['BROWSER']``` is no longer required around integration tests.  We now use rspec filtering on ```type: :feature``` if you aren't running with ENV['BROWSER']
 
 ### Removed
 - .false?, .true?, .or, and .and were removed since NilModels were removed.  This means you get back a real nil value when accessing an undefined model attribute.
