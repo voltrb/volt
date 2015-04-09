@@ -33,12 +33,6 @@ if RUBY_PLATFORM != 'opal'
       expect(logger_with_opts.args).to eq([5, :arg2])
     end
 
-    it 'should deny logging of password fields' do
-     
-      out = StringIO.new
-      $stdout = out
-    end
-
     describe 'when STDOUT is a TTY' do
       before { allow(STDOUT).to receive(:tty?).and_return(true) }
       
