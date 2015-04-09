@@ -46,16 +46,19 @@ class Generate < Thor
   method_option :name, type: :string, banner: 'The name of the HTTP Controller.'
   method_option :component, type: :string, default: 'main', banner: 'The component the http_controller should be created in.', required: false
   def http_controller(name, component = 'main')
-    output_file = Dir.pwd + "/app/#{component}/controllers/#{name.underscore.singularize}.rb"
-    template('controller/http_controller.rb.tt', output_file, component_module: component.camelize, http_controller_name: name.camelize.singularize)
+    name = name.pluralize + '_controller' unless name =~ /_controller$/
+
+    output_file = Dir.pwd + "/app/#{component}/controllers/server/#{name.underscore}.rb"
+    template('controller/http_controller.rb.tt', output_file, component_module: component.camelize, http_controller_name: name.camelize)
   end
 
   desc 'controller NAME COMPONENT', 'Creates a model controller named NAME in the app folder of the component named COMPONENT.'
   method_option :name, type: :string, banner: 'The name of the model controller.'
   method_option :component, type: :string, default: 'main', banner: 'The component the controller should be created in.', required: false
   def controller(name, component = 'main')
-    output_file = Dir.pwd + "/app/#{component}/controllers/#{name.underscore.singularize}.rb"
-    template('controller/model_controller.rb.tt', output_file, component_module: component.camelize, model_controller_name: name.camelize.singularize)
+    name = name + '_controller' unless name =~ /_controller$/
+    output_file = Dir.pwd + "/app/#{component}/controllers/#{name.underscore}.rb"
+    template('controller/model_controller.rb.tt', output_file, component_module: component.camelize, model_controller_name: name.camelize)
   end
 
   desc 'task NAME COMPONENT', 'Creates a task named NAME in the app folder of the component named COMPONENT.'
