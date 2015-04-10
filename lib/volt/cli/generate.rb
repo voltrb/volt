@@ -6,7 +6,9 @@ class Generate < Thor
   method_option :component, type: :string, default: 'main', banner: 'The component the model should be created in.', required: false
   def model(name, component = 'main')
     output_file = Dir.pwd + "/app/#{component.underscore}/models/#{name.underscore.singularize}.rb"
+    spec_file = Dir.pwd + "/spec/app/#{component.underscore}/models/#{name.underscore.pluralize}_spec.rb"
     template('model/model.rb.tt', output_file, model_name: name.camelize.singularize)
+    template('model/model_spec.rb.tt', spec_file, model_name: name.camelize.singularize)
   end
 
   desc 'component NAME', 'Creates a component named NAME in the app folder.'
