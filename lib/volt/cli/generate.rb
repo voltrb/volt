@@ -17,7 +17,7 @@ class Generate < Thor
     component_spec_folder = Dir.pwd + '/spec/app/' + name
     @component_name = name
     directory('component', component_folder, component_name: name)
-    directory('component_specs', component_spec_folder, component_name: name)
+    directory('component_specs', component_spec_folder)
   end
 
 
@@ -33,7 +33,7 @@ class Generate < Thor
     require 'volt/cli/new_gem'
 
     if name =~ /[-]/
-      Volt.logger.error("Gem names should use underscores for their names.  Currently volt only supports a single namespace for a compoennt.")
+      Volt.logger.error("Gem names should use underscores for their names.  Currently volt only supports a single namespace for a component.")
       return
     end
 
@@ -48,7 +48,7 @@ class Generate < Thor
   method_option :name, type: :string, banner: 'The name of the HTTP Controller.'
   method_option :component, type: :string, default: 'main', banner: 'The component the http_controller should be created in.', required: false
   def http_controller(name, component = 'main')
-    name = name.pluralize + '_controller' unless name =~ /_controller$/
+    name = name.underscore.pluralize + '_controller' unless name =~ /_controller$/
 
     output_file = Dir.pwd + "/app/#{component}/controllers/server/#{name.underscore}.rb"
     template('controller/http_controller.rb.tt', output_file, component_module: component.camelize, http_controller_name: name.camelize)
@@ -58,7 +58,7 @@ class Generate < Thor
   method_option :name, type: :string, banner: 'The name of the model controller.'
   method_option :component, type: :string, default: 'main', banner: 'The component the controller should be created in.', required: false
   def controller(name, component = 'main')
-    name = name + '_controller' unless name =~ /_controller$/
+    name = name.underscore.singularize + '_controller' unless name =~ /_controller$/
     output_file = Dir.pwd + "/app/#{component}/controllers/#{name.underscore}.rb"
     template('controller/model_controller.rb.tt', output_file, component_module: component.camelize, model_controller_name: name.camelize)
   end
@@ -75,13 +75,15 @@ class Generate < Thor
   method_option :name, type: :string, banner: 'The name of the view.'
   method_option :component, type: :string, default: 'main', banner: 'The component the view should be created in.', required: false
   def view(name, component = 'main')
-    output_file = Dir.pwd + "/app/#{component}/views/#{component}/#{name.underscore.singularize}.html"
-    controller(name, component) unless controller?(name, component)
-    template('view/view.rb.tt', output_file, view_name: name.camelize.singularize)
+    name = name.underscore.singularize
+    view_folder = Dir.pwd + "/app/#{component}/views/#{name}/"
+    directory('view', view_folder, view_name: name, component: component)
+    controller(name, component) unless controller_exists?(name, component)
   end
 
   private
-  def controller?(name, component = 'main')
+
+  def controller_exists?(name, component = 'main')
     dir = Dir.pwd + "/app/#{component}/controllers/"
     File.exists?(dir + name.downcase.underscore.singularize + '.rb')
   end
