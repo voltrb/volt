@@ -2,18 +2,15 @@
 
 ## 0.9.0.pre1
 ### Added
+- the permissions api has been added!
 - added has_many and belongs_to on models.  See docs.
 - you can now serve http/rest from Volt.  Thanks to @jfahrer for his great work.  Docs coming soon.
 - there is now a generator for controllers and HttpControllers.
-- the following were renamed to follow gem naming conventions:
-  - volt-user-templates (now volt-user_templates)
-  - volt-bootstrap-jumbotron-theme (now volt-bootstrap_jumbotron_theme)
 - fixed generated component code
 - added .order for sorting on the data store (since .sort is a ruby Enum method)
 - calling .then on ArrayModels has been changed to calling .fetch and .fetch_first.  These both return a promise, and take an optional block
 - added .sync for synchronusly waiting on promises on the server only
 - added the ability to pass content into tags: (https://github.com/voltrb/docs/blob/master/en/docs/yield_binding.md)
-- the {action}_remove method had been changed to before_{action}_remove and after_{action}_remove to provide more hooks and a clearer understanding of when it is happening.
 - Changed it so content bindings escape all html (for CSRF - thanks @ChaosData)
 - Added formats, email, phone validators (thanks @lexun and @kxcrl)
 - each_with_index is now supported in views and the ```index``` value is no longer provided by default.
@@ -28,16 +25,20 @@
 
 ### Changed
 - template bindings have been renamed to view.  ```{{ view "path/for/view" }}``` instead of ```{{ template "path/for/view" }}```
+- the {action}_remove method had been changed to before_{action}_remove and after_{action}_remove to provide more hooks and a clearer understanding of when it is happening.
+- the following were renamed to follow gem naming conventions:
+  - volt-user-templates (now volt-user_templates)
+  - volt-bootstrap-jumbotron-theme (now volt-bootstrap_jumbotron_theme)
 - all plural attributes now return an empty ArrayModel.  This is to simplify implementation and to unify store's interface.
 - main_path in generated projects now includes the a component param that can be used to easily point at controllers/views in other components.
 - previously the main component's controllers were not namespaced.  We changed it so all controllers (including those in main) are namespaced.  This is makes things more consistent and keeps expectations when working with components.
 - model attributes no longer return NilModels.  Instead they just return nil.  You can however add an ! to the end to "expand" the model to an empty model.
 
-```page._new_todo # => now returns nil```
+    ```page._new_todo # => now returns nil```
 
-```page._new_todo! # => returns an empty model```
+    ```page._new_todo! # => returns an empty model```
 
-So if you wanted to use a property on ```_new_todo``` without initializing ```_new_todo```, you could add the ! to the lookup.
+  So if you wanted to use a property on ```_new_todo``` without initializing ```_new_todo```, you could add the ! to the lookup.
 - Volt.user has been renamed to Volt.current_user so its clearer what it returns
 - _'s are no longer required for route constraints (so just use ```controller: 'main', action: 'index'``` now)
 - the underlying way queries are normalized and passed to the server has changed (no external api changes)
