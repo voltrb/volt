@@ -14,8 +14,10 @@ class Generate < Thor
   def component(name)
     name = name.underscore
     component_folder = Dir.pwd + "/app/#{name}"
+    component_spec_folder = Dir.pwd + '/spec/app/' + name
     @component_name = name
     directory('component', component_folder, component_name: name)
+    directory('component_specs', component_spec_folder, component_name: name)
   end
 
 
