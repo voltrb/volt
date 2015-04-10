@@ -1,0 +1,5 @@
+require 'spec_helper'
+
+describe <%= config[:component_module] %>::<%= config[:http_controller_name] %>, type: :http_controller do
+  # Specs here
+end

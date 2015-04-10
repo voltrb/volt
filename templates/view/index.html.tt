@@ -1,0 +1,5 @@
+<:Title>
+  <%= config[:view_name] %> index
+
+<:Body>
+  <h1>Find me in app/<%= config[:component] %>/<%= config[:view_name] %>/index.html</h1>

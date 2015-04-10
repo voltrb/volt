@@ -1,0 +1,5 @@
+require 'spec_helper'
+
+describe '<%= config[:name] %>', type: :feature do
+  # Specs here
+end
