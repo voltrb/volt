@@ -61,8 +61,8 @@ if RUBY_PLATFORM != 'opal'
       controller = TestHttpController.new(
         { another: 'params', 'and_a' => 'string' }, request)
       expect(controller.params.size).to eq(4)
-      expect(controller.params[:and_a]).to eq('string')
-      expect(controller.params[:this]).to eq('is_a')
+      expect(controller.params._and_a).to eq('string')
+      expect(controller.params._this).to eq('is_a')
     end
 
     it 'should perform the correct action' do

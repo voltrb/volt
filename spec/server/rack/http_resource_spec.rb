@@ -19,8 +19,8 @@ if RUBY_PLATFORM != 'opal'
       end
 
       def show
-        render text: "show with id #{params[:stuff_id]} " \
-                      "and #{params[:test]} called"
+        render text: "show with id #{params._stuff_id} " \
+                      "and #{params._test} called"
       end
     end
 

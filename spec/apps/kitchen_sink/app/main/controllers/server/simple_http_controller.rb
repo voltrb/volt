@@ -9,7 +9,7 @@ module Main
     end
 
     def upload
-      uploaded = params[:file][:tempfile]
+      uploaded = params._file._tempfile
       File.open('tmp/uploaded_file', 'wb') { |f| f.write(uploaded.read) }
       render text: 'Thanks for uploading'
     end
