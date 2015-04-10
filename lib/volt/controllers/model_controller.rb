@@ -5,6 +5,7 @@ module Volt
     include ReactiveAccessors
 
     reactive_accessor :current_model
+    reactive_accessor :last_promise
 
     # The section is assigned a reference to a "DomSection" which has
     # the dom for the controllers view.
@@ -40,11 +41,11 @@ module Volt
     def model=(val)
       if val.is_a?(Promise)
         # Resolve the promise before setting
-        @last_promise = val
+        self.last_promise = val
 
         val.then do |result|
           # Only assign if nothing else has been assigned since we started the resolve
-          self.model = result if @last_promise == val
+          self.model = result if self.last_promise == val
         end.fail do |err|
           Volt.logger.error("Unable to resolve promise assigned to model on #{inspect}")
         end
@@ -53,7 +54,7 @@ module Volt
       end
 
       # Clear
-      @last_promise = nil
+      self.last_promise = nil
 
       # Start with a nil reactive value.
       self.current_model ||= Model.new
@@ -163,8 +164,20 @@ module Volt
       $page.url.url_with(params)
     end
 
+    # loaded? is a quick way to see if the model for the controller is loaded
+    # yet.  If the model is there, it asks the model if its loaded.  If the model
+    # was set to a promise, it waits for the promise to resolve.
     def loaded?
-      self.model.respond_to?(:loaded?) && self.model.loaded?
+      if model.respond_to?(:loaded?)
+        # There is a model and it is loaded
+        return model.loaded?
+      elsif last_promise || model.is_a?(Promise)
+        # The model is a promise or is resolving
+        return false
+      else
+        # Otherwise, its loaded
+        return true
+      end
     end
 
     # Check if this controller responds_to method, or the model
