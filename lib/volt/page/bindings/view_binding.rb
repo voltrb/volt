@@ -1,11 +1,11 @@
 require 'volt/page/bindings/base_binding'
 require 'volt/page/template_renderer'
-require 'volt/page/bindings/template_binding/grouped_controllers'
-require 'volt/page/bindings/template_binding/view_lookup_for_path'
+require 'volt/page/bindings/view_binding/grouped_controllers'
+require 'volt/page/bindings/view_binding/view_lookup_for_path'
 
 
 module Volt
-  class TemplateBinding < BaseBinding
+  class ViewBinding < BaseBinding
 
     # @param [String]     binding_in_path is the path this binding was rendered from.  Used to
     #                     lookup paths in ViewLookupForPath

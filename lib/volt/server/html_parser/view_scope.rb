@@ -38,7 +38,10 @@ module Volt
             else
               fail "else does not take a conditional, #{content} was provided."
             end
+          when 'view'
+            add_template(args)
           when 'template'
+            Volt.logger.warn('Deprecation warning: The template binding has been renamed to view.  Please update any views accordingly.')
             add_template(args)
           when 'yield'
             add_yield(args)
@@ -91,7 +94,7 @@ module Volt
       content = content.strip.gsub(/^\(/, '').gsub(/\)$/, '')
 
       @handler.html << "<!-- $#{@binding_number} --><!-- $/#{@binding_number} -->"
-      save_binding(@binding_number, "lambda { |__p, __t, __c, __id| Volt::TemplateBinding.new(__p, __t, __c, __id, #{@path.inspect}, Proc.new { [#{content}] }) }")
+      save_binding(@binding_number, "lambda { |__p, __t, __c, __id| Volt::ViewBinding.new(__p, __t, __c, __id, #{@path.inspect}, Proc.new { [#{content}] }) }")
 
       @binding_number += 1
     end

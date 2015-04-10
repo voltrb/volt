@@ -27,6 +27,7 @@
 - Add filtering to logging on password, and option to configure filtered args.  Also, improve the way errors are displayed.
 
 ### Changed
+- template bindings have been renamed to view.  ```{{ view "path/for/view" }}``` instead of ```{{ template "path/for/view" }}```
 - all plural attributes now return an empty ArrayModel.  This is to simplify implementation and to unify store's interface.
 - main_path in generated projects now includes the a component param that can be used to easily point at controllers/views in other components.
 - previously the main component's controllers were not namespaced.  We changed it so all controllers (including those in main) are namespaced.  This is makes things more consistent and keeps expectations when working with components.
