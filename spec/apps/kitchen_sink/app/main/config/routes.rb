@@ -6,6 +6,7 @@ client '/store', action: 'store'
 client '/cookie_test', action: 'cookie_test'
 client '/flash', action: 'flash'
 client '/yield', action: 'yield'
+client '/first_last', action: 'first_last'
 client '/todos', controller: 'todos'
 
 # Signup/login routes

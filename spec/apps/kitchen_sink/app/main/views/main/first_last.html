@@ -1,0 +1,13 @@
+<:Title>
+  Last
+
+<:Body>
+  <h1>First Last Test</h1>
+
+  {{ store._messages.first.inspect }}
+
+  ---
+
+  {{ store._messages.each do |message| }}
+    <p>{{ message._body }}</p>
+  {{ end }}
