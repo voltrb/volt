@@ -53,7 +53,10 @@ class Generate < Thor
     name = name.underscore.pluralize + '_controller' unless name =~ /_controller$/
 
     output_file = Dir.pwd + "/app/#{component}/controllers/server/#{name.underscore}.rb"
+    spec_file = Dir.pwd + "/spec/app/#{component.underscore}/controllers/server/#{name}_spec.rb"
+
     template('controller/http_controller.rb.tt', output_file, component_module: component.camelize, http_controller_name: name.camelize)
+    template('controller/http_controller_spec.rb.tt', spec_file, component_module: component.camelize, http_controller_name: name.camelize)
   end
 
   desc 'controller NAME COMPONENT', 'Creates a model controller named NAME in the app folder of the component named COMPONENT.'
