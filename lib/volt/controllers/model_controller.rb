@@ -1,14 +1,19 @@
 require 'volt/reactive/reactive_accessors'
+require 'volt/controllers/actions'
 
 module Volt
   class ModelController
     include ReactiveAccessors
+    include Actions
 
     reactive_accessor :current_model
 
     # The section is assigned a reference to a "DomSection" which has
     # the dom for the controllers view.
     attr_accessor :section
+
+    # Setup before_action and after_action
+    setup_action_helpers_in_class(:before, :after)
 
     # Container returns the node that is parent to all nodes in the section.
     def container

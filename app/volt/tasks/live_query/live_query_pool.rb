@@ -19,9 +19,7 @@ class LiveQueryPool < Volt::GenericPool
 
   def updated_collection(collection, skip_channel)
     # collection = collection.to_sym
-    # puts "RUN UPDATE FOR #{collection.inspect} - #{@pool.inspect}"
     lookup_all(collection).each do |live_query|
-      # puts "UPDATE COLLECTION: #{collection} - #{live_query.inspect}"
       live_query.run(skip_channel)
     end
   end
