@@ -1,8 +1,10 @@
 require 'volt/reactive/reactive_accessors'
+require 'volt/controllers/actions'
 
 module Volt
   class ModelController
     include ReactiveAccessors
+    include Actions
 
     reactive_accessor :current_model
     reactive_accessor :last_promise
@@ -10,6 +12,9 @@ module Volt
     # The section is assigned a reference to a "DomSection" which has
     # the dom for the controllers view.
     attr_accessor :section
+
+    # Setup before_action and after_action
+    setup_action_helpers_in_class(:before, :after)
 
     # Container returns the node that is parent to all nodes in the section.
     def container
@@ -177,6 +182,14 @@ module Volt
       else
         # Otherwise, its loaded
         return true
+      end
+    end
+
+    def require_login
+      unless Volt.current_user_id
+        go '/login'
+
+        stop_chain
       end
     end
 

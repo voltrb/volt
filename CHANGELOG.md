@@ -25,6 +25,8 @@
 
 ### Changed
 - template bindings have been renamed to view.  ```{{ view "path/for/view" }}``` instead of ```{{ template "path/for/view" }}```
+- view bindings (formerly template) wait until the template's #loaded? method returns true (by .watch! ing it for changes)
+- #loaded? on controllers now returns false if the model is set to a Promise, until the promise is resolved.
 - the {action}_remove method had been changed to before_{action}_remove and after_{action}_remove to provide more hooks and a clearer understanding of when it is happening.
 - the following were renamed to follow gem naming conventions:
   - volt-user-templates (now volt-user_templates)

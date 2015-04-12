@@ -2,6 +2,7 @@ require 'volt/page/bindings/base_binding'
 require 'volt/page/template_renderer'
 require 'volt/page/bindings/view_binding/grouped_controllers'
 require 'volt/page/bindings/view_binding/view_lookup_for_path'
+require 'volt/page/bindings/view_binding/controller_lifecycle'
 
 
 module Volt
@@ -69,20 +70,13 @@ module Volt
 
         new_controller, new_action = create_controller(full_path, controller_path)
 
-        # Clear any previously running wait for loads.  This is for when the path changes
-        # before the view actually renders.
-        if @waiting_for_load
-          @waiting_for_load.stop
-
-          # Only call the after_..._removed because the dom never loaded.
-          controller_send(:"after_#{new_action}_removed", new_controller)
-        end
+        remove_waiting_controller(new_controller, new_action)
 
         # Wait until the controller is loaded before we actually render.
         @waiting_for_load = -> { new_controller.loaded? }.watch_until!(true) do
           begin
             # Remove existing template and call _removed
-            controller_send(:"#{@action}_removed") if @action && @controller
+            ControllerLifecycle.call_action(@controller, @action, :"#{@action}_removed") if @action && @controller
             if @current_template
               @current_template.remove
               @current_template = nil
@@ -99,6 +93,17 @@ module Volt
             puts "GOT ERR: #{e.inspect}"
           end
         end
+      end
+    end
+
+    def remove_waiting_controller(new_controller, new_action)
+      # Clear any previously running wait for loads.  This is for when the path changes
+      # before the view actually renders.
+      if @waiting_for_load
+        @waiting_for_load.stop
+
+        # Only call the after_..._removed because the dom never loaded.
+        ControllerLifecycle.call_action(new_controller, new_action, :"after_#{new_action}_removed")
       end
     end
 
@@ -152,8 +157,7 @@ module Volt
         end
 
         # Trigger the action
-        puts "TRIG ACTION: #{action.inspect}"
-        controller_send(action, controller) if action
+        ControllerLifecycle.call_action(controller, action) if action
 
         # Track the grouped controller
         @grouped_controller.set(controller) if @grouped_controller
@@ -179,7 +183,8 @@ module Volt
           @controller.section = @current_template.dom_section
         end
 
-        controller_send(:"#{@action}_ready") if @action
+        # Call the ready callback on the controller
+        ControllerLifecycle.call_action(@controller, @action, "#{@action}_ready") if @action
       end
     end
 
@@ -188,7 +193,9 @@ module Volt
       @computation.stop
       @computation = nil
 
-      controller_send(:"before_#{@action}_remove") if @controller && @action
+      # TODO: Remove any waiting controllers
+
+      ControllerLifecycle.call_action(@controller, @action, :"before_#{@action}_remove") if @controller && @action
 
       clear_grouped_controller
 
@@ -201,21 +208,13 @@ module Volt
       super
 
       if @controller
-        controller_send(:"after_#{@action}_remove") if @action
+        ControllerLifecycle.call_action(@controller, @action, :"after_#{@action}_remove") if @action
 
         @controller = nil
       end
     end
 
     private
-
-    # Sends the action to the controller if it exists
-    def controller_send(action_name, controller=@controller)
-      if controller.respond_to?(action_name)
-        controller.send(action_name)
-      end
-    end
-
     # Fetch the controller class
     def get_controller(controller_path)
       return nil, nil unless controller_path && controller_path.size > 0
