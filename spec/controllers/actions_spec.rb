@@ -66,6 +66,10 @@ end
 class TestNoCallbacks < BaseTestActions
 end
 
+class TestOnlyCallbacks < TestActionsSymbolsBase
+  before_action :run_one, :run_two, only: [:new]
+end
+
 describe Volt::Actions do
   it 'should trigger before actions via blocks' do
     test_class = TestActionsBlocks.new
@@ -128,5 +132,17 @@ describe Volt::Actions do
 
     result = test_class.run_actions(:before, :index)
     expect(result).to eq(false)
+  end
+
+  it 'should follow only limitations' do
+    test_only = TestOnlyCallbacks.new
+
+    test_only.run_actions(:before, :index)
+    expect(test_only.ran_one).to eq(nil)
+    expect(test_only.ran_two).to eq(nil)
+
+    test_only.run_actions(:before, :new)
+    expect(test_only.ran_one).to eq(true)
+    expect(test_only.ran_two).to eq(true)
   end
 end

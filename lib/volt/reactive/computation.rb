@@ -148,7 +148,7 @@ class Proc
   # @param the value to match
   # @return [Volt::Computation] the initial computation is returned.
   def watch_until!(value, &block)
-    computation = -> do
+    computation = Proc.new do |comp|
       # First fetch the value
       result = self.call
 
@@ -159,7 +159,7 @@ class Proc
         block.call
 
         # stop the computation
-        computation.stop
+        comp.stop
       end
     end.watch!
 

@@ -39,7 +39,7 @@ module Volt
             end
 
             if args.last.is_a?(Hash)
-              options = callbacks.pop
+              options = args.pop
             else
               options = nil
             end
