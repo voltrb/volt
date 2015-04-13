@@ -37,6 +37,10 @@ module Main
       'content'
     end
 
+    def example_html
+      '<button id="examplebutton">Example Button</button>'
+    end
+
     private
 
     # the main template contains a #template binding that shows another
