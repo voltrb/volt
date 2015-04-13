@@ -22,6 +22,10 @@ module Volt
         @in_identity_map = false
       end
 
+      def loaded(initial_state = nil)
+        model.change_state_to(:loaded_state, :loaded)
+      end
+
       def add_to_collection
         @in_collection = true
         ensure_setup

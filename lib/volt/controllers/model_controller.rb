@@ -193,6 +193,13 @@ module Volt
       end
     end
 
+    # Raw marks a string as html safe, so bindings can be rendered as html.
+    # With great power comes great responsibility.
+    def raw(str)
+      str = str.to_s unless str.is_a?(String)
+      str.html_safe
+    end
+
     # Check if this controller responds_to method, or the model
     def respond_to?(method_name)
       super || begin

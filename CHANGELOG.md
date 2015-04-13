@@ -22,6 +22,7 @@
 - ```store``` is now available inside of specs.  If it is accessed in a spec, the database will be cleaned after the spec.
 - ```the_page``` is a shortcut to the page collection inside of specs.  (Unfortunately, ```page``` is used by capybara, so for now we're using ```the_page```, we'll find a better solution in the future.)
 - Add filtering to logging on password, and option to configure filtered args.  Also, improve the way errors are displayed.
+- You can now call raw in a content binding to render the raw html on the page.  Use carefully, this can open you up to xss attacks.  We reccomend never showing html from the user directly.
 
 ### Changed
 - template bindings have been renamed to view.  ```{{ view "path/for/view" }}``` instead of ```{{ template "path/for/view" }}```
