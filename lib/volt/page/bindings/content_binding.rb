@@ -3,6 +3,9 @@ require 'volt/page/bindings/html_safe/string_extension'
 
 module Volt
   class ContentBinding < BaseBinding
+    HTML_ESCAPE_REGEXP = /[&"'><\n]/
+    HTML_ESCAPE = { '&' => '&amp;',  '>' => '&gt;',   '<' => '&lt;', '"' => '&quot;', "'" => '&#39;', "\n" => "<br />\n" }
+
     def initialize(page, target, context, binding_name, getter)
       # puts "New Content Binding: #{self.inspect}"
       super(page, target, context, binding_name)
@@ -30,13 +33,22 @@ module Volt
       # Update the html in this section
       # TODO: Move the formatter into another class.
 
-      # The html safe check lets us know that the string can be rendered
+      # The html safe check lets us know that if string can be rendered
       # directly as html
-      if html_safe
-        dom_section.html = value
-      else
-        value = value.gsub("\n", "<br />\n")
-        dom_section.text = value
+      unless html_safe
+        # Escape any < and >, but convert newlines to br's, and fix quotes and
+        value = html_escape(value)
+      end
+
+      # Assign the content
+      dom_section.html = value
+      # dom_section.text = value
+    end
+
+    def html_escape(str)
+      # https://github.com/opal/opal/issues/798
+      str.gsub(HTML_ESCAPE_REGEXP) do |char|
+        HTML_ESCAPE[char]
       end
     end
 

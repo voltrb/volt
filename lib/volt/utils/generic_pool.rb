@@ -42,6 +42,18 @@ module Volt
       end
     end
 
+    # Looks up the path without generating a new one
+    def lookup_without_generate(*args)
+      section = @pool
+
+      args.each_with_index do |arg, index|
+        section = section[arg]
+        return nil unless section
+      end
+
+      section
+    end
+
     # Does the actual creating, if a block is not passed in, it calls
     # #create on the class.
     def create_new_item(*args)
@@ -95,6 +107,10 @@ module Volt
           parent.delete(args[index - 1])
         end
       end
+    end
+
+    def inspect
+      "<#{self.class.to_s} #{@pool.inspect}>"
     end
 
     def print

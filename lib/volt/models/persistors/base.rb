@@ -3,6 +3,7 @@ module Volt
     # Implements the base persistor functionality.
     class Base
       def loaded(initial_state = nil)
+        @model.change_state_to(:loaded_state, initial_state || :loaded)
       end
 
       def changed(attribute_name)

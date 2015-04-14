@@ -24,8 +24,10 @@ module Volt
 
       def loaded(initial_state = nil)
         if model.path == []
-          model.change_state_to(:loaded_state, :loaded)
+          initial_state = :loaded
         end
+
+        model.change_state_to(:loaded_state, initial_state)
       end
 
       def add_to_collection

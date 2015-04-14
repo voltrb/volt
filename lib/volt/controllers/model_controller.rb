@@ -112,8 +112,14 @@ module Volt
       end
     end
 
-    # Change the url params, similar to redirecting to a new url
     def go(url)
+      Volt.logger.warn('Deprecation warning: `go` has been renamed to `redirect_to` for consistency with other frameworks.')
+
+      redirect_to(url)
+    end
+
+    # Change the url
+    def redirect_to(url)
       # We might be in the rendering loop, so wait until the next tick before
       # we change the url
       Timers.next_tick do
@@ -185,8 +191,9 @@ module Volt
       end
     end
 
-    def require_login
+    def require_login(message="You must login to access this area.")
       unless Volt.current_user_id
+        flash._notices << message
         go '/login'
 
         stop_chain

@@ -1,39 +1,27 @@
 # Some template bindings share the controller with other template bindings based
-# on a name.  This class keeps track of the number of templates using this controller
-# and clears it once no one else is using it.  Use #get or #inc to add to the count.
-# #clear removes 1 from the count.  When the count is 0, delete the controller.
+# on a name.  This class creates a cache based on the group_controller name and the
+# controller class.
 module Volt
   class GroupedControllers
-    @@controllers = {}
-
     def initialize(name)
       @name = name
+      @@pool ||= GenericCountingPool.new
     end
 
-    def get
-      (controller = self.controller) && controller[0]
+    def lookup_or_create(controller, &block)
+      @@pool.find(@name, controller, &block)
     end
 
-    def set(controller)
-      @@controllers[@name] = [controller, 1]
-    end
-
-    def inc
-      controller[1] += 1
+    def remove(controller)
+      @@pool.remove(@name, controller)
     end
 
     def clear
-      controller    = self.controller
-      controller[1] -= 1
-      if controller[1] == 0
-        @@controllers.delete(@name)
-      end
+      @@pool.clear
     end
 
-    private
-
-    def controller
-      @@controllers[@name]
+    def inspect
+      "<GroupedController @name:#{@name.inspect} #{@@pool.inspect}>"
     end
   end
 end

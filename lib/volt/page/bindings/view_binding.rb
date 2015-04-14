@@ -2,7 +2,7 @@ require 'volt/page/bindings/base_binding'
 require 'volt/page/template_renderer'
 require 'volt/page/bindings/view_binding/grouped_controllers'
 require 'volt/page/bindings/view_binding/view_lookup_for_path'
-require 'volt/page/bindings/view_binding/controller_lifecycle'
+require 'volt/page/bindings/view_binding/controller_handler'
 
 
 module Volt
@@ -32,6 +32,7 @@ module Volt
       end.watch!
     end
 
+    # update is called when the path string changes.
     def update(path, section_or_arguments = nil, options = {})
       Computation.run_without_tracking do
         @options = options
@@ -61,49 +62,57 @@ module Volt
         # Sometimes we want multiple template bindings to share the same controller (usually
         # when displaying a :Title and a :Body), this instance tracks those.
         if @options && (controller_group = @options[:controller_group])
+          # Setup the grouped controller for the first time.
           @grouped_controller = GroupedControllers.new(controller_group)
-        else
-          clear_grouped_controller
         end
+
+        # If a controller is already starting, but not yet started, then remove it.
+        remove_starting_controller
 
         full_path, controller_path = @view_lookup.path_for_template(path, section)
 
-        new_controller, new_action = create_controller(full_path, controller_path)
+        unless full_path
+          # if we don't have a full path, then we have a missing template
+          render_next_template(full_path, path)
+          return
+        end
 
-        remove_waiting_controller(new_controller, new_action)
+        @starting_controller_handler, generated_new, chain_stopped = create_controller_handler(full_path, controller_path)
 
-        # Wait until the controller is loaded before we actually render.
-        @waiting_for_load = -> { new_controller.loaded? }.watch_until!(true) do
-          begin
-            # Remove existing template and call _removed
-            ControllerLifecycle.call_action(@controller, @action, :"#{@action}_removed") if @action && @controller
-            if @current_template
-              @current_template.remove
-              @current_template = nil
-            end
+        # Check if chain was stopped when the action ran
+        if chain_stopped
+          # An action stopped the chain.  When this happens, we stop running here.
+          remove_starting_controller
+        else
+          # None of the actions stopped the chain
 
-            @controller = new_controller
-            @action = new_action
-
-            @waiting_for_load = nil
-            render_template(full_path)
-
-            queue_clear_grouped_controller
-          rescue => e
-            puts "GOT ERR: #{e.inspect}"
+          # Wait until the controller is loaded before we actually render.
+          @waiting_for_load = -> { @starting_controller_handler.controller.loaded? }.watch_until!(true) do
+            render_next_template(full_path, path)
           end
+
+          queue_clear_grouped_controller
         end
       end
     end
 
-    def remove_waiting_controller(new_controller, new_action)
-      # Clear any previously running wait for loads.  This is for when the path changes
-      # before the view actually renders.
-      if @waiting_for_load
-        @waiting_for_load.stop
+    # Called when the next template is ready to render
+    def render_next_template(full_path, path)
+      begin
+        remove_current_controller_and_template
 
-        # Only call the after_..._removed because the dom never loaded.
-        ControllerLifecycle.call_action(new_controller, new_action, :"after_#{new_action}_removed")
+        # Switch the current template
+        @current_controller_handler = @starting_controller_handler
+        @starting_controller_handler = nil
+
+        # Also track the current controller directly
+        @controller = @current_controller_handler.controller if full_path
+
+        @waiting_for_load = nil
+        render_template(full_path || path)
+      rescue => e
+        Volt.logger.error("Error during render of template at #{path}: #{e.inspect}")
+        Volt.logger.error(e.backtrace)
       end
     end
 
@@ -129,46 +138,90 @@ module Volt
       end
     end
 
-    # Create controller loads up the controller for the paths
-    def create_controller(full_path, controller_path)
+    def remove_current_controller_and_template
+      # Remove existing controller and template and call _removed
+      if @current_controller_handler
+        @current_controller_handler.call_action('before', 'remove')
+      end
+
+      if @current_template
+        @current_template.remove
+        @current_template = nil
+      end
+
+      if @current_controller_handler
+        @current_controller_handler.call_action('after', 'remove')
+      end
+
+      if @grouped_controller && @current_controller_handler
+        # Remove a reference for the controller in the group.
+        @grouped_controller.remove(@current_controller_handler.controller.class)
+      end
+
+      @controller = nil
+      @current_controller_handler = nil
+    end
+
+    def remove_starting_controller
+      # Clear any previously running wait for loads.  This is for when the path changes
+      # before the view actually renders.
+      if @waiting_for_load
+        @waiting_for_load.stop
+      end
+
+      if @starting_controller_handler
+        # Only call the after_..._removed because the dom never loaded.
+        @starting_controller_handler.call_action('after', 'removed')
+        @starting_controller_handler = nil
+      end
+    end
+
+    # Create controller handler loads up a controller inside of the controller handler for the paths
+    def create_controller_handler(full_path, controller_path)
       # If arguments is nil, then an blank SubContext will be created
       args = [SubContext.new(@arguments, nil, true)]
 
-      controller = nil
+      # get the controller class and action
+      controller_class, action = get_controller(controller_path)
+      controller_class ||= ModelController
 
-      # Fetch grouped controllers if we're grouping
-      controller = @grouped_controller.get if @grouped_controller
-
-      # The action to be called and rendered
-      action     = nil
-
-      if controller
-        # Track that we're using the group controller
-        @grouped_controller.inc if @grouped_controller
-      else
-        # Otherwise, make a new controller
-        controller_class, action = get_controller(controller_path)
-
-        if controller_class
-          # Setup the controller
-          controller = controller_class.new(*args)
-        else
-          controller = ModelController.new(*args)
-        end
-
-        # Trigger the action
-        ControllerLifecycle.call_action(controller, action) if action
-
-        # Track the grouped controller
-        @grouped_controller.set(controller) if @grouped_controller
+      generated_new = false
+      new_controller = Proc.new do
+        # Mark that we needed to generate a new controller instance (not reused
+        # from the group)
+        generated_new = true
+        # Setup the controller
+        controller_class.new(*args)
       end
 
-      return controller, action
+      # Fetch grouped controllers if we're grouping
+      if @grouped_controller
+        # Find the controller in the group, or create it
+        controller = @grouped_controller.lookup_or_create(controller_class, &new_controller)
+      else
+        # Just create the controller
+        controller = new_controller.call
+      end
+
+      handler = ControllerHandler.new(controller, action)
+
+      if generated_new
+        # Call the action
+        stopped = handler.call_action
+
+        if stopped
+          controller.instance_variable_set('@chain_stopped', true)
+        end
+      else
+        stopped = controller.instance_variable_get('@chain_stopped')
+      end
+
+      return handler, generated_new, stopped
     end
 
     # The context for templates can be either a controller, or the original context.
-    def render_template(full_path)
-      @current_template = TemplateRenderer.new(@page, @target, @controller, @binding_name, full_path)
+    def render_template(full_path, path)
+      @current_template = TemplateRenderer.new(@page, @target, @controller, @binding_name, full_path, path)
 
       call_ready
     end
@@ -179,44 +232,32 @@ module Volt
         # the dom if needed
         # Only assign sections for action's, so we don't get AttributeSections bound
         # also.
-        if @action && @controller.respond_to?(:section=)
+        if @controller.respond_to?(:section=)
           @controller.section = @current_template.dom_section
         end
 
         # Call the ready callback on the controller
-        ControllerLifecycle.call_action(@controller, @action, "#{@action}_ready") if @action
+        @current_controller_handler.call_action(nil, 'ready')
       end
     end
 
     # Called when the binding is removed from the page
     def remove
+      # Cleanup any starting controller
+      remove_starting_controller
+
       @computation.stop
       @computation = nil
 
-      # TODO: Remove any waiting controllers
-      ControllerLifecycle.call_action(@controller, @action, :"before_#{@action}_remove") if @controller && @action
-
-      clear_grouped_controller
-
-      if @current_template
-        # Remove the template if one has been rendered, when the template binding is
-        # removed.
-        @current_template.remove
-      end
+      remove_current_controller_and_template
 
       super
-
-      if @controller
-        ControllerLifecycle.call_action(@controller, @action, :"after_#{@action}_remove") if @action
-
-        @controller = nil
-      end
     end
 
     private
     # Fetch the controller class
     def get_controller(controller_path)
-      return nil, nil unless controller_path && controller_path.size > 0
+      raise "Invalid controller path: #{controller_path.inspect}" unless controller_path && controller_path.size > 0
 
       action = controller_path[-1]
 

@@ -80,7 +80,7 @@ module Volt
       if @persistor
         @persistor.loaded(initial_state)
       else
-        change_state_to(:loaded_state, :loaded, false)
+        change_state_to(:loaded_state, initial_state || :loaded, false)
       end
 
       # Trigger the new event, pass in :new
@@ -293,8 +293,8 @@ module Volt
       end
     end
 
-    def new_model(attributes, options)
-      Volt::Model.class_at_path(options[:path]).new(attributes, options)
+    def new_model(*args)
+      Volt::Model.class_at_path(options[:path]).new(*args)
     end
 
     def new_array_model(attributes, options)
