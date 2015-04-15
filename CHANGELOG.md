@@ -1,12 +1,59 @@
 # Change Log
 
-## 0.8.27 - WIP
+## 0.9.0.pre1
 ### Added
-- Added email validator
+- the permissions api has been added!
+- added has_many and belongs_to on models.  See docs.
+- you can now serve http/rest from Volt.  Thanks to @jfahrer for his great work.  Docs coming soon.
+- there is now a generator for controllers and HttpControllers.
+- fixed generated component code
+- added .order for sorting on the data store (since .sort is a ruby Enum method)
+- calling .then on ArrayModels has been changed to calling .fetch and .fetch_first.  These both return a promise, and take an optional block
+- added .sync for synchronusly waiting on promises on the server only
+- added the ability to pass content into tags: (https://github.com/voltrb/docs/blob/master/en/docs/yield_binding.md)
+- Changed it so content bindings escape all html (for CSRF - thanks @ChaosData)
+- Added formats, email, phone validators (thanks @lexun and @kxcrl)
 - each_with_index is now supported in views and the ```index``` value is no longer provided by default.
 - fixed bug with cookie parsing with equals in them
 - fixed bug appending existing models to a collection
 - refactored TemplateBinding, moved code into ViewLookupForPath (SRP)
+- reserved fields now get a warning in models
+- bindings will now resolve any values that are promises. (currently only content and attribute, if, each, and template coming soon)
+- ```store``` is now available inside of specs.  If it is accessed in a spec, the database will be cleaned after the spec.
+- ```the_page``` is a shortcut to the page collection inside of specs.  (Unfortunately, ```page``` is used by capybara, so for now we're using ```the_page```, we'll find a better solution in the future.)
+- Add filtering to logging on password, and option to configure filtered args.  Also, improve the way errors are displayed.
+- You can now call raw in a content binding to render the raw html on the page.  Use carefully, this can open you up to xss attacks.  We reccomend never showing html from the user directly.
+- before/after actions added to ModelController (HttpController support coming soon).
+
+### Changed
+- template bindings have been renamed to view.  ```{{ view "path/for/view" }}``` instead of ```{{ template "path/for/view" }}```
+- view bindings (formerly template) wait until the template's #loaded? method returns true (by .watch! ing it for changes)
+- #loaded? on controllers now returns false if the model is set to a Promise, until the promise is resolved.
+- the {action}_remove method had been changed to before_{action}_remove and after_{action}_remove to provide more hooks and a clearer understanding of when it is happening.
+- the following were renamed to follow gem naming conventions:
+  - volt-user-templates (now volt-user_templates)
+  - volt-bootstrap-jumbotron-theme (now volt-bootstrap_jumbotron_theme)
+- all plural attributes now return an empty ArrayModel.  This is to simplify implementation and to unify store's interface.
+- main_path in generated projects now includes the a component param that can be used to easily point at controllers/views in other components.
+- previously the main component's controllers were not namespaced.  We changed it so all controllers (including those in main) are namespaced.  This is makes things more consistent and keeps expectations when working with components.
+- model attributes no longer return NilModels.  Instead they just return nil.  You can however add an ! to the end to "expand" the model to an empty model.
+
+    ```page._new_todo # => now returns nil```
+
+    ```page._new_todo! # => returns an empty model```
+
+  So if you wanted to use a property on ```_new_todo``` without initializing ```_new_todo```, you could add the ! to the lookup.
+- Volt.user has been renamed to Volt.current_user so its clearer what it returns
+- _'s are no longer required for route constraints (so just use ```controller: 'main', action: 'index'``` now)
+- the underlying way queries are normalized and passed to the server has changed (no external api changes)
+- changed .find to .where to not conflict with ruby Enum's .find
+- Volt::TaskHandler is now Volt::Task
+- Move testing gems to the generated Gemfile for projects
+- ```if ENV['BROWSER']``` is no longer required around integration tests.  We now use rspec filtering on ```type: :feature``` if you aren't running with ENV['BROWSER']
+- ```go``` has been renamed to ```redirect_to``` to keep things consistent between ruby frameworks. (And to allow for go to be used elsewhere)
+
+### Removed
+- .false?, .true?, .or, and .and were removed since NilModels were removed.  This means you get back a real nil value when accessing an undefined model attribute.
 
 ## 0.8.24 - 2014-12-05
 ### Added

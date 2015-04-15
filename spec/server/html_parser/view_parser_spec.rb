@@ -164,7 +164,7 @@ describe Volt::ViewParser do
 
   it 'should parse a template' do
     html = <<-END
-    {{ template "/home/temp/path" }}
+    {{ view "/home/temp/path" }}
     END
 
     view = Volt::ViewParser.new(html, 'main/main/main')
@@ -173,7 +173,7 @@ describe Volt::ViewParser do
                                    'html' => "    <!-- $0 --><!-- $/0 -->\n",
                                    'bindings' => {
                                      0 => [
-                                       "lambda { |__p, __t, __c, __id| Volt::TemplateBinding.new(__p, __t, __c, __id, \"main/main/main/body\", Proc.new { [\"/home/temp/path\"] }) }"
+                                       "lambda { |__p, __t, __c, __id| Volt::ViewBinding.new(__p, __t, __c, __id, \"main/main/main/body\", Proc.new { [\"/home/temp/path\"] }) }"
                                      ]
                                    }
                                  })
@@ -186,7 +186,6 @@ describe Volt::ViewParser do
 
     view = Volt::ViewParser.new(html, 'main/main/main/body')
 
-    # puts view.templates.inspect
   end
   it 'should setup a href single attribute binding correctly' do
     html = <<-END
@@ -194,8 +193,6 @@ describe Volt::ViewParser do
     END
 
     view = Volt::ViewParser.new(html, 'main/main/main/body')
-
-    # puts view.templates.inspect
   end
 
   it 'should parse components' do

@@ -1,5 +1,5 @@
+require 'opal'
 if RUBY_PLATFORM == 'opal'
-  require 'opal'
   require 'opal-jquery'
 end
 require 'volt/models'
@@ -9,7 +9,8 @@ require 'volt/page/bindings/attribute_binding'
 require 'volt/page/bindings/content_binding'
 require 'volt/page/bindings/each_binding'
 require 'volt/page/bindings/if_binding'
-require 'volt/page/bindings/template_binding'
+require 'volt/page/bindings/view_binding'
+require 'volt/page/bindings/yield_binding'
 require 'volt/page/bindings/component_binding'
 require 'volt/page/bindings/event_binding'
 require 'volt/page/template_renderer'
@@ -31,11 +32,9 @@ require 'volt/page/tasks'
 
 module Volt
   class Page
-    attr_reader :url, :params, :page, :templates, :routes, :events, :model_classes
+    attr_reader :url, :params, :page, :templates, :routes, :events
 
     def initialize
-      @model_classes = {}
-
       # Run the code to setup the page
       @page          = Model.new
 
@@ -139,14 +138,6 @@ module Volt
 
     attr_reader :events
 
-    def add_model(model_name)
-      model_name                 = model_name.camelize.to_sym
-      @model_classes[model_name] = Object.const_get(model_name)
-    rescue NameError => e
-      # Handle if the model is user (Volt's provided user model is scoped under Volt::)
-      raise unless model_name == :User
-    end
-
     def add_template(name, template, bindings)
       @templates ||= {}
 
@@ -159,7 +150,6 @@ module Volt
       unless @templates[name]
         @templates[name] = { 'html' => template, 'bindings' => bindings }
       end
-      # puts "Add Template: #{name}"
     end
 
     def add_routes(&block)
@@ -177,7 +167,7 @@ module Volt
       # Do the initial url params parse
       @url_tracker.url_updated(true)
 
-      main_controller = MainController.new
+      main_controller = Main::MainController.new
 
       # Setup main page template
       TemplateRenderer.new(self, DomTarget.new, main_controller, 'CONTENT', 'main/main/main/body')
@@ -210,7 +200,7 @@ module Volt
         end
       end
     rescue => e
-      puts "Unable to restore: #{e.inspect}"
+      Volt.logger.error("Unable to restore: #{e.inspect}")
     end
   end
 
@@ -218,8 +208,13 @@ module Volt
     $page = Page.new
 
     # Call start once the page is loaded
-    Document.ready? do
+    # Document.ready? do
+    #   $page.start
+    # end
+
+    # For some reason Document.ready? (using opal-jquery) quit working.
+    `$(document).ready(function() {`
       $page.start
-    end
+    `});`
   end
 end

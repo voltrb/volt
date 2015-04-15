@@ -25,7 +25,9 @@ if RUBY_PLATFORM != 'opal'
       expect(logger_with_opts.args).to eq([5, :arg2])
     end
 
-    context 'when STDOUT is a TTY' do
+    describe 'when STDOUT is a TTY' do
+      before { allow(STDOUT).to receive(:tty?).and_return(true) }
+      
       it 'should return a blue class name' do
         expect(logger_with_opts.class_name).to eq("\e[1;34m#{class_name}\e[0;37m")
       end
@@ -39,7 +41,7 @@ if RUBY_PLATFORM != 'opal'
       end
     end
 
-    context 'when STDOUT is not a TTY' do
+    describe 'when STDOUT is not a TTY' do
       before { allow(STDOUT).to receive(:tty?).and_return(false) }
 
       it 'should not add any terminal color codes' do

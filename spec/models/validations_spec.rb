@@ -1,17 +1,23 @@
 require 'spec_helper'
 
-class TestModel < Volt::Model
-  validate :count, numericality: { min: 5, max: 10 }
-  validate :description, length: { message: 'needs to be longer', length: 50 }
-  validate :email, email: true
-  validate :name, length: 4
-  validate :phone_number, phone_number: true
-  validate :username, presence: true
-end
-
 describe Volt::Model do
-  it 'should validate the name' do
-    expect(TestModel.new.errors).to eq(
+  let(:model) { test_model_class.new }
+
+  let(:test_model_class) do
+    Class.new(Volt::Model) do
+      validate :count, numericality: { min: 5, max: 10 }
+      validate :description, length: { message: 'needs to be longer',
+                                       length: 50 }
+      validate :email, email: true
+      validate :name, length: 4
+      validate :phone_number, phone_number: true
+      validate :username, presence: true
+    end
+  end
+
+  it 'should return errors for all failed validations' do
+    model.validate!
+    expect(model.errors).to eq(
       count: ['must be a number'],
       description: ['needs to be longer'],
       email: ['must be an email address'],
@@ -21,97 +27,122 @@ describe Volt::Model do
     )
   end
 
-  it 'should show marked validations once they are marked' do
-    model = TestModel.new
-
-    expect(model.marked_errors).to eq({})
-
-    model.mark_field!(:name)
-
-    expect(model.marked_errors).to eq(
-      name: ['must be at least 4 characters']
-    )
-  end
-
   it 'should show all fields in marked errors once saved' do
-    model = TestModel.new
+    buffer = model.buffer
 
-    expect(model.marked_errors).to eq({})
+    buffer.save!
 
-    model.save!
-
-    expect(model.marked_errors.keys).to eq(
+    expect(buffer.marked_errors.keys).to eq(
       [:count, :description, :email, :name, :phone_number, :username]
     )
   end
 
-  describe 'length' do
-    it 'should allow custom errors on length' do
-      model = TestModel.new
+  describe 'builtin validations' do
+    shared_examples_for 'a built in validation' do |field, message|
+      specify do
+        expect { model.mark_field! field }
+          .to change { model.marked_errors }
+          .from({}).to({ field => [message ] })
+      end
+    end
 
-      expect(model.marked_errors).to eq({})
+    describe 'numericality' do
+      message = 'must be a number'
+      it_should_behave_like 'a built in validation', :count, message
+    end
 
-      model.mark_field!(:description)
+    describe 'length' do
+      message = 'needs to be longer'
+      it_should_behave_like 'a built in validation', :description, message
+    end
 
-      expect(model.marked_errors).to eq(
-        description: ['needs to be longer']
-      )
+    describe 'email' do
+      message = 'must be an email address'
+      it_should_behave_like 'a built in validation', :email, message
+    end
+
+    describe 'name' do
+      message = 'must be at least 4 characters'
+      it_should_behave_like 'a built in validation', :name, message
+    end
+
+    describe 'phone_number' do
+      message = 'must be a phone number with area or country code'
+      it_should_behave_like 'a built in validation', :phone_number, message
+    end
+
+    describe 'presence' do
+      message = 'must be specified'
+      it_should_behave_like 'a built in validation', :username, message
+    end
+
+    it 'should fail on non-numbers' do
+      model._count = 'not a number'
+      expect(model.errors[:count]).to eq(['must be a number'])
     end
   end
 
-  describe 'presence' do
-    it 'should validate presence' do
-      model = TestModel.new
+  describe 'validators with multiple criteria' do
+    let(:regex_message) { 'regex failed' }
+    let(:proc_message) { 'proc failed' }
 
-      expect(model.marked_errors).to eq({})
+    let(:test_model_class) do
+      Class.new(Volt::Model) do
+        validate :special_field, format: [
+          { with: /regex/, message: 'regex failed' },
+          { with: ->(x) {x == false}, message: 'proc failed' }
+        ]
+      end
+    end
 
-      model.mark_field!(:username)
+    context 'when multiple fail' do
+      before { model._special_field = 'nope' }
 
-      expect(model.marked_errors).to eq(
-        username: ['must be specified']
-      )
+      it 'returns an array of errors' do
+        expect(model.errors).to eq({
+          special_field: [ regex_message, proc_message ]
+        })
+      end
+    end
+
+    context 'when one fails' do
+      before do
+        # Prevent rollback for testing
+        allow(model).to receive(:revert_changes!)
+        model._special_field = 'regex'
+      end
+
+      it 'returns an array with a single error' do
+        expect(model.errors.to_h).to eq({ special_field: [ proc_message ] })
+      end
     end
   end
 
-  describe 'numericality' do
-    it 'should validate numericality' do
-      model = TestModel.new
+  it 'should report if errors have happened in changed attributes' do
+    # Prevent revert_changes! so it doesn't revert on failed values
+    allow(model).to receive(:revert_changes!)
 
-      expect(model.marked_errors).to eq({})
+    expect(model.error_in_changed_attributes?).to eq(false)
 
-      model.mark_field!(:count)
+    model._not_validated_attr = 'yes'
+    expect(model.error_in_changed_attributes?).to eq(false)
 
-      expect(model.marked_errors).to eq(
-        count: ['must be a number']
-      )
-    end
+    model._name = '5' # fail, too short
+    expect(model.changed?(:name)).to eq(true)
+    expect(model.error_in_changed_attributes?).to eq(true)
+
+    model._name = 'Jimmy'
+    expect(model.error_in_changed_attributes?).to eq(false)
   end
 
-  describe 'email' do
-    it 'should validate email' do
-      model = TestModel.new
+  it 'should revert changes which fail a validation' do
+    model._name = 'bob' # fails too short validation
+    expect(model._name).to eq(nil)
 
-      expect(model.marked_errors).to eq({})
+    model._name = 'Jimmy' # long enough, passes
+    expect(model._name).to eq('Jimmy')
 
-      model.mark_field!(:email)
-
-      expect(model.marked_errors).to eq(
-        email: ['must be an email address']
-      )
-    end
-  end
-
-  describe 'phone_number' do
-    it 'should validate phone number' do
-      model = TestModel.new
-
-      expect(model.marked_errors).to eq({})
-
-      model.mark_field!(:phone_number)
-
-      expect(model.marked_errors).to eq(
-        phone_number: ['must be a phone number with area or country code']
-      )
-    end
+    model._name = 'ok' # fails again
+    expect(model._name).to eq('Jimmy')
   end
 end

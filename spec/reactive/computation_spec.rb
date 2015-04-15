@@ -38,6 +38,57 @@ describe Volt::Computation do
     expect(values).to eq([nil, 'one'])
   end
 
+  it 'should watch_until! a value matches' do
+    a = Volt::ReactiveHash.new
+
+    a[:b] = 5
+
+    count = 0
+    -> do
+      a[:b]
+    end.watch_until!(10) do
+      count += 1
+    end
+
+    expect(count).to eq(0)
+
+    a[:b] = 7
+    Volt::Computation.flush!
+    expect(count).to eq(0)
+
+    a[:b] = 10
+    Volt::Computation.flush!
+    expect(count).to eq(1)
+
+    # Should only trigger once
+    a[:b] = 5
+    Volt::Computation.flush!
+    expect(count).to eq(1)
+
+    a[:b] = 10
+    Volt::Computation.flush!
+    expect(count).to eq(1)
+  end
+
+  it 'should trigger a changed dependency only once on a flush' do
+    a = Volt::Dependency.new
+
+    count = 0
+    -> { count += 1 ; a.depend }.watch!
+
+    expect(count).to eq(1)
+
+    a.changed!
+    a.changed!
+    a.changed!
+
+    expect(count).to eq(1)
+
+    Volt::Computation.flush!
+
+    expect(count).to eq(2)
+  end
+
   it 'should support nested watches' do
     a = Volt::ReactiveHash.new
 
@@ -61,6 +112,20 @@ describe Volt::Computation do
     expect(values).to eq([nil, nil, 'inner', 'outer', 'inner'])
   end
 
+  describe "watch_and_resolve!" do
+    it 'should resolve any returnted promises' do
+      promise = Promise.new.resolve('resolved')
+      count = 0
+
+      -> { promise }.watch_and_resolve! do |result|
+        expect(result).to eq('resolved')
+        count += 1
+      end
+
+      expect(count).to eq(1)
+    end
+  end
+
   # Currently Class#class_variable_set/get isn't in opal
   # https://github.com/opal/opal/issues/677
   unless RUBY_PLATFORM == 'opal'
@@ -72,7 +137,7 @@ describe Volt::Computation do
       Volt::Computation.class_variable_set :@@flush_queue, []
     end
 
-    context 'when stopped' do
+    describe 'when stopped' do
       before(:each) { computation.instance_variable_set :@stopped, true }
 
       it "doesn't add self to flush queue" do
@@ -82,7 +147,7 @@ describe Volt::Computation do
       end
     end
 
-    context 'when computing' do
+    describe 'when computing' do
       before(:each) { computation.instance_variable_set :@computing, true }
 
       it "doesn't add self to flush queue" do
@@ -92,7 +157,7 @@ describe Volt::Computation do
       end
     end
 
-    context 'when not stopped and not computing' do
+    describe 'when not stopped and not computing' do
       before(:each) do
         computation.instance_variable_set :@stopped,   false
         computation.instance_variable_set :@computing, false

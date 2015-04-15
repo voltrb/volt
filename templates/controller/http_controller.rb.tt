@@ -1,0 +1,5 @@
+module <%= config[:component_module] %>
+  class <%= config[:http_controller_name] %> < Volt::HttpController
+
+  end
+end

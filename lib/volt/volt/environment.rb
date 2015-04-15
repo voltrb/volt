@@ -1,7 +1,8 @@
 module Volt
   class Environment
     def initialize
-      @env = ENV['VOLT_ENV']
+      # Use VOLT_ENV or RACK_ENV to set the environment
+      @env = ENV['VOLT_ENV'] || ENV['RACK_ENV']
 
       # If we're in opal, we can set the env from JS before opal loads
       if RUBY_PLATFORM == 'opal'

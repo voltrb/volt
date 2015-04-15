@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'volt/page/bindings/template_binding'
+require 'volt/page/bindings/view_binding'
 
 # Setup page stub
 
@@ -7,7 +7,7 @@ class Volt::Page
   attr_accessor :templates
 end
 
-describe Volt::TemplateBinding do
+describe Volt::ViewBinding do
   before do
     @page = double('volt/page')
     expect(@page).to receive(:templates).at_least(1).times { @templates }

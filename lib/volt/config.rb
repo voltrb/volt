@@ -48,7 +48,7 @@ else
         app_name = File.basename(Dir.pwd)
         {
           app_name:  app_name,
-          db_name:   ENV['DB_NAME'] || (app_name + '_' + Volt.env.to_s),
+          db_name:   (ENV['DB_NAME'] || (app_name + '_' + Volt.env.to_s)).gsub('.', '_'),
           db_host:   ENV['DB_HOST'] || 'localhost',
           db_port:   (ENV['DB_PORT'] || 27_017).to_i,
           db_driver: ENV['DB_DRIVER'] || 'mongo'

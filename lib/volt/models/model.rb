@@ -3,39 +3,101 @@ require 'volt/models/array_model'
 require 'volt/models/model_helpers'
 require 'volt/models/model_hash_behaviour'
 require 'volt/models/validations'
-require 'volt/models/model_state'
+require 'volt/utils/modes'
+require 'volt/models/state_manager'
+require 'volt/models/state_helpers'
 require 'volt/models/buffer'
 require 'volt/models/field_helpers'
 require 'volt/reactive/reactive_hash'
+require 'volt/models/validators/user_validation'
+require 'volt/models/dirty'
+require 'volt/models/listener_tracker'
+require 'volt/models/permissions'
+require 'volt/models/associations'
+require 'volt/reactive/class_eventable'
+require 'volt/utils/event_counter'
+require 'thread'
 
 module Volt
   class NilMethodCall < NoMethodError
+  end
+
+  # The error is raised when a reserved field name is used in a
+  # volt model.
+  class InvalidFieldName < StandardError
   end
 
   class Model
     include ModelWrapper
     include ModelHelpers
     include ModelHashBehaviour
+    include StateManager
+    include StateHelpers
     include Validations
-    include ModelState
     include Buffer
     include FieldHelpers
+    include UserValidatorHelpers
+    include Dirty
+    include ClassEventable
+    include Modes
+    include ListenerTracker
+    include Permissions
+    include Associations
 
-    attr_reader :attributes
-    attr_reader :parent, :path, :persistor, :options
+    attr_reader :attributes, :parent, :path, :persistor, :options
+
+    INVALID_FIELD_NAMES = {
+      :attributes => true,
+      :parent => true,
+      :path => true,
+      :options => true,
+      :persistor => true
+    }
 
     def initialize(attributes = {}, options = {}, initial_state = nil)
+      # The listener event counter keeps track of how many computations are listening on this model
+      @listener_event_counter = EventCounter.new(
+        -> { parent.try(:persistor).try(:listener_added) },
+        -> { parent.try(:persistor).try(:listener_removed) }
+      )
+
+      # The root dependency is used to track if anything is using the data from this
+      # model.  That information is relayed to the ArrayModel so it knows when it can
+      # stop subscribing.
+      # @root_dep    = Dependency.new(@listener_event_counter.method(:add), @listener_event_counter.method(:remove))
+      @root_dep    = Dependency.new(-> { add_list }, -> { remove_list })
+
       @deps        = HashDependency.new
       @size_dep    = Dependency.new
       self.options = options
 
-      send(:attributes=, attributes, true)
+      @new = (initial_state != :loaded)
 
-      # Models start in a loaded state since they are normally setup from an
-      # ArrayModel, which will have the data when they get added.
-      @state = :loaded
+      assign_attributes(attributes, true)
 
-      @persistor.loaded(initial_state) if @persistor
+      # The persistor is usually responsible for setting up the loaded_state, if
+      # there is no persistor, we set it to loaded
+      if @persistor
+        @persistor.loaded(initial_state)
+      else
+        change_state_to(:loaded_state, initial_state || :loaded, false)
+      end
+
+      # Trigger the new event, pass in :new
+      trigger!(:new, :new)
+    end
+
+    def add_list
+      @listener_event_counter.add
+    end
+
+    def remove_list
+      @listener_event_counter.remove
+    end
+
+    def state_for(*args)
+      @root_dep.depend
+      super
     end
 
     # the id is stored in a field named _id, so we setup _id to proxy to this
@@ -45,6 +107,11 @@ module Volt
 
     def _id=(val)
       self.__id = val
+    end
+
+    # Return true if the model hasn't been saved yet
+    def new?
+      @new
     end
 
     # Update the options
@@ -57,31 +124,22 @@ module Volt
     end
 
     # Assign multiple attributes as a hash, directly.
-    def attributes=(attrs, initial_setup = false)
-      @attributes = {}
+    def assign_attributes(attrs, initial_setup=false, skip_changes=false)
+      @attributes ||= {}
 
       attrs = wrap_values(attrs)
 
       if attrs
-        # Assign id first
-        id = attrs.delete(:_id)
-
-        # When doing a mass-assign, we don't save until the end.
-        Model.nosave do
-          self._id = id if id
-
-          # Assign each attribute using setters
-          attrs.each_pair do |key, value|
-            if self.respond_to?(:"#{key}=")
-              # If a method without an underscore is defined, call that.
-              send(:"#{key}=", value)
-            else
-              # Otherwise, use the _ version
-              send(:"_#{key}=", value)
-            end
+        # When doing a mass-assign, we don't validate or save until the end.
+        if initial_setup || skip_changes
+          Model.no_change_tracking do
+            assign_all_attributes(attrs, skip_changes)
           end
+        else
+          assign_all_attributes(attrs)
         end
       else
+        # Assign to nil
         @attributes = attrs
       end
 
@@ -89,18 +147,22 @@ module Volt
       @deps.changed_all!
       @deps = HashDependency.new
 
-      unless initial_setup
+      # Save the changes
+      if initial_setup
+        # Run initial validation
+        errs = Volt.in_mode?(:no_validate) ? nil : validate!
 
-        # Let the persistor know something changed
-        if @persistor
-          # the changed method on a persistor should return a promise that will
-          # be resolved when the save is complete, or fail with a hash of errors.
-          return @persistor.changed
+        if errs && errs.size > 0
+          return Promise.new.reject(errs)
+        else
+          return Promise.new.resolve(nil)
         end
+      else
+        return run_changed
       end
     end
 
-    alias_method :assign_attributes, :attributes=
+    alias_method :attributes=, :assign_attributes
 
     # Pass the comparison through
     def ==(val)
@@ -120,14 +182,18 @@ module Volt
 
     def method_missing(method_name, *args, &block)
       if method_name[0] == '_'
-
         # Remove underscore
         method_name = method_name[1..-1]
         if method_name[-1] == '='
           # Assigning an attribute without the =
-          assign_attribute(method_name[0..-2], *args, &block)
+          set(method_name[0..-2], args[0], &block)
         else
-          read_attribute(method_name)
+          # If the method has an ! on the end, then we assign an empty
+          # collection if no result exists already.
+          expand = (method_name[-1] == '!')
+          method_name = method_name[0..-2] if expand
+
+          get(method_name, expand)
         end
       else
         # Call on parent
@@ -136,17 +202,20 @@ module Volt
     end
 
     # Do the assignment to a model and trigger a changed event
-    def assign_attribute(method_name, *args, &block)
-      self.expand!
+    def set(attribute_name, value, &block)
       # Assign, without the =
-      attribute_name = method_name.to_sym
+      attribute_name = attribute_name.to_sym
 
-      value = args[0]
+      check_valid_field_name(attribute_name)
 
       old_value = @attributes[attribute_name]
       new_value = wrap_value(value, [attribute_name])
 
       if old_value != new_value
+        # Track the old value, skip if we are in no_validate
+        attribute_will_change!(attribute_name, old_value) unless Volt.in_mode?(:no_change_tracking)
+
+        # Assign the new value
         @attributes[attribute_name] = new_value
 
         @deps.changed!(attribute_name)
@@ -157,53 +226,56 @@ module Volt
 
         # TODO: Can we make this so it doesn't need to be handled for non store collections
         # (maybe move it to persistor, though thats weird since buffers don't have a persistor)
-        clear_server_errors(attribute_name) if @server_errors
+        clear_server_errors(attribute_name) if @server_errors.present?
 
-        # Don't save right now if we're in a nosave block
-        if !defined?(Thread) || !Thread.current['nosave']
-          # Let the persistor know something changed
-          @persistor.changed(attribute_name) if @persistor
-        end
+        # Save the changes
+        run_changed(attribute_name) unless Volt.in_mode?(:no_change_tracking)
       end
+
+      new_value
     end
 
     # When reading an attribute, we need to handle reading on:
     # 1) a nil model, which returns a wrapped error
     # 2) reading directly from attributes
     # 3) trying to read a key that doesn't exist.
-    def read_attribute(attr_name)
+    def get(attr_name, expand=false)
       # Reading an attribute, we may get back a nil model.
       attr_name = attr_name.to_sym
 
+      check_valid_field_name(attr_name)
+
+      # Track that something is listening
+      @root_dep.depend
+
       # Track dependency
-      # @deps.depend(attr_name)
+      @deps.depend(attr_name)
 
       # See if the value is in attributes
       if @attributes && @attributes.key?(attr_name)
-        # Track dependency
-        @deps.depend(attr_name)
-
         return @attributes[attr_name]
       else
-        new_model              = read_new_model(attr_name)
-        @attributes            ||= {}
-        @attributes[attr_name] = new_model
+        # If we're expanding, or the get is for a collection, in which
+        # case we always expand.
+        if expand || attr_name.plural?
+          new_value = read_new_model(attr_name)
 
-        # Trigger size change
-        # TODO: We can probably improve Computations to just make this work
-        # without the delay
-        if Volt.in_browser?
-          `setImmediate(function() {`
-            @size_dep.changed!
-          `});`
+          # A value was generated, store it
+          if new_value
+            # Assign directly.  Since this is the first time
+            # we're loading, we can just assign.
+            set(attr_name, new_value)
+          end
+
+          return new_value
         else
-          @size_dep.changed!
+          return nil
         end
-
-        # Depend on attribute
-        @deps.depend(attr_name)
-        return new_model
       end
+    end
+
+    def respond_to_missing?(method_name, include_private=false)
+      method_name.to_s.start_with?('_') || super
     end
 
     # Get a new model, make it easy to override
@@ -212,90 +284,83 @@ module Volt
         return @persistor.read_new_model(method_name)
       else
         opts = @options.merge(parent: self, path: path + [method_name])
+
         if method_name.plural?
           return new_array_model([], opts)
         else
-          return new_model(nil, opts)
+          return new_model({}, opts)
         end
       end
     end
 
-    def new_model(attributes, options)
-      class_at_path(options[:path]).new(attributes, options)
+    def new_model(*args)
+      Volt::Model.class_at_path(options[:path]).new(*args)
     end
 
     def new_array_model(attributes, options)
       # Start with an empty query
       options         = options.dup
-      options[:query] = {}
+      options[:query] = []
 
       ArrayModel.new(attributes, options)
     end
 
-    # If this model is nil, it makes it into a hash model, then
-    # sets it up to track from the parent.
-    def expand!
-      if attributes.nil?
-        @attributes = {}
-        if @parent
-          @parent.expand!
-
-          @parent.send(:"_#{@path.last}=", self)
-        end
-      end
-    end
-
-    # Initialize an empty array and append to it
-    def <<(value)
-      if @parent
-        @parent.expand!
-      else
-        fail 'Model data should be stored in sub collections.'
-      end
-
-      # Grab the last section of the path, so we can do the assign on the parent
-      path   = @path.last
-      result = @parent.send(path)
-
-      if result.nil?
-        # If this isn't a model yet, instantiate it
-        @parent.send(:"#{path}=", new_array_model([], @options))
-        result = @parent.send(path)
-      end
-
-      # Add the new item
-      result << value
-
-      nil
-    end
-
     def inspect
-      "<#{self.class}:#{object_id} #{attributes.inspect}>"
+      Computation.run_without_tracking do
+        str = "<#{self.class}:#{object_id}"
+
+        # Get path, loaded_state, and persistor, but cache in local var
+        path = self.path
+        str += " path:#{path}" if path
+
+        loaded_state = self.loaded_state
+        str += " state:#{loaded_state}" if loaded_state
+
+        persistor = self.persistor
+        # str += " persistor:#{persistor.inspect}" if persistor
+        str += " #{attributes.inspect}>"
+
+        str
+      end
     end
 
-    # Takes a block that when run, changes to models will not save inside of
-    if RUBY_PLATFORM == 'opal'
-      # Temporary stub for no save on client
-      def self.nosave
-        yield
+    def destroy
+      if parent
+        result = parent.delete(self)
+
+        # Wrap result in a promise if it isn't one
+        return Promise.new.then { result }
+      else
+        fail "Model does not have a parent and cannot be deleted."
       end
-    else
-      def self.nosave
-        previous = Thread.current['nosave']
-        Thread.current['nosave'] = true
-        begin
-          yield
-        ensure
-          Thread.current['nosave'] = previous
-        end
+    end
+
+    # Setup run mode helpers
+    [:no_save, :no_validate, :no_change_tracking].each do |method_name|
+      define_singleton_method(method_name) do |&block|
+        Volt.run_in_mode(method_name, &block)
       end
     end
 
     private
+    # Volt provides a few access methods to get more data about the model,
+    # we want to prevent these from being assigned or accessed through
+    # underscore methods.
+    def check_valid_field_name(name)
+      if INVALID_FIELD_NAMES[name]
+        raise InvalidFieldName, "`#{name}` is reserved and can not be used as a field"
+      end
+    end
 
     def setup_buffer(model)
-      model.attributes = attributes
-      model.change_state_to(:loaded)
+      Volt::Model.no_validate do
+        model.assign_attributes(attributes, true)
+      end
+
+      model.change_state_to(:loaded_state, :loaded)
+
+      # Set new to the same as the main model the buffer is from
+      model.instance_variable_set('@new', @new)
     end
 
     # Takes the persistor if there is one and
@@ -303,6 +368,80 @@ module Volt
       if persistor
         @persistor = persistor.new(self)
       end
+    end
+
+    # Used internally from other methods that assign all attributes
+    def assign_all_attributes(attrs, track_changes=false)
+      # Assign each attribute using setters
+      attrs.each_pair do |key, value|
+        key = key.to_sym
+
+        # Track the change, since assign_all_attributes runs with no_change_tracking
+        old_val = @attributes[key]
+        attribute_will_change!(key, old_val) if track_changes && old_val != value
+
+        if self.respond_to?(:"#{key}=")
+          # If a method without an underscore is defined, call that.
+          send(:"#{key}=", value)
+        else
+          # Otherwise, use the _ version
+          send(:"_#{key}=", value)
+        end
+      end
+    end
+
+    # Called when something in the model changes.  Saves
+    # the model if there is a persistor, and changes the
+    # model to not be new.
+    #
+    # @return [Promise|nil] a promise for when the save is
+    #         complete
+    def run_changed(attribute_name=nil)
+      result = nil
+
+      # no_validate mode should only be used internally.  no_validate mode is a
+      # performance optimization that prevents validation from running after each
+      # change when assigning multile attributes.
+      unless Volt.in_mode?(:no_validate)
+        # Run the validations for all fields
+        validate!
+
+        # Buffers are allowed to be in an invalid state
+        unless buffer?
+          # First check that all local validations pass
+          if error_in_changed_attributes?
+            # Some errors are present, revert changes
+            revert_changes!
+
+            # After we revert, we need to validate again to get the error messages back
+            # TODO: Could probably cache the previous errors.
+            errs = validate!
+
+            result = Promise.new.reject(errs)
+          else
+            # No errors, tell the persistor to handle the change (usually save)
+
+            # Don't save right now if we're in a nosave block
+            unless Volt.in_mode?(:no_save)
+              # the changed method on a persistor should return a promise that will
+              # be resolved when the save is complete, or fail with a hash of errors.
+              if @persistor
+                result = @persistor.changed(attribute_name)
+              else
+                result = Promise.new.resolve(nil)
+              end
+
+              # Saved, no longer new
+              @new = false
+
+              # Clear the change tracking
+              clear_tracked_changes!
+            end
+          end
+        end
+      end
+
+      return result
     end
   end
 end

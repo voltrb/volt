@@ -11,9 +11,14 @@ end
 require 'volt/models/persistors/flash'
 require 'volt/models/persistors/local_store'
 if RUBY_PLATFORM == 'opal'
-  require 'promise.rb'
+  require 'promise'
 else
   # Opal doesn't expose its promise library directly
-  spec = Gem::Specification.find_by_name('opal')
-  require(spec.gem_dir + '/stdlib/promise')
+  # gem_dir = Gem::Specification.find_by_name('opal').gem_dir
+  require 'opal'
+
+  gem_dir = File.join(Opal.gem_dir, '..')
+  require(gem_dir + '/stdlib/promise')
 end
+# TODO: remove once https://github.com/opal/opal/pull/725 is released.
+require 'volt/utils/promise_patch'

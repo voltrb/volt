@@ -24,7 +24,8 @@ module Volt
 
     # Lookups an item
     def lookup(*args, &block)
-      item = super(*args, &block)
+      # Note: must call without args because of https://github.com/opal/opal/issues/500
+      item = super
 
       item[1]
     end
@@ -34,12 +35,14 @@ module Volt
     end
 
     def remove(*args)
-      item    = __lookup(*args)
-      item[0] -= 1
+      item    = lookup_without_generate(*args)
+      if item
+        item[0] -= 1
 
-      if item[0] == 0
-        # Last one using this item has removed it.
-        super(*args)
+        if item[0] == 0
+          # Last one using this item has removed it.
+          super(*args)
+        end
       end
     end
   end

@@ -21,29 +21,39 @@ module Volt
       @persistor.event_removed(event, last, last_for_event) if @persistor
     end
 
-    # Gets the class for a model at the specified path.
-    def class_at_path(path)
-      if path
-        begin
-          # remove the _ and then singularize
-          if path.last == :[]
-            index = -2
-          else
-            index = -1
+    module ClassMethods
+      # Gets the class for a model at the specified path.
+      def class_at_path(path)
+        if path
+          begin
+            # remove the _ and then singularize
+            if path.last == :[]
+              index = -2
+            else
+              index = -1
+            end
+
+            klass_name = path[index].singularize.camelize
+
+            # Lookup the class
+            klass = Object.const_get(klass_name)
+
+            # Use it if it is a model
+            klass = Model unless klass < Model
+          rescue NameError => e
+            # Ignore exception, just means the model isn't defined
+            klass = Model
           end
-
-          klass_name = path[index].singularize.camelize
-
-          klass = $page.model_classes[klass_name] || Model
-        rescue NameError => e
-          # Ignore exception, just means the model isn't defined
+        else
           klass = Model
         end
-      else
-        klass = Model
-      end
 
-      klass
+        klass
+      end
+    end
+
+    def self.included(base)
+      base.send :extend, ClassMethods
     end
   end
 end

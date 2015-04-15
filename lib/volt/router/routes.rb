@@ -4,12 +4,12 @@ module Volt
   # The Routes class takes a set of routes and sets up methods to go from
   # a url to params, and params to url.
   # routes do
-  #   get "/about", _view: 'about'
-  #   get "/blog/{_id}/edit", _view: 'blog/edit', _action: 'edit'
-  #   get "/blog/{_id}", _view: 'blog/show', _action: 'show'
-  #   get "/blog", _view: 'blog'
-  #   get "/blog/new", _view: 'blog/new', _action: 'new'
-  #   get "/cool/{_name}", _view: 'cool'
+  #   client "/about", _view: 'about'
+  #   client "/blog/{_id}/edit", _view: 'blog/edit', _action: 'edit'
+  #   client "/blog/{_id}", _view: 'blog/show', _action: 'show'
+  #   client "/blog", _view: 'blog'
+  #   client "/blog/new", _view: 'blog/new', _action: 'new'
+  #   client "/cool/{_name}", _view: 'cool'
   # end
   #
   # Using the routes above, we would generate the following:
@@ -47,7 +47,13 @@ module Volt
       @indirect_routes = {}
 
       # Matcher for going from params to url
-      @param_matches   = []
+      @param_matches   = {}
+
+      [:client, :get, :post, :put, :patch, :delete].each do |method|
+        @direct_routes[method] = {}
+        @indirect_routes[method] = {}
+        @param_matches[method] = []
+      end
     end
 
     def define(&block)
@@ -57,15 +63,29 @@ module Volt
     end
 
     # Add a route
-    def get(path, params = {})
-      params = params.symbolize_keys
-      if has_binding?(path)
-        add_indirect_path(path, params)
-      else
-        @direct_routes[path] = params
-      end
+    def client(path, params = {})
+      create_route(:client, path, params)
+    end
 
-      add_param_matcher(path, params)
+    # Add server side routes
+    def get(path, params)
+      create_route(:get, path, params)
+    end
+
+    def post(path, params)
+      create_route(:post, path, params)
+    end
+
+    def patch(path, params)
+      create_route(:patch, path, params)
+    end
+
+    def put(path, params)
+      create_route(:put, path, params)
+    end
+
+    def delete(path, params)
+      create_route(:delete, path, params)
     end
 
     # Takes in params and generates a path and the remaining params
@@ -74,18 +94,20 @@ module Volt
     #
     # returns the url and new params, or nil, nil if no match is found.
     def params_to_url(test_params)
+      # Extract the desired method from the params
+      method = test_params.delete(:method) || :client
+      method = method.to_sym
+
       # Add in underscores
       test_params = test_params.each_with_object({}) do |(k, v), obj|
-        obj[:"_#{k}"] = v
+        obj[k.to_sym] = v
       end
 
-      @param_matches.each do |param_matcher|
+      @param_matches[method].each do |param_matcher|
         # TODO: Maybe a deep dup?
         result, new_params = check_params_match(test_params.dup, param_matcher[0])
 
-        if result
-          return param_matcher[1].call(new_params)
-        end
+        return param_matcher[1].call(new_params) if result
       end
 
       [nil, nil]
@@ -93,18 +115,38 @@ module Volt
 
     # Takes in a path and returns the matching params.
     # returns params as a hash
-    def url_to_params(path)
+    def url_to_params(*args)
+      if args.size < 2
+        path = args[0]
+        method = :client
+      else
+        path = args[1]
+        method = args[0].to_sym
+      end
+
       # First try a direct match
-      result = @direct_routes[path]
+      result = @direct_routes[method][path]
       return result if result
 
       # Next, split the url and walk the sections
       parts = url_parts(path)
 
-      match_path(parts, parts, @indirect_routes)
+      match_path(parts, parts, @indirect_routes[method])
     end
 
     private
+
+    def create_route(method, path, params)
+      params = params.symbolize_keys
+      method = method.to_sym
+      if has_binding?(path)
+        add_indirect_path(@indirect_routes[method], path, params)
+      else
+        @direct_routes[method][path] = params
+      end
+
+      add_param_matcher(method, path, params)
+    end
 
     # Recursively walk the @indirect_routes hash, return the params for a route, return
     # false for non-matches.
@@ -119,16 +161,16 @@ module Volt
         if node[part]
           # We found a match, replace the bindings and return
           # TODO: Handvle nested
-          return setup_bindings_in_params(original_parts, node[part])
+          setup_bindings_in_params(original_parts, node[part])
         else
-          return false
+          false
         end
       elsif (new_node = node[part])
         # Direct match for section, continue
-        return match_path(original_parts, parts, new_node)
+        match_path(original_parts, parts, new_node)
       elsif (new_node = node['*'])
         # Match on binding section
-        return match_path(original_parts, parts, new_node)
+        match_path(original_parts, parts, new_node)
       end
     end
 
@@ -153,13 +195,12 @@ module Volt
     # nil means a terminal, who's value will be the params.
     #
     # In the params, an integer vaule means the index of the wildcard
-    def add_indirect_path(path, params)
-      node = @indirect_routes
-
+    def add_indirect_path(node, path, params)
       parts = url_parts(path)
 
       parts.each_with_index do |part, index|
         if has_binding?(part)
+          # Strip off {{ and }}
           params[part[2...-2].strip.to_sym] = index
 
           # Set the part to be '*' (anything matcher)
@@ -172,7 +213,7 @@ module Volt
       node[nil] = params
     end
 
-    def add_param_matcher(path, params)
+    def add_param_matcher(method, path, params)
       params = params.dup
       parts  = url_parts(path)
 
@@ -186,7 +227,7 @@ module Volt
 
       path_transformer = create_path_transformer(parts)
 
-      @param_matches << [params, path_transformer]
+      @param_matches[method] << [params, path_transformer]
     end
 
     # Takes in url parts and returns a proc that takes in params and returns

@@ -24,7 +24,15 @@ module Volt
         @branches << [value, template_name]
       end
 
-      @computation = -> { update }.watch!
+      # The promise dependency can be invalidated when we need to rerun the update
+      # manually because a promise resolved.
+      @promise_dependency = Dependency.new
+
+      @computation = -> do
+        @promise_dependency.depend
+
+        update
+      end.watch!
     end
 
     def update
@@ -36,6 +44,22 @@ module Volt
         if value.is_a?(Proc)
           begin
             current_value = @context.instance_eval(&value)
+
+            if current_value.is_a?(Promise)
+              # If we got a promise, use its value if resolved.
+              if current_value.resolved?
+                current_value = current_value.value
+              else
+                # if its not, resolve it and try again.
+                # TODO: we maybe could cache this so we don't have to run a full update again
+                current_value.then do |val|
+                  # Run update again
+                  @promise_dependency.changed!
+                end
+
+                current_value = nil
+              end
+            end
           rescue => e
             Volt.logger.error("IfBinding:#{object_id} error: #{e.inspect}\n" + `value.toString()`)
             current_value = false
@@ -44,7 +68,6 @@ module Volt
           current_value = value
         end
 
-        # TODO: A bug in opal requires us to check == true
         if current_value && !current_value.nil? && !current_value.is_a?(Exception)
           # This branch is currently true
           true_template = template_name

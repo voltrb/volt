@@ -9,12 +9,19 @@ class DataStore
   end
 
   def query(collection, query)
-    # Extract query parts
-    query, skip, limit = query
+    allowed_methods = ['find', 'skip', 'limit']
 
-    cursor = db[collection].find(query)
-    cursor = cursor.skip(skip) if skip
-    cursor = cursor.limit(limit) if limit
+    cursor = db[collection]
+
+    query.each do |query_part|
+      method_name, *args = query_part
+
+      unless allowed_methods.include?(method_name.to_s)
+        raise "`#{method_name}` is not part of a valid query"
+      end
+
+      cursor = cursor.send(method_name, *args)
+    end
 
     cursor.to_a
   end
@@ -22,4 +29,5 @@ class DataStore
   def drop_database
     db.connection.drop_database(Volt.config.db_name)
   end
+
 end

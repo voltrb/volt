@@ -74,7 +74,7 @@ module Volt
         nested_params_hash(params).each_pair do |key, value|
           # remove the _ from the front
           value = `encodeURI(value)`
-          query_parts << "#{key[1..-1]}=#{value}"
+          query_parts << "#{key}=#{value}"
         end
 
         if query_parts.size > 0
@@ -176,7 +176,7 @@ module Volt
         else
           # assign value
           if old_val != new_val
-            params.send(:"#{name}=", new_val)
+            params.set(name, new_val)
           end
           new_params.delete(name)
         end
@@ -189,10 +189,10 @@ module Volt
     def assign_new(params, new_params)
       new_params.each_pair do |name, value|
         if value.is_a?(Hash)
-          assign_new(params.send(name), value)
+          assign_new(params.get(name), value)
         else
           # assign
-          params.send(:"#{name}=", value)
+          params.set(name, value)
         end
       end
     end
@@ -230,7 +230,7 @@ module Volt
     # Example:
     # user[name]=Ryan would parse as [:_user, :_name]
     def query_key_sections(key)
-      key.split(/\[([^\]]+)\]/).reject(&:empty?).map { |v| :"_#{v}" }
+      key.split(/\[([^\]]+)\]/).reject(&:empty?)
     end
 
     # Generate the key for a nested param attribute

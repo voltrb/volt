@@ -76,8 +76,6 @@ module Volt
         code << File.read(model_path) + "\n\n"
 
         model_name = model_path.match(/([^\/]+)[.]rb$/)[1]
-
-        code << "#{page_reference}.add_model(#{model_name.inspect})\n\n"
       end
 
       code
@@ -97,8 +95,8 @@ module Volt
     end
 
     def generate_tasks_code
-      TaskHandler.known_handlers.map do |handler|
-        "class #{handler.name} < Volt::TaskHandler; end"
+      Task.known_handlers.map do |handler|
+        "class #{handler.name} < Volt::Task; end"
       end.join "\n"
     end
   end

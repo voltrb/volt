@@ -1,5 +1,5 @@
 module Volt
-  class TaskHandler
+  class Task
     if RUBY_PLATFORM == 'opal'
       # On the front-end we setup a proxy class to the backend that returns
       # promises for all calls.

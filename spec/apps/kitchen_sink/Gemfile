@@ -8,10 +8,12 @@ gem 'volt', path: '../../../'
 gem 'volt-bootstrap'
 
 # Simple theme for bootstrap, remove to theme yourself.
-gem 'volt-bootstrap-jumbotron-theme'
+gem 'volt-bootstrap_jumbotron_theme'
 
-gem 'volt-fields', path: '/Users/ryanstout/Sites/volt/apps/volt-fields'
-gem 'volt-user-templates', path: '/Users/ryanstout/Sites/volt/apps/volt-user-templates'
+gem 'volt-fields'
+gem 'volt-user_templates'
+
+gem 'opal'
 
 # Server for MRI
 platform :mri do

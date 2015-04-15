@@ -56,6 +56,9 @@ module Volt
       if @in_textarea && tag_name == 'textarea'
         last.close_scope
         @in_textarea = nil
+      elsif tag_name[0] == ':'
+        # Closing a volt tag
+        last.close_scope
       else
         last << "</#{tag_name}>"
       end

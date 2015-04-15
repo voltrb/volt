@@ -1,11 +1,11 @@
 module Volt
   class UniqueValidator
-    def self.validate(model, old_model, field_name, args)
+    def self.validate(model, field_name, args)
       errors = {}
 
       if RUBY_PLATFORM != 'opal'
         if args
-          value  = model.read_attribute(field_name)
+          value  = model.get(field_name)
 
           query = {}
           # Check to see if any other documents have this value.

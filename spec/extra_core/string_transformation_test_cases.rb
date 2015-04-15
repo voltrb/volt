@@ -17,3 +17,11 @@
     'street_address'        => 'street-address',
     'person_street_address' => 'person-street-address'
   }
+
+  UnderscoresToHeaders = {
+    'proxy_authenticate' => 'Proxy-Authenticate',
+    'set_cookie' => 'Set-Cookie',
+    'set-cookie' => 'Set-Cookie',
+    'via' => 'Via',
+    'WWW_Authenticate' => 'WWW-Authenticate'
+  }

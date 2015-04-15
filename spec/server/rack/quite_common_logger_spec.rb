@@ -9,7 +9,6 @@ unless RUBY_PLATFORM == 'opal'
 
     before(:each) do
       allow(app).to receive(:call)
-      # puts "SUBJECT: #{subject.inspect}"
       subject.instance_variable_set :@app, app
     end
 
@@ -24,7 +23,7 @@ unless RUBY_PLATFORM == 'opal'
         allow(subject).to receive(:log)
       end
 
-      context 'when request path has no file extension and request run over web socket' do
+      describe 'when request path has no file extension and request run over web socket' do
         let(:env) { {'REQUEST_PATH' => '/file'} }
 
         it "calls 'log' method" do
@@ -33,7 +32,7 @@ unless RUBY_PLATFORM == 'opal'
         end
       end
 
-      context 'when request path has file extension' do
+      describe 'when request path has file extension' do
         let(:env) { {'REQUEST_PATH' => '/file.ext'} }
 
         it "doesn't call 'log' method" do
@@ -42,7 +41,7 @@ unless RUBY_PLATFORM == 'opal'
         end
       end
 
-      context 'when request run over web socket' do
+      describe 'when request run over web socket' do
         let(:env) { {'REQUEST_PATH' => '/channel'} }
 
         it "doesn't call 'log' method" do

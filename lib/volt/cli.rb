@@ -79,18 +79,25 @@ module Volt
       Volt::CLI::Runner.run_file(file_path)
     end
 
-    desc 'gem GEM', 'Creates a component gem where you can share a component'
-    method_option :bin, type: :boolean, default: false, aliases: '-b', banner: 'Generate a binary for your library.'
-    method_option :test, type: :string, lazy_default: 'rspec', aliases: '-t', banner: "Generate a test directory for your library: 'rspec' is the default, but 'minitest' is also supported."
-    method_option :edit, type: :string, aliases: '-e',
-                         lazy_default: [ENV['BUNDLER_EDITOR'], ENV['VISUAL'], ENV['EDITOR']].find { |e| !e.nil? && !e.empty? },
-                         required: false, banner: '/path/to/your/editor',
-                         desc: 'Open generated gemspec in the specified editor (defaults to $EDITOR or $BUNDLER_EDITOR)'
+    desc 'drop_collection NAME', 'Drop a Collection in your MongoDB'
 
-    def gem(name)
-      require 'volt/cli/new_gem'
+    def drop_collection(collection)
+      ENV['SERVER'] = 'true'
+      require 'mongo'
+      require 'volt/boot'
 
-      NewGem.new(self, name, options)
+      Volt.boot(Dir.pwd)
+
+      host = Volt.config.db_host || 'localhost'
+      port = Volt.config.db_port || Mongo::MongoClient::DEFAULT_PORT
+      name = Volt.config.db_name
+
+      say("Connecting to #{host}:#{port}", :yellow)
+      db = Mongo::MongoClient.new(host, port).db(name)
+      drop = db.drop_collection(collection)
+
+      say("Collection #{collection} on #{name} couldn't be dropped", :red) if drop == false
+      say("Collection #{collection} on #{name} dropped", :green) if drop == true
     end
 
     def self.source_root

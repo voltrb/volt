@@ -3,6 +3,8 @@ module Volt
   # a query have changed.  It then will make the necessary changes to any ArrayStore's
   # to get them to display the new data.
   class QueryListener
+    attr_reader :listening
+
     def initialize(query_listener_pool, tasks, collection, query)
       @query_listener_pool = query_listener_pool
       @tasks               = tasks
@@ -30,25 +32,45 @@ module Volt
             store.add(index, data)
           end
 
-          store.change_state_to(:loaded)
+          store.model.change_state_to(:loaded_state, :loaded)
+
+          # if Volt.server?
+          #   puts "BACK TO DIRTY"
+          #   store.model.change_state_to(:loaded_state, :dirty)
+          # end
         end
       end.fail do |err|
-        puts "Error adding listener: #{err.inspect}"
+        # TODO: need to make it so we can re-raise out of this promise
+        Volt.logger.error("Error adding listener: #{err.inspect}")
+        Volt.logger.error(err.backtrace) if err.respond_to?(:backtrace)
+
+        # If we get back that the user signature is wrong, log the user out.
+        if err.to_s.start_with?('user id or hash is incorrectly signed')
+          # Delete the invalid cookie
+          $page.cookies.delete(:user_id)
+        end
+
+        raise err
       end
     end
 
     def add_store(store, &block)
       @stores << store
 
+      # puts "ADD STORE FOR: #{@collection.inspect}: #{@query.inspect}"
+
       if @listening
         # We are already listening and have this model somewhere else,
         # copy the data from the existing model.
         store.model.clear
-        @stores.first.model.each_with_index do |item, index|
+
+        # Get an existing store to copy data from
+        first_store_model = @stores.first.model
+        first_store_model.each_with_index do |item, index|
           store.add(index, item.to_h)
         end
 
-        store.change_state_to(:loaded)
+        store.model.change_state_to(:loaded_state, first_store_model.loaded_state)
       else
         # First time we've added a store, setup the listener and get
         # the initial data.
@@ -59,6 +81,7 @@ module Volt
     def remove_store(store)
       @stores.delete(store)
 
+      # puts "REMOVE STORE: #{@collection.inspect}: #{@query.inspect} - #{@stores.size}"
       # When there are no stores left, remove the query listener from
       # the pool, it can get created again later.
       if @stores.size == 0
@@ -86,7 +109,6 @@ module Volt
 
     def changed(model_id, data)
       $loading_models = true
-      puts "new data: #{data.inspect}"
       Persistors::ModelStore.changed(model_id, data)
       $loading_models = false
     end

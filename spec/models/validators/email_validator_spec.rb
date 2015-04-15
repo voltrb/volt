@@ -1,120 +1,147 @@
 require 'spec_helper'
 
-describe Volt::EmailValidator do
-  subject { Volt::EmailValidator.new(*params) }
-  let(:params) { [model, field_name, options] }
+describe Volt::Model do
+  let(:model) { test_model_class.new }
 
-  let(:model) { Volt::Model.new email: email }
-  let(:field_name) { :email }
-  let(:options) { true }
-
-  let(:valid_email) { 'test@example.com' }
-  let(:invalid_email) { 'test@example-com' }
-  let(:email) { valid_email }
-
-  describe '.validate' do
-    let(:result) { described_class.validate(*params.dup.insert(1, nil)) }
-
-    before do
-      allow(described_class).to receive(:new).and_return subject
-      allow(subject).to receive(:errors).and_call_original
-
-      result
-    end
-
-    it 'initializes an email validator with the provided arguments' do
-      expect(described_class).to have_received(:new).with(*params)
-    end
-
-    it 'calls errors on the email validator' do
-      expect(subject).to have_received :errors
-    end
-
-    it 'returns the result of calling errors on the validator' do
-      expect(subject.errors).to eq result
+  let(:test_model_class) do
+    Class.new(Volt::Model) do
+      validate :count, numericality: { min: 5, max: 10 }
+      validate :description, length: { message: 'needs to be longer',
+                                       length: 50 }
+      validate :email, email: true
+      validate :name, length: 4
+      validate :phone_number, phone_number: true
+      validate :username, presence: true
     end
   end
 
-  describe '#valid?' do
-    context 'when using the default regex' do
-      let(:options) { true }
+  it 'should return errors for all failed validations' do
+    model.validate!
+    expect(model.errors).to eq(
+      count: ['must be a number'],
+      description: ['needs to be longer'],
+      email: ['must be an email address'],
+      name: ['must be at least 4 characters'],
+      phone_number: ['must be a phone number with area or country code'],
+      username: ['must be specified']
+    )
+  end
 
-      context 'when the email is valid' do
-        let(:email) { valid_email }
+  it 'should show all fields in marked errors once saved' do
+    buffer = model.buffer
+    buffer.save!
 
-        specify { expect(subject.valid?).to eq true }
-      end
+    expect(buffer.marked_errors.keys).to eq(
+      [:count, :description, :email, :name, :phone_number, :username]
+    )
+  end
 
-      context 'when the email is missing a TLD' do
-        let(:email) { 'test@example' }
-
-        specify { expect(subject.valid?).to eq false }
-      end
-
-      context 'when the email TLD is only one character' do
-        let(:email) { 'test@example.c' }
-
-        specify { expect(subject.valid?).to eq false }
-      end
-
-      context 'when the email is missing an username' do
-        let(:email) { '@example.com' }
-
-        specify { expect(subject.valid?).to eq false }
-      end
-
-      context 'when the email is missing the @ symbol' do
-        let(:email) { 'test.example.com' }
-
-        specify { expect(subject.valid?).to eq false }
+  describe 'builtin validations' do
+    shared_examples_for 'a built in validation' do |field, message|
+      specify do
+        expect { model.mark_field! field }
+          .to change { model.marked_errors }
+          .from({}).to({ field => [message ] })
       end
     end
 
-    context 'when using a custom regex' do
-      let(:options) { { with: /.+\@.+/ } }
+    describe 'numericality' do
+      message = 'must be a number'
+      it_should_behave_like 'a built in validation', :count, message
+    end
 
-      context 'and the email qualifies' do
-        let(:email) { 'test@example' }
+    describe 'length' do
+      message = 'needs to be longer'
+      it_should_behave_like 'a built in validation', :description, message
+    end
 
-        specify { expect(subject.valid?).to eq true }
+    describe 'email' do
+      message = 'must be an email address'
+      it_should_behave_like 'a built in validation', :email, message
+    end
+
+    describe 'name' do
+      message = 'must be at least 4 characters'
+      it_should_behave_like 'a built in validation', :name, message
+    end
+
+    describe 'phone_number' do
+      message = 'must be a phone number with area or country code'
+      it_should_behave_like 'a built in validation', :phone_number, message
+    end
+
+    describe 'presence' do
+      message = 'must be specified'
+      it_should_behave_like 'a built in validation', :username, message
+    end
+
+    it 'should fail on non-numbers' do
+      model._count = 'not a number'
+      expect(model.errors[:count]).to eq(['must be a number'])
+    end
+  end
+
+  describe 'validators with multiple criteria' do
+    let(:regex_message) { 'regex failed' }
+    let(:proc_message) { 'proc failed' }
+
+    let(:test_model_class) do
+      Class.new(Volt::Model) do
+        validate :special_field, format: [
+          { with: /regex/, message: 'regex failed' },
+          { with: ->(x) {x == false}, message: 'proc failed' }
+        ]
+      end
+    end
+
+    context 'when multiple fail' do
+      before { model._special_field = 'nope' }
+
+      it 'returns an array of errors' do
+        expect(model.errors).to eq({
+          special_field: [ regex_message, proc_message ]
+        })
+      end
+    end
+
+    context 'when one fails' do
+      before do
+        # Prevent rollback for testing
+        allow(model).to receive(:revert_changes!)
+        model._special_field = 'regex'
       end
 
-      context 'and the email does not qualify' do
-        let(:email) { 'test$example' }
-
-        specify { expect(subject.valid?).to eq false }
+      it 'returns an array with a single error' do
+        expect(model.errors.to_h).to eq({ special_field: [ proc_message ] })
       end
     end
   end
 
-  describe '#errors' do
-    context 'when the model has a valid email' do
-      let(:email) { valid_email }
+  it 'should report if errors have happened in changed attributes' do
+    # Prevent revert_changes! so it doesn't revert on failed values
+    allow(model).to receive(:revert_changes!)
 
-      it 'returns an empty error hash' do
-        expect(subject.errors).to eq({})
-      end
-    end
+    expect(model.error_in_changed_attributes?).to eq(false)
 
-    context 'when the model has an invalid email' do
-      let(:email) { invalid_email }
+    model._not_validated_attr = 'yes'
+    expect(model.error_in_changed_attributes?).to eq(false)
 
-      it 'returns an array of errors for email' do
-        expect(subject.errors).to eq(email: ['must be an email address'])
-      end
-    end
+    model._name = '5' # fail, too short
+    expect(model.changed?(:name)).to eq(true)
+    expect(model.error_in_changed_attributes?).to eq(true)
 
-    context 'when provided a custom error message' do
-      let(:options) { { error_message: custom_message } }
-      let(:custom_message) { 'this is a custom message' }
+    model._name = 'Jimmy'
+    expect(model.error_in_changed_attributes?).to eq(false)
+  end
 
-      context 'and the email is invalid' do
-        let(:email) { invalid_email }
+  it 'should revert changes which fail a validation' do
+    model._name = 'bob' # fails too short validation
+    expect(model._name).to eq(nil)
 
-        it 'returns errors with the custom message' do
-          expect(subject.errors).to eq(email: [custom_message])
-        end
-      end
-    end
+    model._name = 'Jimmy' # long enough, passes
+    expect(model._name).to eq('Jimmy')
+
+    model._name = 'ok' # fails again
+    expect(model._name).to eq('Jimmy')
   end
 end

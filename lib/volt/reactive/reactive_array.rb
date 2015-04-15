@@ -33,15 +33,16 @@ module Volt
     def count(&block)
       if block
         count = 0
+
         size.times do |index|
-          if block.call(self[index]).true?
+          if block.call(self[index])
             count += 1
           end
         end
 
-        return count
+        count
       else
-        return size
+        size
       end
     end
 
@@ -49,7 +50,7 @@ module Volt
       result = []
       size.times do |index|
         val = self[index]
-        if yield(val).true?
+        if yield(val)
           result << val
         end
       end
@@ -62,14 +63,14 @@ module Volt
         size.times do |index|
           val = self[index]
 
-          if yield(val).true?
+          if yield(val)
             return true
           end
         end
 
-        return false
+        false
       else
-        return @array.any?
+        @array.any?
       end
     end
 
@@ -78,20 +79,20 @@ module Volt
         size.times do |index|
           val = self[index]
 
-          unless yield(val).true?
+          unless yield(val)
             return false
           end
         end
 
-        return true
+        true
       else
-        return @array.all?
+        @array.all?
       end
     end
 
     # TODO: Handle a range
     def [](index)
-      # Handle a negative index
+      # Handle a negative index, depend on size
       index = size + index if index < 0
 
       # Get or create the dependency
@@ -125,7 +126,7 @@ module Volt
       # Handle a negative index
       index = size + index if index < 0
 
-      model      = @array.delete_at(index)
+      model = @array.delete_at(index)
 
       # Remove the dependency for that cell, and #remove it
       index_deps = @array_deps.delete_at(index)
@@ -244,7 +245,6 @@ module Volt
     def trigger_for_index!(index)
       # Trigger a change for the cell
       dep = @array_deps[index]
-
       dep.changed! if dep
     end
 

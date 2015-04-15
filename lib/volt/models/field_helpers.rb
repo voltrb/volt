@@ -11,7 +11,7 @@ module FieldHelpers
       end
 
       define_method(name) do
-        read_attribute(name)
+        get(name)
       end
 
       define_method(:"#{name}=") do |val|
@@ -25,7 +25,7 @@ module FieldHelpers
           end
         end
 
-        assign_attribute(name, val)
+        set(name, val)
       end
     end
   end

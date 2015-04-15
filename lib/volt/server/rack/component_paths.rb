@@ -16,7 +16,7 @@ module Volt
 
         # Gem folders with volt in them
         # TODO: we should probably qualify this a bit more
-        app_folders += Gem.loaded_specs.values.map(&:full_gem_path).reject { |g| g !~ /volt/ }.map { |f| f + '/app' }
+        app_folders += Gem.loaded_specs.values.reduce([]) { |paths, gem| paths << "#{gem.full_gem_path}/app" if gem.name =~ /volt/; paths }
 
         app_folders.uniq
       end
@@ -62,18 +62,9 @@ module Volt
           $LOAD_PATH.unshift(app_folder)
 
           # Sort so we get consistent load order across platforms
-          Dir["#{app_folder}/*/{controllers,models,tasks}/*.rb"].each do |ruby_file|
+          Dir["#{app_folder}/*/{lib,controllers,models,tasks}/*.rb"].each do |ruby_file|
             path = ruby_file.gsub(/^#{app_folder}\//, '')[0..-4]
             require(path)
-          end
-
-          if Volt.server?
-            # Add models to page
-            Dir["#{app_folder}/*/models/*.rb"].each do |ruby_file|
-              class_name = File.basename(ruby_file).gsub(/[.]rb$/, '')
-
-              $page.add_model(class_name)
-            end
           end
         end
 
@@ -85,7 +76,7 @@ module Volt
       component_names = []
       app_folders do |app_folder|
         Dir["#{app_folder}/*"].map { |cp| cp[/[^\/]+$/] }.each do |component_name|
-          component_names << component_name
+          component_names << component_name if File.directory?(component_name)
         end
       end
 

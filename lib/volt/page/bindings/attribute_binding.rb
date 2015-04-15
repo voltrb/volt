@@ -17,12 +17,14 @@ module Volt
       # Listen for changes
       @computation = -> do
         begin
-          update(@context.instance_eval(&@getter))
+          @context.instance_eval(&@getter)
         rescue => e
           Volt.logger.error("AttributeBinding Error: #{e.inspect}")
-          update('')
+          ''
         end
-      end.watch!
+      end.watch_and_resolve! do |result|
+        update(result)
+      end
 
       @is_radio = element.is('[type=radio]')
       if @is_radio
@@ -122,9 +124,13 @@ module Volt
           element.off('change.attrbind', nil)
       end
 
+      if @computation
+        @computation.stop
+        @computation = nil
+      end
+
       @string_template_renderer.remove if @string_template_renderer
       @string_template_renderer_computation.stop if @string_template_renderer_computation
-      @computation.stop if @computation
 
       # Clear any references
       @target  = nil

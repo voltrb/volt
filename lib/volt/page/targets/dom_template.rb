@@ -16,7 +16,7 @@ module Volt
         html      = template['html']
         @bindings = template['bindings']
       else
-        html      = "<div>-- &lt; missing template #{template_name.inspect.html_inspect}, make sure it's component is included in dependencies.rb &gt; --</div>"
+        html      = "<div>-- &lt; missing view or tag at #{template_name.inspect}, make sure it's component is included in dependencies.rb &gt; --</div>"
         @bindings = {}
       end
 

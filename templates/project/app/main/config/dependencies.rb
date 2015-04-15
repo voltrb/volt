@@ -5,7 +5,7 @@
 component 'bootstrap'
 
 # a default theme for the bootstrap framework
-component 'bootstrap-jumbotron-theme'
+component 'bootstrap_jumbotron_theme'
 
 # provides templates for login, signup, and logout
-component 'user-templates'
+component 'user_templates'

@@ -1,10 +1,42 @@
 require 'volt/reactive/reactive_accessors'
+require 'volt/controllers/actions'
 
 module Volt
   class ModelController
     include ReactiveAccessors
+    include Actions
 
     reactive_accessor :current_model
+    reactive_accessor :last_promise
+
+    # The section is assigned a reference to a "DomSection" which has
+    # the dom for the controllers view.
+    attr_accessor :section
+
+    # Setup before_action and after_action
+    setup_action_helpers_in_class(:before, :after)
+
+    # Container returns the node that is parent to all nodes in the section.
+    def container
+      section.container_node
+    end
+
+    def dom_nodes
+      section.range
+    end
+
+    # yield_html renders the content passed into a tag as a string.  You can ```.watch!```
+    # ```yield_html``` and it will be run again when anything in the template changes.
+    def yield_html
+      if (template_path = attrs.content_template_path)
+        # TODO: Don't use $page global
+        @yield_renderer ||= StringTemplateRender.new($page, self, template_path)
+        @yield_renderer.html
+      else
+        # no template, empty string
+        ''
+      end
+    end
 
     def self.model(val)
       @default_model = val
@@ -12,6 +44,23 @@ module Volt
 
     # Sets the current model on this controller
     def model=(val)
+      if val.is_a?(Promise)
+        # Resolve the promise before setting
+        self.last_promise = val
+
+        val.then do |result|
+          # Only assign if nothing else has been assigned since we started the resolve
+          self.model = result if self.last_promise == val
+        end.fail do |err|
+          Volt.logger.error("Unable to resolve promise assigned to model on #{inspect}")
+        end
+
+        return
+      end
+
+      # Clear
+      self.last_promise = nil
+
       # Start with a nil reactive value.
       self.current_model ||= Model.new
 
@@ -63,9 +112,19 @@ module Volt
       end
     end
 
-    # Change the url params, similar to redirecting to a new url
     def go(url)
-      self.url.parse(url)
+      Volt.logger.warn('Deprecation warning: `go` has been renamed to `redirect_to` for consistency with other frameworks.')
+
+      redirect_to(url)
+    end
+
+    # Change the url
+    def redirect_to(url)
+      # We might be in the rendering loop, so wait until the next tick before
+      # we change the url
+      Timers.next_tick do
+        self.url.parse(url)
+      end
     end
 
     def page
@@ -116,8 +175,36 @@ module Volt
       $page.url.url_with(params)
     end
 
+    # loaded? is a quick way to see if the model for the controller is loaded
+    # yet.  If the model is there, it asks the model if its loaded.  If the model
+    # was set to a promise, it waits for the promise to resolve.
     def loaded?
-      respond_to?(:state) && state == :loaded
+      if model.respond_to?(:loaded?)
+        # There is a model and it is loaded
+        return model.loaded?
+      elsif last_promise || model.is_a?(Promise)
+        # The model is a promise or is resolving
+        return false
+      else
+        # Otherwise, its loaded
+        return true
+      end
+    end
+
+    def require_login(message="You must login to access this area.")
+      unless Volt.current_user_id
+        flash._notices << message
+        go '/login'
+
+        stop_chain
+      end
+    end
+
+    # Raw marks a string as html safe, so bindings can be rendered as html.
+    # With great power comes great responsibility.
+    def raw(str)
+      str = str.to_s unless str.is_a?(String)
+      str.html_safe
     end
 
     # Check if this controller responds_to method, or the model

@@ -22,6 +22,14 @@ module Volt
         @in_identity_map = false
       end
 
+      def loaded(initial_state = nil)
+        if model.path == []
+          initial_state = :loaded
+        end
+
+        model.change_state_to(:loaded_state, initial_state)
+      end
+
       def add_to_collection
         @in_collection = true
         ensure_setup
@@ -62,9 +70,9 @@ module Volt
 
       def save_changes?
         if RUBY_PLATFORM == 'opal'
-          return !(defined?($loading_models) && $loading_models) && @tasks
+          !(defined?($loading_models) && $loading_models) && @tasks
         else
-          return true
+          true
         end
       end
 
@@ -92,6 +100,7 @@ module Volt
 
               queue_client_save
             else
+              # puts "SAVE TO DB: #{@model.inspect} - #{self_attributes.inspect} - #{@model.changed_attributes.inspect}"
               errors = save_to_db!(self_attributes)
               if errors.size == 0
                 promise.resolve(nil)
@@ -143,7 +152,7 @@ module Volt
       # Update the models based on the id/identity map.  Usually these requests
       # will come from the backend.
       def self.changed(model_id, data)
-        Model.nosave do
+        Model.no_save do
           model = @@identity_map.lookup(model_id)
 
           if model
@@ -203,7 +212,6 @@ module Volt
             end
           end
 
-          # puts "Update Collection: #{collection.inspect} - #{values.inspect} -- #{Thread.current['in_channel'].inspect}"
           QueryTasks.live_query_pool.updated_collection(collection.to_s, Thread.current['in_channel'])
           {}
         end

@@ -1,5 +1,5 @@
 if RUBY_PLATFORM != 'opal'
-  class TestTask < Volt::TaskHandler
+  class TestTask < Volt::Task
     def allowed_method(arg1, arg2)
       return 'yes' + arg1 + arg2
     end
@@ -10,7 +10,7 @@ if RUBY_PLATFORM != 'opal'
       Volt.logger = spy('Volt::VoltLogger')
     end
 
-    it 'should only allow method calls on TaskHandler or above in the inheritance chain' do
+    it 'should only allow method calls on Task or above in the inheritance chain' do
       channel = double('channel')
 
       expect(channel).to receive(:send_message).with('response', 0, 'yes it works', nil)

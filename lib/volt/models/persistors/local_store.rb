@@ -10,22 +10,6 @@ module Volt
         @model = model
       end
 
-      # Find the root for this model
-      def root_model
-        node = @model
-
-        loop do
-          parent = node.parent
-          if parent
-            node = parent
-          else
-            break
-          end
-        end
-
-        node
-      end
-
       # Called when a model is added to the collection
       def added(model, index)
         root_model.persistor.save_all

@@ -13,6 +13,7 @@ if RUBY_PLATFORM == 'opal'
       end
     end
   end
+
   class VoltLogger < Logger
   end
 else
@@ -26,7 +27,7 @@ else
         @formatter = Volt::VoltLoggerFormatter.new
       end
 
-      def log_dispatch(class_name, method_name, run_time, args)
+      def log_dispatch(class_name, method_name, run_time, args, error)
         @current = {
           args: args,
           class_name: class_name,
@@ -34,7 +35,19 @@ else
           run_time: run_time
         }
 
-        log(Logger::INFO, task_dispatch_message)
+        level = error ? Logger::ERROR : Logger::INFO
+        text = TaskLogger.task_dispatch_message(self, args)
+
+
+        if error
+          text += "\n" + colorize(error.to_s, :red)
+          if error.is_a?(Exception) && !error.is_a?(VoltUserError)
+            text += "\n" + colorize(error.backtrace.join("\n"), :red)
+          end
+        end
+
+        log(level, text)
+
       end
 
       def args
@@ -73,15 +86,6 @@ else
         else
           string.to_s
         end
-      end
-
-      def task_dispatch_message
-        msg = "task #{class_name}##{method_name} in #{run_time}\n"
-        if args.size > 0
-          arg_str = args.map {|v| v.inspect }.join(', ')
-          msg += "with args: #{arg_str}\n"
-        end
-        msg
       end
     end
 

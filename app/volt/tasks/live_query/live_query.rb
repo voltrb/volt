@@ -31,8 +31,16 @@ class LiveQuery
 
   def notify_added(index, data, skip_channel)
     # puts "Added: #{index} - #{data.inspect}"
+    # Make model for testing permissions against
+    model = model_for_filter(data)
+
     notify! do |channel|
-      channel.send_message('added', nil, @collection, @query, index, data)
+      filtered_data = nil
+      Volt.as_user(channel.user_id) do
+        filtered_data = model.filtered_attributes
+      end
+
+      channel.send_message('added', nil, @collection, @query, index, filtered_data)
     end
   end
 
@@ -44,9 +52,15 @@ class LiveQuery
   end
 
   def notify_changed(id, data, skip_channel)
-    # puts "Changed: #{id}, #{data}"
+    model = model_for_filter(data)
+
     notify!(skip_channel) do |channel|
-      channel.send_message('changed', nil, @collection, @query, id, data)
+      filtered_data = nil
+      Volt.as_user(channel.user_id) do
+        filtered_data = model.filtered_attributes
+      end
+      # puts "Changed: #{id}, #{data} to #{channel.inspect}"
+      channel.send_message('changed', nil, @collection, @query, id, filtered_data)
     end
   end
 
@@ -55,8 +69,15 @@ class LiveQuery
     @query_tracker.results.map.with_index do |data, index|
       data = data.dup
       data['_id'] = data['_id'].to_s
+
       [index, data]
     end
+  end
+
+  # Lookup the model class
+  def model_class
+    # recreate the "path" from the collection
+    Volt::Model.class_at_path([collection, :[]])
   end
 
   def add_channel(channel)
@@ -82,5 +103,26 @@ class LiveQuery
     channels.each do |channel|
       yield(channel)
     end
+  end
+
+  # Takes in data to be sent to the client and sets up a model to test
+  # field permissions against
+  def model_for_filter(data)
+    klass = Volt::Model.class_at_path([@collection])
+    model = nil
+
+    # Skip read validations when loading the model, no need to check read when checking
+    # permissions.
+    # TODO: We should probably document the possibility of data leak here, though really you
+    # shouldn't be storing anything inside of the permissions block.
+    Volt::Model.no_validate do
+      model = klass.new(data, {}, :loaded)
+    end
+
+    model
+  end
+
+  def inspect
+    "<#{self.class.to_s} #{@collection}: #{@query.inspect}>"
   end
 end
