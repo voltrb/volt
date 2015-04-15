@@ -9,6 +9,7 @@ end
 
 require 'rack'
 require 'sass'
+require 'volt/utils/tilt_patch'
 if RUBY_PLATFORM != 'java'
   require 'rack/sockjs'
   require 'eventmachine'
