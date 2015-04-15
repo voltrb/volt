@@ -257,14 +257,19 @@ module Volt
       else
         # If we're expanding, or the get is for a collection, in which
         # case we always expand.
-        if expand || attr_name.plural?
+        plural_attr = attr_name.plural?
+        if expand || plural_attr
           new_value = read_new_model(attr_name)
 
           # A value was generated, store it
           if new_value
             # Assign directly.  Since this is the first time
             # we're loading, we can just assign.
-            set(attr_name, new_value)
+            #
+            # Don't track changes if we're setting a collection
+            Volt.run_in_mode_if(plural_attr, :no_change_tracking) do
+              set(attr_name, new_value)
+            end
           end
 
           return new_value
