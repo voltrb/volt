@@ -87,9 +87,9 @@ module Volt
     # here by storing by action and having an all category as well.
     def filter_actions_by_only_exclude(callbacks, action)
       callbacks.select do |callback, options|
-        if options
+        if options && (only = options[:only])
           # If there is an only, make sure the action is in the list.
-          options[:only].include?(action.to_sym)
+          [only].flatten.include?(action.to_sym)
         else
           # If no only, include it
           true
