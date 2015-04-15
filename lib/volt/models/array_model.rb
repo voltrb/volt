@@ -197,12 +197,12 @@ module Volt
       end
     end
 
-    def buffer
+    def buffer(attrs={})
       model_path  = options[:path] + [:[]]
       model_klass = Volt::Model.class_at_path(model_path)
 
       new_options = options.merge(path: model_path, save_to: self, buffer: true).reject { |k, _| k.to_sym == :persistor }
-      model       = model_klass.new({}, new_options)
+      model       = model_klass.new(attrs, new_options)
 
       model
     end
