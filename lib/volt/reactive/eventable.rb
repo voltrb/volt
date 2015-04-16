@@ -18,6 +18,7 @@ module Volt
     end
 
     def remove
+      raise "Listener has already been removed" if @removed
       @removed = true
 
       @events.each do |event|

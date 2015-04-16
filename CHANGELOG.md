@@ -24,6 +24,8 @@
 - Add filtering to logging on password, and option to configure filtered args.  Also, improve the way errors are displayed.
 - You can now call raw in a content binding to render the raw html on the page.  Use carefully, this can open you up to xss attacks.  We reccomend never showing html from the user directly.
 - before/after actions added to ModelController (HttpController support coming soon).
+- in the disabled attribute, you can now bind to a boolean or string.
+- added a .fetch_each method that fetches all items, then yields each one.
 
 ### Changed
 - template bindings have been renamed to view.  ```{{ view "path/for/view" }}``` instead of ```{{ template "path/for/view" }}```

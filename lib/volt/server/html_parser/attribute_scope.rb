@@ -35,7 +35,11 @@ module Volt
     # Takes a string and splits on bindings, returns the string split on bindings
     # and the number of bindings.
     def binding_parts_and_count(value)
-      parts         = value.split(/(\{\{[^\}]+\}\})/).reject(&:blank?)
+      if value.is_a?(String)
+        parts = value.split(/(\{\{[^\}]+\}\})/).reject(&:blank?)
+      else
+        parts = ['']
+      end
       binding_count = parts.count { |p| p[0] == '{' && p[1] == '{' && p[-2] == '}' && p[-1] == '}' }
 
       [parts, binding_count]
