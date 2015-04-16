@@ -16,6 +16,7 @@ require 'volt/models/permissions'
 require 'volt/models/associations'
 require 'volt/reactive/class_eventable'
 require 'volt/utils/event_counter'
+require 'volt/reactive/reactive_accessors'
 require 'thread'
 
 module Volt
@@ -43,6 +44,7 @@ module Volt
     include ListenerTracker
     include Permissions
     include Associations
+    include ReactiveAccessors
 
     attr_reader :attributes, :parent, :path, :persistor, :options
 
