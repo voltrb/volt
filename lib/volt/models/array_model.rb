@@ -83,6 +83,9 @@ module Volt
         promise = @persistor.added(model, @array.size - 1)
         if promise && promise.is_a?(Promise)
           return promise.then do
+            # Mark the model as loaded
+            model.change_state_to(:loaded_state, :loaded)
+
             # return the model
             model
           end.fail do |err|
@@ -94,7 +97,6 @@ module Volt
             trigger_size_change!
             #
             # re-raise, err might not be an Error object, so we use a rejected promise to re-raise
-
             Promise.new.reject(err)
           end
         end

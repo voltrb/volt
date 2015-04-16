@@ -7,7 +7,6 @@ module Volt
     HTML_ESCAPE = { '&' => '&amp;',  '>' => '&gt;',   '<' => '&lt;', '"' => '&quot;', "'" => '&#39;', "\n" => "<br />\n" }
 
     def initialize(page, target, context, binding_name, getter)
-      # puts "New Content Binding: #{self.inspect}"
       super(page, target, context, binding_name)
 
       # Listen for changes

@@ -92,10 +92,7 @@ module Volt
     def remove
       @nodes = []
 
-      # puts "Component Node Removed"
       changed!
-
-      # @binding_id = nil
     end
 
     def remove_anchors

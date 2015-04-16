@@ -13,6 +13,11 @@ module Volt
 
     # Forward any missing methods to the array
     def method_missing(method_name, *args, &block)
+      # Long term we should probably handle all Enum methods
+      # directly for smarter updating.  For now, just depend on size
+      # so updates retrigger the whole method call.
+      @size_dep.depend
+
       @array.send(method_name, *args, &block)
     end
 

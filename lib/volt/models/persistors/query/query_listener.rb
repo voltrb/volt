@@ -35,7 +35,6 @@ module Volt
           store.model.change_state_to(:loaded_state, :loaded)
 
           # if Volt.server?
-          #   puts "BACK TO DIRTY"
           #   store.model.change_state_to(:loaded_state, :dirty)
           # end
         end
@@ -56,8 +55,6 @@ module Volt
 
     def add_store(store, &block)
       @stores << store
-
-      # puts "ADD STORE FOR: #{@collection.inspect}: #{@query.inspect}"
 
       if @listening
         # We are already listening and have this model somewhere else,
@@ -81,7 +78,6 @@ module Volt
     def remove_store(store)
       @stores.delete(store)
 
-      # puts "REMOVE STORE: #{@collection.inspect}: #{@query.inspect} - #{@stores.size}"
       # When there are no stores left, remove the query listener from
       # the pool, it can get created again later.
       if @stores.size == 0

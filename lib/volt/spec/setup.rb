@@ -43,7 +43,6 @@ module Volt
           if @__store_accessed
             # Clear the database after each spec where we use store
             # @@db ||= Volt::DataStore.fetch
-            # puts "DB CLASS: #{@@db.inspect}"
             # @@db.drop_database
             ::DataStore.new.drop_database
 
