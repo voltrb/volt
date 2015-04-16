@@ -104,7 +104,6 @@ module Volt
 
       # Called the first time data is requested from this collection
       def load_data
-        # puts "LOAD DATA: #{@model.path.inspect}: #{@model.options[:query].inspect}"
         Computation.run_without_tracking do
           loaded_state = @model.loaded_state
 
@@ -216,6 +215,15 @@ module Volt
         end
 
         promise
+      end
+
+      # A combination of .fetch and .each.  Returns the fetch promise
+      def fetch_each
+        fetch do |items|
+          items.each do |item|
+            yield(item)
+          end
+        end
       end
 
       # Alias then for now
