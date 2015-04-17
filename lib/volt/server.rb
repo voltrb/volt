@@ -67,7 +67,7 @@ module Volt
     end
 
     def initialize(root_path = nil)
-      Volt.root ||= root_path
+      Volt.root        = root_path if root_path
 
       @app_path        = File.expand_path(File.join(Volt.root, 'app'))
 

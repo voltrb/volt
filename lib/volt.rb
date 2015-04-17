@@ -11,7 +11,7 @@ unless RUBY_PLATFORM == 'opal'
   require 'volt/data_stores/data_store'
 end
 require 'volt/volt/users'
-
+require 'pathname'
 module Volt
   puts 'initializing volt'
   @in_browser = if RUBY_PLATFORM == 'opal'
@@ -30,7 +30,9 @@ module Volt
       #@root ||= File.expand_path(Dir.pwd)
     end
 
-    attr_writer :root
+    def root=(path)
+      @root = Pathname.new(path).expand_path.to_s
+    end
 
     def server?
       !!ENV['SERVER']
