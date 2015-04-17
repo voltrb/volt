@@ -41,7 +41,7 @@ module Volt
     end
 
     proxy_with_root_dep :[], :size, :first, :last, :state_for#, :limit, :find_one, :find
-    proxy_to_persistor :find, :where, :skip, :sort, :limit, :then, :fetch, :fetch_first
+    proxy_to_persistor :find, :where, :skip, :sort, :limit, :then, :fetch, :fetch_first, :fetch_each
 
     def initialize(array = [], options = {})
       @options   = options
@@ -83,6 +83,9 @@ module Volt
         promise = @persistor.added(model, @array.size - 1)
         if promise && promise.is_a?(Promise)
           return promise.then do
+            # Mark the model as loaded
+            model.change_state_to(:loaded_state, :loaded)
+
             # return the model
             model
           end.fail do |err|
@@ -94,7 +97,6 @@ module Volt
             trigger_size_change!
             #
             # re-raise, err might not be an Error object, so we use a rejected promise to re-raise
-
             Promise.new.reject(err)
           end
         end

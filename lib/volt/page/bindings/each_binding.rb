@@ -33,8 +33,14 @@ module Volt
         values = current_values(value)
         @value = values
 
-        @added_listener.remove if @added_listener
-        @removed_listener.remove if @removed_listener
+        if @added_listener
+          @added_listener.remove
+          @added_listener = nil
+        end
+        if @removed_listener
+          @removed_listener.remove
+          @removed_listener = nil
+        end
 
         if @value.respond_to?(:on)
           @added_listener   = @value.on('added') { |position| item_added(position) }
@@ -131,6 +137,8 @@ module Volt
 
       # Clear value
       @value       = []
+
+      @getter = nil
 
       if @added_listener
         @added_listener.remove

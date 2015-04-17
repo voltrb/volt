@@ -62,9 +62,6 @@ class QueryTasks < Volt::Task
   def remove_listener(collection, query)
     live_query = @@live_query_pool.lookup(collection, query)
     live_query.remove_channel(@channel)
-    #
-    # puts "REMOVE LIST1"
-    # @@live_query_pool.print
   end
 
   # Removes a channel from all associated live queries

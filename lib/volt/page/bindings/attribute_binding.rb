@@ -97,6 +97,15 @@ module Volt
           if val != element.value
             element.value = val
           end
+        when 'disabled'
+          # Disabled is handled specially, you can either return a boolean:
+          # (true being disabled, false not disabled), or you can optionally
+          # include the "disabled" string. (or any string)
+          if val != false && val.present?
+            element.attr('disabled', 'disabled')
+          else
+            element.remove_attr('disabled')
+          end
         else
           element[@attribute_name] = val
       end

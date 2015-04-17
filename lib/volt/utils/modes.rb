@@ -27,6 +27,18 @@ module Volt
         end
       end
 
+      def run_in_mode_if(conditional, mode_name)
+        if conditional
+          # Yes, run in the mode
+          Volt.run_in_mode(mode_name) do
+            yield
+          end
+        else
+          # Just run normally
+          yield
+        end
+      end
+
       # Check to see if we are in the specified mode
       def in_mode?(mode_name)
         return defined?(Thread) && Thread.current[mode_name]

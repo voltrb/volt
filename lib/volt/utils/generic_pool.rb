@@ -33,7 +33,7 @@ module Volt
 
         if last
           # return, creating if needed
-          return(section[arg] ||= create_new_item(*args, &block))
+          return (section[arg] ||= create_new_item(*args, &block))
         else
           next_section = section[arg]
           next_section ||= (section[arg] = {})
