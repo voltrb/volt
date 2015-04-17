@@ -152,12 +152,17 @@ module Volt
       # Save the changes
       if initial_setup
         # Run initial validation
-        errs = Volt.in_mode?(:no_validate) ? nil : validate!
-
-        if errs && errs.size > 0
-          return Promise.new.reject(errs)
+        if Volt.in_mode?(:no_validate)
+          # No validate, resolve nil
+          Promise.new.resolve(nil)
         else
-          return Promise.new.resolve(nil)
+          return validate!.then do |errs|
+            if errs && errs.size > 0
+              Promise.new.reject(errs)
+            else
+              Promise.new.resolve(nil)
+            end
+          end
         end
       else
         return run_changed
@@ -404,51 +409,56 @@ module Volt
     # @return [Promise|nil] a promise for when the save is
     #         complete
     def run_changed(attribute_name=nil)
-      result = nil
-
       # no_validate mode should only be used internally.  no_validate mode is a
       # performance optimization that prevents validation from running after each
       # change when assigning multile attributes.
       unless Volt.in_mode?(:no_validate)
         # Run the validations for all fields
-        validate!
+        result = nil
+        return validate!.then do
 
-        # Buffers are allowed to be in an invalid state
-        unless buffer?
-          # First check that all local validations pass
-          if error_in_changed_attributes?
-            # Some errors are present, revert changes
-            revert_changes!
+          # Buffers are allowed to be in an invalid state
+          unless buffer?
+            # First check that all local validations pass
+            if error_in_changed_attributes?
+              # Some errors are present, revert changes
+              revert_changes!
 
-            # After we revert, we need to validate again to get the error messages back
-            # TODO: Could probably cache the previous errors.
-            errs = validate!
-
-            result = Promise.new.reject(errs)
-          else
-            # No errors, tell the persistor to handle the change (usually save)
-
-            # Don't save right now if we're in a nosave block
-            unless Volt.in_mode?(:no_save)
-              # the changed method on a persistor should return a promise that will
-              # be resolved when the save is complete, or fail with a hash of errors.
-              if @persistor
-                result = @persistor.changed(attribute_name)
-              else
-                result = Promise.new.resolve(nil)
+              # After we revert, we need to validate again to get the error messages back
+              # TODO: Could probably cache the previous errors.
+              result = validate!.then do
+                # Reject the promise with the errors
+                Promise.new.reject(errs)
               end
+            else
+              # No errors, tell the persistor to handle the change (usually save)
 
-              # Saved, no longer new
-              @new = false
+              # Don't save right now if we're in a nosave block
+              unless Volt.in_mode?(:no_save)
+                # the changed method on a persistor should return a promise that will
+                # be resolved when the save is complete, or fail with a hash of errors.
+                if @persistor
+                  result = @persistor.changed(attribute_name)
+                else
+                  result = Promise.new.resolve(nil)
+                end
 
-              # Clear the change tracking
-              clear_tracked_changes!
+                # Saved, no longer new
+                @new = false
+
+                # Clear the change tracking
+                clear_tracked_changes!
+              end
             end
           end
+
+          # Return result inside of the validate! promise
+          result
         end
       end
 
-      return result
+      # Didn't run validations
+      return nil
     end
   end
 end
