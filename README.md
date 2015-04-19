@@ -1,4 +1,4 @@
-[![Gratipay](//img.shields.io/gratipay/voltframework.svg)](https://www.gratipay.com/voltframework/)
+[![Gratipay](://img.shields.io/gratipay/voltframework.svg)](https://www.gratipay.com/voltframework/)
 [![Gem Version](https://badge.fury.io/rb/volt.svg)](http://badge.fury.io/rb/volt)
 [![Code Climate](https://codeclimate.com/github/voltrb/volt/badges/gpa.svg)](https://codeclimate.com/github/voltrb/volt)
 [![Build Status](http://img.shields.io/travis/voltrb/volt/master.svg?style=flat)](https://travis-ci.org/voltrb/volt)
