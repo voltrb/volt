@@ -1,3 +1,4 @@
+[![Gratipay](//img.shields.io/gratipay/voltframework.svg)](https://www.gratipay.com/voltframework/)
 [![Gem Version](https://badge.fury.io/rb/volt.svg)](http://badge.fury.io/rb/volt)
 [![Code Climate](https://codeclimate.com/github/voltrb/volt/badges/gpa.svg)](https://codeclimate.com/github/voltrb/volt)
 [![Build Status](http://img.shields.io/travis/voltrb/volt/master.svg?style=flat)](https://travis-ci.org/voltrb/volt)
@@ -33,4 +34,5 @@ There is also a [work in progress tutorial](https://github.com/rhgraysonii/volt_
 
 You want to contribute? Great! Thanks for being awesome! At the moment, we have a big internal todo list, hop on https://gitter.im/voltrb/volt so we don't duplicate work. Pull requests are always welcome, but asking about helping on Gitter should save some duplication.
 
-[![Pledgie](https://pledgie.com/campaigns/26731.png?skin_name=chrome)](https://pledgie.com/campaigns/26731)
+
+[![Gratipay](//img.shields.io/gratipay/voltframework.svg)](https://www.gratipay.com/voltframework/)

@@ -150,10 +150,10 @@ describe Volt::Computation do
     describe 'when computing' do
       before(:each) { computation.instance_variable_set :@computing, true }
 
-      it "doesn't add self to flush queue" do
+      it "should still add itself to flush queue" do
         computation.invalidate!
 
-        expect(Volt::Computation.class_variable_get :@@flush_queue).to be_empty
+        expect(Volt::Computation.class_variable_get :@@flush_queue).not_to be_empty
       end
     end
 
