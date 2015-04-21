@@ -68,7 +68,7 @@ module Volt
           current_value = value
         end
 
-        if current_value && !current_value.nil? && !current_value.is_a?(Exception)
+        if current_value && !current_value.is_a?(Exception)
           # This branch is currently true
           true_template = template_name
           break

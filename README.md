@@ -13,7 +13,8 @@ Instead of syncing data between the client and server via HTTP, Volt uses a pers
 Pages HTML is written in a template language where you can put Ruby between `{{` and `}}`. Volt uses data flow/reactive programming to automatically and intelligently propagate changes to the DOM (or any other code wanting to know when a value updates). When something in the DOM changes, Volt intelligently updates only the nodes that need to be changed.
 
 See some demo videos here:
-- [Volt Todos Example](https://www.youtube.com/watch?v=Tg-EtRnMz7o)
+- [Volt Todos Example](https://www.youtube.com/watch?v=KbFtIt7-ge8)
+- [What Is Volt in 6 Minutes](https://www.youtube.com/watch?v=P27EPQ4ne7o)
 - [Pagination Example](https://www.youtube.com/watch?v=1uanfzMLP9g)
 - [Routes and Templates](https://www.youtube.com/watch?v=1yNMP3XR6jU)
 - [Isomorphic App Development - RubyConf 2014](https://www.youtube.com/watch?v=7i6AL7Walc4)
@@ -21,8 +22,8 @@ See some demo videos here:
 **Note:** The blog video is outdated, expect an updated version soon.
 
 Check out demo apps:
- - https://github.com/voltrb/todos3
- - https://github.com/voltrb/contactsdemo
+ - https://github.com/voltrb/todomvc
+ - https://github.com/voltrb/blog5
 
 # Docs
 

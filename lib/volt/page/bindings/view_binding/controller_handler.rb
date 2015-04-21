@@ -4,7 +4,7 @@ module Volt
 
     def initialize(controller, action)
       @controller = controller
-      @action = action.to_sym
+      @action = action.to_sym if action
     end
 
     def call_action(stage_prefix=nil, stage_suffix=nil)
