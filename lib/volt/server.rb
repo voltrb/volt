@@ -66,13 +66,12 @@ module Volt
       end
     end
 
-    def initialize(root_path = nil)
+    def initialize(root_path = nil, additional_paths = [])
       Volt.root        = root_path if root_path
-
       @app_path        = File.expand_path(File.join(Volt.root, 'app'))
 
       # Boot the volt app
-      @component_paths = Volt.boot(Volt.root) # was root_path
+      @component_paths = Volt.boot(Volt.root, additional_paths)
 
       setup_router
       require_http_controllers

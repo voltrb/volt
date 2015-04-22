@@ -7,7 +7,7 @@ else
 end
 
 module Volt
-  def self.boot(app_path)
+  def self.boot(app_path, additional_paths=[])
     # Run the app config to load all users config files
     unless RUBY_PLATFORM == 'opal'
       Volt.run_files_in_config_folder
@@ -17,7 +17,7 @@ module Volt
       end
     end
 
-    component_paths = ComponentPaths.new(app_path)
+    component_paths = ComponentPaths.new(app_path, additional_paths)
     component_paths.require_in_components
 
     component_paths

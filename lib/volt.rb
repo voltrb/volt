@@ -24,10 +24,7 @@ module Volt
 
   class << self
     def root
-      # if running inside of a rails app we add the directory voltage otherwise the root is current directory
-      # however it looks like we can actually get rid of this, since the server will initialize this for us
-      @root ||= File.expand_path("#{Dir.pwd}#{VOLT_PATH if defined? VOLT_PATH }")
-      #@root ||= File.expand_path(Dir.pwd)
+      @root ||= File.expand_path("#{Dir.pwd}")
     end
 
     def root=(path)
