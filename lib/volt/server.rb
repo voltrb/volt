@@ -1,19 +1,10 @@
 ENV['SERVER'] = 'true'
 
 require 'opal'
-if RUBY_PLATFORM == 'java'
-  require 'jubilee'
-else
-  require 'thin'
-end
 
 require 'rack'
 require 'sass'
 require 'volt/utils/tilt_patch'
-if RUBY_PLATFORM != 'java'
-  require 'rack/sockjs'
-  require 'eventmachine'
-end
 require 'sprockets-sass'
 require 'listen'
 
@@ -22,9 +13,6 @@ require 'volt/boot'
 require 'volt/tasks/dispatcher'
 require 'volt/tasks/task_handler'
 require 'volt/server/component_handler'
-if RUBY_PLATFORM != 'java'
-  require 'volt/server/socket_connection_handler'
-end
 require 'volt/server/rack/component_paths'
 require 'volt/server/rack/index_files'
 require 'volt/server/rack/http_resource'
@@ -34,6 +22,7 @@ require 'volt/page/page'
 
 require 'volt/server/rack/http_request'
 require 'volt/controllers/http_controller'
+require 'volt/server/websocket/websocket_handler'
 
 module Rack
   # TODO: For some reason in Rack (or maybe thin), 304 headers close
@@ -113,6 +102,9 @@ module Volt
     def app
       @app = Rack::Builder.new
 
+      # Handle websocket connections
+      @app.use WebsocketHandler
+
       # Should only be used in production
       if Volt.config.deflate
         @app.use Rack::Deflater
@@ -143,15 +135,6 @@ module Volt
       @app.use HttpResource, @router
 
       component_paths.require_in_components
-
-      # Handle socks js connection
-      if RUBY_PLATFORM != 'java'
-        SocketConnectionHandler.dispatcher = Dispatcher.new
-
-        @app.map '/channel' do
-          run Rack::SockJS.new(SocketConnectionHandler) # , :websocket => false
-        end
-      end
 
       @app.use Rack::Static,
         urls: ['/'],

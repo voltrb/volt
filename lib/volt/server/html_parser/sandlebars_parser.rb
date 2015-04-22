@@ -150,13 +150,6 @@ module Volt
         return
       end
 
-      # Auto-close the last inline tag if we started a new block
-      if BLOCK[tag_name]
-        if last && INLINE[last]
-          end_tag(nil, last)
-        end
-      end
-
       # Some tags close themselves when a new one of themselves is reached.
       # ex, a tr will close the previous tr
       if CLOSE_SELF[tag_name] && last == tag_name

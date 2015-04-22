@@ -32,11 +32,21 @@ module Volt
       require 'capybara/dsl'
       require 'capybara/rspec'
       require 'capybara/poltergeist'
+      require 'selenium-webdriver'
       require 'volt/server'
 
-      Capybara.server do |app, port|
-        require 'rack/handler/thin'
-        Rack::Handler::Thin.run(app, Port: port)
+      case RUNNING_SERVER
+      when 'thin'
+        Capybara.server do |app, port|
+          require 'rack/handler/thin'
+          Rack::Handler::Thin.run(app, Port: port)
+        end
+      when 'puma'
+        Capybara.server do |app, port|
+          Puma::Server.new(app).tap do |s|
+            s.add_tcp_listener Capybara.server_host, port
+          end.run.join
+        end
       end
 
       Capybara.app = Server.new(app_path).app

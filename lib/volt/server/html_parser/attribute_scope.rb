@@ -113,7 +113,7 @@ module Volt
 
       string_template_renderer_path = add_string_template_renderer(content)
 
-      save_binding(id, "lambda { |__p, __t, __c, __id| Volt::AttributeBinding.new(__p, __t, __c, __id, #{attribute_name.inspect}, Proc.new { Volt::StringTemplateRender.new(__p, __c, #{string_template_renderer_path.inspect}) }) }")
+      save_binding(id, "lambda { |__p, __t, __c, __id| Volt::AttributeBinding.new(__p, __t, __c, __id, #{attribute_name.inspect}, Proc.new { Volt::StringTemplateRenderer.new(__p, __c, #{string_template_renderer_path.inspect}) }) }")
     end
 
     def add_string_template_renderer(content)

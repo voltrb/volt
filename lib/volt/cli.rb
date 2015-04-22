@@ -36,13 +36,8 @@ module Volt
     method_option :bind, type: :string, aliases: '-b', banner: 'the ip the server should bind to'
 
     def server
-      if RUBY_PLATFORM == 'java'
-        require 'volt/server'
-      else
-        require 'thin'
-      end
-
       require 'fileutils'
+      require 'volt/server'
 
       # If we're in a Volt project, clear the temp directory
       # TODO: this is a work around for a bug when switching between
@@ -55,19 +50,31 @@ module Volt
         return
       end
 
-      if RUBY_PLATFORM == 'java'
-        server = Server.new.app
-        Rack::Handler::Jubilee.run(server)
-        Thread.stop
-      else
-        ENV['SERVER'] = 'true'
-        args = ['start', '--threaded', '--max-persistent-conns', '300']
-        args += ['--max-conns', '400'] unless Gem.win_platform?
-        args += ['-p', options[:port].to_s] if options[:port]
-        args += ['-a', options[:bind]] if options[:bind]
+      # ENV['SERVER'] = 'true'
+      # args = ['start', '--threaded', '--max-persistent-conns', '300']
+      # args += ['--max-conns', '400'] unless Gem.win_platform?
+      # args += ['-p', options[:port].to_s] if options[:port]
+      # args += ['-a', options[:bind]] if options[:bind]
+      #
+      # Thin::Runner.new(args).run!
 
-        Thin::Runner.new(args).run!
+      app = Volt::Server.new.app
+
+      server = Rack::Handler.get(RUNNING_SERVER)
+
+      opts = {}
+      opts[:Port] = options[:port] || 3000
+      opts[:Host] = options[:bind] if options[:bind]
+
+      server.run(app, opts) do |server|
+        case RUNNING_SERVER
+        when 'thin'
+          server.maximum_persistent_connections = 300
+          server.maximum_connections = 500 unless Gem.win_platform?
+          server.threaded = true
+        end
       end
+
     end
 
     desc 'runner FILEPATH', 'Runs a ruby file at FILEPATH in the volt app'
