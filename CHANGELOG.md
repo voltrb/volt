@@ -1,6 +1,6 @@
 # Change Log
 
-## 0.9.0.pre1
+## 0.9.0
 ### Added
 - the permissions api has been added!
 - added has_many and belongs_to on models.  See docs.
