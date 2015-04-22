@@ -23,6 +23,9 @@ module Volt
 
   class << self
     def root
+      if self.client?
+        raise "Volt.root can not be called from the client."
+      end
       @root ||= File.expand_path(Dir.pwd)
     end
 
