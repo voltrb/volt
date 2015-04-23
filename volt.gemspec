@@ -44,7 +44,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'selenium-webdriver', '~> 2.43.0'
   spec.add_development_dependency 'chromedriver2-helper', '~> 0.0.8'
   spec.add_development_dependency 'poltergeist', '~> 1.5.0'
-  spec.add_development_dependency 'puma', '~> 2.11.2'
+  # spec.add_development_dependency 'puma', '~> 2.11.2'
+  spec.add_development_dependency 'thin', '~> 1.6.3'
 
   spec.add_development_dependency 'guard', '2.6.0' # bug in current guard
   spec.add_development_dependency 'guard-rspec', '~> 4.3.0'

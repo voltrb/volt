@@ -50,13 +50,7 @@ module Volt
         return
       end
 
-      # ENV['SERVER'] = 'true'
-      # args = ['start', '--threaded', '--max-persistent-conns', '300']
-      # args += ['--max-conns', '400'] unless Gem.win_platform?
-      # args += ['-p', options[:port].to_s] if options[:port]
-      # args += ['-a', options[:bind]] if options[:bind]
-      #
-      # Thin::Runner.new(args).run!
+      ENV['SERVER'] = 'true'
 
       app = Volt::Server.new.app
 
@@ -72,6 +66,10 @@ module Volt
           server.maximum_persistent_connections = 300
           server.maximum_connections = 500 unless Gem.win_platform?
           server.threaded = true
+
+          # We need to disable the timeout on thin, otherwise it will keep
+          # disconnecting the websockets.
+          server.timeout = 0
         end
       end
 
