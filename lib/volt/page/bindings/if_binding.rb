@@ -48,7 +48,10 @@ module Volt
             if current_value.is_a?(Promise)
               # If we got a promise, use its value if resolved.
               if current_value.resolved?
-                current_value = current_value.value
+                # Should call then immediately
+                current_value.then do |value|
+                  current_value = value
+                end
               else
                 # if its not, resolve it and try again.
                 # TODO: we maybe could cache this so we don't have to run a full update again
@@ -68,7 +71,7 @@ module Volt
           current_value = value
         end
 
-        if current_value && !current_value.nil? && !current_value.is_a?(Exception)
+        if current_value && !current_value.is_a?(Exception)
           # This branch is currently true
           true_template = template_name
           break

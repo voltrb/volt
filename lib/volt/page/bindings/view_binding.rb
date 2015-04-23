@@ -85,7 +85,6 @@ module Volt
           remove_starting_controller
         else
           # None of the actions stopped the chain
-
           # Wait until the controller is loaded before we actually render.
           @waiting_for_load = -> { @starting_controller_handler.controller.loaded? }.watch_until!(true) do
             render_next_template(full_path, path)

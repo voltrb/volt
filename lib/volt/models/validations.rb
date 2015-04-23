@@ -82,16 +82,18 @@ module Volt
     def validate!
       errors.clear
 
-      run_validations
+      run_validations.then do
 
-      # See if any server errors are in place and merge them in if they are
-      if Volt.client?
-        errors.merge!(server_errors.to_h)
+        # See if any server errors are in place and merge them in if they are
+        if Volt.client?
+          errors.merge!(server_errors.to_h)
+        end
+      end.then do
+        run_custom_validations
+      end.then do
+        # Return the errors object
+        errors
       end
-
-      run_custom_validations
-
-      errors
     end
 
     # Returns true if any of the changed fields now has an error
@@ -111,7 +113,10 @@ module Volt
     private
 
     # Runs through each of the normal validations.
+    # @return [Promise] a promsie to run all validations
     def run_validations
+      promise = Promise.new.resolve(nil)
+
       validations = self.class.validations
       if validations
 
@@ -123,8 +128,12 @@ module Volt
             klass = validation_class(validation, args)
 
             if klass
-              result = klass.validate(self, field_name, args)
-              errors.merge!(result)
+              # Chain on the promises
+              promise = promise.then do
+                klass.validate(self, field_name, args)
+              end.then do |errs|
+                errors.merge!(errs)
+              end
             else
               fail "validation type #{validation} is not specified."
             end
@@ -132,19 +141,26 @@ module Volt
         end
       end
 
-      errors
+      return promise
     end
 
     def run_custom_validations
+      promise = Promise.new.resolve(nil)
       # Call all of the custom validations
       custom_validations = self.class.custom_validations
       if custom_validations
         custom_validations.each do |custom_validation|
-          # Run the validator in the context of the model
-          result = instance_exec(&custom_validation)
-          errors.merge!(result)
+          # Add to the promise chain
+          promise = promise.then do
+            # Run the validator in the context of the model
+            instance_exec(&custom_validation)
+          end.then do |errs|
+            errors.merge!(errs)
+          end
         end
       end
+
+      return promise
     end
 
     def validation_class(validation, args)

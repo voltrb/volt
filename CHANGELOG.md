@@ -1,10 +1,10 @@
 # Change Log
 
-## 0.9.0.pre1
+## 0.9.0
 ### Added
 - the permissions api has been added!
 - added has_many and belongs_to on models.  See docs.
-- you can now serve http/rest from Volt.  Thanks to @jfahrer for his great work.  Docs coming soon.
+- you can now serve http/rest from Volt.  Thanks to @jfahrer for his great work.  More docs coming soon.
 - there is now a generator for controllers and HttpControllers.
 - fixed generated component code
 - added .order for sorting on the data store (since .sort is a ruby Enum method)

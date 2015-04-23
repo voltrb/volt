@@ -15,6 +15,19 @@ describe Volt::Model do
     end
   end
 
+  let(:test_model_with_promises) do
+    Class.new(Volt::Model) do
+      attr_accessor :ran_promise
+      validate do
+
+        Promise.new.then do
+          self.ran_promise = true
+          {name: 'Invalid'}
+        end
+      end
+    end
+  end
+
   it 'should return errors for all failed validations' do
     model.validate!
     expect(model.errors).to eq(
@@ -35,6 +48,15 @@ describe Volt::Model do
     expect(buffer.marked_errors.keys).to eq(
       [:count, :description, :email, :name, :phone_number, :username]
     )
+  end
+
+  it 'should resolve promises returned from inside of validations' do
+    model = test_model_with_promises.new
+
+    model.validate!.then do |errs|
+      expect(errs).to eq({name: 'Invalid'})
+      expect(model.ran_promise).to eq(true)
+    end
   end
 
   describe 'builtin validations' do

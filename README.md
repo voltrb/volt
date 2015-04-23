@@ -1,3 +1,4 @@
+[![Gratipay](http://img.shields.io/gratipay/voltframework.svg)](https://www.gratipay.com/voltframework/)
 [![Gem Version](https://badge.fury.io/rb/volt.svg)](http://badge.fury.io/rb/volt)
 [![Code Climate](https://codeclimate.com/github/voltrb/volt/badges/gpa.svg)](https://codeclimate.com/github/voltrb/volt)
 [![Build Status](http://img.shields.io/travis/voltrb/volt/master.svg?style=flat)](https://travis-ci.org/voltrb/volt)
@@ -12,7 +13,8 @@ Instead of syncing data between the client and server via HTTP, Volt uses a pers
 Pages HTML is written in a template language where you can put Ruby between `{{` and `}}`. Volt uses data flow/reactive programming to automatically and intelligently propagate changes to the DOM (or any other code wanting to know when a value updates). When something in the DOM changes, Volt intelligently updates only the nodes that need to be changed.
 
 See some demo videos here:
-- [Volt Todos Example](https://www.youtube.com/watch?v=Tg-EtRnMz7o)
+- [Volt Todos Example](https://www.youtube.com/watch?v=KbFtIt7-ge8)
+- [What Is Volt in 6 Minutes](https://www.youtube.com/watch?v=P27EPQ4ne7o)
 - [Pagination Example](https://www.youtube.com/watch?v=1uanfzMLP9g)
 - [Routes and Templates](https://www.youtube.com/watch?v=1yNMP3XR6jU)
 - [Isomorphic App Development - RubyConf 2014](https://www.youtube.com/watch?v=7i6AL7Walc4)
@@ -20,8 +22,8 @@ See some demo videos here:
 **Note:** The blog video is outdated, expect an updated version soon.
 
 Check out demo apps:
- - https://github.com/voltrb/todos3
- - https://github.com/voltrb/contactsdemo
+ - https://github.com/voltrb/todomvc
+ - https://github.com/voltrb/blog5
 
 # Docs
 
@@ -33,4 +35,5 @@ There is also a [work in progress tutorial](https://github.com/rhgraysonii/volt_
 
 You want to contribute? Great! Thanks for being awesome! At the moment, we have a big internal todo list, hop on https://gitter.im/voltrb/volt so we don't duplicate work. Pull requests are always welcome, but asking about helping on Gitter should save some duplication.
 
-[![Pledgie](https://pledgie.com/campaigns/26731.png?skin_name=chrome)](https://pledgie.com/campaigns/26731)
+
+[![Gratipay](http://img.shields.io/gratipay/voltframework.svg)](https://www.gratipay.com/voltframework/)

@@ -144,7 +144,7 @@ module Volt
         promise = limit(1).fetch do |res|
           result = res.first
 
-          next result
+          result
         end
       else
         # On all other persistors, it should be loaded already

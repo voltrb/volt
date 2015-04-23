@@ -57,9 +57,7 @@ module Volt
       unless @invalidated
         @invalidated = true
 
-        unless @stopped || @computing
-          queue_flush!
-        end
+        queue_flush! unless @stopped
 
         invalidations  = @invalidations
         @invalidations = []

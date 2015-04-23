@@ -7,57 +7,58 @@ module Volt
     def save!(&block)
       # TODO: this shouldn't need to be run, but if no attributes are assigned, then
       # if needs to be run.  Maybe there's a better way to handle it.
-      validate!
+      return validate!.then do
 
-      # Get errors from validate
-      errors = self.errors.to_h
+        # Get errors from validate
+        errors = self.errors.to_h
 
-      result = nil
+        result = nil
 
-      if errors.size == 0
-        save_to = options[:save_to]
-        if save_to
-          if save_to.is_a?(ArrayModel)
-            # Add to the collection
-            promise = save_to.append(attributes)
+        if errors.size == 0
+          save_to = options[:save_to]
+          if save_to
+            if save_to.is_a?(ArrayModel)
+              # Add to the collection
+              promise = save_to.append(attributes)
+            else
+              # We have a saved model
+              promise = save_to.assign_attributes(attributes)
+            end
+
+            result = promise.then do |new_model|
+              # The main model saved, so mark the buffer as not new
+              @new = false
+
+              if new_model
+                # Mark the model as loaded
+                new_model.change_state_to(:loaded_state, :loaded)
+
+                # Set the buffer's id to track the main model's id
+                attributes[:_id] = new_model._id
+                options[:save_to]     = new_model
+              end
+
+              nil
+            end.fail do |errors|
+              if errors.is_a?(Hash)
+                server_errors.replace(errors)
+              end
+
+              promise_for_errors(errors)
+            end
           else
-            # We have a saved model
-            promise = save_to.assign_attributes(attributes)
-          end
-
-          result = promise.then do |new_model|
-            # The main model saved, so mark the buffer as not new
-            @new = false
-
-            if new_model
-              # Mark the model as loaded
-              new_model.change_state_to(:loaded_state, :loaded)
-
-              # Set the buffer's id to track the main model's id
-              attributes[:_id] = new_model._id
-              options[:save_to]     = new_model
-            end
-
-            nil
-          end.fail do |errors|
-            if errors.is_a?(Hash)
-              server_errors.replace(errors)
-            end
-
-            promise_for_errors(errors)
+            fail 'Model is not a buffer, can not be saved, modifications should be persisted as they are made.'
           end
         else
-          fail 'Model is not a buffer, can not be saved, modifications should be persisted as they are made.'
+          # Some errors, mark all fields
+          result = promise_for_errors(errors)
         end
-      else
-        # Some errors, mark all fields
-        result = promise_for_errors(errors)
+
+        # If passed a block, call then on it with the block.
+        result = result.then(&block) if block
+
+        result
       end
-
-      # If passed a block, call then on it with the block.
-      result = result.then(&block) if block
-
-      return result
     end
 
     # When errors come in, we mark all fields and return a rejected promise.
