@@ -10,6 +10,7 @@ if ENV['BROWSER'] && ENV['BROWSER'] != 'sauce'
 
       click_link 'Flash Notice'
       expect(page).to have_content('A notice message')
+      # sleep 40
       find('.alert').click
       expect(page).to_not have_content('A notice message')
 

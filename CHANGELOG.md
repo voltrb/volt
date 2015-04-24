@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.9.1
+### Changed
+- Corrected the name of StringTemplateRender to StringTemplateRenderer
+- Volt now uses faye-websocket for socket connections.  This means we can run on any rack-hijack server supported by faye-websocket.  Currently Volt is tested with thin and puma.  (Note: Thin will probably have better performance since it is evented, which means it doesn't need a thread per connection)  More servers coming soon.
+
+
 ## 0.9.0
 ### Added
 - the permissions api has been added!

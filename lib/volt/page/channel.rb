@@ -27,21 +27,30 @@ module Volt
     end
 
     def connect!
-      `
-        this.socket = new SockJS('/channel');
+      %x{
+        this.socket = new WebSocket('ws://' + document.location.host + '/socket');
 
-        this.socket.onopen = function() {
+        this.socket.onopen = function () {
+          console.log('on open');
           self.$opened();
         };
 
+        // Log errors
+        this.socket.onerror = function (error) {
+          console.log('WebSocket Error ', error);
+        };
+
+        // Log messages from the server
         this.socket.onmessage = function(message) {
+          console.log('on msg');
           self['$message_received'](message.data);
         };
 
         this.socket.onclose = function(error) {
+          console.log('on close', error);
           self.$closed(error);
         };
-      `
+      }
     end
 
     def opened

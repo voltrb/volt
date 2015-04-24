@@ -1,10 +1,10 @@
 module Volt
-  # StringTemplateRender are used to render a template to a string.  Call .html
+  # StringTemplateRenderer are used to render a template to a string.  Call .html
   # to get the string.  Be sure to call .remove when complete.
   #
-  # StringTemplateRender will intellegently update the string in the same way
+  # StringTemplateRenderer will intellegently update the string in the same way
   # a normal bindings will update the dom.
-  class StringTemplateRender
+  class StringTemplateRenderer
     def initialize(page, context, template_path)
       @dependency = Dependency.new
 

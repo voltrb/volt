@@ -1,9 +1,8 @@
 require 'json'
-require 'sockjs/session'
 require File.join(File.dirname(__FILE__), '../../../app/volt/tasks/query_tasks')
 
 module Volt
-  class SocketConnectionHandler < SockJS::Session
+  class SocketConnectionHandler
     # Create one instance of the dispatcher
 
     # We track the connected user_id with the channel for use with permissions.
@@ -33,8 +32,6 @@ module Volt
 
       @@channels ||= []
       @@channels << self
-
-      super
     end
 
     def process_message(message)
@@ -48,21 +45,19 @@ module Volt
     def send_message(*args)
       str = JSON.dump([*args])
 
-      begin
-        send(str)
-      rescue MetaState::WrongStateError => e
-        puts "Tried to send to closed connection: #{e.inspect}"
-
-        # Mark this channel as closed
-        closed
-      end
+      @session.send(str)
     end
 
     def closed
-      # Remove ourself from the available channels
-      @@channels.delete(self)
+      unless @closed
+        @closed = true
+        # Remove ourself from the available channels
+        @@channels.delete(self)
 
-      QueryTasks.new(self).close!
+        QueryTasks.new(self).close!
+      else
+        Volt.logger.error("Socket Error: Connection already closed\n#{inspect}")
+      end
     end
 
     def inspect

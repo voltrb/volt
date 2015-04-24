@@ -25,7 +25,3 @@ end
 platform :jruby do
   gem 'jubilee'
 end
-
-#---------------------
-# Needed at the moment
-gem 'volt-sockjs', require: false, platforms: :mri

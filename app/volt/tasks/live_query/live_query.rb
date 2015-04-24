@@ -85,10 +85,16 @@ class LiveQuery
   end
 
   def remove_channel(channel)
-    @channels.delete(channel)
+    deleted = @channels.delete(channel)
 
     # remove this query, no one is listening anymore
-    @pool.remove(@collection, @query) if @channels.empty?
+    if @channels.empty?
+      begin
+        @pool.remove(@collection, @query)
+      rescue Volt::GenericPoolDeleteException => e
+        # ignore
+      end
+    end
   end
 
   def notify!(skip_channel = nil, only_channel = nil)
