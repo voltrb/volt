@@ -9,7 +9,6 @@ require 'sprockets-sass'
 require 'listen'
 
 require 'volt'
-require 'volt/boot'
 require 'volt/tasks/dispatcher'
 require 'volt/tasks/task_handler'
 require 'volt/server/component_handler'
@@ -47,6 +46,38 @@ end
 
 module Volt
   class Server
+    class ProxyServer
+      def initialize(server, reader, writer)
+        @server = server
+        @reader = reader
+        @writer = writer
+      end
+
+      def call(env)
+        # setup_change_listener
+        @reader, @writer = IO.pipe
+
+        if @child_id = fork
+          @reader.close
+          # running as parent
+          puts "PASS: #{env.inspect}"
+          Marshal.dump(env, @writer)
+        else
+          @writer.close
+          # Running as child
+          setup_router
+          require_http_controllers
+
+          @rack_server = @server.new_server
+
+          env = Marshal.load(@reader)
+
+          puts "READ ENV: #{env.inspect}"
+        end
+
+        puts "CALL ENV"
+      end
+    end
 
     def initialize(root_path = nil)
       root_path ||= Dir.pwd
@@ -55,11 +86,9 @@ module Volt
       @app_path        = File.expand_path(File.join(root_path, 'app'))
 
       # Boot the volt app
-      @component_paths = Volt.boot(root_path)
+      require 'volt/boot'
 
-      setup_router
-      require_http_controllers
-      setup_change_listener
+      @component_paths = Volt.boot(root_path)
 
       display_welcome
     end
@@ -100,6 +129,10 @@ module Volt
     end
 
     def app
+      ProxyServer.new(self, @reader, @writer)
+    end
+
+    def new_server
       @app = Rack::Builder.new
 
       # Handle websocket connections
