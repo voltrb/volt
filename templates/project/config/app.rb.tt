@@ -5,7 +5,7 @@ Volt.configure do |config|
   # be tampered with.  A random value is generated on new projects that will work
   # without the need to customize.  Make sure this value doesn't leave your server.
   #
-  # For added security we reccomend moving the app secret into an enviromnet.  You can
+  # For added security we recommend moving the app secret into an environment.  You can
   # setup that like so:
   #
   # config.app_secret = ENV['APP_SECRET']
