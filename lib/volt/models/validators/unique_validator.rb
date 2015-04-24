@@ -1,8 +1,6 @@
 module Volt
   class UniqueValidator
     def self.validate(model, field_name, args)
-      errors = {}
-
       if RUBY_PLATFORM != 'opal'
         if args
           value  = model.get(field_name)
@@ -14,15 +12,19 @@ module Volt
 
           # Check if the value is taken
           # TODO: need a way to handle scope for unique
-          if $page.store.send(:"_#{model.path[-2]}").find(query).size > 0
-            message = (args.is_a?(Hash) && args[:message]) || 'is already taken'
+          return $page.store.get(model.path[-2]).where(query).fetch_first do |item|
+            if item
+              message = (args.is_a?(Hash) && args[:message]) || 'is already taken'
 
-            errors[field_name] = [message]
+              # return the error
+              next {field_name: [message]}
+            end
           end
         end
       end
 
-      errors
+      # no errors
+      {}
     end
   end
 end
