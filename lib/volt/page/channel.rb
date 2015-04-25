@@ -31,7 +31,6 @@ module Volt
         this.socket = new WebSocket('ws://' + document.location.host + '/socket');
 
         this.socket.onopen = function () {
-          console.log('on open');
           self.$opened();
         };
 
@@ -42,12 +41,10 @@ module Volt
 
         // Log messages from the server
         this.socket.onmessage = function(message) {
-          console.log('on msg');
           self['$message_received'](message.data);
         };
 
         this.socket.onclose = function(error) {
-          console.log('on close', error);
           self.$closed(error);
         };
       }
