@@ -1,12 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-
-version = File.read(File.expand_path('../VERSION', __FILE__)).strip
+require 'volt/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'volt'
-  spec.version       = version
+  spec.version       = Volt::Version::STRING
   spec.authors       = ['Ryan Stout']
   spec.email         = ['ryan@agileproductions.com']
   spec.summary       = 'A ruby web framework where your ruby runs on both server and client (via Opal)'
