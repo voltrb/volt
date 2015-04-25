@@ -22,6 +22,7 @@ require 'volt/page/page'
 require 'volt/server/rack/http_request'
 require 'volt/controllers/http_controller'
 require 'volt/server/websocket/websocket_handler'
+require 'drb'
 
 module Rack
   # TODO: For some reason in Rack (or maybe thin), 304 headers close
@@ -47,35 +48,51 @@ end
 module Volt
   class Server
     class ProxyServer
-      def initialize(server, reader, writer)
+      def initialize(server)
         @server = server
-        @reader = reader
-        @writer = writer
       end
 
       def call(env)
-        # setup_change_listener
-        @reader, @writer = IO.pipe
+        unless @drb_object
+          reader, writer = IO.pipe
+          # setup_change_listener
 
-        if @child_id = fork
-          @reader.close
-          # running as parent
-          puts "PASS: #{env.inspect}"
-          Marshal.dump(env, @writer)
-        else
-          @writer.close
-          # Running as child
-          setup_router
-          require_http_controllers
+          if @child_id = fork
+            writer.close
+            # running as parent
 
-          @rack_server = @server.new_server
+            # Read the url from the child
+            uri = reader.gets.strip
 
-          env = Marshal.load(@reader)
+            # Setup a drb object to the child
+            puts "Connect to drb: #{uri.inspect}"
+            DRb.start_service
+            @drb_object = DRbObject.new_with_uri(uri)
+            @server_proxy = @drb_object[0]
+            @dispatcher_proxy = @drb_object[1]
 
-          puts "READ ENV: #{env.inspect}"
+            SocketConnectionHandler.dispatcher = @dispatcher_proxy
+          else
+            reader.close
+            # Running as child
+            @server.setup_router
+            @server.require_http_controllers
+            @rack_app = @server.new_server
+
+            # Set the drb object locally
+            drb_object = DRb.start_service(nil, [@rack_app, Dispatcher.new])
+
+            writer.puts(drb_object.uri)
+            DRb.thread.join
+          end
         end
 
-        puts "CALL ENV"
+        result = @server_proxy.call(env)
+
+        # We need to extract this into a real array from DRbObject's to get
+        # rack to allow it.
+        result = [result[0], result[1], result[2]]
+        result
       end
     end
 
@@ -129,14 +146,17 @@ module Volt
     end
 
     def app
-      ProxyServer.new(self, @reader, @writer)
+      app = Rack::Builder.new
+      # Handle websocket connections
+      app.use WebsocketHandler
+
+      app.run ProxyServer.new(self)
+
+      app
     end
 
     def new_server
       @app = Rack::Builder.new
-
-      # Handle websocket connections
-      @app.use WebsocketHandler
 
       # Should only be used in production
       if Volt.config.deflate
