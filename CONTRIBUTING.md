@@ -47,7 +47,7 @@ Ensure that you can build the project and run tests.
 
 ```
 bundle install
-bundle exec rake
+NO_BROWSER=true bundle exec rake
 ```
 
 By default rake doesn't run the integration tests.  The integration tests use capybara to run the tests in a real browser, (read more [here](https://github.com/voltrb/docs/blob/master/en/docs/testing.md)).  You can run with integration tests in a browser with:
