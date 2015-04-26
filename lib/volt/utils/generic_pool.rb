@@ -9,6 +9,8 @@ module Volt
   # all of the items at a sub-path with #lookup_all
   #
   # TODO: make the lookup/create threadsafe
+  class GenericPoolDeleteException < StandardError ; end
+
   class GenericPool
     attr_reader :pool
 
@@ -93,6 +95,10 @@ module Volt
         stack << section
 
         if args.size - 1 == index
+          unless section
+            raise GenericPoolDeleteException, "An attempt was made to delete at #{arg}, full path: #{args.inspect} in #{inspect}"
+          end
+
           section.delete(arg)
         else
           section = section[arg]

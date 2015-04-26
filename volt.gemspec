@@ -32,7 +32,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'opal', '~> 0.7.1'
   spec.add_dependency 'opal-jquery', '~> 0.3.0'
   spec.add_dependency 'bundler', '>= 1.5'
-  spec.add_dependency 'volt-sockjs', '~> 0.3.4.4'
+  spec.add_dependency 'faye-websocket', '~> 0.9.2'
 
   # For user passwords
   spec.add_dependency 'bcrypt', '~> 3.1.9'
@@ -44,8 +44,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'selenium-webdriver', '~> 2.43.0'
   spec.add_development_dependency 'chromedriver2-helper', '~> 0.0.8'
   spec.add_development_dependency 'poltergeist', '~> 1.5.0'
+  # spec.add_development_dependency 'puma', '~> 2.11.2'
+  spec.add_development_dependency 'thin', '~> 1.6.3'
   spec.add_development_dependency 'coveralls', '~> 0.8.1'
-
 
   spec.add_development_dependency 'guard', '2.6.0' # bug in current guard
   spec.add_development_dependency 'guard-rspec', '~> 4.3.0'

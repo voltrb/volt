@@ -18,6 +18,7 @@ module Volt
           setup_capybara(app_path)
         rescue LoadError => e
           Volt.logger.warn("unable to load capybara, if you wish to use it for tests, be sure it is in the app's Gemfile")
+          Volt.logger.error(e)
         end
       end
 

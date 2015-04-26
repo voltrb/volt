@@ -30,7 +30,7 @@ module Volt
     def yield_html
       if (template_path = attrs.content_template_path)
         # TODO: Don't use $page global
-        @yield_renderer ||= StringTemplateRender.new($page, self, template_path)
+        @yield_renderer ||= StringTemplateRenderer.new($page, self, template_path)
         @yield_renderer.html
       else
         # no template, empty string

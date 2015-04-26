@@ -14,8 +14,6 @@ describe 'user accounts', type: :feature, sauce: true do
   it 'should create an account' do
     visit '/'
 
-    # sleep 300
-
     click_link 'Login'
 
     click_link 'Signup here'
