@@ -7,6 +7,7 @@ module Volt
       ENV['VOLT_ENV'] = 'test'
 
       require 'volt/boot'
+      require 'volt/server'
 
       # Require in app
       Volt.boot(app_path)
