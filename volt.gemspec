@@ -34,6 +34,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'bundler', '>= 1.5'
   spec.add_dependency 'volt-sockjs', '~> 0.3.4.4'
 
+  spec.add_dependency 'haml'
+
+
   # For user passwords
   spec.add_dependency 'bcrypt', '~> 3.1.9'
 
