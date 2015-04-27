@@ -8,6 +8,7 @@
 - fixed issue with the unique validation.
 - made it so <:SectionName> can be accessed by <:section_name /> tag
 - fixed issue with if bindings not resolving some promises.
+- fixed issue with require's in controllers.
 
 ## 0.9.0
 ### Added
