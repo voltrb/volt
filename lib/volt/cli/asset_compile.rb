@@ -16,6 +16,7 @@ module Volt
       require 'opal'
       require 'rack'
       require 'volt'
+      require 'volt/volt/core'
       require 'volt/boot'
 
 
@@ -71,7 +72,6 @@ module Volt
       path = "#{@root_path}/public/assets/#{logical_path}"
 
       begin
-        puts "LP: #{logical_path.inspect}"
         content = @opal_files.environment[logical_path].to_s
         write_file(path, content)
       rescue Sprockets::FileNotFound, SyntaxError => e
