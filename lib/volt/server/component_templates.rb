@@ -93,7 +93,12 @@ module Volt
         template_path = view_path[views_path.size..((-1 * (".#{format}".size + 1)))]
         template_path = "#{@component_name}/#{template_path}"
 
-        all_templates = ViewParser.new(File.read(view_path), template_path, format)
+
+        puts "File.read(view_path): #{File.read(view_path)}"
+        puts "template_path: #{template_path}"
+        puts "format: #{format}"
+        
+        all_templates = ViewParser.new( File.read(view_path), template_path, format )
 
         binding_initializers = []
         all_templates.templates.each_pair do |name, template|

@@ -1,7 +1,7 @@
 module Volt
   class EachScope < ViewScope
     def initialize(handler, path, content, with_index)
-      super(handler, path)
+      super(handler, path, @mode)
 
       if with_index
         @content, @variable_name = content.split(/.each_with_index\s+do\s+\|/)

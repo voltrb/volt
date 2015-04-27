@@ -13,7 +13,7 @@ module Volt
     def initialize(html, template_path, mode)
       @template_path = template_path
 
-      handler = ViewHandler.new(template_path)
+      handler = ViewHandler.new(template_path, mode)
 
       SandlebarsParser.new(html, handler, mode)
 

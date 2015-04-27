@@ -1,7 +1,7 @@
 module Volt
   class TextareaScope < ViewScope
     def initialize(handler, path, attributes)
-      super(handler, path)
+      super(handler, path, @mode)
 
       @attributes = attributes
     end

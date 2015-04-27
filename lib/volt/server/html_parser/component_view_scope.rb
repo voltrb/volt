@@ -3,7 +3,7 @@ module Volt
     # The path passed in is the path used to lookup view's.  The path from the tag is passed in
     # as tag_name
     def initialize(handler, path, tag_name, attributes, unary)
-      super(handler, path)
+      super(handler, path, @mode)
 
       @binding_in_path = path
 

@@ -10,15 +10,16 @@ module Volt
       @scope.last
     end
 
-    def initialize(initial_path, allow_sections = true)
+    def initialize(initial_path, mode, allow_sections = true)
       @original_path = initial_path
+      @mode = mode
 
       puts "initial_path: #{initial_path}"
 
       # Default to the body section
       initial_path   += '/body' if allow_sections
 
-      @scope     = [ViewScope.new(self, initial_path)]
+      @scope     = [ViewScope.new(self, initial_path, @mode)]
       @templates = {}
     end
 
@@ -82,7 +83,7 @@ module Volt
 
       # Set the new path to include the section
       new_path    = @original_path + '/' + @in_section
-      @scope      = [ViewScope.new(self, new_path)]
+      @scope      = [ViewScope.new(self, new_path, @mode)]
     end
   end
 end
