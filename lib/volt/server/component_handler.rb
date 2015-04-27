@@ -22,11 +22,9 @@ module Volt
     def compile_for_component(component_name)
       code = ComponentCode.new(component_name, @component_paths).code
 
-      # Add the lib directory to the load path
-      Opal.append_path(Volt.root + '/lib')
-
       # Compile the code
-      javascript_code = Opal.compile(code)
+      # javascript_code = Opal.compile(code)
+      javascript_code = Opal::Builder.new.build_str(code, 'app.rb').to_s
 
       javascript_code
     end

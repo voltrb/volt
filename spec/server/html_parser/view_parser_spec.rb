@@ -156,7 +156,7 @@ describe Volt::ViewParser do
                                    'html' => "      <div id=\"id0\">\n      </div>\n",
                                    'bindings' => {
                                      'id0' => [
-                                       "lambda { |__p, __t, __c, __id| Volt::AttributeBinding.new(__p, __t, __c, __id, \"class\", Proc.new { Volt::StringTemplateRender.new(__p, __c, \"main/main/main/body/_rv1\") }) }"
+                                       "lambda { |__p, __t, __c, __id| Volt::AttributeBinding.new(__p, __t, __c, __id, \"class\", Proc.new { Volt::StringTemplateRenderer.new(__p, __c, \"main/main/main/body/_rv1\") }) }"
                                      ]
                                    }
                                  })

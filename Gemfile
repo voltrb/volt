@@ -24,4 +24,7 @@ end
 
 group :development, :test do
   gem 'bson_ext'
+
+  # For running tests
+  gem 'thin'
 end

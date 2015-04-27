@@ -173,7 +173,7 @@ module Volt
       TemplateRenderer.new(self, DomTarget.new, main_controller, 'CONTENT', 'main/main/main/body')
 
       # Setup title reactive template
-      @title_template = StringTemplateRender.new(self, main_controller, 'main/main/main/title')
+      @title_template = StringTemplateRenderer.new(self, main_controller, 'main/main/main/title')
 
       # Watch for changes to the title template
       proc do
