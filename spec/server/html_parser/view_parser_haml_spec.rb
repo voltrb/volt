@@ -131,7 +131,7 @@ describe Volt::ViewParser do
     expect(view.templates).to eq('main/main/main/body' => { 'html' => "<div id=\"id0\"></div>\n", 'bindings' => { 'id0' => ["lambda { |__p, __t, __c, __id| Volt::AttributeBinding.new(__p, __t, __c, __id, \"class\", Proc.new { main_class }, Proc.new { |val| self.main_class=(val) }) }"] } })
   end
 
-  it 'should parse multiple attribute bindings in a single attribute', focus: true do
+  it 'should parse multiple attribute bindings in a single attribute' do
     html = <<-END
 .start{class: "{{ main_class }} {{ awesome_class }} string"}
     END
