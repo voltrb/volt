@@ -7,7 +7,7 @@ describe Volt::ViewParser do
   it 'should parse content bindings' do
     html = '<p>Some {{ content }} binding, {{ name }}</p>'
 
-    view = Volt::ViewParser.new(html, 'main/main/main', :html)
+    view = Volt::ViewParser.new(html, 'main/main/main')
 
     expect(view.templates).to eq('main/main/main/body' => {
                                    'html' => '<p>Some <!-- $0 --><!-- $/0 --> binding, <!-- $1 --><!-- $/1 --></p>',
@@ -32,7 +32,7 @@ describe Volt::ViewParser do
     </p>
     END
 
-    view = Volt::ViewParser.new(html, 'main/main/main', :html)
+    view = Volt::ViewParser.new(html, 'main/main/main')
 
     expect(view.templates).to eq('main/main/main/body/__ifg0/__if0' => {
                                    'html' => "\n        text\n      "
@@ -67,7 +67,7 @@ describe Volt::ViewParser do
     </p>
     END
 
-    view = Volt::ViewParser.new(html, 'main/main/main', :html)
+    view = Volt::ViewParser.new(html, 'main/main/main')
 
     expect(view.templates).to eq('main/main/main/body/__ifg0/__if0/__ifg0/__if0' => {
                                    'html' => "\n          sub item text\n        "
@@ -102,7 +102,7 @@ describe Volt::ViewParser do
       </div>
     END
 
-    view = Volt::ViewParser.new(html, 'main/main/main', :html)
+    view = Volt::ViewParser.new(html, 'main/main/main')
 
     expect(view.templates).to eq('main/main/main/body/__each0/__template/0' => {
                                    'html' => "\n          <p><!-- $0 --><!-- $/0 --></p>\n        ",
@@ -128,7 +128,7 @@ describe Volt::ViewParser do
       </div>
     END
 
-    view = Volt::ViewParser.new(html, 'main/main/main', :html)
+    view = Volt::ViewParser.new(html, 'main/main/main')
 
     expect(view.templates).to eq('main/main/main/body' => { 'html' => "      <div id=\"id0\">\n      </div>\n", 'bindings' => { 'id0' => ["lambda { |__p, __t, __c, __id| Volt::AttributeBinding.new(__p, __t, __c, __id, \"class\", Proc.new { main_class }, Proc.new { |val| self.main_class=(val) }) }"] } })
   end
@@ -139,7 +139,7 @@ describe Volt::ViewParser do
       </div>
     END
 
-    view = Volt::ViewParser.new(html, 'main/main/main', :html)
+    view = Volt::ViewParser.new(html, 'main/main/main')
 
     expect(view.templates).to eq('main/main/main/body/_rv1' => {
                                    'html' => 'start <!-- $0 --><!-- $/0 --> <!-- $1 --><!-- $/1 --> string',
@@ -167,7 +167,7 @@ describe Volt::ViewParser do
     {{ view "/home/temp/path" }}
     END
 
-    view = Volt::ViewParser.new(html, 'main/main/main', :html)
+    view = Volt::ViewParser.new(html, 'main/main/main')
 
     expect(view.templates).to eq('main/main/main/body' => {
                                    'html' => "    <!-- $0 --><!-- $/0 -->\n",
@@ -184,18 +184,17 @@ describe Volt::ViewParser do
     <a href="/{link_name}">Link</a>
     END
 
-    view = Volt::ViewParser.new(html, 'main/main/main/body', :html)
+    view = Volt::ViewParser.new(html, 'main/main/main/body')
 
   end
   it 'should setup a href single attribute binding correctly' do
     html = <<-END
-%a{ href: "{link_name}" }
-  Link
+    <a href="{link_name}">Link</a>
     END
 
-    view = Volt::ViewParser.new(html, 'main/main/main/body', :haml)
+    view = Volt::ViewParser.new(html, 'main/main/main/body')
 
-    expected = "<a href=\"{link_name}\">\n  Link\n</a>\n"
+    expected = "    <a href=\"{link_name}\">Link</a>\n"
     expect(view.templates["main/main/main/body/body"]["html"]).to eq expected
   end
 
@@ -211,7 +210,7 @@ describe Volt::ViewParser do
       <p>This text goes in the body</p>
     END
 
-    view = Volt::ViewParser.new(html, 'main/main/main', :html)
+    view = Volt::ViewParser.new(html, 'main/main/main')
 
     expect(view.templates).to eq('main/main/main/title' => {
                                    'html' => "\n      This text goes in the title\n\n    "
@@ -226,7 +225,7 @@ describe Volt::ViewParser do
     <textarea name="cool">some text in a textarea</textarea>
     END
 
-    view = Volt::ViewParser.new(html, 'main/main/main', :html)
+    view = Volt::ViewParser.new(html, 'main/main/main')
 
     expect(view.templates).to eq('main/main/main/body' => {
                                    'html' => "    <textarea name=\"cool\">some text in a textarea</textarea>\n"
@@ -238,7 +237,7 @@ describe Volt::ViewParser do
     <textarea name="cool">{{ awesome }}</textarea>
     END
 
-    view = Volt::ViewParser.new(html, 'main/main/main', :html)
+    view = Volt::ViewParser.new(html, 'main/main/main')
 
     expect(view.templates).to eq('main/main/main/body' => { 'html' => "    <textarea name=\"cool\" id=\"id1\"></textarea>\n", 'bindings' => { 'id1' => ["lambda { |__p, __t, __c, __id| Volt::AttributeBinding.new(__p, __t, __c, __id, \"value\", Proc.new { awesome }, Proc.new { |val| self.awesome=(val) }) }"] } })
   end
