@@ -39,6 +39,8 @@ module Volt
         html = Haml::Engine.new(html).render
       end
 
+      puts "html: #{html}"
+
       @html      = StringScanner.new(html)
       @handler   = handler
       @file_path = file_path

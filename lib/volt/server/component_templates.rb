@@ -87,7 +87,7 @@ module Volt
 
       code = ''
 
-      formats = %w( html haml ).each do |format|
+      formats = [ :html, :haml ].each do |format|
 
         puts "handling files of format: #{format}"
 
