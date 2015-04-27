@@ -85,36 +85,36 @@ module Volt
 
     def parse_templates( views_path )
 
-      format = "html"
-
       code = ''
 
-      # Load all templates in the folder
-      Dir["#{views_path}*/*.#{format}"].sort.each do |view_path|
-        # Get the path for the template, supports templates in folders
-        template_path = view_path[views_path.size..((-1 * (".#{format}".size + 1)))]
-        template_path = "#{@component_name}/#{template_path}"
+      formats = %w( html haml ).each do |format|
 
+        puts "handling files of format: #{format}"
 
-        puts "File.read(view_path): #{File.read(view_path)}"
-        puts "template_path: #{template_path}"
-        puts "format: #{format}"
-        
-        all_templates = ViewParser.new( File.read(view_path), template_path, format )
+        # Load all templates in the folder
+        Dir["#{views_path}*/*.#{format}"].sort.each do |view_path|
+          puts "view path: #{view_path}"
 
-        binding_initializers = []
-        all_templates.templates.each_pair do |name, template|
-          binding_code = []
+          # Get the path for the template, supports templates in folders
+          template_path = view_path[views_path.size..((-1 * (".#{format}".size + 1)))]
+          template_path = "#{@component_name}/#{template_path}"
 
-          if template['bindings']
-            template['bindings'].each_pair do |key, value|
-              binding_code << "#{key.inspect} => [#{value.join(', ')}]"
+          all_templates = ViewParser.new( File.read(view_path), template_path, format )
+
+          binding_initializers = []
+          all_templates.templates.each_pair do |name, template|
+            binding_code = []
+
+            if template['bindings']
+              template['bindings'].each_pair do |key, value|
+                binding_code << "#{key.inspect} => [#{value.join(', ')}]"
+              end
             end
+
+            binding_code = "{#{binding_code.join(', ')}}"
+
+            code << "#{page_reference}.add_template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})\n"
           end
-
-          binding_code = "{#{binding_code.join(', ')}}"
-
-          code << "#{page_reference}.add_template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})\n"
         end
       end
 

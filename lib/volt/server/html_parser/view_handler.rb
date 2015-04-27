@@ -14,8 +14,6 @@ module Volt
       @original_path = initial_path
       @mode = mode
 
-      puts "initial_path: #{initial_path}"
-
       # Default to the body section
       initial_path   += '/body' if allow_sections
 
