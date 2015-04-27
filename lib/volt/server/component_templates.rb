@@ -89,8 +89,6 @@ module Volt
 
         # Load all templates in the folder
         Dir["#{views_path}*/*.#{format}"].sort.each do |view_path|
-          puts "view path: #{view_path}"
-
           # Get the path for the template, supports templates in folders
           template_path = view_path[views_path.size..((-1 * (".#{format}".size + 1)))]
           template_path = "#{@component_name}/#{template_path}"
