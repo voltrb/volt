@@ -19,7 +19,6 @@ module Volt
       Opal.append_path(Volt.root + '/app')
       Opal.append_path(Volt.root + '/lib')
 
-
       Gem.loaded_specs.values.each do |gem|
         path = gem.full_gem_path + '/app'
 

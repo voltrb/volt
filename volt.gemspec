@@ -33,6 +33,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'opal-jquery', '~> 0.3.0'
   spec.add_dependency 'bundler', '>= 1.5'
   spec.add_dependency 'faye-websocket', '~> 0.9.2'
+  spec.add_dependency 'concurrent-ruby', '~> 0.8.0'
 
   # For user passwords
   spec.add_dependency 'bcrypt', '~> 3.1.9'

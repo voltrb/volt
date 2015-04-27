@@ -26,3 +26,8 @@ group :development, :test do
   # For running tests
   gem 'thin'
 end
+
+platform :mri do
+  # The implementation of ReadWriteLock in Volt uses concurrent ruby and ext helps performance.
+  gem 'concurrent-ruby-ext'
+end
