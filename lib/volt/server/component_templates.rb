@@ -30,29 +30,7 @@ module Volt
       code       = ''
       views_path = "#{@component_path}/views/"
 
-      # Load all templates in the folder
-      Dir["#{views_path}*/*.html"].sort.each do |view_path|
-        # Get the path for the template, supports templates in folders
-        template_path = view_path[views_path.size..((-1 * ('.html'.size + 1)))]
-        template_path = "#{@component_name}/#{template_path}"
-
-        all_templates = ViewParser.new(File.read(view_path), template_path)
-
-        binding_initializers = []
-        all_templates.templates.each_pair do |name, template|
-          binding_code = []
-
-          if template['bindings']
-            template['bindings'].each_pair do |key, value|
-              binding_code << "#{key.inspect} => [#{value.join(', ')}]"
-            end
-          end
-
-          binding_code = "{#{binding_code.join(', ')}}"
-
-          code << "#{page_reference}.add_template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})\n"
-        end
-      end
+      code = parse_templates(views_path)
 
       code
     end
@@ -99,5 +77,49 @@ module Volt
         "class #{handler.name} < Volt::Task; end"
       end.join "\n"
     end
+
+    private
+
+
+    def parse_templates( views_path )
+
+      code = ''
+
+      formats = [ :html, :haml ].each do |format|
+
+        # Load all templates in the folder
+        Dir["#{views_path}*/*.#{format}"].sort.each do |view_path|
+          # Get the path for the template, supports templates in folders
+          template_path = view_path[views_path.size..((-1 * (".#{format}".size + 1)))]
+          template_path = "#{@component_name}/#{template_path}"
+
+          file_contents = File.read(view_path)
+
+          if format == :haml
+            file_contents = Haml::Engine.new(file_contents).render
+          end
+
+          all_templates = ViewParser.new( file_contents, template_path )
+
+          binding_initializers = []
+          all_templates.templates.each_pair do |name, template|
+            binding_code = []
+
+            if template['bindings']
+              template['bindings'].each_pair do |key, value|
+                binding_code << "#{key.inspect} => [#{value.join(', ')}]"
+              end
+            end
+
+            binding_code = "{#{binding_code.join(', ')}}"
+
+            code << "#{page_reference}.add_template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})\n"
+          end
+        end
+      end
+
+      code
+    end
+
   end
 end
