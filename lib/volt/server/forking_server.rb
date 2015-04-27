@@ -142,8 +142,18 @@ module Volt
       end
     end
 
-    def reload
-      Volt.logger.log_with_color('file changed, sending reload', :light_blue)
+    def reload(changed_files)
+      # only reload the server code if a non-view file was changed
+      server_code_changed = changed_files.any? {|path| File.extname(path) == '.rb' }
+
+      msg = 'file changed, reloading'
+      if server_code_changed
+        msg << ' server and'
+      end
+      msg << ' client...'
+
+      Volt.logger.log_with_color(msg, :light_blue)
+
       begin
         SocketConnectionHandler.send_message_all(nil, 'reload')
       rescue => e
@@ -151,9 +161,11 @@ module Volt
         Volt.logger.error(e)
       end
 
-      @child_lock.with_write_lock do
-        stop_child
-        start_child
+      if server_code_changed
+        @child_lock.with_write_lock do
+          stop_child
+          start_child
+        end
       end
     end
 
@@ -162,7 +174,7 @@ module Volt
       @listener = Listen.to("#{@server.app_path}/") do |modified, added, removed|
         Thread.new do
           # Run the reload in a new thread
-          reload
+          reload(modified + added + removed)
         end
       end
       @listener.start

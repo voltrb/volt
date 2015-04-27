@@ -37,7 +37,7 @@ module Volt
           Dir["#{app_folder}/*/controllers/server/*.rb"].each do |ruby_file|
             #path = ruby_file.gsub(/^#{app_folder}\//, '')[0..-4]
             #require(path)
-            load ruby_file
+            require(ruby_file)
           end
         end
       end
