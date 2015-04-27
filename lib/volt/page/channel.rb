@@ -28,7 +28,13 @@ module Volt
 
     def connect!
       %x{
-        this.socket = new WebSocket('ws://' + document.location.host + '/socket');
+        if (document.location.protocol == 'https:') {
+          var wsProto = 'wss';
+        } else {
+          var wsProto = 'ws';
+        }
+
+        this.socket = new WebSocket(wsProto + '://' + document.location.host + '/socket');
 
         this.socket.onopen = function () {
           self.$opened();
