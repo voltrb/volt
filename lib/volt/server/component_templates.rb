@@ -87,6 +87,8 @@ module Volt
 
       format = "html"
 
+      code = ''
+
       # Load all templates in the folder
       Dir["#{views_path}*/*.#{format}"].sort.each do |view_path|
         # Get the path for the template, supports templates in folders
@@ -115,6 +117,8 @@ module Volt
           code << "#{page_reference}.add_template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})\n"
         end
       end
+
+      code
     end
 
   end
