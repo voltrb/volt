@@ -10,12 +10,12 @@ module Volt
   class ViewParser
     attr_reader :templates
 
-    def initialize(html, template_path, mode)
+    def initialize(html, template_path)
       @template_path = template_path
 
-      handler = ViewHandler.new(template_path, mode)
+      handler = ViewHandler.new(template_path)
 
-      SandlebarsParser.new(html, handler, mode)
+      SandlebarsParser.new(html, handler)
 
       # Close out the last scope
       last_scope = handler.scope.last

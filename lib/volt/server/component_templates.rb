@@ -2,7 +2,7 @@ require 'volt/server/html_parser/view_parser'
 require 'volt/tasks/task_handler'
 
 # Initialize with the path to a component and returns all the front-end
-# setup code (for controllers, models, views, and routes)
+# setup code (for controllersls, views, and routes)
 module Volt
   class ComponentTemplates
     # client is if we are generating for the client or backend
@@ -99,7 +99,13 @@ module Volt
           template_path = view_path[views_path.size..((-1 * (".#{format}".size + 1)))]
           template_path = "#{@component_name}/#{template_path}"
 
-          all_templates = ViewParser.new( File.read(view_path), template_path, format )
+          file_contents = File.read(view_path)
+
+          if format == :haml
+            file_contents = Haml::Engine.new(file_contents).render
+          end
+
+          all_templates = ViewParser.new( file_contents, template_path )
 
           binding_initializers = []
           all_templates.templates.each_pair do |name, template|

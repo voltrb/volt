@@ -54,7 +54,7 @@ module Volt
 
       def add_to_identity_map
         unless @in_identity_map
-          @@identity_map.add(@model._id, @model)
+          @@identity_map.add(@model._idl)
 
           @in_identity_map = true
         end
@@ -131,7 +131,7 @@ module Volt
         delete self.saveTimer;
         `
 
-        StoreTasks.save(collection, @model.path, self_attributes).then do
+        StoreTasks.save(collectionl.path, self_attributes).then do
           save_promises = @save_promises
           @save_promises = nil
           save_promises.each { |promise|  promise.resolve(nil) }

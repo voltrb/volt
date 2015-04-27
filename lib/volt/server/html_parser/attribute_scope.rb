@@ -118,10 +118,10 @@ module Volt
 
     def add_string_template_renderer(content)
       path            = @path + "/_rv#{@binding_number}"
-      new_handler     = ViewHandler.new(path, false, @mode)
+      new_handler     = ViewHandler.new(path, false)
       @binding_number += 1
 
-      SandlebarsParser.new(content, new_handler, @mode)
+      SandlebarsParser.new(content, new_handler)
 
       # Close out the last scope
       new_handler.scope.last.close_scope

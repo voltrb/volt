@@ -7,7 +7,7 @@ module Volt
     attr_reader :html, :bindings
     attr_accessor :path, :binding_number, :mode
 
-    def initialize(handler, path, mode)
+    def initialize(handler, path)
       @handler = handler
       @path    = path
       @mode    = mode

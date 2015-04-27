@@ -34,13 +34,8 @@ module Volt
 
     FILL_IN_ATTRIBUTES = truth_hash(%w(checked compact declare defer disabled ismap multiple nohref noresize noshade nowrap readonly selected))
 
-    def initialize(html, handler, mode, file_path = nil)
-      if mode == :haml
-        html = Haml::Engine.new(html).render
-      end
-
-      puts "html: #{html}"
-
+    def initialize(html, handler, file_path = nil)
+      
       @html      = StringScanner.new(html)
       @handler   = handler
       @file_path = file_path

@@ -1,7 +1,7 @@
 module Volt
   class IfViewScope < ViewScope
     def initialize(handler, path, content)
-      super(handler, path, @mode)
+      super(handler, path)
 
       @original_path = @path
 
