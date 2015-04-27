@@ -19,6 +19,7 @@ module Volt
 
     # Sends a message to all, optionally skipping a users channel
     def self.send_message_all(skip_channel = nil, *args)
+      return unless @@channels
       @@channels.each do |channel|
         if skip_channel && channel == skip_channel
           next

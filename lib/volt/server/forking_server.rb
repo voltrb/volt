@@ -69,7 +69,12 @@ module Volt
 
           watch_for_parent_exit
 
-          DRb.thread.join
+          begin
+            DRb.thread.join
+          rescue Interrupt => e
+            # Ignore interrupt
+            exit
+          end
         end
       end
     end
@@ -79,7 +84,7 @@ module Volt
     def watch_for_parent_exit
       Thread.new do
         loop do
-          if @reader.closed?
+          if @writer.closed?
             puts "Parent process died"
             exit
           end
@@ -125,15 +130,27 @@ module Volt
     def stop_child
       # clear the drb object and kill the child process.
       if @drb_object
-        @drb_object = nil
-        DRb.stop_service
-        @reader.close
-        stop_change_listener
-        Process.kill(9, @child_id)
+        begin
+          @drb_object = nil
+          DRb.stop_service
+          @reader.close
+          stop_change_listener
+          Process.kill(9, @child_id)
+        rescue => e
+          puts "Stop Child Error: #{e.inspect}"
+        end
       end
     end
 
     def reload
+      Volt.logger.info('file changed, sending reload')
+      begin
+        SocketConnectionHandler.send_message_all(nil, 'reload')
+      rescue => e
+        Volt.logger.error("Reload dispatch error: ")
+        Volt.logger.error(e)
+      end
+
       @child_lock.with_write_lock do
         stop_child
         start_child
@@ -143,10 +160,10 @@ module Volt
     def start_change_listener
       # Setup the listeners for file changes
       @listener = Listen.to("#{@server.app_path}/") do |modified, added, removed|
-        puts 'file changed, sending reload'
-        SocketConnectionHandler.send_message_all(nil, 'reload')
-
-        reload
+        Thread.new do
+          # Run the reload in a new thread
+          reload
+        end
       end
       @listener.start
     end

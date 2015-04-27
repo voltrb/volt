@@ -12,8 +12,6 @@ module Volt
   def self.boot(app_path)
     # Run the app config to load all users config files
     unless RUBY_PLATFORM == 'opal'
-      Volt.run_files_in_config_folder
-
       if Volt.server?
         $page = Page.new
       end

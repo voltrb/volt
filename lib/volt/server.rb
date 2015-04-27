@@ -18,8 +18,7 @@ require 'volt/server/rack/opal_files'
 require 'volt/server/rack/quiet_common_logger'
 require 'volt/page/page'
 
-require 'volt/controllers/http_controller'
-require 'volt/server/rack/http_request'
+require 'volt/volt/core'
 require 'volt/server/websocket/websocket_handler'
 require 'volt/utils/read_write_lock'
 require 'volt/server/forking_server'
@@ -49,9 +48,10 @@ module Volt
   class Server
     attr_reader :listener, :app_path
 
-    def initialize(root_path = nil)
-      @root_path ||= Dir.pwd
-      Volt.root = root_path
+    # You can also optionally pass in a prebooted app
+    def initialize(root_path = nil, app = false)
+      @root_path = root_path || Dir.pwd
+      @volt_app = app
 
       @app_path        = File.expand_path(File.join(@root_path, 'app'))
 
@@ -66,7 +66,7 @@ module Volt
       # Boot the volt app
       require 'volt/boot'
 
-      @volt_app = Volt.boot(@root_path)
+      @volt_app ||= Volt.boot(@root_path)
     end
 
     # App returns the main rack app.  In development it will fork a
@@ -76,9 +76,11 @@ module Volt
       # Handle websocket connections
       app.use WebsocketHandler
 
-      if Volt.env.production?
-        # In production, we boot the app and run the server
-        boot_volt
+      if Volt.env.production? || Volt.env.test?
+        # In production/test, we boot the app and run the server
+        #
+        # Sometimes the app is already booted, so we can skip if it is
+        boot_volt unless @volt_app
 
         # Setup the dispatcher (it stays this class during its run)
         SocketConnectionHandler.dispatcher = Dispatcher.new
@@ -92,6 +94,7 @@ module Volt
     end
 
     # new_server returns the core of the Rack app.
+    # Volt.boot should be called before generating the new server
     def new_server
       @rack_app = Rack::Builder.new
 

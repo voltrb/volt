@@ -2,11 +2,11 @@ require 'volt/spec/sauce_labs'
 
 module Volt
   class << self
-    def setup_capybara(app_path)
+    def setup_capybara(app_path, volt_app=nil)
       browser = ENV['BROWSER']
 
       if browser
-        setup_capybara_app(app_path)
+        setup_capybara_app(app_path, volt_app)
 
         case browser
         when 'phantom'
@@ -27,7 +27,7 @@ module Volt
       end
     end
 
-    def setup_capybara_app(app_path)
+    def setup_capybara_app(app_path, volt_app)
       require 'capybara'
       require 'capybara/dsl'
       require 'capybara/rspec'
@@ -49,7 +49,8 @@ module Volt
         end
       end
 
-      Capybara.app = Server.new(app_path).app
+      # Setup server, use existing booted app
+      Capybara.app = Server.new(app_path, volt_app).app
     end
   end
 end
