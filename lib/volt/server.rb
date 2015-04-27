@@ -76,7 +76,14 @@ module Volt
       # Handle websocket connections
       app.use WebsocketHandler
 
-      if Volt.env.production? || Volt.env.test?
+      can_fork = Process.respond_to?(:fork)
+
+      unless can_fork
+        Volt.logger.warn('Code reloading in Volt currently depends on `fork`.  Your environment does not support `fork`.  We\'re working on adding more reloading strategies.  For now though you\'ll need to restart the server manually on changes, which sucks.  Feel free to complain to the devs, we really let you down here. :-)')
+      end
+
+      # Only run ForkingServer if fork is supported in this env.
+      if !can_fork || Volt.env.production? || Volt.env.test?
         # In production/test, we boot the app and run the server
         #
         # Sometimes the app is already booted, so we can skip if it is
