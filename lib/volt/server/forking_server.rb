@@ -143,7 +143,7 @@ module Volt
     end
 
     def reload
-      Volt.logger.info('file changed, sending reload')
+      Volt.logger.log_with_color('file changed, sending reload', :light_blue)
       begin
         SocketConnectionHandler.send_message_all(nil, 'reload')
       rescue => e
