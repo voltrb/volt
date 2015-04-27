@@ -2,7 +2,7 @@ require 'volt/server/html_parser/view_parser'
 require 'volt/tasks/task_handler'
 
 # Initialize with the path to a component and returns all the front-end
-# setup code (for controllersls, views, and routes)
+# setup code (for controllers, models, views, and routes)
 module Volt
   class ComponentTemplates
     # client is if we are generating for the client or backend
@@ -27,8 +27,6 @@ module Volt
     end
 
     def generate_view_code
-      puts "generate_view_code"
-
       code       = ''
       views_path = "#{@component_path}/views/"
 
@@ -88,8 +86,6 @@ module Volt
       code = ''
 
       formats = [ :html, :haml ].each do |format|
-
-        puts "handling files of format: #{format}"
 
         # Load all templates in the folder
         Dir["#{views_path}*/*.#{format}"].sort.each do |view_path|

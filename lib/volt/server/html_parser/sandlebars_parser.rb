@@ -1,5 +1,4 @@
 require 'strscan'
-require 'haml'
 
 module Volt
   class HTMLParseError < RuntimeError
@@ -35,7 +34,6 @@ module Volt
     FILL_IN_ATTRIBUTES = truth_hash(%w(checked compact declare defer disabled ismap multiple nohref noresize noshade nowrap readonly selected))
 
     def initialize(html, handler, file_path = nil)
-      
       @html      = StringScanner.new(html)
       @handler   = handler
       @file_path = file_path

@@ -5,12 +5,11 @@ module Volt
     include AttributeScope
 
     attr_reader :html, :bindings
-    attr_accessor :path, :binding_number, :mode
+    attr_accessor :path, :binding_number
 
     def initialize(handler, path)
       @handler = handler
       @path    = path
-      @mode    = mode
 
       @html           = ''
       @bindings       = {}

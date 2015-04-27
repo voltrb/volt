@@ -12,7 +12,7 @@ module Volt
 
     def initialize(initial_path, allow_sections = true)
       @original_path = initial_path
-      
+
       # Default to the body section
       initial_path   += '/body' if allow_sections
 
