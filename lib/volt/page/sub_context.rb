@@ -9,7 +9,7 @@ module Volt
     attr_reader :locals
 
     def initialize(locals = nil, context = nil, return_nils = false)
-      @locals  = locals.stringify_keys if locals
+      @locals  = locals.symbolize_keys if locals
       @context = context
       @return_nils = return_nils
     end
