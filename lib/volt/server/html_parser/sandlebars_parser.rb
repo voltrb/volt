@@ -142,7 +142,11 @@ module Volt
     def start_tag(tag, tag_name, rest, unary)
       section_tag = tag_name[0] == ':' && tag_name[1] =~ /[A-Z]/
 
-      tag_name = tag_name.downcase
+      if section_tag
+        tag_name = tag_name.underscore
+      else
+        tag_name = tag_name.downcase
+      end
 
       # handle doctype so we get it output exactly the same way
       if tag_name == '!doctype'

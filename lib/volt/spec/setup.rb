@@ -1,3 +1,7 @@
+if RUBY_PLATFORM != 'opal'
+  require 'volt/volt/core'
+end
+
 module Volt
   class << self
     def spec_setup(app_path = '.')
@@ -9,15 +13,16 @@ module Volt
       require 'volt/boot'
 
       # Require in app
-      Volt.boot(app_path)
+      volt_app = Volt.boot(app_path)
 
       unless RUBY_PLATFORM == 'opal'
         begin
           require 'volt/spec/capybara'
 
-          setup_capybara(app_path)
+          setup_capybara(app_path, volt_app)
         rescue LoadError => e
           Volt.logger.warn("unable to load capybara, if you wish to use it for tests, be sure it is in the app's Gemfile")
+          Volt.logger.error(e)
         end
       end
 

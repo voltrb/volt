@@ -1,4 +1,6 @@
-require 'rack'
+if RUBY_PLATFORM != 'opal'
+  require 'rack'
+end
 require 'volt'
 require 'volt/router/routes'
 require 'volt/server/rack/http_request'

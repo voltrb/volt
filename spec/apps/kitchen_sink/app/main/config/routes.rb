@@ -10,6 +10,7 @@ client '/first_last', action: 'first_last'
 client '/todos', controller: 'todos'
 client '/html_safe', action: 'html_safe'
 client '/missing', action: 'missing'
+client '/require_test', action: 'require_test'
 
 # Signup/login routes
 client '/signup', component: 'user_templates', controller: 'signup'

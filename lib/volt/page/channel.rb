@@ -27,13 +27,25 @@ module Volt
     end
 
     def connect!
-      `
-        this.socket = new SockJS('/channel');
+      %x{
+        if (document.location.protocol == 'https:') {
+          var wsProto = 'wss';
+        } else {
+          var wsProto = 'ws';
+        }
 
-        this.socket.onopen = function() {
+        this.socket = new WebSocket(wsProto + '://' + document.location.host + '/socket');
+
+        this.socket.onopen = function () {
           self.$opened();
         };
 
+        // Log errors
+        this.socket.onerror = function (error) {
+          console.log('WebSocket Error ', error);
+        };
+
+        // Log messages from the server
         this.socket.onmessage = function(message) {
           self['$message_received'](message.data);
         };
@@ -41,7 +53,7 @@ module Volt
         this.socket.onclose = function(error) {
           self.$closed(error);
         };
-      `
+      }
     end
 
     def opened

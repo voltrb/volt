@@ -12,24 +12,32 @@ module Volt
 
       req            = Rack::Request.new(env)
 
-      # TODO: Sanatize template path
+      path = req.path.strip
 
-      component_name = req.path.strip.gsub(/^\/components\//, '').gsub(/[.]js$/, '')
-      javascript_code = compile_for_component(component_name)
+      request_source_map = (File.extname(path) == '.map')
+
+      # TODO: Sanatize template path
+      component_name = path.gsub(/^\/components\//, '').gsub(/[.](js|map)$/, '')
+
+      javascript_code = compile_for_component(component_name, request_source_map)
 
       [200, { 'Content-Type' => 'application/javascript; charset=utf-8' }, StringIO.new(javascript_code)]
     end
 
-    def compile_for_component(component_name)
+    def compile_for_component(component_name, map=false)
       code = ComponentCode.new(component_name, @component_paths).code
 
-      # Add the lib directory to the load path
-      Opal.append_path(Volt.root + '/lib')
-
       # Compile the code
-      javascript_code = Opal.compile(code)
+      # javascript_code = Opal.compile(code)
+      builder = Opal::Builder.new.build_str(code, 'app.rb')
 
-      javascript_code
+      if map
+        js_code = builder.source_map
+      else
+        js_code = builder.to_s + "\n//# sourceMappingURL=#{component_name}.map"
+      end
+
+      js_code
     end
   end
 end

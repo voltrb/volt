@@ -1,30 +1,16 @@
 ENV['SERVER'] = 'true'
 
 require 'opal'
-if RUBY_PLATFORM == 'java'
-  require 'jubilee'
-else
-  require 'thin'
-end
 
 require 'rack'
 require 'sass'
 require 'volt/utils/tilt_patch'
-if RUBY_PLATFORM != 'java'
-  require 'rack/sockjs'
-  require 'eventmachine'
-end
 require 'sprockets-sass'
-require 'listen'
 
 require 'volt'
-require 'volt/boot'
 require 'volt/tasks/dispatcher'
 require 'volt/tasks/task_handler'
 require 'volt/server/component_handler'
-if RUBY_PLATFORM != 'java'
-  require 'volt/server/socket_connection_handler'
-end
 require 'volt/server/rack/component_paths'
 require 'volt/server/rack/index_files'
 require 'volt/server/rack/http_resource'
@@ -32,8 +18,10 @@ require 'volt/server/rack/opal_files'
 require 'volt/server/rack/quiet_common_logger'
 require 'volt/page/page'
 
-require 'volt/server/rack/http_request'
-require 'volt/controllers/http_controller'
+require 'volt/volt/core'
+require 'volt/server/websocket/websocket_handler'
+require 'volt/utils/read_write_lock'
+require 'volt/server/forking_server'
 
 module Rack
   # TODO: For some reason in Rack (or maybe thin), 304 headers close
@@ -58,21 +46,19 @@ end
 
 module Volt
   class Server
+    attr_reader :listener, :app_path, :additional_paths
 
     class << self
       attr_accessor :index_files
     end
 
-    def initialize(root_path = nil, additional_paths = [])
-      Volt.root        = root_path if root_path
+    # You can also optionally pass in a prebooted app
+    def initialize(root_path = nil, app = false, additional_paths = [])
+      Volt.root = root_path if root_path
+      @volt_app = app
+      @additional_paths = additional_paths
+
       @app_path        = File.expand_path(File.join(Volt.root, 'app'))
-
-      # Boot the volt app
-      @component_paths = Volt.boot(Volt.root, additional_paths)
-
-      setup_router
-      require_http_controllers
-      setup_change_listener
 
       display_welcome
     end
@@ -81,84 +67,82 @@ module Volt
       puts File.read(File.join(File.dirname(__FILE__), 'server/banner.txt'))
     end
 
-    def setup_router
-      # Find the route file
-      home_path  = @component_paths.component_paths('main').first
-      routes = File.read("#{home_path}/config/routes.rb")
-      @router = Routes.new.define do
-        eval(routes)
-      end
+    def boot_volt
+      # Boot the volt app
+      require 'volt/boot'
+      @component_paths = Volt.boot(Volt.root, additional_paths)
+      @volt_app ||= Volt.boot(@root_path)
     end
 
-    def require_http_controllers
-      @component_paths.app_folders do |app_folder|
-        # Sort so we get consistent load order across platforms
-        Dir["#{app_folder}/*/controllers/server/*.rb"].each do |ruby_file|
-          #path = ruby_file.gsub(/^#{app_folder}\//, '')[0..-4]
-          #require(path)
-          load ruby_file
-        end
-      end
-    end
-
-    def setup_change_listener
-      # Setup the listeners for file changes
-      listener = Listen.to("#{@app_path}/") do |modified, added, removed|
-        puts 'file changed, sending reload'
-        setup_router
-        require_http_controllers
-        SocketConnectionHandler.send_message_all(nil, 'reload')
-      end
-      listener.start
-    end
-
+    # App returns the main rack app.  In development it will fork a
     def app
-      @app = Rack::Builder.new
+      app = Rack::Builder.new
+
+      # Handle websocket connections
+      app.use WebsocketHandler
+
+      can_fork = Process.respond_to?(:fork)
+
+      unless can_fork
+        Volt.logger.warn('Code reloading in Volt currently depends on `fork`.  Your environment does not support `fork`.  We\'re working on adding more reloading strategies.  For now though you\'ll need to restart the server manually on changes, which sucks.  Feel free to complain to the devs, we really let you down here. :-)')
+      end
+
+      # Only run ForkingServer if fork is supported in this env.
+      if !can_fork || Volt.env.production? || Volt.env.test?
+        # In production/test, we boot the app and run the server
+        #
+        # Sometimes the app is already booted, so we can skip if it is
+        boot_volt unless @volt_app
+
+        # Setup the dispatcher (it stays this class during its run)
+        SocketConnectionHandler.dispatcher = Dispatcher.new
+        app.run(new_server)
+      else
+        # In developer
+        app.run ForkingServer.new(self)
+      end
+
+      app
+    end
+
+    # new_server returns the core of the Rack app.
+    # Volt.boot should be called before generating the new server
+    def new_server
+      @rack_app = Rack::Builder.new
 
       # Should only be used in production
       if Volt.config.deflate
-        @app.use Rack::Deflater
-        @app.use Rack::Chunked
+        @rack_app.use Rack::Deflater
+        @rack_app.use Rack::Chunked
       end
 
-      @app.use Rack::ContentLength
+      @rack_app.use Rack::ContentLength
 
-      @app.use Rack::KeepAlive
-      @app.use Rack::ConditionalGet
-      @app.use Rack::ETag
+      @rack_app.use Rack::KeepAlive
+      @rack_app.use Rack::ConditionalGet
+      @rack_app.use Rack::ETag
 
-      @app.use QuietCommonLogger
-      @app.use Rack::ShowExceptions
+      @rack_app.use QuietCommonLogger
+      @rack_app.use Rack::ShowExceptions
 
-      component_paths = @component_paths
-      @app.map '/components' do
+      component_paths = @volt_app.component_paths
+      @rack_app.map '/components' do
         run ComponentHandler.new(component_paths)
       end
 
       # Serve the opal files
-      opal_files = OpalFiles.new(@app, @app_path, @component_paths)
+      opal_files = OpalFiles.new(@rack_app, @app_path, @volt_app.component_paths)
 
       # save the index file object for access from outside volt
       Server.index_files = IndexFiles.new(@app, @component_paths, opal_files)
 
       # Serve the main html files from public, also figure out
       # which JS/CSS files to serve.
-      @app.use IndexFiles, @component_paths, opal_files
+      @rack_app.use IndexFiles, @volt_app.component_paths, opal_files
 
-      @app.use HttpResource, @router
+      @rack_app.use HttpResource, @volt_app.router
 
-      component_paths.require_in_components
-
-      # Handle socks js connection
-      if RUBY_PLATFORM != 'java'
-        SocketConnectionHandler.dispatcher = Dispatcher.new
-
-        @app.map '/channel' do
-          run Rack::SockJS.new(SocketConnectionHandler) # , :websocket => false
-        end
-      end
-
-      @app.use Rack::Static,
+      @rack_app.use Rack::Static,
         urls: ['/'],
         root: 'config/base',
         index: '',
@@ -166,9 +150,9 @@ module Volt
           [:all, { 'Cache-Control' => 'public, max-age=86400' }]
         ]
 
-      @app.run lambda { |env| [404, { 'Content-Type' => 'text/html; charset=utf-8' }, ['404 - page not found']] }
+      @rack_app.run lambda { |env| [404, { 'Content-Type' => 'text/html; charset=utf-8' }, ['404 - page not found']] }
 
-      @app
+      @rack_app
     end
 
   end

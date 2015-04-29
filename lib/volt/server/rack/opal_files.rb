@@ -13,6 +13,20 @@ module Volt
       Opal::Processor.source_map_enabled = Volt.source_maps?
       Opal::Processor.const_missing_enabled = true
 
+      # Setup Opal paths
+
+      # Add the lib directory to the load path
+      Opal.append_path(Volt.root + '/app')
+      Opal.append_path(Volt.root + '/lib')
+
+      Gem.loaded_specs.values.each do |gem|
+        path = gem.full_gem_path + '/app'
+
+        if Dir.exists?(path)
+          Opal.append_path(path)
+        end
+      end
+
       # Don't run arity checks in production
       # Opal::Processor.arity_check_enabled = !Volt.env.production?
       # Opal::Processor.dynamic_require_severity = :raise

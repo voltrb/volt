@@ -14,10 +14,16 @@ module Volt
       ENV['SERVER'] = 'true'
 
       require 'opal'
+      require 'rack'
       require 'volt'
+      require 'volt/volt/core'
       require 'volt/boot'
 
-      Volt.boot(Dir.pwd)
+
+      @root_path ||= Dir.pwd
+      Volt.root  = @root_path
+
+      Volt.boot(@root_path)
 
       require 'volt/server/rack/component_paths'
       require 'volt/server/rack/component_code'
@@ -25,8 +31,6 @@ module Volt
       require 'volt/server/rack/index_files'
       require 'volt/server/component_handler'
 
-      @root_path ||= Dir.pwd
-      Volt.root  = @root_path
 
       @app_path = File.expand_path(File.join(@root_path, 'app'))
 
@@ -49,7 +53,7 @@ module Volt
       @opal_files.environment.each_logical_path do |logical_path|
         logical_path = logical_path.to_s
         # Only include files that aren't compiled elsewhere, like fonts
-        unless logical_path[/[.](y|css|js|html|erb)$/]
+        if !logical_path[/[.](y|css|js|html|erb)$/] && File.extname(logical_path) != ''
           write_sprocket_file(logical_path)
         end
       end

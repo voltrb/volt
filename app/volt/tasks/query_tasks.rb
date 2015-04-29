@@ -25,8 +25,9 @@ class QueryTasks < Volt::Task
       # they simply return to :dirty once the query is issued.
       @channel.user_id = Volt.current_user_id
 
-      live_query.add_channel(@channel)
+      # live_query.add_channel(@channel)
     end
+    live_query.add_channel(@channel)
 
     errors = {}
 

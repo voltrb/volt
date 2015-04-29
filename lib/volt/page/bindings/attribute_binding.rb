@@ -72,7 +72,7 @@ module Volt
       @string_template_renderer_computation.stop if @string_template_renderer_computation
       @string_template_renderer.remove if @string_template_renderer
 
-      if new_value.is_a?(StringTemplateRender)
+      if new_value.is_a?(StringTemplateRenderer)
         # We don't need to refetch the whole reactive template to
         # update, we can just depend on it and update directly.
         @string_template_renderer = new_value

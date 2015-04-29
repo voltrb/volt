@@ -66,6 +66,10 @@ else
         colorize(@current[:run_time].to_s + 'ms', :green)
       end
 
+      def log_with_color(msg, color)
+        Volt.logger.info(colorize(msg, color))
+      end
+
 
       private
 
