@@ -32,7 +32,7 @@ module Volt
         @included_components[name] = true
 
         # Get the path to the component
-        component_path = @component_paths.component_paths(name)
+        component_path = @component_paths.component_paths(name.to_s)
 
         unless component_path
           fail "Unable to find component '#{name}', make sure the gem is included in your Gemfile"
