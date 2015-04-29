@@ -42,6 +42,9 @@ module Volt
             end.fail do |errors|
               if errors.is_a?(Hash)
                 server_errors.replace(errors)
+
+                # Merge the server errors into the main errors
+                self.errors.merge!(server_errors.to_h)
               end
 
               promise_for_errors(errors)
