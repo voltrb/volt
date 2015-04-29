@@ -195,21 +195,10 @@ module Volt
           id = values[:_id]
 
           # Try to create
-          # TODO: Seems mongo is dumb and doesn't let you upsert with custom id's
-          begin
-            # values['_id'] = BSON::ObjectId('_id') if values['_id']
-            db[collection].insert(values)
-          rescue Mongo::OperationFailure => error
-            # Really mongo client?
-            if error.message[/^11000[:]/]
-              # Update because the id already exists
-              update_values = values.dup
-              update_values.delete(:_id)
-              db[collection].update({ _id: id }, update_values)
-            else
-              return { error: error.message }
-            end
-          end
+          update_result = db.update(collection, values)
+
+          # An error hash will be returned if the update doesn't work
+          return update_result if update_result
 
           QueryTasks.live_query_pool.updated_collection(collection.to_s, Thread.current['in_channel'])
           {}

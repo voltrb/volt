@@ -74,7 +74,7 @@ class StoreTasks < Volt::Task
     query.fetch_first do |model|
       if model
         if model.can_delete?
-          db[collection].remove('_id' => id)
+          db.delete('_id' => id)
         else
           raise "Permissions did not allow #{collection} #{id} to be deleted."
         end

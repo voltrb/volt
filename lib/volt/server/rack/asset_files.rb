@@ -8,7 +8,11 @@ module Volt
       @included_components = {}
       @components          = []
 
-      component('volt')
+      # Include each of the default included components
+      Volt.config.default_components.each do |def_comp_name|
+        component(def_comp_name)
+      end
+
       component(component_name)
     end
 

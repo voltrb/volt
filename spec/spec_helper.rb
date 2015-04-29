@@ -22,10 +22,6 @@ Volt.spec_setup(kitchen_sink_path)
 
 unless RUBY_PLATFORM == 'opal'
   RSpec.configure do |config|
-    # config.before(:each) do
-    #   DataStore.new.drop_database
-    # end
-
     config.run_all_when_everything_filtered = true
     config.filter_run :focus
 

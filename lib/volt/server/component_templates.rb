@@ -16,7 +16,7 @@ module Volt
       code = generate_routes_code + generate_view_code
       if @client
         # On the backend, we just need the views
-        code << generate_controller_code + generate_model_code + generate_tasks_code
+        code << generate_controller_code + generate_model_code + generate_tasks_code + generate_initializers_code
       end
 
       code
@@ -98,6 +98,10 @@ module Volt
       Task.known_handlers.map do |handler|
         "class #{handler.name} < Volt::Task; end"
       end.join "\n"
+    end
+
+    def generate_initializers_code
+      "\nrequire_tree '#{@component_path}/config/initializers/'\n"
     end
   end
 end
