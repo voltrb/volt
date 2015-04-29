@@ -77,7 +77,7 @@ module Volt
       @assets.each do |type, path|
         case type
           when :folder
-            javascript_files += Dir["#{path}/**/*.js"].sort.map { |folder| '/volt/assets' + folder[path.size..-1] }
+            javascript_files += Dir["#{path}/**/*.js"].sort.map { |folder| '/assets' + folder[path.size..-1] }
           when :javascript_file
             javascript_files << path
         end
@@ -85,11 +85,11 @@ module Volt
 
       opal_js_files = []
       if Volt.source_maps?
-        opal_js_files += opal_files.environment['volt/page/page'].to_a.map { |v| '/volt/assets/' + v.logical_path + '?body=1' }
+        opal_js_files += opal_files.environment['volt/page/page'].to_a.map { |v| '/assets/' + v.logical_path + '?body=1' }
       else
-        opal_js_files << '/volt/assets/volt/page/page.js'
+        opal_js_files << '/assets/volt/page/page.js'
       end
-      opal_js_files << '/volt/components/main.js'
+      opal_js_files << '/components/main.js'
 
       javascript_files += opal_js_files
 
@@ -105,7 +105,7 @@ module Volt
             # aren't imported by default:
             #  http://sass-lang.com/guide
             css_files += Dir["#{path}/**/[^_]*.{css,scss}"].sort.map do |folder|
-              '/volt/assets' + folder[path.size..-1].gsub(/[.]scss$/, '')
+              '/assets' + folder[path.size..-1].gsub(/[.]scss$/, '')
             end
           when :css_file
             css_files << path
