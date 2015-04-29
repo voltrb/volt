@@ -60,10 +60,7 @@ module Volt
   class Server
 
     class << self
-      attr_writer :index_files # so that rails can access the index files object
-      def index_files
-        @index_files
-      end
+      attr_accessor :index_files
     end
 
     def initialize(root_path = nil, additional_paths = [])
@@ -141,7 +138,7 @@ module Volt
       # Serve the opal files
       opal_files = OpalFiles.new(@app, @app_path, @component_paths)
 
-      # save the index file object for access from the rails app
+      # save the index file object for access from outside volt
       Server.index_files = IndexFiles.new(@app, @component_paths, opal_files)
 
       # Serve the main html files from public, also figure out
