@@ -232,7 +232,10 @@ module Volt
         # Only assign sections for action's, so we don't get AttributeSections bound
         # also.
         if @controller.respond_to?(:section=)
-          @controller.section = @current_template.dom_section
+          dom_section = @current_template.dom_section
+
+          # Only assign dom sections that can be manipulated via the dom (so not the title for example)
+          @controller.section = dom_section unless dom_section.is_a?(Volt::AttributeSection)
         end
 
         # Call the ready callback on the controller
