@@ -30,6 +30,7 @@ require 'volt/page/url_tracker'
 require 'volt/benchmark/benchmark'
 require 'volt/page/tasks'
 
+
 module Volt
   class Page
     attr_reader :url, :params, :page, :templates, :routes, :events

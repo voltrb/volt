@@ -20,7 +20,7 @@ module Volt
       super
 
       @handler.html << "<!-- $#{binding_number} --><!-- $/#{binding_number} -->"
-      @handler.scope.last.save_binding(binding_number, "lambda { |__p, __t, __c, __id| Volt::EachBinding.new(__p, __t, __c, __id, Proc.new { #{@content} }, #{@variable_name.inspect}, #{@index_name.inspect}, #{@path.inspect}) }")
+      @handler.scope.last.save_binding(binding_number, "lambda { |__p, __t, __c, __id| Volt::EachBinding.new(__p, __t, __c, __id, Proc.new { #{@content} }, #{@variable_name.try(:strip).inspect}, #{@index_name.try(:strip).inspect}, #{@path.inspect}) }")
     end
   end
 end
