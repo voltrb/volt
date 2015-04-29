@@ -12,8 +12,8 @@ unless RUBY_PLATFORM == 'opal'
 end
 require 'volt/volt/users'
 require 'pathname'
+
 module Volt
-  puts 'initializing volt'
   @in_browser = if RUBY_PLATFORM == 'opal'
                   `!!document && !window.OPAL_SPEC_PHANTOM`
                 else

@@ -25,6 +25,7 @@ module Volt
     def route_match?(path)
       path = "/" if path.strip == ""
       params = @@router.url_to_params(path)
+
       return params if params
 
       false
