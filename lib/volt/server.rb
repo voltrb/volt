@@ -54,7 +54,7 @@ module Volt
 
     # You can also optionally pass in a prebooted app
     def initialize(root_path = nil, app = false, additional_paths = [])
-      Volt.root = root_path if root_path
+      @root_path = root_path ? Pathname.new(root_path).expand_path.to_s :  Dir.pwd
       @volt_app = app
       @additional_paths = additional_paths
 
@@ -70,8 +70,7 @@ module Volt
     def boot_volt
       # Boot the volt app
       require 'volt/boot'
-      @component_paths = Volt.boot(Volt.root, additional_paths)
-      @volt_app ||= Volt.boot(@root_path)
+      @volt_app ||= Volt.boot(@root_path, additional_paths)
     end
 
     # App returns the main rack app.  In development it will fork a
@@ -134,7 +133,7 @@ module Volt
       opal_files = OpalFiles.new(@rack_app, @app_path, @volt_app.component_paths)
 
       # save the index file object for access from outside volt
-      Server.index_files = IndexFiles.new(@app, @component_paths, opal_files)
+      Server.index_files = IndexFiles.new(@app, @volt_app.component_paths, opal_files)
 
       # Serve the main html files from public, also figure out
       # which JS/CSS files to serve.
