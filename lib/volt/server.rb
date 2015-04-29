@@ -48,10 +48,6 @@ module Volt
   class Server
     attr_reader :listener, :app_path, :additional_paths
 
-    class << self
-      attr_accessor :index_files
-    end
-
     # You can also optionally pass in a prebooted app
     def initialize(root_path = nil, app = false, additional_paths = [])
       @root_path = root_path ? Pathname.new(root_path).expand_path.to_s :  Dir.pwd
@@ -129,14 +125,9 @@ module Volt
         run ComponentHandler.new(component_paths)
       end
 
-      # Serve the opal files
-      opal_files = OpalFiles.new(@rack_app, @app_path, @volt_app.component_paths)
-
-      # save the index file object for access from outside volt
-      Server.index_files = IndexFiles.new(@app, @volt_app.component_paths, opal_files)
-
       # Serve the main html files from public, also figure out
       # which JS/CSS files to serve.
+      opal_files  = OpalFiles.new(@rack_app, @app_path, @volt_app.component_paths)
       @rack_app.use IndexFiles, @volt_app.component_paths, opal_files
 
       @rack_app.use HttpResource, @volt_app.router
