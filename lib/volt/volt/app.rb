@@ -6,9 +6,9 @@ module Volt
       # Setup root path
       Volt.root = app_path
 
-      # Require in config files
+      # Require in app and initializers
       unless RUBY_PLATFORM == 'opal'
-        Volt.run_files_in_config_folder
+        Volt.run_app_and_initializers
       end
 
       # Load component paths

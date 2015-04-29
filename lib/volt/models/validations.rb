@@ -20,7 +20,8 @@ module Volt
           custom_validations << block
         else
           self.validations             ||= {}
-          validations[field_name] = options
+          validations[field_name]      ||= {}
+          validations[field_name].merge!(options)
         end
       end
     end
