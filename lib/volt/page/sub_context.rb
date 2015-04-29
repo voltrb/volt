@@ -9,13 +9,13 @@ module Volt
     attr_reader :locals
 
     def initialize(locals = nil, context = nil, return_nils = false)
-      @locals  = locals.stringify_keys if locals
+      @locals  = locals.symbolize_keys if locals
       @context = context
       @return_nils = return_nils
     end
 
     def respond_to?(method_name)
-      !!((@locals && @locals[method_name.to_s]) || (@context && @context.respond_to?(method_name)))
+      !!((@locals && @locals[method_name.to_sym]) || (@context && @context.respond_to?(method_name.to_sym)))
     end
 
     def inspect
@@ -23,7 +23,7 @@ module Volt
     end
 
     def method_missing(method_name, *args, &block)
-      method_name = method_name.to_s
+      method_name = method_name.to_sym
       if @locals && @locals.key?(method_name)
         obj = @locals[method_name]
 
