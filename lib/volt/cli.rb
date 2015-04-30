@@ -20,7 +20,7 @@ module Volt
       version = File.read(File.join(File.dirname(__FILE__), '../../VERSION'))
       directory('project', name, version: version, name: name)
 
-      say 'Bundling Gems....'
+      say 'Bundling Gems...'
       `cd #{name} && bundle`
     end
 
