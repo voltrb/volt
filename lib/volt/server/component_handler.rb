@@ -19,6 +19,8 @@ module Volt
       # TODO: Sanatize template path
       component_name = path.gsub(/^\/components\//, '').gsub(/[.](js|map)$/, '')
 
+      component_name = req.path.strip.gsub(/^\/volt\/components\//, '').gsub(/[.]js$/, '')
+      component_name == "/volt/components/main"
       javascript_code = compile_for_component(component_name, request_source_map)
 
       [200, { 'Content-Type' => 'application/javascript; charset=utf-8' }, StringIO.new(javascript_code)]
