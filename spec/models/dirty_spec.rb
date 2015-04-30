@@ -43,8 +43,12 @@ describe "Volt::Dirty" do
     expect(model.changed?(:name)).to eq(true)
 
     model.clear_tracked_changes!
-
     expect(model.changed?(:name)).to eq(false)
+
+    expect(model.changed?).to eq(false)
+    model._some_other_attr = "Wow!"
+    expect(model.changed?).to eq(true)
+
   end
 
   it 'should reset changes' do
