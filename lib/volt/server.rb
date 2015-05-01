@@ -22,6 +22,7 @@ require 'volt/volt/core'
 require 'volt/server/websocket/websocket_handler'
 require 'volt/utils/read_write_lock'
 require 'volt/server/forking_server'
+require 'pathname'
 
 module Rack
   # TODO: For some reason in Rack (or maybe thin), 304 headers close

@@ -11,7 +11,6 @@ unless RUBY_PLATFORM == 'opal'
   require 'volt/data_stores/data_store'
 end
 require 'volt/volt/users'
-require 'pathname'
 
 module Volt
   @in_browser = if RUBY_PLATFORM == 'opal'
