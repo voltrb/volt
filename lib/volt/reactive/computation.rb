@@ -154,7 +154,9 @@ class Proc
         # Values match
 
         # call the block
-        block.call
+        Volt::Computation.run_without_tracking do
+          block.call
+        end
 
         # stop the computation
         comp.stop
