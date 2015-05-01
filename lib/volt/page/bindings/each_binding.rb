@@ -51,12 +51,12 @@ module Volt
           values_size    = values.size
 
           # Start over, re-create all nodes
-          (templates_size - 1).downto(0) do |index|
-            item_removed(index)
-          end
-          0.upto(values_size - 1) do |index|
-            item_added(index)
-          end
+          #(templates_size - 1).downto(0) do |index|
+            #item_removed(index)
+          #end
+          #0.upto(values_size - 1) do |index|
+            #item_added(index)
+          #end
         end
       end
     end
@@ -138,7 +138,11 @@ module Volt
     def current_values(values)
       return Promise.new.resolve([]) if values.is_a?(Model) || values.is_a?(Exception)
       unless values.is_a? Promise
-        values = Promise.new.resolve(values.attributes) if values.respond_to?(:attributes)
+        if values.respond_to?(:attributes)
+          values = Promise.new.resolve(values.attributes)
+        else
+          values = Promise.new.resolve(values)
+        end
       end
 
       values
