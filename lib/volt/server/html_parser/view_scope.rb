@@ -20,52 +20,18 @@ module Volt
       @html << html
     end
 
+    def add_end(noop)
+      close_scope
+    end
+
     def add_binding(content)
       content = content.strip
-      index   = content.index(/[ \(]/)
-      if index
-        first_symbol = content[0...index]
-        args         = content[index..-1].strip
+      index = content.index(/[ \(]/)
 
-        case first_symbol
-          when 'if'
-            add_if(args)
-          when 'elsif'
-            add_else(args)
-          when 'else'
-            if args.blank?
-              add_else(nil)
-            else
-              fail "else does not take a conditional, #{content} was provided."
-            end
-          when 'view'
-            add_template(args)
-          when 'template'
-            Volt.logger.warn('Deprecation warning: The template binding has been renamed to view.  Please update any views accordingly.')
-            add_template(args)
-          when 'yield'
-            add_yield(args)
-          else
-            if content =~ /.each\s+do\s+\|/
-              add_each(content, false)
-            elsif content =~ /.each_with_index\s+do\s+\|/
-              add_each(content, true)
-            else
-              add_content_binding(content)
-            end
-        end
+      if index
+        content_with_index(content, index)
       else
-        case content
-          when 'end'
-            # Close the binding
-            close_scope
-          when 'else'
-            add_else(nil)
-          when 'yield'
-            add_yield
-          else
-            add_content_binding(content)
-        end
+        content_with_no_index(content)
       end
     end
 
@@ -82,14 +48,33 @@ module Volt
     end
 
     def add_else(content)
-      fail '#else can only be added inside of an if block'
+      if content.blank?
+        '#else can only be added inside of an if block'
+      else
+        "else does not take a conditional, #{content} was provided."
+      end
+
+      fail fail_msg
     end
 
-    def add_each(content, with_index)
+    def add_elsif(content)
+      add_else(content)
+    end
+
+    def add_each(content, with_index = false)
       @handler.scope << EachScope.new(@handler, @path + "/__each#{@binding_number}", content, with_index)
     end
 
+    def add_each_with_index
+      add_each(content, true)
+    end
+
     def add_template(content)
+      Volt.logger.warn('Deprecation warning: The template binding has been renamed to view.  Please update any views accordingly.')
+      add_view(content)
+    end
+
+    def add_view(content)
       # Strip ( and ) from the outsides
       content = content.strip.gsub(/^\(/, '').gsub(/\)$/, '')
 
@@ -165,6 +150,35 @@ module Volt
     def save_binding(binding_number, code)
       @bindings[binding_number] ||= []
       @bindings[binding_number] << code
+    end
+
+    private
+
+    def content_with_index(content, index)
+      with, content = content_dispatcher(content, index)
+
+      send(:"add_#{with}", content)
+    end
+
+    def content_with_no_index(content)
+      if %w(end else yield).include? content
+        send(:"add_#{content}", nil)
+      else
+        add_content_binding(content)
+      end
+    end
+
+    def content_dispatcher(content, index)
+      add_type = content[0...index]
+      cases = %w(if elsif else view template yield)
+
+      if cases.include? add_type
+        [add_type, content[index..-1].strip]
+      elsif content =~ /\.each/
+        [content[/each(_with_index)?/], content]
+      else
+        ['content_binding', content]
+      end
     end
   end
 end
