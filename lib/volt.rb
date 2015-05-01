@@ -30,9 +30,7 @@ module Volt
       @root ||= File.expand_path(Dir.pwd)
     end
 
-    def root=(path)
-      @root = Pathname.new(path).expand_path.to_s
-    end
+    attr_writer :root
 
     def server?
       !!ENV['SERVER']

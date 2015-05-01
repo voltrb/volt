@@ -54,7 +54,7 @@ module Volt
       @volt_app = app
       @additional_paths = additional_paths
 
-      @app_path        = File.expand_path(File.join(Volt.root, 'app'))
+      @app_path        = File.expand_path(File.join(@root_path, 'app'))
 
       display_welcome
     end
@@ -125,9 +125,11 @@ module Volt
         run ComponentHandler.new(component_paths)
       end
 
+      # Serve the opal files
+      opal_files = OpalFiles.new(@rack_app, @app_path, @volt_app.component_paths)
+
       # Serve the main html files from public, also figure out
       # which JS/CSS files to serve.
-      opal_files  = OpalFiles.new(@rack_app, @app_path, @volt_app.component_paths)
       @rack_app.use IndexFiles, @volt_app.component_paths, opal_files
 
       @rack_app.use HttpResource, @volt_app.router

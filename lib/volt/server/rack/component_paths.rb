@@ -7,14 +7,13 @@ module Volt
       @root = app_root || Dir.pwd
       @additional_paths = optional_extra_paths
     end
-    attr_reader :root, :additional_paths
 
     # Yield for every folder where we might find components
     def app_folders
       # Find all app folders
       @app_folders ||= begin
         volt_app    = File.expand_path(File.join(File.dirname(__FILE__), '../../../../app'))
-        app_folders = [volt_app, "#{root}/app", "#{root}/vendor/app", *additional_paths].map { |f| File.expand_path(f) }
+        app_folders = [volt_app, "#{@root}/app", "#{@root}/vendor/app", *@additional_paths].map { |f| File.expand_path(f) }
 
         # Gem folders with volt in them
         # TODO: we should probably qualify this a bit more
