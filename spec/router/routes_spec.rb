@@ -211,7 +211,7 @@ describe Volt::Routes do
     expect(match).to eq(false)
   end
 
-  it 'should not match params that do not make sense' do
+  it 'should not match params with that have no matches at all' do
     routes = Volt::Routes.new
     match, params = routes.send(:check_params_match, { view: '', id: false }, bleep: {volt: 'rocks'} )
     expect(match).to eq(false)
