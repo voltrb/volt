@@ -31,16 +31,10 @@ module Volt
       Computation.run_without_tracking do
         # Adjust to the new size
         values = current_values(value)
+
         @value = values
 
-        if @added_listener
-          @added_listener.remove
-          @added_listener = nil
-        end
-        if @removed_listener
-          @removed_listener.remove
-          @removed_listener = nil
-        end
+        remove_listeners
 
         if @value.respond_to?(:on)
           @added_listener   = @value.on('added') { |position| item_added(position) }
@@ -141,6 +135,17 @@ module Volt
       values
     end
 
+    def remove_listeners
+      if @added_listener
+        @added_listener.remove
+        @added_listener = nil
+      end
+      if @removed_listener
+        @removed_listener.remove
+        @removed_listener = nil
+      end
+    end
+
     # When this each_binding is removed, cleanup.
     def remove
       @computation.stop
@@ -151,15 +156,7 @@ module Volt
 
       @getter = nil
 
-      if @added_listener
-        @added_listener.remove
-        @added_listener = nil
-      end
-
-      if @removed_listener
-        @removed_listener.remove
-        @removed_listener = nil
-      end
+      remove_listeners
 
       if @templates
         template_count = @templates.size
