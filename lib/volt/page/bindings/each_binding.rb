@@ -30,32 +30,33 @@ module Volt
       # size change, so we run without tracking.
       Computation.run_without_tracking do
         # Adjust to the new size
-        values = current_values(value)
-        @value = values
+        current_values(value).then do |values|
+          @value = values
 
-        if @added_listener
-          @added_listener.remove
-          @added_listener = nil
-        end
-        if @removed_listener
-          @removed_listener.remove
-          @removed_listener = nil
-        end
+          if @added_listener
+            @added_listener.remove
+            @added_listener = nil
+          end
+          if @removed_listener
+            @removed_listener.remove
+            @removed_listener = nil
+          end
 
-        if @value.respond_to?(:on)
-          @added_listener   = @value.on('added') { |position| item_added(position) }
-          @removed_listener = @value.on('removed') { |position| item_removed(position) }
-        end
+          if @value.respond_to?(:on)
+            @added_listener   = @value.on('added') { |position| item_added(position) }
+            @removed_listener = @value.on('removed') { |position| item_removed(position) }
+          end
 
-        templates_size = @templates.size
-        values_size    = values.size
+          templates_size = @templates.size
+          values_size    = values.size
 
-        # Start over, re-create all nodes
-        (templates_size - 1).downto(0) do |index|
-          item_removed(index)
-        end
-        0.upto(values_size - 1) do |index|
-          item_added(index)
+          # Start over, re-create all nodes
+          (templates_size - 1).downto(0) do |index|
+            item_removed(index)
+          end
+          0.upto(values_size - 1) do |index|
+            item_added(index)
+          end
         end
       end
     end
@@ -135,8 +136,10 @@ module Volt
     end
 
     def current_values(values)
-      return [] if values.is_a?(Model) || values.is_a?(Exception)
-      values = values.attributes if values.respond_to?(:attributes)
+      return Promise.new.resolve([]) if values.is_a?(Model) || values.is_a?(Exception)
+      unless values.is_a? Promise
+        values = Promise.new.resolve(values.attributes) if values.respond_to?(:attributes)
+      end
 
       values
     end
