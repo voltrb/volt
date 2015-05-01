@@ -155,9 +155,9 @@ module Volt
     private
 
     def content_with_index(content, index)
-      with, content = content_dispatcher(content, index)
+      method, args = index_method_tuple(content, index)
 
-      send(:"add_#{with}", content)
+      send(:"add_#{method}", args)
     end
 
     def content_with_no_index(content)
@@ -168,7 +168,7 @@ module Volt
       end
     end
 
-    def content_dispatcher(content, index)
+    def index_method_tuple(content, index)
       add_type = content[0...index]
       cases = %w(if elsif else view template yield)
 
