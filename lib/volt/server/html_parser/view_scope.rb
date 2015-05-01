@@ -20,7 +20,7 @@ module Volt
       @html << html
     end
 
-    def add_end(noop)
+    def add_end(_)
       close_scope
     end
 
