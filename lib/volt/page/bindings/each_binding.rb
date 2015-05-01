@@ -25,6 +25,7 @@ module Volt
         Volt.logger.error("EachBinding Error: #{e.inspect}")
         value = []
       end
+      Volt.logger.info("EachBinding Reload: #{@template_name}, #{@item_name}, #{value.count}")
 
       # Since we're checking things like size, we don't want this to be re-triggered on a
       # size change, so we run without tracking.
@@ -54,9 +55,8 @@ module Volt
         (templates_size - 1).downto(0) do |index|
           item_removed(index)
         end
-        0.upto(values_size - 1) do |index|
-          item_added(index)
-        end
+
+        item_async_added_all(values_size)
       end
     end
 
@@ -73,19 +73,8 @@ module Volt
       update_indexes_after(position)
     end
 
-    def item_added(position)
-      binding_name     = @@binding_number
-      @@binding_number += 1
-
-      if position >= @templates.size
-        # Setup new bindings in the spot we want to insert the item
-        dom_section.insert_anchor_before_end(binding_name)
-      else
-        # Insert the item before an existing item
-        dom_section.insert_anchor_before(binding_name, @templates[position].binding_name)
-      end
-
-      # TODORW: :parent => @value may change
+    def setup_item_locals(position)
+      # Setup context and local variables
       item_context                           = SubContext.new({ _index_value: position, parent: @value }, @context)
       item_context.locals[@item_name.to_sym] = proc { @value[item_context.locals[:_index_value]] }
 
@@ -116,11 +105,39 @@ module Volt
           item_context.locals[:_index_value]
         end
       end
+      item_context
+    end
+
+    def setup_item_doms(position, item_context)
+      # Setup DOM and templates
+      binding_name     = @@binding_number
+      @@binding_number += 1
+
+      if position >= @templates.size
+        # Setup new bindings in the spot we want to insert the item
+        dom_section.insert_anchor_before_end(binding_name)
+      else
+        # Insert the item before an existing item
+        dom_section.insert_anchor_before(binding_name, @templates[position].binding_name)
+      end
 
       item_template = TemplateRenderer.new(@page, @target, item_context, binding_name, @template_name)
       @templates.insert(position, item_template)
 
       update_indexes_after(position)
+    end
+
+    def item_added(position)
+      item_context = setup_item_locals(position)
+      setup_item_doms(position, item_context)
+    end
+
+    def item_async_added_all(values_size)
+      0.upto(values_size - 1) do |index|
+        Timeout.new 2 do
+          item_added(index)
+        end
+      end
     end
 
     # When items are added or removed in the middle of the list, we need
