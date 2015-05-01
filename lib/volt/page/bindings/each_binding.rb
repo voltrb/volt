@@ -51,12 +51,12 @@ module Volt
           values_size    = values.size
 
           # Start over, re-create all nodes
-          #(templates_size - 1).downto(0) do |index|
-            #item_removed(index)
-          #end
-          #0.upto(values_size - 1) do |index|
-            #item_added(index)
-          #end
+          (templates_size - 1).downto(0) do |index|
+            item_removed(index)
+          end
+          0.upto(values_size - 1) do |index|
+            item_added(index)
+          end
         end
       end
     end
