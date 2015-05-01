@@ -206,6 +206,15 @@ describe Volt::Routes do
     match, params = routes.send(:check_params_match, { view: 'blog', id: '55', _extra: 'some value' }, view: 'blog', id: '55')
     expect(match).to eq(true)
     expect(params).to eq(_extra: 'some value')
+
+    match, params = routes.send(:check_params_match, { view: 'blog', id: '55' }, view: 'blog', id: '20')
+    expect(match).to eq(false)
+  end
+
+  it 'should not match params that do not make sense' do
+    routes = Volt::Routes.new
+    match, params = routes.send(:check_params_match, { view: '', id: false }, bleep: {volt: 'rocks'} )
+    expect(match).to eq(false)
   end
 
   it 'should match routes' do
