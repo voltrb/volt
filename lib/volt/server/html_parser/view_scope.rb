@@ -48,7 +48,7 @@ module Volt
     end
 
     def add_else(content)
-      if content.blank?
+      fail_msg = if content.blank?
         '#else can only be added inside of an if block'
       else
         "else does not take a conditional, #{content} was provided."
