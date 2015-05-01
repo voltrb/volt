@@ -98,6 +98,7 @@ module Volt
     # Called when the next template is ready to render
     def render_next_template(full_path, path)
       begin
+        # stop_waiting_for_load
         remove_current_controller_and_template
 
         # Switch the current template
@@ -107,11 +108,17 @@ module Volt
         # Also track the current controller directly
         @controller = @current_controller_handler.controller if full_path
 
-        @waiting_for_load = nil
         render_template(full_path || path)
       rescue => e
         Volt.logger.error("Error during render of template at #{path}: #{e.inspect}")
         Volt.logger.error(e.backtrace)
+      end
+    end
+
+    def stop_waiting_for_load
+      if @waiting_for_load
+        @waiting_for_load.stop
+        @waiting_for_load = nil
       end
     end
 
@@ -164,9 +171,7 @@ module Volt
     def remove_starting_controller
       # Clear any previously running wait for loads.  This is for when the path changes
       # before the view actually renders.
-      if @waiting_for_load
-        @waiting_for_load.stop
-      end
+      stop_waiting_for_load
 
       if @starting_controller_handler
         # Only call the after_..._removed because the dom never loaded.
