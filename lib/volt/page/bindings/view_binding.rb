@@ -181,8 +181,7 @@ module Volt
       args = [SubContext.new(@arguments, nil, true)]
 
       # get the controller class and action
-      controller_class, action = get_controller(controller_path)
-      controller_class ||= ModelController
+      controller_class, action = ControllerHandler.get_controller_and_action(controller_path)
 
       generated_new = false
       new_controller = Proc.new do
@@ -254,30 +253,6 @@ module Volt
       remove_current_controller_and_template
 
       super
-    end
-
-    private
-    # Fetch the controller class
-    def get_controller(controller_path)
-      raise "Invalid controller path: #{controller_path.inspect}" unless controller_path && controller_path.size > 0
-
-      action = controller_path[-1]
-
-      # Get the constant parts
-      parts  = controller_path[0..-2].map { |v| v.tr('-', '_').camelize }
-
-      # Do const lookups starting at object and working our way down.
-      # So Volt::ProgressBar would lookup Volt, then ProgressBar on Volt.
-      obj = Object
-      parts.each do |part|
-        if obj.const_defined?(part)
-          obj = obj.const_get(part)
-        else
-          return nil
-        end
-      end
-
-      [obj, action]
     end
   end
 end

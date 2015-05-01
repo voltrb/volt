@@ -1,11 +1,6 @@
 require 'spec_helper'
 require 'volt/page/bindings/view_binding'
 
-# Setup page stub
-
-class Volt::Page
-  attr_accessor :templates
-end
 
 describe Volt::ViewBinding do
   before do

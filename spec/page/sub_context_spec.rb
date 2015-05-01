@@ -1,3 +1,4 @@
+require 'spec_helper'
 require 'volt/page/sub_context'
 
 describe Volt::SubContext do

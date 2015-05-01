@@ -10,13 +10,6 @@ require 'volt/volt/app'
 
 module Volt
   def self.boot(app_path)
-    # Run the app config to load all users config files
-    unless RUBY_PLATFORM == 'opal'
-      if Volt.server?
-        $page = Page.new
-      end
-    end
-
     # Boot the app
     App.new(app_path)
   end
