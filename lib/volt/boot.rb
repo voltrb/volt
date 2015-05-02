@@ -1,5 +1,10 @@
-# Require in gems
-Bundler.require((ENV['VOLT_ENV'] || ENV['RACK_ENV'] || :development).to_sym)
+unless RUBY_PLATFORM == 'opal'
+  # An option to skip requiring.
+  unless ENV['SKIP_BUNDLER_REQUIRE']
+    # Require in gems
+    Bundler.require((ENV['VOLT_ENV'] || ENV['RACK_ENV'] || :development).to_sym)
+  end
+end
 
 require 'volt/models'
 require 'volt/server/rack/component_paths'
