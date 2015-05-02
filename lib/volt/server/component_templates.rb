@@ -23,7 +23,11 @@ module Volt
     end
 
     def page_reference
-      '$page'
+      if @client
+        '$page'
+      else
+        'page'
+      end
     end
 
     def generate_view_code
@@ -96,8 +100,21 @@ module Volt
 
     def generate_tasks_code
       Task.known_handlers.map do |handler|
-        "class #{handler.name} < Volt::Task; end"
-      end.join "\n"
+        # Split into modules and class
+        klass_parts = handler.name.split('::')
+
+        # Start with the inner class
+        parts = ["class #{klass_parts.pop} < Volt::Task; end"]
+
+        # Work backwards on the modules
+        klass_parts.reverse.each do |kpart|
+          parts.unshift("module #{kpart}")
+          parts.push("end")
+        end
+
+        # Combine the parts
+        parts.join("\n")
+      end.join "\n" # combine all into one string
     end
 
     def generate_initializers_code

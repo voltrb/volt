@@ -63,7 +63,7 @@ module Volt
 
           # Set the drb object locally
           @dispatcher = Dispatcher.new
-          drb_object = DRb.start_service(nil, [self, @dispatcher])
+          drb_object = DRb.start_service('drbunix:', [self, @dispatcher])
 
           @writer.puts(drb_object.uri)
 

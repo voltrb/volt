@@ -10,6 +10,8 @@
 - made it so <:SectionName> can be accessed by <:section_name /> tag
 - fixed issue with if bindings not resolving some promises.
 - fixed issue with require's in controllers.
+- fix class formatting issue with Pry.
+- Bundler.require is now called for the correct env when 'volt/boot' is included.  (We weren't planning to do this, but it does make life so much easier)
 
 
 ## 0.9.0

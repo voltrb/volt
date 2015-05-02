@@ -13,6 +13,7 @@ unless RUBY_PLATFORM == 'opal'
 
   SimpleCov.start do
     add_filter 'spec/'
+    add_filter 'lib/volt/page/bindings' # all Opal / Front end stuff.
   end
 end
 

@@ -80,7 +80,7 @@ module Volt
     end
 
     def write_component_js
-      javascript_code = @component_handler.compile_for_component('main')
+      javascript_code = @component_handler.compile_for_component('main', true)
 
       path = File.join(Volt.root, '/public/components/main.js')
       write_file(path, javascript_code)

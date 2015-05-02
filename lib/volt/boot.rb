@@ -1,3 +1,11 @@
+unless RUBY_PLATFORM == 'opal'
+  # An option to skip requiring.
+  unless ENV['SKIP_BUNDLER_REQUIRE']
+    # Require in gems
+    Bundler.require((ENV['VOLT_ENV'] || ENV['RACK_ENV'] || :development).to_sym)
+  end
+end
+
 require 'volt/models'
 require 'volt/server/rack/component_paths'
 
@@ -10,13 +18,6 @@ require 'volt/volt/app'
 
 module Volt
   def self.boot(app_path)
-    # Run the app config to load all users config files
-    unless RUBY_PLATFORM == 'opal'
-      if Volt.server?
-        $page = Page.new
-      end
-    end
-
     # Boot the app
     App.new(app_path)
   end

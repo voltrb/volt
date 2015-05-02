@@ -40,5 +40,29 @@ module Volt
       # before_action chain was not stopped
       return false
     end
+
+    # Fetch the controller class
+    def self.get_controller_and_action(controller_path)
+      raise "Invalid controller path: #{controller_path.inspect}" unless controller_path && controller_path.size > 0
+
+      action = controller_path[-1]
+
+      # Get the constant parts
+      parts  = controller_path[0..-2].map { |v| v.tr('-', '_').camelize }
+
+      # Do const lookups starting at object and working our way down.
+      # So Volt::ProgressBar would lookup Volt, then ProgressBar on Volt.
+      obj = Object
+      parts.each do |part|
+        if obj.const_defined?(part)
+          obj = obj.const_get(part)
+        else
+          # return a blank ModelController
+          return [ModelController, nil]
+        end
+      end
+
+      [obj, action]
+    end
   end
 end

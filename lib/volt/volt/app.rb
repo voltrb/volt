@@ -1,10 +1,20 @@
 module Volt
   class App
-    attr_reader :component_paths, :router
+    attr_reader :component_paths, :router, :page
 
     def initialize(app_path)
       # Setup root path
       Volt.root = app_path
+
+      # Run the app config to load all users config files
+      unless RUBY_PLATFORM == 'opal'
+        if Volt.server?
+          @page = Page.new
+
+          # Setup a global for now
+          $page = @page unless defined?($page)
+        end
+      end
 
       # Require in app and initializers
       unless RUBY_PLATFORM == 'opal'
@@ -13,7 +23,7 @@ module Volt
 
       # Load component paths
       @component_paths = ComponentPaths.new(app_path)
-      @component_paths.require_in_components
+      @component_paths.require_in_components(@page || $page)
 
       unless RUBY_PLATFORM == 'opal'
         setup_router
