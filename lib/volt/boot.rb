@@ -1,3 +1,6 @@
+# Require in gems
+Bundler.require((ENV['VOLT_ENV'] || ENV['RACK_ENV'] || :development).to_sym)
+
 require 'volt/models'
 require 'volt/server/rack/component_paths'
 
