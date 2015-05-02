@@ -18,6 +18,9 @@ module Volt
       end
 
       def initialize(model, tasks = nil)
+        # Keep a hash of all ids in this collection
+        @ids = {}
+
         super
 
         # The listener event counter keeps track of how many things are listening
@@ -234,7 +237,8 @@ module Volt
           data_id = data['_id'] || data[:_id]
 
           # Don't add if the model is already in the ArrayModel
-          unless @model.array.find { |v| v._id == data_id }
+          unless @ids[data_id]
+            @ids[data_id] = true
             # Find the existing model, or create one
             new_model = @@identity_map.find(data_id) do
               new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
@@ -254,6 +258,7 @@ module Volt
           # TODO: optimize this delete so we don't need to loop
           @model.each_with_index do |model, index|
             if model._id == id
+              @ids.delete(id)
               del = @model.delete_at(index)
               break
             end
