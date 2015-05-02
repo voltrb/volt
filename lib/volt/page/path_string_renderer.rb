@@ -6,6 +6,7 @@ require 'volt/page/bindings/view_binding/controller_handler'
 require 'volt/page/string_template_renderer'
 
 module Volt
+  class ViewLookupException < Exception ; end
   class PathStringRenderer
     attr_reader :html
     def initialize(path, attrs=nil, page=nil, render_from_path=nil)
@@ -19,9 +20,14 @@ module Volt
       @view_lookup = Volt::ViewLookupForPath.new(page, render_from_path)
       full_path, controller_path = @view_lookup.path_for_template(path, nil)
 
+      if full_path == nil
+        raise ViewLookupException, "Unable to find view at `#{path}`"
+      end
+
       controller_class, action = ControllerHandler.get_controller_and_action(controller_path)
 
-      controller = controller_class.new(SubContext.new(attrs, nil, true))
+      controller = controller_class.new#(SubContext.new(attrs, nil, true))
+      controller.model = SubContext.new(attrs, nil, true)
 
       renderer = StringTemplateRenderer.new(page, controller, full_path)
 
