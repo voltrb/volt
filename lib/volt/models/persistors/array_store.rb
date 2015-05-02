@@ -229,14 +229,14 @@ module Volt
       # TODO: Deprecate
       alias_method :then, :fetch
 
-      # Called from backend
+      # Called from backend when an item is added
       def add(index, data)
         $loading_models = true
 
         Model.no_validate do
           data_id = data['_id'] || data[:_id]
 
-          # Don't add if the model is already in the ArrayModel
+          # Don't add if the model is already in the ArrayModel (from the client already)
           unless @ids[data_id]
             @ids[data_id] = true
             # Find the existing model, or create one
@@ -252,6 +252,7 @@ module Volt
         $loading_models = false
       end
 
+      # Called from the server when it removes an item.
       def remove(ids)
         $loading_models = true
         ids.each do |id|
@@ -272,19 +273,26 @@ module Volt
         @model.path[-1]
       end
 
-      # When a model is added to this collection, we call its "changed"
-      # method.  This should trigger a save.
+      # Called when the client adds an item.
       def added(model, index)
         if model.persistor
           # Tell the persistor it was added, return the promise
-          model.persistor.add_to_collection
+          promise = model.persistor.add_to_collection
+
+          # Track the the model got added
+          @ids[model._id] = true
+
+          promise
         end
       end
 
+      # Called when the client removes an item
       def removed(model)
         if model.persistor
           # Tell the persistor it was removed
           model.persistor.remove_from_collection
+
+          @ids.delete(model._id)
         end
 
         if defined?($loading_models) && $loading_models
