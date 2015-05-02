@@ -34,10 +34,15 @@ module Volt
       code       = ''
       views_path = "#{@component_path}/views/"
 
+      exts = ['html']
+
+      # Only load email templates on the server
+      exts << 'email' unless @client
+
       # Load all templates in the folder
-      Dir["#{views_path}*/*.html"].sort.each do |view_path|
+      Dir["#{views_path}*/*.{#{exts.join(',')}}"].sort.each do |view_path|
         # Get the path for the template, supports templates in folders
-        template_path = view_path[views_path.size..((-1 * ('.html'.size + 1)))]
+        template_path = view_path[views_path.size..-1].gsub(/[.](#{exts.join('|')})$/, '')
         template_path = "#{@component_name}/#{template_path}"
 
         all_templates = ViewParser.new(File.read(view_path), template_path)
