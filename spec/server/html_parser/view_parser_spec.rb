@@ -116,7 +116,36 @@ describe Volt::ViewParser do
                                    'html' => "      <div class=\"main\">\n        <!-- $0 --><!-- $/0 -->\n      </div>\n",
                                    'bindings' => {
                                      0 => [
-                                       "lambda { |__p, __t, __c, __id| Volt::EachBinding.new(__p, __t, __c, __id, Proc.new { _items }, \"item\", nil, \"main/main/main/body/__each0/__template/0\") }"
+                                       "lambda { |__p, __t, __c, __id| Volt::EachBinding.new(__p, __t, __c, __id, Proc.new { _items }, \"main/main/main/body/__each0/__template/0\", \"item\", nil, nil) }"
+                                     ]
+                                   }
+                                 })
+  end
+
+  it 'should parse each bindings with hash' do
+    html = <<-END
+      <div class="main">
+        {{ _items.each do |key, value| }}
+          <p>{{ value }}</p>
+        {{ end }}
+      </div>
+    END
+
+    view = Volt::ViewParser.new(html, 'main/main/main')
+
+    expect(view.templates).to eq('main/main/main/body/__each0/__template/0' => {
+                                   'html' => "\n          <p><!-- $0 --><!-- $/0 --></p>\n        ",
+                                   'bindings' => {
+                                     0 => [
+                                       'lambda { |__p, __t, __c, __id| Volt::ContentBinding.new(__p, __t, __c, __id, Proc.new { value }) }'
+                                     ]
+                                   }
+                                 },
+                                 'main/main/main/body' => {
+                                   'html' => "      <div class=\"main\">\n        <!-- $0 --><!-- $/0 -->\n      </div>\n",
+                                   'bindings' => {
+                                     0 => [
+                                       "lambda { |__p, __t, __c, __id| Volt::EachBinding.new(__p, __t, __c, __id, Proc.new { _items }, \"main/main/main/body/__each0/__template/0\", \"value\", nil, \"key\") }"
                                      ]
                                    }
                                  })
