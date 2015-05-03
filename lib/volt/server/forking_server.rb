@@ -114,7 +114,7 @@ module Volt
         body_str = extracted_body.join
       end
 
-      [status, headers, StringIO.new(body_str)]
+      [status, headers, body_str]
     end
 
     def call(env)

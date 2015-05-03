@@ -26,26 +26,28 @@ module Volt
         update(result)
       end
 
-      @is_radio = element.is('[type=radio]')
+      @is_radio = `#{element}.is('[type=radio]')`
       if @is_radio
-        @selected_value = element.attr('value')
+        @selected_value = `#{element}.attr('value') || ''`
       end
 
       # Bind so when this value updates, we update
       case @attribute_name
         when 'value'
-          element.on('input.attrbind') { changed }
+          changed_event = Proc.new { changed }
+          `#{element}.on('input.attrbind', #{changed_event})`
         when 'checked'
-          element.on('change.attrbind') { |event| changed(event) }
+          changed_event = Proc.new { |event| changed(event) }
+          `#{element}.on('change.attrbind', #{changed_event})`
       end
     end
 
     def changed(event = nil)
       case @attribute_name
         when 'value'
-          current_value = element.value
+          current_value = `#{element}.val() || ''`
         else
-          current_value = element.is(':checked')
+          current_value = `#{element}.is(':checked')`
       end
 
       if @is_radio
@@ -59,7 +61,7 @@ module Volt
     end
 
     def element
-      Element.find('#' + binding_name)
+      @element ||= `$('#' + #{binding_name})`
     end
 
     def update(new_value)
@@ -94,20 +96,20 @@ module Volt
         when 'value'
           # TODO: only update if its not the same, this keeps it from moving the
           # cursor in text fields.
-          if val != element.value
-            element.value = val
+          if val != `(#{element}.val() || '')`
+            `#{element}.val(#{val})`
           end
         when 'disabled'
           # Disabled is handled specially, you can either return a boolean:
           # (true being disabled, false not disabled), or you can optionally
           # include the "disabled" string. (or any string)
           if val != false && val.present?
-            element.attr('disabled', 'disabled')
+            `#{element}.attr('disabled', 'disabled')`
           else
-            element.remove_attr('disabled')
+            `#{element}.removeAttr('disabled')`
           end
         else
-          element[@attribute_name] = val
+          `#{element}.attr(#{@attribute_name}, #{val})`
       end
     end
 
@@ -120,7 +122,7 @@ module Volt
         value = (@selected_value == value)
       end
 
-      element.prop('checked', value)
+      `#{element}.prop('checked', #{value})`
     end
 
     def remove
@@ -128,9 +130,9 @@ module Volt
       # aren't responsible for it being there.
       case @attribute_name
         when 'value'
-          element.off('input.attrbind', nil)
+          `#{element}.off('input.attrbind', #{nil})`
         when 'checked'
-          element.off('change.attrbind', nil)
+          `#{element}.off('change.attrbind', #{nil})`
       end
 
       if @computation
