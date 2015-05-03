@@ -37,11 +37,6 @@ module Volt
 
         remove_listeners
 
-        if @value.respond_to?(:on)
-          @added_listener   = @value.on('added') { |position| item_added(position) }
-          @removed_listener = @value.on('removed') { |position| item_removed(position) }
-        end
-
         templates_size = @templates.size
 
         # Start over, re-create all nodes
@@ -50,17 +45,37 @@ module Volt
         end
 
         if @value.is_a?(Hash) or @value.is_a?(ReactiveHash)
+          if @value.respond_to?(:on)
+            @added_listener   = @value.on('added') { |key, position| entry_added(key, position) }
+            @removed_listener = @value.on('removed') { |key, position| entry_removed(key, position) }
+          end
+
           # Ruby 1.9+ has key ordering based on insertion
           @value.keys.each_with_index do |key, index|
             entry_added(key, index)
           end
         else
+          if @value.respond_to?(:on)
+            @added_listener   = @value.on('added') { |position| item_added(position) }
+            @removed_listener = @value.on('removed') { |position| item_removed(position) }
+          end
+
           values_size = values.size
           0.upto(values_size - 1) do |index|
             item_added(index)
           end
         end
       end
+    end
+
+    def entry_removed(key, position)
+      # Remove dependency
+      @templates[position].context.locals["_#{@key_name.to_s}_dependency".to_sym].remove
+      @templates[position].context.locals["_#{@item_name.to_s}_dependency".to_sym].remove
+
+      @templates[position].remove_anchors
+      @templates[position].remove
+      @templates.delete_at(position)
     end
 
     def entry_added(key, position)
@@ -84,7 +99,9 @@ module Volt
       # Get and set key
       item_context.locals["#{@key_name}=".to_sym]             = proc do |val|
         key_dependency.changed!
-        item_context.locals["#{@key_name}=".to_sym] = val
+        old_key = item_context.locals["#{@key_name}".to_sym]
+        @value[val] = @value[old_key]
+        @value.delete(old_key)
       end
 
 
