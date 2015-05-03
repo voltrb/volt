@@ -540,5 +540,26 @@ describe Volt::Model do
 
       expect(count).to eq(1)
     end
+
+    it 'should query twice and return twice' do
+      store._items << {name: 'One'}
+      store._items << {name: 'Two'}
+
+      puts "I: #{store._items.inspect}"
+
+      puts "----------"
+      puts "ITEMS: " + store._items.fetch.sync.inspect
+      puts "---------"
+
+      a = store._items.fetch.sync
+      puts "---------"
+      b = store._items.fetch.sync
+
+      puts "A: #{a.inspect}"
+      expect(a.size).to eq(2)
+
+      puts "B"
+      expect(b.size).to eq(2)
+    end
   end
 end
