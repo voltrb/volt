@@ -92,5 +92,24 @@ describe Volt::ReactiveArray do
       Volt::Computation.flush!
       expect(size_values).to eq([3, 2])
     end
+
+    it 'should create a new reactive array on concatenating another reactive array' do
+      array = Volt::ReactiveArray.new([1, 2, 3])
+      array_two = Volt::ReactiveArray.new([4, 5, 6])
+
+      size_values = []
+      -> { size_values << array.size }.watch!
+
+      expect(size_values).to eq([3])
+
+      array = array + array_two
+
+      Volt::Computation.flush!
+      expect(size_values).to eq([3])
+
+      -> { size_values << array.size }.watch!
+
+      expect(size_values).to eq([3, 6])
+    end
   end
 end
