@@ -2,11 +2,12 @@ require 'volt/page/bindings/base_binding'
 
 module Volt
   class EachBinding < BaseBinding
-    def initialize(page, target, context, binding_name, getter, variable_name, index_name, template_name)
+    def initialize(page, target, context, binding_name, getter, template_name, variable_name, index_name, key_name)
       super(page, target, context, binding_name)
 
       @item_name     = variable_name
       @index_name    = index_name
+      @key_name      = key_name
       @template_name = template_name
 
       @templates = []
@@ -42,16 +43,66 @@ module Volt
         end
 
         templates_size = @templates.size
-        values_size    = values.size
 
         # Start over, re-create all nodes
         (templates_size - 1).downto(0) do |index|
           item_removed(index)
         end
-        0.upto(values_size - 1) do |index|
-          item_added(index)
+
+        if @value.is_a?(Hash) or @value.is_a?(ReactiveHash)
+          # Ruby 1.9+ has key ordering based on insertion
+          @value.keys.each_with_index do |key, index|
+            entry_added(key, index)
+          end
+        else
+          values_size = values.size
+          0.upto(values_size - 1) do |index|
+            item_added(index)
+          end
         end
       end
+    end
+
+    def entry_added(key, position)
+      binding_name     = @@binding_number
+      @@binding_number += 1
+
+      if position >= @templates.size
+        # Setup new bindings in the spot we want to insert the item
+        dom_section.insert_anchor_before_end(binding_name)
+      else
+        # Insert the item before an existing item
+        dom_section.insert_anchor_before(binding_name, @templates[position].binding_name)
+      end
+
+      # TODORW: :parent => @value may change
+      item_context                           = SubContext.new({ "#{@key_name}".to_sym => key, parent: @value }, @context)
+
+      key_dependency                          = Dependency.new
+      item_context.locals["_#{@key_name}_dependency".to_sym] = key_dependency
+
+      # Get and set key
+      item_context.locals["#{@key_name}=".to_sym]             = proc do |val|
+        key_dependency.changed!
+        item_context.locals["#{@key_name}=".to_sym] = val
+      end
+
+
+      # Get and set value
+      value_dependency                        = Dependency.new
+      item_context.locals[@item_name.to_sym] = proc do
+        value_dependency.depend
+        @value[item_context.locals["#{@key_name}".to_sym]]
+      end
+      item_context.locals["_#{@item_name.to_s}_dependency".to_sym] = value_dependency
+
+      item_context.locals["#{@item_name.to_s}=".to_sym] = proc do |val|
+        value_dependency.changed!
+        @value[item_context.locals["#{@key_name}".to_sym]] = val
+      end
+
+      item_template = TemplateRenderer.new(@page, @target, item_context, binding_name, @template_name)
+      @templates.insert(position, item_template)
     end
 
     def item_removed(position)

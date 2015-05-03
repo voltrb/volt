@@ -8,6 +8,9 @@ module Volt
         @variable_name, @index_name = @variable_name.gsub(/\|/, '').split(/\s*,\s*/)
       else
         @content, @variable_name = content.split(/.each\s+do\s+\|/)
+        if @variable_name.index(',')
+          @key_name, @variable_name = @variable_name.gsub(/\|/, '').split(/\s*,\s*/)
+        end
         @variable_name = @variable_name.gsub(/\|/, '')
       end
     end
@@ -20,7 +23,7 @@ module Volt
       super
 
       @handler.html << "<!-- $#{binding_number} --><!-- $/#{binding_number} -->"
-      @handler.scope.last.save_binding(binding_number, "lambda { |__p, __t, __c, __id| Volt::EachBinding.new(__p, __t, __c, __id, Proc.new { #{@content} }, #{@variable_name.try(:strip).inspect}, #{@index_name.try(:strip).inspect}, #{@path.inspect}) }")
+      @handler.scope.last.save_binding(binding_number, "lambda { |__p, __t, __c, __id| Volt::EachBinding.new(__p, __t, __c, __id, Proc.new { #{@content} }, #{@path.inspect}, #{@variable_name.try(:strip).inspect}, #{@index_name.try(:strip).inspect}, #{@key_name.try(:strip).inspect}) }")
     end
   end
 end
