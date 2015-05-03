@@ -122,7 +122,9 @@ module Volt
         if @exiting
           [500, {}, 'Server Exiting']
         else
-          @server_proxy.call_on_child(env)
+          status, headers, body_str = @server_proxy.call_on_child(env)
+
+          [status, headers, StringIO.new(body_str)]
         end
       end
     end
