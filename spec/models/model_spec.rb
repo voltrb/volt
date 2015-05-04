@@ -554,4 +554,12 @@ describe Volt::Model do
       expect(a.to_a).to eq(b.to_a)
     end
   end
+
+  describe 'destroy' do
+    it 'fails if attempting to destroy while parentless' do
+      model = Volt::Model.new(test: "yeah")
+      expect { model.destroy }.to raise_error(RuntimeError,
+        'Model does not have a parent and cannot be deleted.')
+    end
+  end
 end
