@@ -38,4 +38,18 @@ describe Volt::FormatValidator do
 
     specify { expect(subject).to be_valid }
   end
+  context 'when default_options is not a Hash' do
+    it 'returns the options hash instead of default_options' do
+      class SpecValidator < Volt::FormatValidator
+        def default_options
+          "No hash here, no sir!"
+        end
+      end
+      user = Volt::Model.new(email: "rick@nolematad.io")
+      validator = SpecValidator.new(user, 'email')
+      options = { with: /.+@.+/, message: 'must include an @ symbol' }
+      results = validator.apply(options).errors
+      expect(results.empty?).to be_truthy
+    end
+  end
 end
