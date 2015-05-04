@@ -2,6 +2,7 @@ module Volt
   module Associations
     module ClassMethods
       def belongs_to(method_name, key_name=nil)
+        # getter
         define_method(method_name) do
           association_with_root_model('belongs_to') do |root|
             # Lookup the associated model id

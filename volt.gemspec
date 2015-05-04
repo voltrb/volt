@@ -29,7 +29,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'uglifier', '>= 2.4.0'
   spec.add_dependency "configurations", "~> 2.0.0.pre"
   spec.add_dependency 'yui-compressor', '~> 0.12.0'
-  spec.add_dependency 'opal', '~> 0.7.1'
+  spec.add_dependency 'opal', '~> 0.7.2'
   spec.add_dependency 'opal-jquery', '~> 0.3.0'
   spec.add_dependency 'bundler', '>= 1.5'
   spec.add_dependency 'faye-websocket', '~> 0.9.2'

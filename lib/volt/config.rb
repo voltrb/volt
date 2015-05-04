@@ -63,8 +63,11 @@ else
       end
 
       # Load in all .rb files in the config folder
-      def run_files_in_config_folder
-        Dir[Volt.root + '/config/*.rb'].each do |config_file|
+      def run_app_and_initializers
+        files = ["#{Volt.root}/config/app.rb"]
+        files += Dir[Volt.root + '/config/initializers/*.rb']
+
+        files.each do |config_file|
           require(config_file)
         end
       end

@@ -10,7 +10,7 @@ describe Volt::PhoneNumberValidator do
   let(:options) { true }
 
   let(:phone_number) { field_content }
-  let(:field_contet) { valid_us_number }
+  let(:field_content) { valid_us_number }
   let(:valid_us_number) { '(123)-123-1234' }
   let(:valid_intl_number) { '+12 123 123 1234' }
   let(:invalid_number) { '1234-123-123456' }

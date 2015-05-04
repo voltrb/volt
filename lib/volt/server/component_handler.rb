@@ -17,17 +17,14 @@ module Volt
       request_source_map = (File.extname(path) == '.map')
 
       # TODO: Sanatize template path
-      component_name = path.gsub(/^\/components\//, '').gsub(/[.](js|map)$/, '')
-
-      component_name = req.path.strip.gsub(/^\/volt\/components\//, '').gsub(/[.]js$/, '')
-      component_name == "/volt/components/main"
+      component_name = path.gsub(/^\/volt\/components\//, '').gsub(/[.](js|map)$/, '')
       javascript_code = compile_for_component(component_name, request_source_map)
 
       [200, { 'Content-Type' => 'application/javascript; charset=utf-8' }, StringIO.new(javascript_code)]
     end
 
-    def compile_for_component(component_name, map=false)
-      code = ComponentCode.new(component_name, @component_paths).code
+    def compile_for_component(component_name, for_client, map=false)
+      code = ComponentCode.new(component_name, @component_paths, for_client).code
 
       # Compile the code
       # javascript_code = Opal.compile(code)

@@ -40,7 +40,7 @@ module Volt
       end
     end
 
-    proxy_with_root_dep :[], :size, :first, :last, :state_for#, :limit, :find_one, :find
+    proxy_with_root_dep :[], :size, :first, :last, :state_for, :reverse
     proxy_to_persistor :find, :where, :skip, :sort, :limit, :then, :fetch, :fetch_first, :fetch_each
 
     def initialize(array = [], options = {})
@@ -135,6 +135,7 @@ module Volt
       self[0]
     end
 
+
     # returns a promise to fetch the first instance
     def fetch_first(&block)
       persistor = self.persistor
@@ -179,9 +180,10 @@ module Volt
 
     # Convert the model to an array all of the way down
     def to_a
+      @size_dep.depend
       array = []
-      attributes.each do |value|
-        array << deep_unwrap(value)
+      attributes.size.times do |index|
+        array << deep_unwrap(self[index])
       end
       array
     end

@@ -98,6 +98,7 @@ module Volt
     # Called when the next template is ready to render
     def render_next_template(full_path, path)
       begin
+        # stop_waiting_for_load
         remove_current_controller_and_template
 
         # Switch the current template
@@ -107,11 +108,17 @@ module Volt
         # Also track the current controller directly
         @controller = @current_controller_handler.controller if full_path
 
-        @waiting_for_load = nil
         render_template(full_path || path)
       rescue => e
         Volt.logger.error("Error during render of template at #{path}: #{e.inspect}")
         Volt.logger.error(e.backtrace)
+      end
+    end
+
+    def stop_waiting_for_load
+      if @waiting_for_load
+        @waiting_for_load.stop
+        @waiting_for_load = nil
       end
     end
 
@@ -164,9 +171,7 @@ module Volt
     def remove_starting_controller
       # Clear any previously running wait for loads.  This is for when the path changes
       # before the view actually renders.
-      if @waiting_for_load
-        @waiting_for_load.stop
-      end
+      stop_waiting_for_load
 
       if @starting_controller_handler
         # Only call the after_..._removed because the dom never loaded.
@@ -181,8 +186,7 @@ module Volt
       args = [SubContext.new(@arguments, nil, true)]
 
       # get the controller class and action
-      controller_class, action = get_controller(controller_path)
-      controller_class ||= ModelController
+      controller_class, action = ControllerHandler.get_controller_and_action(controller_path)
 
       generated_new = false
       new_controller = Proc.new do
@@ -232,7 +236,10 @@ module Volt
         # Only assign sections for action's, so we don't get AttributeSections bound
         # also.
         if @controller.respond_to?(:section=)
-          @controller.section = @current_template.dom_section
+          dom_section = @current_template.dom_section
+
+          # Only assign dom sections that can be manipulated via the dom (so not the title for example)
+          @controller.section = dom_section unless dom_section.is_a?(Volt::AttributeSection)
         end
 
         # Call the ready callback on the controller
@@ -251,30 +258,6 @@ module Volt
       remove_current_controller_and_template
 
       super
-    end
-
-    private
-    # Fetch the controller class
-    def get_controller(controller_path)
-      raise "Invalid controller path: #{controller_path.inspect}" unless controller_path && controller_path.size > 0
-
-      action = controller_path[-1]
-
-      # Get the constant parts
-      parts  = controller_path[0..-2].map { |v| v.tr('-', '_').camelize }
-
-      # Do const lookups starting at object and working our way down.
-      # So Volt::ProgressBar would lookup Volt, then ProgressBar on Volt.
-      obj = Object
-      parts.each do |part|
-        if obj.const_defined?(part)
-          obj = obj.const_get(part)
-        else
-          return nil
-        end
-      end
-
-      [obj, action]
     end
   end
 end

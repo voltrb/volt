@@ -5,10 +5,12 @@
 - All code in ```app``` is now automatically reloaded when any files change.  This is done through a "preforking" server.  Before your apps code is loaded (and after Volt's is), the server forks a child process to handle the request (in dev and test mode).
 - Corrected the name of StringTemplateRender to StringTemplateRenderer
 - Volt now uses faye-websocket for socket connections.  This means we can run on any rack-hijack server supported by faye-websocket.  Currently Volt is tested with thin and puma.  (Note: Thin will probably have better performance since it is evented, which means it doesn't need a thread per connection)  More servers coming soon.
+- originally everything in /config would be run when an app boots (similar to rails initializers folder).  The issue we didn't see is things like capistrano that store other ruby files in config.  To maintain conventions, Volt now loads config/app.rb first, then everything in config/initializers/*.rb
 - fixed issue with the unique validation.
 - made it so <:SectionName> can be accessed by <:section_name /> tag
 - fixed issue with if bindings not resolving some promises.
 - fixed issue with require's in controllers.
+
 
 ## 0.9.0
 ### Added

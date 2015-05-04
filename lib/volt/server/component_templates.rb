@@ -23,7 +23,11 @@ module Volt
     end
 
     def page_reference
-      '$page'
+      if @client
+        '$page'
+      else
+        'page'
+      end
     end
 
     def generate_view_code

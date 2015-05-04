@@ -31,6 +31,14 @@ if RUBY_PLATFORM != 'opal'
 
         @items.insert(index, item)
       end
+
+      def notify_changed(id, data, skip_channel)
+        item = @items.find{ |item| item['_id'] == id }
+        idx  = @items.index(item)
+        @items.delete(item)
+        @items.insert(idx, data)
+      end
+
     end
 
     before do
@@ -112,6 +120,28 @@ if RUBY_PLATFORM != 'opal'
       ]
       @query_tracker.run
       expect(@live_query.items).to eq(@items)
+    end
+
+    it 'should notify data hash has changed' do
+      @items = [
+        { '_id' => 1, '_name' => 'one' },
+        { '_id' => 2, '_name' => 'two' },
+        { '_id' => 3, '_name' => 'three' },
+        { '_id' => 4, '_name' => 'four' },
+        { '_id' => 5, '_name' => 'five' }
+      ]
+      @query_tracker.run
+      @items = [
+        { '_id' => 1, '_name' => 'some' },
+        { '_id' => 2, '_name' => 'values' },
+        { '_id' => 3, '_name' => 'have' },
+        { '_id' => 4, '_name' => 'changed' },
+        { '_id' => 5, '_name' => 'other' }
+      ]
+      expect(@live_query.items).to_not eq(@items)
+      @query_tracker.run
+      expect(@live_query.items).to eq(@items)
+
     end
   end
 end
