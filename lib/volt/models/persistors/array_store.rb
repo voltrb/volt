@@ -269,6 +269,11 @@ module Volt
         $loading_models = false
       end
 
+      # Called when all models are removed
+      def clear
+        @ids = {}
+      end
+
       def channel_name
         @model.path[-1]
       end

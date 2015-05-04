@@ -3,6 +3,7 @@
 [![Code Climate](https://codeclimate.com/github/voltrb/volt/badges/gpa.svg)](https://codeclimate.com/github/voltrb/volt)
 [![Coverage Status](https://coveralls.io/repos/voltrb/volt/badge.svg?branch=master)](https://coveralls.io/r/voltrb/volt?branch=master)[![Build Status](http://img.shields.io/travis/voltrb/volt/master.svg?style=flat)](https://travis-ci.org/voltrb/volt)
 [![Inline docs](http://inch-ci.org/github/voltrb/volt.svg?branch=master)](http://inch-ci.org/github/voltrb/volt)
+[![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](http://opensource.org/licenses/MIT)
 
 For the current status of Volt, read: http://voltframework.com/blog
 

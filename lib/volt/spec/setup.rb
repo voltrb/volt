@@ -49,7 +49,7 @@ module Volt
             # Clear the database after each spec where we use store
             # @@db ||= Volt::DataStore.fetch
             # @@db.drop_database
-            ::DataStore.new.drop_database
+            Volt::DataStore.fetch.drop_database
 
             $page.instance_variable_set('@store', nil)
           end

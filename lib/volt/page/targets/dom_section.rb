@@ -41,12 +41,15 @@ module Volt
     end
 
     def insert_anchor_before_end(binding_name)
-      Element.find(@end_node).before("<!-- $#{binding_name} --><!-- $/#{binding_name} -->")
+      binding_str = "<!-- $#{binding_name} --><!-- $/#{binding_name} -->"
+      `$(#{@end_node}).before(#{binding_str})`
     end
 
     def insert_anchor_before(binding_name, insert_after_binding)
       node = find_by_comment("$#{insert_after_binding}")
-      Element.find(node).before("<!-- $#{binding_name} --><!-- $/#{binding_name} -->")
+
+      binding_str = "<!-- $#{binding_name} --><!-- $/#{binding_name} -->"
+      `$(#{node}).before(#{binding_str})`
     end
 
     # Takes in an array of dom nodes and replaces the current content

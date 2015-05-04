@@ -63,7 +63,7 @@ module Volt
 
           # Set the drb object locally
           @dispatcher = Dispatcher.new
-          drb_object = DRb.start_service(nil, [self, @dispatcher])
+          drb_object = DRb.start_service('drbunix:', [self, @dispatcher])
 
           @writer.puts(drb_object.uri)
 
@@ -122,7 +122,9 @@ module Volt
         if @exiting
           [500, {}, 'Server Exiting']
         else
-          @server_proxy.call_on_child(env)
+          status, headers, body_str = @server_proxy.call_on_child(env)
+
+          [status, headers, StringIO.new(body_str)]
         end
       end
     end

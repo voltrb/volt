@@ -16,7 +16,7 @@ module Volt
       code = generate_routes_code + generate_view_code
       if @client
         # On the backend, we just need the views
-        code << generate_controller_code + generate_model_code + generate_tasks_code
+        code << generate_controller_code + generate_model_code + generate_tasks_code + generate_initializers_code
       end
 
       code
@@ -34,10 +34,15 @@ module Volt
       code       = ''
       views_path = "#{@component_path}/views/"
 
+      exts = ['html']
+
+      # Only load email templates on the server
+      exts << 'email' unless @client
+
       # Load all templates in the folder
-      Dir["#{views_path}*/*.html"].sort.each do |view_path|
+      Dir["#{views_path}*/*.{#{exts.join(',')}}"].sort.each do |view_path|
         # Get the path for the template, supports templates in folders
-        template_path = view_path[views_path.size..((-1 * ('.html'.size + 1)))]
+        template_path = view_path[views_path.size..-1].gsub(/[.](#{exts.join('|')})$/, '')
         template_path = "#{@component_name}/#{template_path}"
 
         all_templates = ViewParser.new(File.read(view_path), template_path)
@@ -100,8 +105,25 @@ module Volt
 
     def generate_tasks_code
       Task.known_handlers.map do |handler|
-        "class #{handler.name} < Volt::Task; end"
-      end.join "\n"
+        # Split into modules and class
+        klass_parts = handler.name.split('::')
+
+        # Start with the inner class
+        parts = ["class #{klass_parts.pop} < Volt::Task; end"]
+
+        # Work backwards on the modules
+        klass_parts.reverse.each do |kpart|
+          parts.unshift("module #{kpart}")
+          parts.push("end")
+        end
+
+        # Combine the parts
+        parts.join("\n")
+      end.join "\n" # combine all into one string
+    end
+
+    def generate_initializers_code
+      "\nrequire_tree '#{@component_path}/config/initializers/'\n"
     end
   end
 end

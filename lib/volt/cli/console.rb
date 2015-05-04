@@ -29,6 +29,17 @@ end
 
 module Volt
   class Console
+    module Helpers
+      def store
+        $page.store
+      end
+
+      def page
+        $page.page
+      end
+    end
+
+
     def self.start
       require 'pry'
 
@@ -46,10 +57,10 @@ module Volt
 
       Pry.config.prompt_name = 'volt'
 
-      # start a REPL session
-      # Pry.start
+      Pry.main.send(:include, Volt::Console::Helpers)
 
-      $page.pry
+      # $page.pry
+      Pry.start
     end
   end
 end

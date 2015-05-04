@@ -36,7 +36,7 @@ module Volt
     # Currently the has_many and belongs_to associations only work on the store collection,
     # this method checks to make sure we are on store and returns the root reference to it.
     def association_with_root_model(method_name)
-      persistor = self.persistor || (respond_to(:save_to) && save_to.persistor)
+      persistor = self.persistor || (respond_to?(:save_to) && save_to.persistor)
 
       # Check if we are on the store collection
       if persistor.is_a?(Volt::Persistors::ModelStore)

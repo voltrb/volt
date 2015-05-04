@@ -1,7 +1,4 @@
 require 'opal'
-if RUBY_PLATFORM == 'opal'
-  require 'opal-jquery'
-end
 require 'volt/models'
 require 'volt/controllers/model_controller'
 require 'volt/tasks/task_handler'
@@ -176,7 +173,7 @@ module Volt
 
     def start
       # Setup to render template
-      Element.find('body').html = '<!-- $CONTENT --><!-- $/CONTENT -->'
+      `$('body').html('<!-- $CONTENT --><!-- $/CONTENT -->');`
 
       load_stored_page
 
@@ -223,7 +220,6 @@ module Volt
   if Volt.client?
     $page = Page.new
 
-    # For some reason Document.ready? (using opal-jquery) quit working.
     `$(document).ready(function() {`
       $page.start
     `});`
