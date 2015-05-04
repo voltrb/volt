@@ -17,6 +17,10 @@ module Volt
         changed(attribute_name)
       end
 
+      # Called when the model is cleared (all child models removed)
+      def clear
+      end
+
       def event_added(event, first, first_for_event)
       end
 

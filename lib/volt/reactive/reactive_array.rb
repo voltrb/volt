@@ -181,6 +181,8 @@ module Volt
         end
       end
 
+      @persistor.clear if @persistor
+
       # clear the array
       @array = []
     end
