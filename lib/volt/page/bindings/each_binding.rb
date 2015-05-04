@@ -42,15 +42,15 @@ module Volt
 
         templates_size = @templates.size
 
-        if @value.is_a?(Hash) or @value.is_a?(ReactiveHash)
-          # Start over, re-create all nodes
-          (templates_size - 1).downto(0) do |index|
-            entry_removed(nil, index)
-          end
+        # Start over, re-create all nodes
+        (templates_size - 1).downto(0) do |index|
+          item_removed(index)
+        end
 
+        if @value.is_a?(Hash) or @value.is_a?(ReactiveHash)
           if @value.respond_to?(:on)
             @added_listener   = @value.on('added') { |key, position| entry_added(key, position) }
-            @removed_listener = @value.on('removed') { |key, position| entry_removed(key, position) }
+            @removed_listener = @value.on('removed') { |key, position| item_removed(position) }
           end
 
           # Ruby 1.9+ has key ordering based on insertion
@@ -58,11 +58,6 @@ module Volt
             entry_added(key, index)
           end
         else
-          # Start over, re-create all nodes
-          (templates_size - 1).downto(0) do |index|
-            item_removed(index)
-          end
-
           if @value.respond_to?(:on)
             @added_listener   = @value.on('added') { |position| item_added(position) }
             @removed_listener = @value.on('removed') { |position| item_removed(position) }
@@ -74,16 +69,6 @@ module Volt
           end
         end
       end
-    end
-
-    def entry_removed(key, position)
-      # Remove dependency
-      @templates[position].context.locals["_#{@key_name.to_s}_dependency".to_sym].remove
-      @templates[position].context.locals["_#{@item_name.to_s}_dependency".to_sym].remove
-
-      @templates[position].remove_anchors
-      @templates[position].remove
-      @templates.delete_at(position)
     end
 
     def entry_added(key, position)
@@ -132,7 +117,11 @@ module Volt
 
     def item_removed(position)
       # Remove dependency
-      @templates[position].context.locals[:_index_dependency].remove
+      if @templates[position].context.locals[:parent].is_a?(Hash) or @templates[position].context.locals[:parent].is_a?(ReactiveHash)
+        @templates[position].context.locals["_#{@key_name.to_s}_dependency".to_sym].remove
+      else
+        @templates[position].context.locals[:_index_dependency].remove
+      end
       @templates[position].context.locals["_#{@item_name.to_s}_dependency".to_sym].remove
 
       @templates[position].remove_anchors
