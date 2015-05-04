@@ -39,12 +39,12 @@ module Volt
 
         templates_size = @templates.size
 
-        # Start over, re-create all nodes
-        (templates_size - 1).downto(0) do |index|
-          item_removed(index)
-        end
-
         if @value.is_a?(Hash) or @value.is_a?(ReactiveHash)
+          # Start over, re-create all nodes
+          (templates_size - 1).downto(0) do |index|
+            entry_removed(nil, index)
+          end
+
           if @value.respond_to?(:on)
             @added_listener   = @value.on('added') { |key, position| entry_added(key, position) }
             @removed_listener = @value.on('removed') { |key, position| entry_removed(key, position) }
@@ -55,6 +55,11 @@ module Volt
             entry_added(key, index)
           end
         else
+          # Start over, re-create all nodes
+          (templates_size - 1).downto(0) do |index|
+            item_removed(index)
+          end
+
           if @value.respond_to?(:on)
             @added_listener   = @value.on('added') { |position| item_added(position) }
             @removed_listener = @value.on('removed') { |position| item_removed(position) }
