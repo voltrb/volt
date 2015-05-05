@@ -2,11 +2,12 @@ require 'volt/page/bindings/base_binding'
 
 module Volt
   class EachBinding < BaseBinding
-    def initialize(page, target, context, binding_name, getter, variable_name, index_name, template_name)
+    def initialize(page, target, context, binding_name, getter, template_name, variable_name, index_name, key_name)
       super(page, target, context, binding_name)
 
       @item_name     = variable_name
       @index_name    = index_name
+      @key_name      = key_name
       @template_name = template_name
 
       @templates = []
@@ -14,17 +15,20 @@ module Volt
       @getter      = getter
 
       # Listen for changes
-      @computation = -> { reload }.watch!
+      @computation = -> do
+        begin
+          value = @context.instance_eval(&@getter)
+        rescue => e
+          Volt.logger.error("EachBinding Error: #{e.inspect}")
+          value = []
+        end
+      end.watch_and_resolve! do |result|
+        reload(result)
+      end
     end
 
     # When a changed event happens, we update to the new size.
-    def reload
-      begin
-        value = @context.instance_eval(&@getter)
-      rescue => e
-        Volt.logger.error("EachBinding Error: #{e.inspect}")
-        value = []
-      end
+    def reload(value)
 
       # Since we're checking things like size, we don't want this to be re-triggered on a
       # size change, so we run without tracking.
@@ -36,27 +40,88 @@ module Volt
 
         remove_listeners
 
-        if @value.respond_to?(:on)
-          @added_listener   = @value.on('added') { |position| item_added(position) }
-          @removed_listener = @value.on('removed') { |position| item_removed(position) }
-        end
-
         templates_size = @templates.size
-        values_size    = values.size
 
         # Start over, re-create all nodes
         (templates_size - 1).downto(0) do |index|
           item_removed(index)
         end
-        0.upto(values_size - 1) do |index|
-          item_added(index)
+
+        if @value.is_a?(Hash) or @value.is_a?(ReactiveHash)
+          if @value.respond_to?(:on)
+            @added_listener   = @value.on('added') { |key, position| entry_added(key, position) }
+            @removed_listener = @value.on('removed') { |key, position| item_removed(position) }
+          end
+
+          # Ruby 1.9+ has key ordering based on insertion
+          @value.keys.each_with_index do |key, index|
+            entry_added(key, index)
+          end
+        else
+          if @value.respond_to?(:on)
+            @added_listener   = @value.on('added') { |position| item_added(position) }
+            @removed_listener = @value.on('removed') { |position| item_removed(position) }
+          end
+
+          values_size = values.size
+          0.upto(values_size - 1) do |index|
+            item_added(index)
+          end
         end
       end
     end
 
+    def entry_added(key, position)
+      binding_name     = @@binding_number
+      @@binding_number += 1
+
+      if position >= @templates.size
+        # Setup new bindings in the spot we want to insert the item
+        dom_section.insert_anchor_before_end(binding_name)
+      else
+        # Insert the item before an existing item
+        dom_section.insert_anchor_before(binding_name, @templates[position].binding_name)
+      end
+
+      # TODORW: :parent => @value may change
+      item_context                           = SubContext.new({ "#{@key_name}".to_sym => key, parent: @value }, @context)
+
+      key_dependency                          = Dependency.new
+      item_context.locals["_#{@key_name}_dependency".to_sym] = key_dependency
+
+      # Get and set key
+      item_context.locals["#{@key_name}=".to_sym]             = proc do |val|
+        key_dependency.changed!
+        old_key = item_context.locals["#{@key_name}".to_sym]
+        @value[val] = @value[old_key]
+        @value.delete(old_key)
+      end
+
+
+      # Get and set value
+      value_dependency                        = Dependency.new
+      item_context.locals[@item_name.to_sym] = proc do
+        value_dependency.depend
+        @value[item_context.locals["#{@key_name}".to_sym]]
+      end
+      item_context.locals["_#{@item_name.to_s}_dependency".to_sym] = value_dependency
+
+      item_context.locals["#{@item_name.to_s}=".to_sym] = proc do |val|
+        value_dependency.changed!
+        @value[item_context.locals["#{@key_name}".to_sym]] = val
+      end
+
+      item_template = TemplateRenderer.new(@page, @target, item_context, binding_name, @template_name)
+      @templates.insert(position, item_template)
+    end
+
     def item_removed(position)
       # Remove dependency
-      @templates[position].context.locals[:_index_dependency].remove
+      if @templates[position].context.locals[:parent].is_a?(Hash) or @templates[position].context.locals[:parent].is_a?(ReactiveHash)
+        @templates[position].context.locals["_#{@key_name.to_s}_dependency".to_sym].remove
+      else
+        @templates[position].context.locals[:_index_dependency].remove
+      end
       @templates[position].context.locals["_#{@item_name.to_s}_dependency".to_sym].remove
 
       @templates[position].remove_anchors
