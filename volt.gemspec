@@ -1,4 +1,3 @@
-# coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
@@ -7,10 +6,15 @@ version = File.read(File.expand_path('../VERSION', __FILE__)).strip
 Gem::Specification.new do |spec|
   spec.name          = 'volt'
   spec.version       = version
+  spec.platform      = Gem::Platform::RUBY
+  spec.required_ruby_version = '>= 2.1'
   spec.authors       = ['Ryan Stout']
   spec.email         = ['ryan@agileproductions.com']
-  spec.summary       = 'A ruby web framework where your ruby runs on both server and client (via Opal)'
-  # spec.description   = %q{}
+  spec.summary       = 'A reactive Ruby web framework.'
+  spec.description   =  <<-EOF
+    A reactive Ruby web framework where your Ruby code runs on both the server
+    and the client (via Opal).
+  EOF
   spec.homepage      = 'http://voltframework.com'
   spec.license       = 'MIT'
 
@@ -27,7 +31,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'mongo', '~> 1.9.0'
   spec.add_dependency 'listen', '~> 2.8.0'
   spec.add_dependency 'uglifier', '>= 2.4.0'
-  spec.add_dependency "configurations", "~> 2.0.0.pre"
+  spec.add_dependency 'configurations', '~> 2.0.0.pre'
   spec.add_dependency 'ruby-clean-css', '~> 1.0.0'
   spec.add_dependency 'opal', '~> 0.7.2'
   spec.add_dependency 'bundler', '>= 1.5'
