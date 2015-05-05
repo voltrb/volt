@@ -54,7 +54,10 @@ else
           db_driver: ENV['DB_DRIVER'] || 'mongo',
 
           # a list of components which should be included in all components
-          default_components: ['volt']
+          default_components: ['volt'],
+
+          compress_javascript: Volt.env.production?,
+          compress_css:        Volt.env.production?
         }
       end
 

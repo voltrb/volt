@@ -50,6 +50,15 @@ Volt.configure do |config|
   # Use username instead of email as the login
   # config.public.auth.use_username = true
 
+  #####################
+  # Compression Options
+  #####################
+  # Disable or enable css/js compression.  Default is to only run in production.
+  # if Volt.env.production?
+  #   config.compress_javascript = true
+  #   config.compress_css        = true
+  # end
+
   ################
   # Mailer options
   ################

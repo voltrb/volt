@@ -1,8 +1,11 @@
 require 'volt/server/rack/source_map_server'
-if Volt.env.production?
-  # Compress assets in production
-  require 'uglifier'
-end
+
+# There is currently a weird issue with therubyracer
+# https://github.com/rails/execjs/issues/15
+# https://github.com/middleman/middleman/issues/1367
+#
+# To get around this, we just force Node for the time being
+ENV['EXECJS_RUNTIME'] = 'Node'
 
 # Sets up the maps for the opal assets, and source maps if enabled.
 module Volt
@@ -43,10 +46,16 @@ module Volt
 
       environment.cache = Sprockets::Cache::FileStore.new('./tmp')
 
-      if Volt.env.production?
-        # Compress in production
+      # Compress in production
+      if Volt.config.compress_javascript
+        require 'uglifier'
         environment.js_compressor  = Sprockets::UglifierCompressor
-        environment.css_compressor = Sprockets::YUICompressor
+      end
+
+      if Volt.config.compress_css
+        require 'ruby-clean-css'
+        require 'ruby-clean-css/sprockets'
+        RubyCleanCSS::Sprockets.register(environment)
       end
 
       server.append_path(app_path)

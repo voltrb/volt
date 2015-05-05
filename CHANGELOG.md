@@ -12,6 +12,7 @@
 - fixed issue with require's in controllers.
 - fix class formatting issue with Pry.
 - Bundler.require is now called for the correct env when 'volt/boot' is included.  (We weren't planning to do this, but it does make life so much easier)
+- opal-jquery was removed as a dependency.  If you want to use it again, add ```gem 'opal-jquery'``` to your Gemfile and add ```require 'opal/jquery'` to your MainController.
 
 
 ## 0.9.0
