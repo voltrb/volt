@@ -1,10 +1,12 @@
 Volt.configure do |config|
   # Setup your global app config here.
 
-  ################
-  # Basic App Info
-  ################
-  # config.domain = 'yourapp.com'
+  #######################################
+  # Basic App Info (stuff you should set)
+  #######################################
+  config.domain = '<%= config[:domain] %>.com'
+  config.app_name = '<%= config[:app_name] %>'
+  config.mailer.from = '<%= config[:app_name] %> <no-reply@<%= config[:domain] %>.com>'
 
   ############
   # App Secret
@@ -69,7 +71,7 @@ Volt.configure do |config|
   ################
   # The volt-mailer gem uses pony (https://github.com/benprew/pony) to deliver e-mail.  Any
   # options you would pass to pony can be setup below.
-  # config.mailer.from = 'no-reply@' + config.domain
+  # NOTE: The from address is setup at the top
 
   # Normally pony uses /usr/sbin/sendmail if one is installed.  You can specify smtp below:
   # config.mailer.via = :smtp

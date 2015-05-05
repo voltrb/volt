@@ -18,7 +18,7 @@ module Volt
 
       # Grab the current volt version
       version = File.read(File.join(File.dirname(__FILE__), '../../VERSION'))
-      directory('project', name, version: version, name: name)
+      directory('project', name, version: version, name: name, domain: name.dasherize.downcase, app_name: name.capitalize)
 
       say 'Bundling Gems...'
       `cd #{name} && bundle`
