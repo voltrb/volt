@@ -71,7 +71,13 @@ module Volt
       getter = getter.strip.gsub(/\(\s*\)/, '')
 
       # Check to see if this can be converted to a setter
-      if getter[0] =~ /^[a-z_]/ && getter[-1] != ')'
+      if getter[0] =~ /^[A-Z]/ && getter[-1] != ')'
+        if getter.index('.')
+          "#{getter}=(val)"
+        else
+          "raise \"could not auto generate setter for `#{getter}`\""
+        end
+      elsif getter[0] =~ /^[a-z_]/ && getter[-1] != ')'
         # Convert a getter into a setter
         if getter.index('.') || getter.index('@')
           prefix = ''
