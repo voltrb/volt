@@ -8,6 +8,7 @@ require 'volt/extra_core/hash'
 require 'volt/extra_core/class'
 if RUBY_PLATFORM == 'opal'
   # TODO: != does not work with opal for some reason
+  require 'volt/extra_core/timeout'
 else
   require 'volt/extra_core/symbol'
 end

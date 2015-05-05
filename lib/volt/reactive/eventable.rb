@@ -78,8 +78,11 @@ module Volt
       if @listeners && @listeners[event]
         # TODO: We have to dup here because one trigger might remove another
         @listeners[event].dup.each do |listener|
-          # Call the event on each listener
-          listener.call(*args)
+          # Run in the next tick
+          Timeout.new 2 do
+            # Call the event on each listener
+            listener.call(*args)
+          end
         end
       end
     end
