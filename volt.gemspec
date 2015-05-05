@@ -1,11 +1,10 @@
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-
-version = File.read(File.expand_path('../VERSION', __FILE__)).strip
+require 'volt/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'volt'
-  spec.version       = version
+  spec.version       = Volt::Version::STRING
   spec.platform      = Gem::Platform::RUBY
   spec.required_ruby_version = '>= 2.1'
   spec.authors       = ['Ryan Stout']

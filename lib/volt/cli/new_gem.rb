@@ -103,8 +103,8 @@ class NewGem
   end
 
   def volt_version_base
-    version_path = File.join(File.dirname(__FILE__), '../../../VERSION')
-    File.read(version_path).split('.').tap { |v| v[v.size - 1] = 0 }.join('.')
+    require 'volt/version'
+    Volt::Version::STRING.split('.').tap { |v| v[v.size - 1] = 0 }.join('.')
   end
 
   def get_constant_name
