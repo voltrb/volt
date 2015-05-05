@@ -26,6 +26,7 @@ module Volt
         update(result)
       end
 
+      @is_check = `#{element}.is('select')`
       @is_radio = `#{element}.is('[type=radio]')`
       if @is_radio
         @selected_value = `#{element}.attr('value') || ''`
@@ -35,7 +36,10 @@ module Volt
       case @attribute_name
         when 'value'
           changed_event = Proc.new { changed }
-          `#{element}.on('input.attrbind', #{changed_event})`
+          if @is_check
+            `#{element}.on('change', #{changed_event})`
+          end
+          `#{element}.watch('value', #{changed_event})`
         when 'checked'
           changed_event = Proc.new { |event| changed(event) }
           `#{element}.on('change.attrbind', #{changed_event})`
@@ -131,6 +135,8 @@ module Volt
       case @attribute_name
         when 'value'
           `#{element}.off('input.attrbind', #{nil})`
+          `#{element}.off('change')`
+          `#{element}.unwatch('value')`
         when 'checked'
           `#{element}.off('change.attrbind', #{nil})`
       end
