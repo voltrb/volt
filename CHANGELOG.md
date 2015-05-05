@@ -2,6 +2,7 @@
 
 ## 0.9.1
 ### Changed
+- Mailer! - volt now includes the volt-mailer gem out of the box.  (you can remove it if you don't need/want it).  See https://github.com/voltrb/volt-mailer for more info.
 - All code in ```app``` is now automatically reloaded when any files change.  This is done through a "preforking" server.  Before your apps code is loaded (and after Volt's is), the server forks a child process to handle the request (in dev and test mode).
 - Corrected the name of StringTemplateRender to StringTemplateRenderer
 - Volt now uses faye-websocket for socket connections.  This means we can run on any rack-hijack server supported by faye-websocket.  Currently Volt is tested with thin and puma.  (Note: Thin will probably have better performance since it is evented, which means it doesn't need a thread per connection)  More servers coming soon.
@@ -13,7 +14,7 @@
 - fix class formatting issue with Pry.
 - Bundler.require is now called for the correct env when 'volt/boot' is included.  (We weren't planning to do this, but it does make life so much easier)
 - opal-jquery was removed as a dependency.  If you want to use it again, add ```gem 'opal-jquery'``` to your Gemfile and add ```require 'opal/jquery'` to your MainController.
-
+- Volt and new gems now use the standard ruby version.rb file.
 
 ## 0.9.0
 ### Added
