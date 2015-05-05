@@ -5,7 +5,7 @@ class QuietCommonLogger < Rack::CommonLogger
   @@ignore_extensions = %w(png jpg jpeg ico gif woff tff svg eot css js)
 
   def call(env)
-    path = env['REQUEST_PATH']
+    path = env['PATH_INFO']
     began_at = Time.now
     status, header, body = @app.call(env)
     header = Utils::HeaderHash.new(header)
