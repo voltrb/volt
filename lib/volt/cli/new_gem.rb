@@ -51,8 +51,8 @@ class NewGem
     copy('newgem/gitignore.tt', '.gitignore')
     copy('newgem/newgem.gemspec.tt', "#{@name}.gemspec")
     copy('newgem/lib/newgem.rb.tt', "lib/#{@namespaced_path}.rb")
-    copy('newgem/VERSION', 'VERSION')
     FileUtils.mkdir_p(File.join(@target, "lib/#{@namespaced_path}"))
+    copy('newgem/lib/newgem/version.rb.tt', "lib/#{@namespaced_path}/version.rb")
   end
 
   def copy_options
