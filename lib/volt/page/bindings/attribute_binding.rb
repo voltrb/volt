@@ -27,6 +27,7 @@ module Volt
       end
 
       @is_check = `#{element}.is('select')`
+      @is_hidden = `#{element}.is('[type=hidden]')`
       @is_radio = `#{element}.is('[type=radio]')`
       if @is_radio
         @selected_value = `#{element}.attr('value') || ''`
@@ -38,8 +39,11 @@ module Volt
           changed_event = Proc.new { changed }
           if @is_check
             `#{element}.on('change', #{changed_event})`
+          elsif @is_hidden
+            `#{element}.watch('value', #{changed_event})`
+          else
+            `#{element}.on('input.attrbind', #{changed_event})`
           end
-          `#{element}.watch('value', #{changed_event})`
         when 'checked'
           changed_event = Proc.new { |event| changed(event) }
           `#{element}.on('change.attrbind', #{changed_event})`
