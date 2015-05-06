@@ -14,6 +14,13 @@ class Promise
     @next = nil
   end
 
+  def method_missing(method_name, *args, &block)
+    self.then do |result|
+      result.send(method_name.to_sym, *args, &block)
+    end.fail do |error|
+      raise error
+    end
+  end
 
   def >>(promise)
     @next = promise
