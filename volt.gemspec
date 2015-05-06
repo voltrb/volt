@@ -41,7 +41,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.2.0'
   spec.add_development_dependency 'opal-rspec', '~> 0.4.2'
   spec.add_development_dependency 'capybara', '~> 2.4.2'
-  spec.add_development_dependency 'selenium-webdriver', '~> 2.43.0'
+  spec.add_development_dependency 'selenium-webdriver', '~> 2.45.0'
   spec.add_development_dependency 'chromedriver2-helper', '~> 0.0.8'
   spec.add_development_dependency 'poltergeist', '~> 1.5.0'
   spec.add_development_dependency 'thin', '~> 1.6.3'
