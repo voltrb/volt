@@ -66,7 +66,7 @@ describe Volt::Model do
     buffer.save!
 
     expect(buffer.marked_errors.keys).to eq(
-      [:count, :description, :email, :name, :phone_number, :username]
+      [:count, :description, :email, :name, :phone_number, :username, :password]
     )
   end
 
