@@ -47,7 +47,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'selenium-webdriver', '~> 2.43.0'
   spec.add_development_dependency 'chromedriver2-helper', '~> 0.0.8'
   spec.add_development_dependency 'poltergeist', '~> 1.5.0'
-  # spec.add_development_dependency 'puma', '~> 2.11.2'
   spec.add_development_dependency 'thin', '~> 1.6.3'
   spec.add_development_dependency 'coveralls', '~> 0.8.1'
 
@@ -63,4 +62,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'sauce', '~> 3.5.3'
   spec.add_development_dependency 'sauce-connect', '~> 3.5.0'
   spec.add_development_dependency 'pry-byebug', '~> 2.0.0'
+
+  spec.add_development_dependency 'rubocop', '~> 0.31.0'
 end
