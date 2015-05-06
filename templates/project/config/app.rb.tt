@@ -1,6 +1,13 @@
 Volt.configure do |config|
   # Setup your global app config here.
 
+  #######################################
+  # Basic App Info (stuff you should set)
+  #######################################
+  config.domain = '<%= config[:domain] %>.com'
+  config.app_name = '<%= config[:app_name] %>'
+  config.mailer.from = '<%= config[:app_name] %> <no-reply@<%= config[:domain] %>.com>'
+
   ############
   # App Secret
   ############
@@ -50,11 +57,32 @@ Volt.configure do |config|
   # Use username instead of email as the login
   # config.public.auth.use_username = true
 
+  #####################
+  # Compression Options
+  #####################
+  # Disable or enable css/js compression.  Default is to only run in production.
+  # if Volt.env.production?
+  #   config.compress_javascript = true
+  #   config.compress_css        = true
+  # end
+
   ################
   # Mailer options
   ################
   # The volt-mailer gem uses pony (https://github.com/benprew/pony) to deliver e-mail.  Any
   # options you would pass to pony can be setup below.
+  # NOTE: The from address is setup at the top
+
+  # Normally pony uses /usr/sbin/sendmail if one is installed.  You can specify smtp below:
+  # config.mailer.via = :smtp
+  # config.mailer.via_options = {
+  #   :address        => 'smtp.yourserver.com',
+  #   :port           => '25',
+  #   :user_name      => 'user',
+  #   :password       => 'password',
+  #   :authentication => :plain, # :plain, :login, :cram_md5, no auth by default
+  #   :domain         => "localhost.localdomain" # the HELO domain provided by the client to the server
+  # }
 
 
 

@@ -58,7 +58,7 @@ BROWSER=firefox bundle exec rake
 
 #### Write Tests
 
-Try to write a test that reproduces the problem you're trying to fix or describes a feature that you want to build. Add to [spec/volt](spec/volt).
+Try to write a test that reproduces the problem you're trying to fix or describes a feature that you want to build. Add to [specs](https://github.com/voltrb/volt/tree/master/spec).
 
 We definitely appreciate pull requests that highlight or reproduce a problem, even without a fix.
 
