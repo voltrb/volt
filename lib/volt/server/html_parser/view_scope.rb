@@ -174,7 +174,7 @@ module Volt
 
       if cases.include? add_type
         [add_type, content[index..-1].strip]
-      elsif content =~ /\.each/
+      elsif content =~ /\.each(_with_index)?\s+do\s+\|/
         [content[/each(_with_index)?/], content]
       else
         ['content_binding', content]
