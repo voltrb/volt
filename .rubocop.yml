@@ -1,3 +1,54 @@
+AllCops:
+  Include:
+  - "**/*.gemspec"
+  - "**/*.podspec"
+  - "**/*.jbuilder"
+  - "**/*.rake"
+  - "**/*.opal"
+  - "**/Gemfile"
+  - "**/Rakefile"
+  - "**/Capfile"
+  - "**/Guardfile"
+  - "**/Podfile"
+  - "**/Thorfile"
+  - "**/Vagrantfile"
+  - "**/Berksfile"
+  - "**/Cheffile"
+  - "**/Vagabondfile"
+  Exclude:
+  - "vendor/**/*"
+  - "db/schema.rb"
+  RunRailsCops: false
+  DisplayCopNames: false
+  StyleGuideCopsOnly: false
+
+
+Style/AccessModifierIndentation:
+  Description: Check indentation of private/protected visibility modifiers.
+  StyleGuide: https://github.com/bbatsov/ruby-style-guide#indent-public-private-protected
+  Enabled: true
+  EnforcedStyle: indent
+  SupportedStyles:
+  - outdent
+  - indent
+
+# Metrics/LineLength:
+#   Description: Limit lines to 80 characters.
+#   StyleGuide: https://github.com/bbatsov/ruby-style-guide#80-character-limits
+#   Enabled: false
+#   Max: 80
+#   AllowURI: true
+#   URISchemes:
+#   - http
+#   - https
+# Style/GlobalVars:
+#   Description: Do not introduce global variables.
+#   StyleGuide: https://github.com/bbatsov/ruby-style-guide#instance-vars
+#   Enabled: false
+#   AllowedVariables: []
+
+# ^ From hound
+
 Style/Documentation:
   Enabled: false
 
