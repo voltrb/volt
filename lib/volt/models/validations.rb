@@ -19,8 +19,8 @@ module Volt
           self.custom_validations ||= []
           custom_validations << block
         else
-          self.validations             ||= {}
-          validations[field_name]      ||= {}
+          self.validations ||= {}
+          validations[field_name] ||= {}
           validations[field_name].merge!(options)
         end
       end
@@ -67,12 +67,12 @@ module Volt
       @server_errors.delete(key)
     end
 
-    def errors(marked_only=false)
+    def errors(marked_only = false)
       @errors ||= Errors.new
 
       if marked_only
         # Only return the fields that have been marked
-        @errors.to_h.select {|key,_| marked_fields[key] }
+        @errors.to_h.select { |key, _| marked_fields[key] }
       else
         @errors
       end
@@ -84,11 +84,8 @@ module Volt
       errors.clear
 
       run_validations.then do
-
         # See if any server errors are in place and merge them in if they are
-        if Volt.client?
-          errors.merge!(server_errors.to_h)
-        end
+        errors.merge!(server_errors.to_h) if Volt.client?
       end.then do
         run_custom_validations
       end.then do
@@ -107,9 +104,8 @@ module Volt
         return true if errs[key]
       end
 
-      return false
+      false
     end
-
 
     private
 
@@ -142,7 +138,7 @@ module Volt
         end
       end
 
-      return promise
+      promise
     end
 
     def run_custom_validations
@@ -161,7 +157,7 @@ module Volt
         end
       end
 
-      return promise
+      promise
     end
 
     def validation_class(validation, args)
@@ -169,6 +165,5 @@ module Volt
     rescue NameError => e
       puts "Unable to find #{validation} validator"
     end
-
   end
 end

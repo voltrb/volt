@@ -153,9 +153,7 @@ module Volt
       # Get the params that are in the route
       new_params = @router.url_to_params(path)
 
-      if new_params == false
-        fail "no routes match path: #{path}"
-      end
+      fail "no routes match path: #{path}" if new_params == false
 
       query_hash.merge!(new_params)
 
@@ -181,9 +179,7 @@ module Volt
           assign_from_old(old_val, new_val)
         else
           # assign value
-          if old_val != new_val
-            params.set(name, new_val)
-          end
+          params.set(name, new_val) if old_val != new_val
           new_params.delete(name)
         end
       end

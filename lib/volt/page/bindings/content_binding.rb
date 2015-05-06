@@ -10,7 +10,7 @@ module Volt
       super(page, target, context, binding_name)
 
       # Listen for changes
-      @computation = -> do
+      @computation = lambda do
         begin
           res = @context.instance_eval(&getter)
         rescue => e

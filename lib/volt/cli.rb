@@ -72,7 +72,6 @@ module Volt
           server.timeout = 0
         end
       end
-
     end
 
     desc 'runner FILEPATH', 'Runs a ruby file at FILEPATH in the volt app'

@@ -135,12 +135,12 @@ module Volt
       @rack_app.use HttpResource, @volt_app.router
 
       @rack_app.use Rack::Static,
-        urls: ['/'],
-        root: 'config/base',
-        index: '',
-        header_rules: [
-          [:all, { 'Cache-Control' => 'public, max-age=86400' }]
-        ]
+                    urls: ['/'],
+                    root: 'config/base',
+                    index: '',
+                    header_rules: [
+                      [:all, { 'Cache-Control' => 'public, max-age=86400' }]
+                    ]
 
       @rack_app.run lambda { |env| [404, { 'Content-Type' => 'text/html; charset=utf-8' }, ['404 - page not found']] }
 

@@ -56,9 +56,7 @@ class NewGem
   end
 
   def copy_options
-    if @options[:bin]
-      copy('newgem/bin/newgem.tt', "bin/#{@name}")
-    end
+    copy('newgem/bin/newgem.tt', "bin/#{@name}") if @options[:bin]
     case @options[:test]
     when 'rspec'
       copy('newgem/rspec.tt', '.rspec')

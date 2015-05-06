@@ -10,10 +10,10 @@ module Volt
       driver_name = database_name.camelize + 'Driver'
 
       begin
-        driver = self.const_get(driver_name)
+        driver = const_get(driver_name)
         @driver = MongoDriver.new
       rescue NameError => e
-        fail "#{database_name} is not a supported database"
+        raise "#{database_name} is not a supported database"
       end
     end
   end

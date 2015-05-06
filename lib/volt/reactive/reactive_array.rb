@@ -40,9 +40,7 @@ module Volt
         count = 0
 
         size.times do |index|
-          if block.call(self[index])
-            count += 1
-          end
+          count += 1 if block.call(self[index])
         end
 
         count
@@ -55,9 +53,7 @@ module Volt
       result = []
       size.times do |index|
         val = self[index]
-        if yield(val)
-          result << val
-        end
+        result << val if yield(val)
       end
 
       result
@@ -68,9 +64,7 @@ module Volt
         size.times do |index|
           val = self[index]
 
-          if yield(val)
-            return true
-          end
+          return true if yield(val)
         end
 
         false
@@ -84,9 +78,7 @@ module Volt
         size.times do |index|
           val = self[index]
 
-          unless yield(val)
-            return false
-          end
+          return false unless yield(val)
         end
 
         true

@@ -1,7 +1,7 @@
 module Volt
   module Associations
     module ClassMethods
-      def belongs_to(method_name, key_name=nil)
+      def belongs_to(method_name, key_name = nil)
         # getter
         define_method(method_name) do
           association_with_root_model('belongs_to') do |root|
@@ -9,15 +9,15 @@ module Volt
             lookup_key = send(:"_#{key_name || method_name}_id")
 
             # Return a promise for the belongs_to
-            root.send(:"_#{method_name.pluralize}").where(:_id => lookup_key).fetch_first
+            root.send(:"_#{method_name.pluralize}").where(_id: lookup_key).fetch_first
           end
         end
       end
 
-      def has_many(method_name, remote_key_name=nil)
+      def has_many(method_name, remote_key_name = nil)
         define_method(method_name) do
           association_with_root_model('has_many') do |root|
-            id = self._id
+            id = _id
 
             # The key will be "{this class name}_id"
             remote_key_name ||= :"#{path[-2].singularize}_id"
@@ -33,6 +33,7 @@ module Volt
     end
 
     private
+
     # Currently the has_many and belongs_to associations only work on the store collection,
     # this method checks to make sure we are on store and returns the root reference to it.
     def association_with_root_model(method_name)

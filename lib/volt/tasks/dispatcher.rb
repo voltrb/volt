@@ -59,7 +59,7 @@ module Volt
         Volt.logger.log_dispatch(class_name, method_name, run_time, args, error)
       end
 
-        # Run the promise and pass the return value/error back to the client
+      # Run the promise and pass the return value/error back to the client
       promise.then do |result|
         channel.send_message('response', callback_id, result, nil)
 
@@ -91,4 +91,3 @@ module Volt
     end
   end
 end
-

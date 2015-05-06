@@ -28,9 +28,7 @@ module Volt
         obj = @locals[method_name]
 
         # TODORW: Might get a normal proc, flag internal procs
-        if obj.is_a?(Proc)
-          obj = obj.call(*args)
-        end
+        obj = obj.call(*args) if obj.is_a?(Proc)
         return obj
       elsif @return_nils && method_name[-1] != '='
         return nil

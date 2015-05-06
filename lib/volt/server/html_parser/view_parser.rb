@@ -20,7 +20,7 @@ module Volt
       # Close out the last scope
       last_scope = handler.scope.last
 
-      raise "Unclosed tag in:\n#{html}" unless last_scope
+      fail "Unclosed tag in:\n#{html}" unless last_scope
 
       last_scope.close_scope
 

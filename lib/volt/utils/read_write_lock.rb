@@ -68,9 +68,9 @@ class ReadWriteLock
   end
 
   def acquire_read_lock
-    while(true)
+    loop do
       c = @counter.value
-      raise "Too many reader threads!" if (c & MAX_READERS) == MAX_READERS
+      fail 'Too many reader threads!' if (c & MAX_READERS) == MAX_READERS
 
       # If a writer is waiting when we first queue up, we need to wait
       if c >= WAITING_WRITER
@@ -82,26 +82,26 @@ class ReadWriteLock
 
         # after a reader has waited once, they are allowed to "barge" ahead of waiting writers
         # but if a writer is *running*, the reader still needs to wait (naturally)
-        while(true)
+        loop do
           c = @counter.value
           if c >= RUNNING_WRITER
             @reader_mutex.synchronize do
               @reader_q.wait(@reader_mutex) if @counter.value >= RUNNING_WRITER
             end
           else
-            return if @counter.compare_and_swap(c,c+1)
+            return if @counter.compare_and_swap(c, c + 1)
           end
         end
       else
-        break if @counter.compare_and_swap(c,c+1)
+        break if @counter.compare_and_swap(c, c + 1)
       end
     end
   end
 
   def release_read_lock
-    while(true)
+    loop do
       c = @counter.value
-      if @counter.compare_and_swap(c,c-1)
+      if @counter.compare_and_swap(c, c - 1)
         # If one or more writers were waiting, and we were the last reader, wake a writer up
         if c >= WAITING_WRITER && (c & MAX_READERS) == 1
           @writer_mutex.synchronize { @writer_q.signal }
@@ -112,15 +112,15 @@ class ReadWriteLock
   end
 
   def acquire_write_lock
-    while(true)
+    loop do
       c = @counter.value
-      raise "Too many writers!" if (c & MAX_WRITERS) == MAX_WRITERS
+      fail 'Too many writers!' if (c & MAX_WRITERS) == MAX_WRITERS
 
       if c == 0 # no readers OR writers running
         # if we successfully swap the RUNNING_WRITER bit on, then we can go ahead
-        break if @counter.compare_and_swap(0,RUNNING_WRITER)
-      elsif @counter.compare_and_swap(c,c+WAITING_WRITER)
-        while(true)
+        break if @counter.compare_and_swap(0, RUNNING_WRITER)
+      elsif @counter.compare_and_swap(c, c + WAITING_WRITER)
+        loop do
           # Now we have successfully incremented, so no more readers will be able to increment
           #   (they will wait instead)
           # However, readers OR writers could decrement right here, OR another writer could increment
@@ -138,7 +138,7 @@ class ReadWriteLock
           c = @counter.value
           break if (c < RUNNING_WRITER) &&
                    ((c & MAX_READERS) == 0) &&
-                   @counter.compare_and_swap(c,c+RUNNING_WRITER-WAITING_WRITER)
+                   @counter.compare_and_swap(c, c + RUNNING_WRITER - WAITING_WRITER)
         end
         break
       end
@@ -146,13 +146,11 @@ class ReadWriteLock
   end
 
   def release_write_lock
-    while(true)
+    loop do
       c = @counter.value
-      if @counter.compare_and_swap(c,c-RUNNING_WRITER)
+      if @counter.compare_and_swap(c, c - RUNNING_WRITER)
         @reader_mutex.synchronize { @reader_q.broadcast }
-        if (c & MAX_WRITERS) > 0 # if any writers are waiting...
-          @writer_mutex.synchronize { @writer_q.signal }
-        end
+        @writer_mutex.synchronize { @writer_q.signal } if (c & MAX_WRITERS) > 0 # if any writers are waiting...
         break
       end
     end
@@ -161,11 +159,11 @@ class ReadWriteLock
   def to_s
     c = @counter.value
     s = if c >= RUNNING_WRITER
-      "1 writer running, "
-    elsif (c & MAX_READERS) > 0
-      "#{c & MAX_READERS} readers running, "
-    else
-      ""
+          '1 writer running, '
+        elsif (c & MAX_READERS) > 0
+          "#{c & MAX_READERS} readers running, "
+        else
+          ''
     end
 
     "#<ReadWriteLock:#{object_id.to_s(16)} #{s}#{(c & MAX_WRITERS) / WAITING_WRITER} writers waiting>"

@@ -6,8 +6,8 @@ describe 'yield binding', type: :feature, sauce: true do
   end
 
   it 'should render the yielded content multiple times' do
-    expect(page).to have_content("My yielded content 1")
-    expect(page).to have_content("My yielded content 2")
+    expect(page).to have_content('My yielded content 1')
+    expect(page).to have_content('My yielded content 2')
   end
 
   it 'should render the content from the tag\'s controller when yielding' do

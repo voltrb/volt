@@ -8,17 +8,15 @@ if RUBY_PLATFORM != 'opal'
     let(:logger) { Volt::VoltLogger.new }
 
     let(:logger_with_opts) do
-      Volt::VoltLogger.new({
-        args: args,
-        class_name: class_name,
-        method_name: method_name,
-        run_time: run_time
-      })
+      Volt::VoltLogger.new(args: args,
+                           class_name: class_name,
+                           method_name: method_name,
+                           run_time: run_time)
     end
 
     it 'should log only severity and message wrapped in line breaks' do
       expect(STDOUT).to receive(:write).with("\n\n[INFO] message\n")
-      logger.log(Logger::INFO, "message")
+      logger.log(Logger::INFO, 'message')
     end
 
     it 'should convert an array of arguments into a string' do
@@ -27,7 +25,7 @@ if RUBY_PLATFORM != 'opal'
 
     describe 'when STDOUT is a TTY' do
       before { allow(STDOUT).to receive(:tty?).and_return(true) }
-      
+
       it 'should return a blue class name' do
         expect(logger_with_opts.class_name).to eq("\e[1;34m#{class_name}\e[0;37m")
       end

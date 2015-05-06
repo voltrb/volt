@@ -3,7 +3,7 @@
 # more with Volt.config.filter_keys
 class TaskArgumentFilterer
   def self.filter(args)
-    self.new(args).run
+    new(args).run
   end
 
   def initialize(args)
@@ -24,9 +24,9 @@ class TaskArgumentFilterer
 
   def filter_args(args)
     if args.is_a?(Array)
-      args.map {|v| filter_args(v) }
+      args.map { |v| filter_args(v) }
     elsif args.is_a?(Hash)
-      args.map do |k,v|
+      args.map do |k, v|
         if @@filter_args.include?(k.to_sym)
           # filter
           [k, '[FILTERED]']

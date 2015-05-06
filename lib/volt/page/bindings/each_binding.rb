@@ -57,7 +57,7 @@ module Volt
     def item_removed(position)
       # Remove dependency
       @templates[position].context.locals[:_index_dependency].remove
-      @templates[position].context.locals["_#{@item_name.to_s}_dependency".to_sym].remove
+      @templates[position].context.locals["_#{@item_name}_dependency".to_sym].remove
 
       @templates[position].remove_anchors
       @templates[position].remove
@@ -92,12 +92,11 @@ module Volt
         item_context.locals[:_index_value] = val
       end
 
-
       # Get and set value
       value_dependency                    = Dependency.new
-      item_context.locals["_#{@item_name.to_s}_dependency".to_sym] = value_dependency
+      item_context.locals["_#{@item_name}_dependency".to_sym] = value_dependency
 
-      item_context.locals["#{@item_name.to_s}=".to_sym] = proc do |val|
+      item_context.locals["#{@item_name}=".to_sym] = proc do |val|
         value_dependency.changed!
         @value[item_context.locals[:_index_value]] = val
       end

@@ -23,9 +23,7 @@ module Volt
       end
 
       def loaded(initial_state = nil)
-        if model.path == []
-          initial_state = :loaded
-        end
+        initial_state = :loaded if model.path == []
 
         model.change_state_to(:loaded_state, initial_state)
       end
@@ -143,9 +141,7 @@ module Volt
       end
 
       def event_added(event, first, first_for_event)
-        if first_for_event && event == :changed
-          ensure_setup
-        end
+        ensure_setup if first_for_event && event == :changed
       end
 
       # Update the models based on the id/identity map.  Usually these requests
@@ -156,9 +152,7 @@ module Volt
 
           if model
             data.each_pair do |key, value|
-              if key != :_id
-                model.send(:"_#{key}=", value)
-              end
+              model.send(:"_#{key}=", value) if key != :_id
             end
           end
         end

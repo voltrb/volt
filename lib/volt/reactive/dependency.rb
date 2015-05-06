@@ -36,7 +36,7 @@ module Volt
     #   on this dependency.
     # @param on_stop_dep [Proc] a proc to be called when no computations are depending
     #   on this dependency anymore.
-    def initialize(on_dep=nil, on_stop_dep=nil)
+    def initialize(on_dep = nil, on_stop_dep = nil)
       @dependencies = Set.new
       @on_dep = on_dep
       @on_stop_dep = on_stop_dep

@@ -8,7 +8,7 @@ else
 
     it 'handles tags' do
       handler.comment('Yowza!')
-      handler.start_tag('a', {href: 'yahoo.com'}, false)
+      handler.start_tag('a', { href: 'yahoo.com' }, false)
       handler.text('Cool in 1996')
       handler.end_tag('a')
 

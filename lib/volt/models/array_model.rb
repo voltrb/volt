@@ -11,7 +11,6 @@ module Volt
     include StateManager
     include StateHelpers
 
-
     attr_reader :parent, :path, :persistor, :options, :array
 
     # For many methods, we want to call load data as soon as the model is interacted
@@ -74,7 +73,7 @@ module Volt
       end
 
       if model.is_a?(Model) && !model.can_create?
-        raise "permissions did not allow create for #{model.inspect}"
+        fail "permissions did not allow create for #{model.inspect}"
       end
 
       super(model)
@@ -134,7 +133,6 @@ module Volt
     def first
       self[0]
     end
-
 
     # returns a promise to fetch the first instance
     def fetch_first(&block)
@@ -201,7 +199,7 @@ module Volt
       end
     end
 
-    def buffer(attrs={})
+    def buffer(attrs = {})
       model_path  = options[:path] + [:[]]
       model_klass = Volt::Model.class_at_path(model_path)
 
@@ -215,9 +213,7 @@ module Volt
 
     # Takes the persistor if there is one and
     def setup_persistor(persistor)
-      if persistor
-        @persistor = persistor.new(self)
-      end
+      @persistor = persistor.new(self) if persistor
     end
   end
 end

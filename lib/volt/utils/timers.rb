@@ -1,5 +1,4 @@
 module Volt
-
   # The timers class provides useful methods for working in an asynchronus environment.
   class Timers
     # next tick (same as setImmediate) calls the block of code after any currently
@@ -7,7 +6,7 @@ module Volt
     def self.next_tick(&block)
       if Volt.in_browser?
         `setImmediate(function() {`
-          yield
+        yield
         `})`
       else
         tick_timers = (Thread.current['tick_timers'] ||= [])
@@ -23,10 +22,7 @@ module Volt
       if tick_timers
         # clear
         Thread.current['tick_timers'] = nil
-        tick_timers.each do |timer|
-          # Run the timer
-          timer.call
-        end
+        tick_timers.each(&:call)
       end
     end
   end

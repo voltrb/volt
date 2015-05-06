@@ -44,9 +44,7 @@ module Volt
 
             # Add in the folder if it's not alreay in there
             folders = (@components[folder_name] ||= [])
-            unless folders.include?(folder)
-              folders << folder
-            end
+            folders << folder unless folders.include?(folder)
           end
         end
       end

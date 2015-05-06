@@ -13,7 +13,7 @@ class Object
   # TODO: Need a real implementation of this
   def deep_clone
     if RUBY_PLATFORM == 'opal'
-      JSON.parse(self.to_json)
+      JSON.parse(to_json)
     else
       Marshal.load(Marshal.dump(self))
     end

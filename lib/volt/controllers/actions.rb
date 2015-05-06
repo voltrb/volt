@@ -12,7 +12,7 @@ module Volt
   module Actions
     # StopChainException inherits from Exception directly so it will not be handled by a
     # default rescue.
-    class StopChainException < Exception ; end
+    class StopChainException < Exception; end
 
     module ClassMethods
       # Takes a list of action groups (as symbols).  An action group is typically used for before/after, but
@@ -29,7 +29,7 @@ module Volt
             # Add the block in place of the symbol
             args.unshift(block) if block
 
-            raise "No callback symbol or block provided" unless args[0]
+            fail 'No callback symbol or block provided' unless args[0]
 
             callbacks = send(callbacks_var_name)
 
@@ -75,7 +75,7 @@ module Volt
     # raise an exception under the hood which will stop the chain and evaluation
     # from where stop_chain is called.
     def stop_chain
-      raise StopChainException
+      fail StopChainException
     end
 
     def self.included(base)
@@ -83,6 +83,7 @@ module Volt
     end
 
     private
+
     # TODO: currently we filter during the call, we could maybe improve performance
     # here by storing by action and having an all category as well.
     def filter_actions_by_only_exclude(callbacks, action)
@@ -94,8 +95,7 @@ module Volt
           # If no only, include it
           true
         end
-      end.map {|v| v[0] }
+      end.map { |v| v[0] }
     end
-
   end
 end

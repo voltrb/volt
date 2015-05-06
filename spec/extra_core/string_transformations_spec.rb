@@ -47,7 +47,7 @@ describe '#camelize' do
 end
 
 describe '#headerize' do
-  it "headerizes" do
+  it 'headerizes' do
     expect('test_case'.headerize).to eq('Test-Case')
   end
 
@@ -55,5 +55,5 @@ describe '#headerize' do
     it 'underscores' do
       expect(underscored.headerize).to eq(headerized)
     end
-  end  
+  end
 end

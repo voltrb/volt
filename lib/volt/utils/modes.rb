@@ -41,7 +41,7 @@ module Volt
 
       # Check to see if we are in the specified mode
       def in_mode?(mode_name)
-        return defined?(Thread) && Thread.current[mode_name]
+        defined?(Thread) && Thread.current[mode_name]
       end
     end
 

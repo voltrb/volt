@@ -36,11 +36,11 @@ module Volt
           end
         end
 
-        return nil
+        nil
       end
 
       def query(collection, query)
-        allowed_methods = ['find', 'skip', 'limit']
+        allowed_methods = %w(find skip limit)
 
         cursor = @db[collection]
 
@@ -48,7 +48,7 @@ module Volt
           method_name, *args = query_part
 
           unless allowed_methods.include?(method_name.to_s)
-            raise "`#{method_name}` is not part of a valid query"
+            fail "`#{method_name}` is not part of a valid query"
           end
 
           cursor = cursor.send(method_name, *args)

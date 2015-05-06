@@ -14,7 +14,7 @@ module Volt
       at_exit do
         # Only run on parent
         if @child_id
-          puts "Exiting..."
+          puts 'Exiting...'
           @exiting = true
           stop_child
         end
@@ -85,7 +85,7 @@ module Volt
       Thread.new do
         loop do
           if @writer.closed?
-            puts "Parent process died"
+            puts 'Parent process died'
             exit
           end
 
@@ -146,12 +146,10 @@ module Volt
 
     def reload(changed_files)
       # only reload the server code if a non-view file was changed
-      server_code_changed = changed_files.any? {|path| File.extname(path) == '.rb' }
+      server_code_changed = changed_files.any? { |path| File.extname(path) == '.rb' }
 
       msg = 'file changed, reloading'
-      if server_code_changed
-        msg << ' server and'
-      end
+      msg << ' server and' if server_code_changed
       msg << ' client...'
 
       Volt.logger.log_with_color(msg, :light_blue)
@@ -159,7 +157,7 @@ module Volt
       begin
         SocketConnectionHandler.send_message_all(nil, 'reload')
       rescue => e
-        Volt.logger.error("Reload dispatch error: ")
+        Volt.logger.error('Reload dispatch error: ')
         Volt.logger.error(e)
       end
 
@@ -185,6 +183,5 @@ module Volt
     def stop_change_listener
       @listener.stop
     end
-
   end
 end

@@ -1,6 +1,5 @@
 require 'spec_helper'
 
-
 class TestUserTodo < Volt::Model
   own_by_user
 
@@ -47,7 +46,7 @@ class ::TestUpdateReadCheck < Volt::Model
   end
 end
 
-describe "model permissions" do
+describe 'model permissions' do
   it 'should follow CRUD states when checking permissions' do
     todo = TestUserTodoWithCrudStates.new.buffer
 
@@ -59,26 +58,23 @@ describe "model permissions" do
       todo._name = 'Jimmy'
 
       todo.save!.then do
-        spec_err = "should not have saved"
+        spec_err = 'should not have saved'
       end.fail do |err|
-        expect(err).to eq({:name=>["can not be changed"]})
+        expect(err).to eq(name: ['can not be changed'])
       end
     end.fail do |err|
       spec_err = "Did not save because: #{err.inspect}"
     end
 
-    if spec_err
-      fail spec_err
-    end
+    fail spec_err if spec_err
   end
 
   # it 'should deny an insert/create if a deny without fields' do
   #   store._todos << {name: 'Ryan'}
   # end
 
-
   if RUBY_PLATFORM != 'opal'
-    describe "read permissions" do
+    describe 'read permissions' do
       it 'should deny read on a field' do
         model = store._test_deny_read_names!.buffer
         model._name = 'Jimmy'
@@ -113,7 +109,7 @@ describe "model permissions" do
     end
 
     it 'should not check the read permissions when updating (so that all fields are present for the permissions check)' do
-      model = store._test_update_read_checks!.append({name: 'Ryan'}).sync
+      model = store._test_update_read_checks!.append(name: 'Ryan').sync
 
       expect(model.create_check).to eq(true)
       expect(model.read_check).to eq(nil)
@@ -146,7 +142,7 @@ describe "model permissions" do
     end
 
     it 'should not check read on delete, so all fields are available to the permissions block' do
-      model = store._test_update_read_checks!.append({name: 'Ryan'}).sync
+      model = store._test_update_read_checks!.append(name: 'Ryan').sync
 
       expect(model.read_check).to eq(nil)
 

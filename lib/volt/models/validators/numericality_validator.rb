@@ -37,13 +37,9 @@ module Volt
           @args.each do |arg, val|
             case arg
             when :min
-              if @value < val
-                add_error("number must be greater than #{val}")
-              end
+              add_error("number must be greater than #{val}") if @value < val
             when :max
-              if @value > val
-                add_error("number must be less than #{val}")
-              end
+              add_error("number must be less than #{val}") if @value > val
             end
           end
 
