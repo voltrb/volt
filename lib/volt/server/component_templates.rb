@@ -10,12 +10,6 @@ module Volt
     end
   end
 
-  class HAMLHandler
-    def call(file_contents)
-      Haml::Engine.new(file_contents).render
-    end
-  end
-
   class ComponentTemplates
     PAGE_REFERENCE = '$page'
 
@@ -36,9 +30,6 @@ module Volt
       # The handler must respond to +:call+, which will be passed the template
       # and should return the rendered template as a String.
       def register_template_handler(extension, handler)
-        puts "register_template_handler"
-        puts "extension, handler: #{extension} #{handler}"
-
         @@template_handlers[extension.to_sym] = handler
       end
 
@@ -131,6 +122,8 @@ module Volt
 
       known_file_extensions = Handlers.extensions.join(',')
 
+      puts "known_file_extensions: #{known_file_extensions}"
+
       # Load all templates in the folder
       Dir["#{views_path}*/*.{#{known_file_extensions}}"].sort.each do |view_path|
         # file extension
@@ -145,10 +138,7 @@ module Volt
         if handler = ComponentTemplates.handler_for_extension(format)
           file_contents = handler.call(file_contents)
         end
-        # if format == :haml
-        #   file_contents = Haml::Engine.new(file_contents).render
-        # end
-
+        
         all_templates = ViewParser.new( file_contents, template_path )
 
         binding_initializers = []
@@ -171,6 +161,4 @@ module Volt
     end
 
   end
-
-  ComponentTemplates.register_template_handler :html, HTMLHandler.new
 end

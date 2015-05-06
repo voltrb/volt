@@ -6,7 +6,6 @@ require 'rack'
 require 'sass'
 require 'volt/utils/tilt_patch'
 require 'sprockets-sass'
-require 'haml'
 require 'listen'
 
 
