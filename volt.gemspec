@@ -10,10 +10,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Ryan Stout']
   spec.email         = ['ryan@agileproductions.com']
   spec.summary       = 'A reactive Ruby web framework.'
-  spec.description   =  <<-EOF
-    A reactive Ruby web framework where your Ruby code runs on both the server
-    and the client (via Opal).
-  EOF
+  spec.description   = 'A reactive Ruby web framework where your Ruby code runs on both the server and the client (via Opal).'
   spec.homepage      = 'http://voltframework.com'
   spec.license       = 'MIT'
 
