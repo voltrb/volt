@@ -202,16 +202,18 @@ describe 'bindings test', type: :feature, sauce: true do
     end
   end
 
-  describe 'input hidden and select' do
-    it 'should display binding value' do
-      visit '/'
+  if ENV['BROWSER'] != 'phantom'
+    describe 'input hidden and select' do
+      it 'should display binding value' do
+        visit '/'
 
-      click_link 'Form'
+        click_link 'Form'
 
-      expect(find('body')).to have_content('Form Example')
-      expect(find('#title')).to have_content('form_ready')
-      expect(find('#name-display')).to have_content('Test')
-      expect(find('#location-display')).to have_content('AL')
+        expect(find('body')).to have_content('Form Example')
+        expect(find('#title')).to have_content('form_ready')
+        expect(find('#name-display')).to have_content('Test')
+        expect(find('#location-display')).to have_content('AL')
+      end
     end
   end
 end
