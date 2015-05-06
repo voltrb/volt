@@ -65,7 +65,7 @@ module Volt
       @handler.scope << EachScope.new(@handler, @path + "/__each#{@binding_number}", content, with_index)
     end
 
-    def add_each_with_index
+    def add_each_with_index(_)
       add_each(content, true)
     end
 
