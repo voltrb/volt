@@ -41,6 +41,10 @@ If not installed, you can install from the source or use Homebrew:
 brew upgrade && brew install phantomjs
 ```
 
+#### Caveat
+
+You need 2.0 for MutationObserver API support, so until this issue https://github.com/teampoltergeist/poltergeist/issues/574 is resolved that poltergeist will support phantomjs 2.0, the test for attribute binding has to be in a real browser.
+
 #### Bundle Install and Test
 
 Ensure that you can build the project and run tests.
