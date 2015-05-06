@@ -26,7 +26,7 @@ module Volt
         update(result)
       end
 
-      @is_check = `#{element}.is('select')`
+      @is_select = `#{element}.is('select')`
       @is_hidden = `#{element}.is('[type=hidden]')`
       @is_radio = `#{element}.is('[type=radio]')`
       if @is_radio
@@ -37,7 +37,7 @@ module Volt
       case @attribute_name
         when 'value'
           changed_event = Proc.new { changed }
-          if @is_check
+          if @is_select
             `#{element}.on('change', #{changed_event})`
           elsif @is_hidden
             `#{element}.watch('value', #{changed_event})`
