@@ -4,15 +4,13 @@ require 'volt/page/bindings/view_binding/grouped_controllers'
 require 'volt/page/bindings/view_binding/view_lookup_for_path'
 require 'volt/page/bindings/view_binding/controller_handler'
 
-
 module Volt
   class ViewBinding < BaseBinding
-
     # @param [String]     binding_in_path is the path this binding was rendered from.  Used to
     #                     lookup paths in ViewLookupForPath
     # @param [String|nil] content_template_path is the path to the template for the content
     #                     provided in the tag.
-    def initialize(page, target, context, binding_name, binding_in_path, getter, content_template_path=nil)
+    def initialize(page, target, context, binding_name, binding_in_path, getter, content_template_path = nil)
       super(page, target, context, binding_name)
 
       @content_template_path = content_template_path
@@ -23,7 +21,7 @@ module Volt
       @current_template = nil
 
       # Run the initial render
-      @computation      = -> do
+      @computation      = lambda do
         # Don't try to render if this has been removed
         if @context
           # Render
@@ -97,22 +95,19 @@ module Volt
 
     # Called when the next template is ready to render
     def render_next_template(full_path, path)
-      begin
-        # stop_waiting_for_load
-        remove_current_controller_and_template
+      remove_current_controller_and_template
 
-        # Switch the current template
-        @current_controller_handler = @starting_controller_handler
-        @starting_controller_handler = nil
+      # Switch the current template
+      @current_controller_handler = @starting_controller_handler
+      @starting_controller_handler = nil
 
-        # Also track the current controller directly
-        @controller = @current_controller_handler.controller if full_path
+      # Also track the current controller directly
+      @controller = @current_controller_handler.controller if full_path
 
-        render_template(full_path || path)
-      rescue => e
-        Volt.logger.error("Error during render of template at #{path}: #{e.inspect}")
-        Volt.logger.error(e.backtrace)
-      end
+      render_template(full_path || path)
+    rescue => e
+      Volt.logger.error("Error during render of template at #{path}: #{e.inspect}")
+      Volt.logger.error(e.backtrace)
     end
 
     def stop_waiting_for_load
@@ -189,7 +184,7 @@ module Volt
       controller_class, action = ControllerHandler.get_controller_and_action(controller_path)
 
       generated_new = false
-      new_controller = Proc.new do
+      new_controller = proc do
         # Mark that we needed to generate a new controller instance (not reused
         # from the group)
         generated_new = true
@@ -212,14 +207,12 @@ module Volt
         # Call the action
         stopped = handler.call_action
 
-        if stopped
-          controller.instance_variable_set('@chain_stopped', true)
-        end
+        controller.instance_variable_set('@chain_stopped', true) if stopped
       else
         stopped = controller.instance_variable_get('@chain_stopped')
       end
 
-      return handler, generated_new, stopped
+      [handler, generated_new, stopped]
     end
 
     # The context for templates can be either a controller, or the original context.

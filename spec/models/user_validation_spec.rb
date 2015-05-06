@@ -1,8 +1,7 @@
 require 'spec_helper'
 
-
 describe Volt::UserValidatorHelpers do
-  context "with user" do
+  context 'with user' do
     before do
       allow(Volt).to receive(:current_user_id) { 294 }
     end

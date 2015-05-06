@@ -19,7 +19,6 @@ module Volt
       require 'volt/volt/core'
       require 'volt/boot'
 
-
       @root_path ||= Dir.pwd
       Volt.root  = @root_path
 
@@ -30,7 +29,6 @@ module Volt
       require 'volt/server/rack/opal_files'
       require 'volt/server/rack/index_files'
       require 'volt/server/component_handler'
-
 
       @app_path = File.expand_path(File.join(@root_path, 'app'))
 

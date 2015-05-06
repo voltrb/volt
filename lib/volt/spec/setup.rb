@@ -1,6 +1,4 @@
-if RUBY_PLATFORM != 'opal'
-  require 'volt/volt/core'
-end
+require 'volt/volt/core' if RUBY_PLATFORM != 'opal'
 
 module Volt
   class << self
@@ -28,7 +26,7 @@ module Volt
 
       unless ENV['BROWSER']
         # Not running integration tests with ENV['BROWSER']
-        RSpec.configuration.filter_run_excluding :type => :feature
+        RSpec.configuration.filter_run_excluding type: :feature
       end
 
       # Setup the spec collection accessors
@@ -55,7 +53,6 @@ module Volt
           end
         end
       end
-
     end
   end
 end

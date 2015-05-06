@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "Volt::Dirty" do
+describe 'Volt::Dirty' do
   let(:model) do
     model = Volt::Model.new
 
@@ -30,7 +30,7 @@ describe "Volt::Dirty" do
     expect(model.name_was).to eq(nil)
     expect(model.name_changes).to eq([nil, 'Bob', 'Jimmy', 'Martin', nil])
 
-    expect(model.changed_attributes).to eq({:name=>[nil, "Bob", "Jimmy", "Martin", nil]})
+    expect(model.changed_attributes).to eq(name: [nil, 'Bob', 'Jimmy', 'Martin', nil])
   end
 
   it 'should say models are changed' do
@@ -46,9 +46,8 @@ describe "Volt::Dirty" do
     expect(model.changed?(:name)).to eq(false)
 
     expect(model.changed?).to eq(false)
-    model._some_other_attr = "Wow!"
+    model._some_other_attr = 'Wow!'
     expect(model.changed?).to eq(true)
-
   end
 
   it 'should reset changes' do
@@ -81,26 +80,26 @@ describe "Volt::Dirty" do
 
   it 'should revert changes' do
     expect(model.attributes).to eq({})
-    model.attributes = {first: 'Bob', last: 'Smith'}
-    expect(model.attributes).to eq({first: 'Bob', last: 'Smith'})
+    model.attributes = { first: 'Bob', last: 'Smith' }
+    expect(model.attributes).to eq(first: 'Bob', last: 'Smith')
 
     model.revert_changes!
-    expect(model.attributes).to eq({first: nil, last: nil})
+    expect(model.attributes).to eq(first: nil, last: nil)
   end
 
   it 'should revert changes after a clear_tracked_changed!' do
     expect(model.attributes).to eq({})
-    model.attributes = {first: 'Bob', last: 'Smith'}
-    expect(model.attributes).to eq({first: 'Bob', last: 'Smith'})
+    model.attributes = { first: 'Bob', last: 'Smith' }
+    expect(model.attributes).to eq(first: 'Bob', last: 'Smith')
 
     model.clear_tracked_changes!
     expect(model.changed_attributes).to eq({})
 
     model._first = 'Jimmy'
     model._last = 'Dean'
-    expect(model.attributes).to eq({first: 'Jimmy', last: 'Dean'})
+    expect(model.attributes).to eq(first: 'Jimmy', last: 'Dean')
 
     model.revert_changes!
-    expect(model.attributes).to eq({first: 'Bob', last: 'Smith'})
+    expect(model.attributes).to eq(first: 'Bob', last: 'Smith')
   end
 end

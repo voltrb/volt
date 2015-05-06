@@ -7,9 +7,7 @@ require 'volt/utils/volt_user_error'
 require 'volt/utils/boolean_patch'
 
 require 'volt/config'
-unless RUBY_PLATFORM == 'opal'
-  require 'volt/data_stores/data_store'
-end
+require 'volt/data_stores/data_store' unless RUBY_PLATFORM == 'opal'
 require 'volt/volt/users'
 
 module Volt
@@ -23,9 +21,7 @@ module Volt
 
   class << self
     def root
-      if self.client?
-        raise "Volt.root can not be called from the client."
-      end
+      fail 'Volt.root can not be called from the client.' if self.client?
       @root ||= File.expand_path(Dir.pwd)
     end
 

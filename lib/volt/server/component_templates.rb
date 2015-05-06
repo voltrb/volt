@@ -112,9 +112,9 @@ module Volt
         parts = ["class #{klass_parts.pop} < Volt::Task; end"]
 
         # Work backwards on the modules
-        klass_parts.reverse.each do |kpart|
+        klass_parts.reverse_each do |kpart|
           parts.unshift("module #{kpart}")
-          parts.push("end")
+          parts.push('end')
         end
 
         # Combine the parts

@@ -9,13 +9,13 @@ class Pry
       loop do
         case val = read
         when :control_c
-          output.puts ""
+          output.puts ''
           pry.reset_eval_string
         when :no_more_input
-          output.puts "" if output.tty?
+          output.puts '' if output.tty?
           break
         else
-          output.puts "" if val.nil? && output.tty?
+          output.puts '' if val.nil? && output.tty?
           return pry.exit_value unless pry.eval(val)
         end
 
@@ -38,7 +38,6 @@ module Volt
         $page.page
       end
     end
-
 
     def self.start
       require 'pry'

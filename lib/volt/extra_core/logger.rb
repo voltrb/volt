@@ -21,7 +21,7 @@ else
 
   module Volt
     class VoltLogger < Logger
-      def initialize(current={})
+      def initialize(current = {})
         super(STDOUT)
         @current = current
         @formatter = Volt::VoltLoggerFormatter.new
@@ -38,7 +38,6 @@ else
         level = error ? Logger::ERROR : Logger::INFO
         text = TaskLogger.task_dispatch_message(self, args)
 
-
         if error
           text += "\n" + colorize(error.to_s, :red)
           if error.is_a?(Exception) && !error.is_a?(VoltUserError)
@@ -47,7 +46,6 @@ else
         end
 
         log(level, text)
-
       end
 
       def args
@@ -69,7 +67,6 @@ else
       def log_with_color(msg, color)
         Volt.logger.info(colorize(msg, color))
       end
-
 
       private
 

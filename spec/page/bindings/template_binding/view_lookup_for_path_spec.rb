@@ -1,7 +1,6 @@
 require 'spec_helper'
 require 'volt/page/bindings/view_binding'
 
-
 describe Volt::ViewBinding do
   before do
     @page = double('volt/page')

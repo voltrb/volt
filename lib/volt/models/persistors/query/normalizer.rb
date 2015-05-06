@@ -12,8 +12,8 @@ module Volt
 
       def self.merge_finds_and_move_to_front(query)
         # Map first parts to string
-        query = query.map {|v| v[0] = v[0].to_s ; v }
-        has_find = query.find {|v| v[0] == 'find' }
+        query = query.map { |v| v[0] = v[0].to_s; v }
+        has_find = query.find { |v| v[0] == 'find' }
 
         if has_find
           # merge any finds

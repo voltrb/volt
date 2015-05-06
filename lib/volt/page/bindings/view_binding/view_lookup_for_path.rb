@@ -87,6 +87,5 @@ module Volt
 
       [nil, nil]
     end
-
   end
 end

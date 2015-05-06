@@ -1,7 +1,7 @@
 if RUBY_PLATFORM != 'opal'
   class TestTask < Volt::Task
     def allowed_method(arg1, arg2)
-      return 'yes' + arg1 + arg2
+      'yes' + arg1 + arg2
     end
   end
 

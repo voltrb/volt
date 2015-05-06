@@ -14,7 +14,7 @@ module Volt
       @original_path = initial_path
 
       # Default to the body section
-      initial_path   += '/body' if allow_sections
+      initial_path += '/body' if allow_sections
 
       @scope     = [ViewScope.new(self, initial_path)]
       @templates = {}

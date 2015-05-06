@@ -15,7 +15,7 @@ module Volt
 
     def setup
       # Listen for changes
-      @computation = -> do
+      @computation = lambda do
         begin
           @context.instance_eval(&@getter)
         rescue => e
@@ -27,17 +27,15 @@ module Volt
       end
 
       @is_radio = `#{element}.is('[type=radio]')`
-      if @is_radio
-        @selected_value = `#{element}.attr('value') || ''`
-      end
+      @selected_value = `#{element}.attr('value') || ''` if @is_radio
 
       # Bind so when this value updates, we update
       case @attribute_name
         when 'value'
-          changed_event = Proc.new { changed }
+          changed_event = proc { changed }
           `#{element}.on('input.attrbind', #{changed_event})`
         when 'checked'
-          changed_event = Proc.new { |event| changed(event) }
+          changed_event = proc { |event| changed(event) }
           `#{element}.on('change.attrbind', #{changed_event})`
       end
     end
@@ -79,13 +77,11 @@ module Volt
         # update, we can just depend on it and update directly.
         @string_template_renderer = new_value
 
-        @string_template_renderer_computation = -> do
+        @string_template_renderer_computation = lambda do
           self.value = @string_template_renderer.html
         end.watch!
       else
-        if new_value.is_a?(NilMethodCall) || new_value.nil?
-          new_value = ''
-        end
+        new_value = '' if new_value.is_a?(NilMethodCall) || new_value.nil?
 
         self.value = new_value
       end
@@ -96,9 +92,7 @@ module Volt
         when 'value'
           # TODO: only update if its not the same, this keeps it from moving the
           # cursor in text fields.
-          if val != `(#{element}.val() || '')`
-            `#{element}.val(#{val})`
-          end
+          `#{element}.val(#{val})` if val != `(#{element}.val() || '')`
         when 'disabled'
           # Disabled is handled specially, you can either return a boolean:
           # (true being disabled, false not disabled), or you can optionally
@@ -114,13 +108,9 @@ module Volt
     end
 
     def update_checked(value)
-      if value.is_a?(NilMethodCall) || value.nil?
-        value = false
-      end
+      value = false if value.is_a?(NilMethodCall) || value.nil?
 
-      if @is_radio
-        value = (@selected_value == value)
-      end
+      value = (@selected_value == value) if @is_radio
 
       `#{element}.prop('checked', #{value})`
     end

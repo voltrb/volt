@@ -29,7 +29,7 @@ module Volt
           model                          = @model.new_model(nil, options)
 
           # TODO: Might not need to assign this
-          @model.attributes              ||= {}
+          @model.attributes ||= {}
           @model.attributes[method_name] = model
         end
         model
@@ -40,7 +40,7 @@ module Volt
       end
 
       def inspect
-        "<#{self.class.to_s}:#{object_id}>"
+        "<#{self.class}:#{object_id}>"
       end
     end
   end

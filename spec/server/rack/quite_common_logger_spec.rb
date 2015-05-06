@@ -24,7 +24,7 @@ unless RUBY_PLATFORM == 'opal'
       end
 
       describe 'when request path has no file extension and request run over web socket' do
-        let(:env) { {'PATH_INFO' => '/file'} }
+        let(:env) { { 'PATH_INFO' => '/file' } }
 
         it "calls 'log' method" do
           expect(subject).to receive(:log)
@@ -33,7 +33,7 @@ unless RUBY_PLATFORM == 'opal'
       end
 
       describe 'when request path has file extension' do
-        let(:env) { {'PATH_INFO' => '/file.ext'} }
+        let(:env) { { 'PATH_INFO' => '/file.ext' } }
 
         it "doesn't call 'log' method" do
           expect(subject).not_to receive(:log)
@@ -42,7 +42,7 @@ unless RUBY_PLATFORM == 'opal'
       end
 
       describe 'when request run over web socket' do
-        let(:env) { {'PATH_INFO' => '/channel'} }
+        let(:env) { { 'PATH_INFO' => '/channel' } }
 
         it "doesn't call 'log' method" do
           expect(subject).not_to receive(:log)

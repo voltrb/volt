@@ -6,6 +6,5 @@ describe "missing tags and view's", type: :feature do
 
     expect(page).to have_content('view or tag at "some/wrong/path"')
     expect(page).to have_content('view or tag at "not/a/component"')
-
   end
 end

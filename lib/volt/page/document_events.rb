@@ -22,7 +22,7 @@ module Volt
 
       end
 
-      @events[event][binding.binding_name]                    ||= {}
+      @events[event][binding.binding_name] ||= {}
       @events[event][binding.binding_name][binding.object_id] = handler
     end
 

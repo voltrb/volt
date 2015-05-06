@@ -72,7 +72,7 @@ shared_examples_for 'a format validator' do
   end
 
   context 'when there is both regex and block criteria' do
-    let(:options) { [ regex_opts, proc_opts ] }
+    let(:options) { [regex_opts, proc_opts] }
 
     before { validate }
 

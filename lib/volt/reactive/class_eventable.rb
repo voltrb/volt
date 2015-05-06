@@ -17,7 +17,7 @@ module Volt
       # events at the class level.  When the event triggers, self will be set to the
       # instance it was triggered on.
       def on(*events, &callback)
-        raise '.on requires an event' if events.size == 0
+        fail '.on requires an event' if events.size == 0
 
         listener = Listener.new(self, events, callback)
 

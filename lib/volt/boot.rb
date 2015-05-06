@@ -21,6 +21,4 @@ module Volt
     # Boot the app
     App.new(app_path)
   end
-
-
 end

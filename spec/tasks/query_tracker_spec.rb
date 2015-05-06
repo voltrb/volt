@@ -33,12 +33,11 @@ if RUBY_PLATFORM != 'opal'
       end
 
       def notify_changed(id, data, skip_channel)
-        item = @items.find{ |item| item['_id'] == id }
+        item = @items.find { |item| item['_id'] == id }
         idx  = @items.index(item)
         @items.delete(item)
         @items.insert(idx, data)
       end
-
     end
 
     before do
@@ -141,7 +140,6 @@ if RUBY_PLATFORM != 'opal'
       expect(@live_query.items).to_not eq(@items)
       @query_tracker.run
       expect(@live_query.items).to eq(@items)
-
     end
   end
 end

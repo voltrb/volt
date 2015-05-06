@@ -27,7 +27,6 @@ require 'volt/page/url_tracker'
 require 'volt/benchmark/benchmark'
 require 'volt/page/tasks'
 
-
 module Volt
   class Page
     attr_reader :url, :params, :page, :routes, :events
@@ -151,9 +150,7 @@ module Volt
 
     # On the server, we can delay loading the views until they are actually requeted.  This
     # sets up an instance variable to call to load.
-    def template_loader=(callback)
-      @template_loader = callback
-    end
+    attr_writer :template_loader
 
     def templates
       if @template_loader
@@ -166,7 +163,7 @@ module Volt
     end
 
     def add_routes(&block)
-      @routes   ||= Routes.new
+      @routes ||= Routes.new
       @routes.define(&block)
       @url.router = @routes
     end
@@ -221,7 +218,7 @@ module Volt
     $page = Page.new
 
     `$(document).ready(function() {`
-      $page.start
+    $page.start
     `});`
   end
 end

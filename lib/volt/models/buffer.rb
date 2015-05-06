@@ -7,8 +7,7 @@ module Volt
     def save!(&block)
       # TODO: this shouldn't need to be run, but if no attributes are assigned, then
       # if needs to be run.  Maybe there's a better way to handle it.
-      return validate!.then do
-
+      validate!.then do
         # Get errors from validate
         errors = self.errors.to_h
 
