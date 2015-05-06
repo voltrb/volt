@@ -19,9 +19,9 @@ module Volt
           self.custom_validations ||= []
           custom_validations << block
         else
-          self.validations ||= {}
-          validations[field_name] ||= {}
-          validations[field_name].merge!(options)
+          self.validations                     ||= {}
+          validations[field_name]              ||= {create: {}, update: {}, both: {}}
+          validations[field_name][options[:on] || :both].merge!(options.except(:on))
         end
       end
     end
@@ -119,7 +119,8 @@ module Volt
 
         # Run through each validation
         validations.each_pair do |field_name, options|
-          options.each_pair do |validation, args|
+          merged_options = (new_record? ? options[:create] : options[:update]).merge options[:both]
+          merged_options.each_pair do |validation, args|
             # Call the specific validator, then merge the results back
             # into one large errors hash.
             klass = validation_class(validation, args)
