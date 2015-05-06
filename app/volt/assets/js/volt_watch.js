@@ -172,16 +172,18 @@
       var element = elements[i];
       var indexes = []
 
-      for (var j = 0; j < element.watching.length; j++) {
+      if (element.watching) {
+        for (var j = 0; j < element.watching.length; j++) {
 
-        var data = element.watching[j];
-        if (eqlArrays(data.props, props.split(' '))) {
-          indexes.push(j);
+          var data = element.watching[j];
+          if (eqlArrays(data.props, props.split(' '))) {
+            indexes.push(j);
+          }
+
         }
 
+        element.watching.multisplice.apply(element.watching, indexes);
       }
-
-      element.watching.multisplice.apply(element.watching, indexes);
 
     }
 
