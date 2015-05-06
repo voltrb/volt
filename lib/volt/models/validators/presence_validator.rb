@@ -3,7 +3,7 @@ module Volt
     def self.validate(model, field_name, args)
       errors = {}
       value  = model.get(field_name)
-      if !value || value.blank?
+      unless value.present?
         if args.is_a?(Hash) && args[:message]
           message = args[:message]
         else

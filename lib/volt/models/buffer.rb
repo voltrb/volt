@@ -77,6 +77,13 @@ module Volt
       options[:buffer]
     end
 
+    # Return true if the model hasn't been saved yet
+    def new?
+      @new
+    end
+
+    alias_method :new_record?, :new?
+
     def save_to
       options[:save_to]
     end

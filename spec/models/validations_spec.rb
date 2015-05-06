@@ -12,6 +12,7 @@ describe Volt::Model do
       validate :name, length: 4
       validate :phone_number, phone_number: true
       validate :username, presence: true
+      validate :password, length: 8, on: :create
     end
   end
 
@@ -27,16 +28,36 @@ describe Volt::Model do
     end
   end
 
+  it 'should only validate password on new record' do
+    model.validate!.then do
+      expect(model.errors).to include(
+        password: ['must be at least 8 characters']
+      )
+    end
+
+    Volt::Model.no_validate do
+      model.assign_attributes({password: '123123123'}, false)
+    end
+
+    model.validate!.then do
+      expect(model.errors).to_not include(
+        password: ['must be at least 8 characters']
+      )
+    end
+  end
+
   it 'should return errors for all failed validations' do
-    model.validate!
-    expect(model.errors).to eq(
-      count: ['must be a number'],
-      description: ['needs to be longer'],
-      email: ['must be an email address'],
-      name: ['must be at least 4 characters'],
-      phone_number: ['must be a phone number with area or country code'],
-      username: ['must be specified']
-    )
+    model.validate!.then do |errs|
+      expect(errs).to eq(
+        count: ['must be a number'],
+        description: ['needs to be longer'],
+        email: ['must be an email address'],
+        name: ['must be at least 4 characters'],
+        phone_number: ['must be a phone number with area or country code'],
+        username: ['must be specified'],
+        password: ['must be at least 8 characters']
+      )
+    end
   end
 
   it 'should show all fields in marked errors once saved' do

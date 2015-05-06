@@ -116,6 +116,8 @@ module Volt
       @new
     end
 
+    alias_method :new_record?, :new?
+
     # Update the options
     def options=(options)
       @options     = options
@@ -219,7 +221,7 @@ module Volt
       new_value = wrap_value(value, [attribute_name])
 
       if old_value != new_value
-        # Track the old value, skip if we are in no_validate
+        # Track the old value, skip if we are in no_change_tracking
         attribute_will_change!(attribute_name, old_value) unless Volt.in_mode?(:no_change_tracking)
 
         # Assign the new value
@@ -420,12 +422,7 @@ module Volt
               # Some errors are present, revert changes
               revert_changes!
 
-              # After we revert, we need to validate again to get the error messages back
-              # TODO: Could probably cache the previous errors.
-              result = validate!.then do
-                # Reject the promise with the errors
-                Promise.new.reject(errs)
-              end
+              Promise.new.reject(errors)
             else
               # No errors, tell the persistor to handle the change (usually save)
 
