@@ -1,6 +1,6 @@
 require 'volt/reactive/reactive_array'
 require 'volt/models/model_wrapper'
-require 'volt/models/model_helpers'
+require 'volt/models/model_helpers/model_helpers'
 require 'volt/models/state_manager'
 require 'volt/models/state_helpers'
 

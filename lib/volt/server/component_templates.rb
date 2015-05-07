@@ -72,10 +72,9 @@ module Volt
 
     def generate_view_code
       code = ''
+      views_path = "#{@component_path}/views/"
 
       exts = Handlers.extensions
-
-      puts "known_file_extensions: #{exts}"
 
       # Load all templates in the folder
       Dir["#{views_path}*/*.{#{exts.join(',')}}"].sort.each do |view_path|
@@ -92,7 +91,7 @@ module Volt
         if handler = ComponentTemplates.handler_for_extension(format)
           file_contents = handler.call(file_contents)
         
-          all_templates = ViewParser.new(File.read(view_path), template_path)
+          all_templates = ViewParser.new(file_contents, template_path)
 
           binding_initializers = []
           all_templates.templates.each_pair do |name, template|
@@ -144,7 +143,7 @@ module Volt
       routes_path = "#{@component_path}/config/routes.rb"
 
       if File.exist?(routes_path)
-        code << "#{PAGE_REFERENCE}.add_routes do\n"
+        code << "#{page_reference}.add_routes do\n"
         code << "\n" + File.read(routes_path) + "\n"
         code << "end\n\n"
       end

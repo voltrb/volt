@@ -51,7 +51,13 @@ else
           db_name:   (ENV['DB_NAME'] || (app_name + '_' + Volt.env.to_s)).gsub('.', '_'),
           db_host:   ENV['DB_HOST'] || 'localhost',
           db_port:   (ENV['DB_PORT'] || 27_017).to_i,
-          db_driver: ENV['DB_DRIVER'] || 'mongo'
+          db_driver: ENV['DB_DRIVER'] || 'mongo',
+
+          # a list of components which should be included in all components
+          default_components: ['volt'],
+
+          compress_javascript: Volt.env.production?,
+          compress_css:        Volt.env.production?
         }
       end
 
@@ -63,8 +69,11 @@ else
       end
 
       # Load in all .rb files in the config folder
-      def run_files_in_config_folder
-        Dir[Volt.root + '/config/*.rb'].each do |config_file|
+      def run_app_and_initializers
+        files = ["#{Volt.root}/config/app.rb"]
+        files += Dir[Volt.root + '/config/initializers/*.rb']
+
+        files.each do |config_file|
           require(config_file)
         end
       end

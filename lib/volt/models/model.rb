@@ -1,6 +1,6 @@
 require 'volt/models/model_wrapper'
 require 'volt/models/array_model'
-require 'volt/models/model_helpers'
+require 'volt/models/model_helpers/model_helpers'
 require 'volt/models/model_hash_behaviour'
 require 'volt/models/validations'
 require 'volt/utils/modes'
@@ -10,8 +10,9 @@ require 'volt/models/buffer'
 require 'volt/models/field_helpers'
 require 'volt/reactive/reactive_hash'
 require 'volt/models/validators/user_validation'
-require 'volt/models/dirty'
-require 'volt/models/listener_tracker'
+require 'volt/models/model_helpers/dirty'
+require 'volt/models/model_helpers/listener_tracker'
+require 'volt/models/model_helpers/model_change_helpers'
 require 'volt/models/permissions'
 require 'volt/models/associations'
 require 'volt/reactive/class_eventable'
@@ -45,6 +46,7 @@ module Volt
     include Permissions
     include Associations
     include ReactiveAccessors
+    include ModelChangeHelpers
 
     attr_reader :attributes, :parent, :path, :persistor, :options
 
@@ -149,24 +151,7 @@ module Volt
       @deps.changed_all!
       @deps = HashDependency.new
 
-      # Save the changes
-      if initial_setup
-        # Run initial validation
-        if Volt.in_mode?(:no_validate)
-          # No validate, resolve nil
-          Promise.new.resolve(nil)
-        else
-          return validate!.then do |errs|
-            if errs && errs.size > 0
-              Promise.new.reject(errs)
-            else
-              Promise.new.resolve(nil)
-            end
-          end
-        end
-      else
-        return run_changed
-      end
+      run_initial_setup(initial_setup)
     end
 
     alias_method :attributes=, :assign_attributes
@@ -353,6 +338,28 @@ module Volt
     end
 
     private
+    def run_initial_setup(initial_setup)
+
+      # Save the changes
+      if initial_setup
+        # Run initial validation
+        if Volt.in_mode?(:no_validate)
+          # No validate, resolve nil
+          Promise.new.resolve(nil)
+        else
+          return validate!.then do |errs|
+            if errs && errs.size > 0
+              Promise.new.reject(errs)
+            else
+              Promise.new.resolve(nil)
+            end
+          end
+        end
+      else
+        return run_changed
+      end
+    end
+
 
     # Volt provides a few access methods to get more data about the model,
     # we want to prevent these from being assigned or accessed through
@@ -361,17 +368,6 @@ module Volt
       if INVALID_FIELD_NAMES[name]
         fail InvalidFieldName, "`#{name}` is reserved and can not be used as a field"
       end
-    end
-
-    def setup_buffer(model)
-      Volt::Model.no_validate do
-        model.assign_attributes(attributes, true)
-      end
-
-      model.change_state_to(:loaded_state, :loaded)
-
-      # Set new to the same as the main model the buffer is from
-      model.instance_variable_set('@new', @new)
     end
 
     # Takes the persistor if there is one and
@@ -397,64 +393,6 @@ module Volt
           send(:"_#{key}=", value)
         end
       end
-    end
-
-    # Called when something in the model changes.  Saves
-    # the model if there is a persistor, and changes the
-    # model to not be new.
-    #
-    # @return [Promise|nil] a promise for when the save is
-    #         complete
-    def run_changed(attribute_name = nil)
-      # no_validate mode should only be used internally.  no_validate mode is a
-      # performance optimization that prevents validation from running after each
-      # change when assigning multile attributes.
-      unless Volt.in_mode?(:no_validate)
-        # Run the validations for all fields
-        result = nil
-        return validate!.then do
-          # Buffers are allowed to be in an invalid state
-          unless buffer?
-            # First check that all local validations pass
-            if error_in_changed_attributes?
-              # Some errors are present, revert changes
-              revert_changes!
-
-              # After we revert, we need to validate again to get the error messages back
-              # TODO: Could probably cache the previous errors.
-              result = validate!.then do
-                # Reject the promise with the errors
-                Promise.new.reject(errs)
-              end
-            else
-              # No errors, tell the persistor to handle the change (usually save)
-
-              # Don't save right now if we're in a nosave block
-              unless Volt.in_mode?(:no_save)
-                # the changed method on a persistor should return a promise that will
-                # be resolved when the save is complete, or fail with a hash of errors.
-                if @persistor
-                  result = @persistor.changed(attribute_name)
-                else
-                  result = Promise.new.resolve(nil)
-                end
-
-                # Saved, no longer new
-                @new = false
-
-                # Clear the change tracking
-                clear_tracked_changes!
-              end
-            end
-          end
-
-          # Return result inside of the validate! promise
-          result
-        end
-      end
-
-      # Didn't run validations
-      nil
     end
   end
 end

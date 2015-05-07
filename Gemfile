@@ -18,8 +18,6 @@ group :development do
 
   # For running rubocop
   gem 'rubocop', require: false
-
-  gem 'haml'
 end
 
 group :development, :test do
