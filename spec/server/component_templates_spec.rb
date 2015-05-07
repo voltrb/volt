@@ -3,12 +3,8 @@ else
   require 'spec_helper'
   require 'benchmark'
   require 'volt/server/component_templates'
-end
 
-describe Volt::ComponentTemplates do
-  let(:ct){ Volt::ComponentTemplates.new('path/to/things', 'thing') }
-
-  describe "#available_formats" do
+  describe Volt::ComponentTemplates do
     let(:ct_haml){ Volt::ComponentTemplates.new('path/to/things.haml', 'thing') }
     it 'can be extended' do
       # Register new handler
@@ -19,4 +15,5 @@ describe Volt::ComponentTemplates do
       expect( ct_haml.generate_view_code ).to eq("")
     end
   end
+
 end
