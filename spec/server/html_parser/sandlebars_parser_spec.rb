@@ -20,7 +20,7 @@ class HTMLHandler
   end
 
   def binding(binding)
-    @html << "{#{binding}}"
+    @html << "{{#{binding}}}"
   end
 
   def start_tag(tag_name, attributes, unary)
@@ -94,12 +94,13 @@ describe Volt::SandlebarsParser do
   end
 
   it 'should handle bindings' do
-    html = '<p>some cool {text} is {awesome}</p>'
+    html = '<p>some cool {{ text }} is {{ awesome }}</p>'
+    match = '<p>some cool {{text}} is {{awesome}}</p>'
     test_html(html)
   end
 
-  it 'should handle bindings with nested { and }' do
-    html = "<p>testing with {nested { 'binding stuff' }}</p>"
+  it 'should handle bindings with nested {{and}}' do
+    html = "<p>testing with {{nested {{ 'binding stuff' }} }}</p>"
     test_html(html)
   end
 
@@ -139,7 +140,7 @@ describe Volt::SandlebarsParser do
   end
 
   it 'should not jump bindings' do
-    html = '<p>{some} text {binding}</p>'
+    html = '<p>{{ some }} text {{ binding }}</p>'
     test_html(html)
   end
 
@@ -150,8 +151,8 @@ describe Volt::SandlebarsParser do
   end
 
   it 'should let you escape { and }' do
-    html = 'should escape {{{{}}} and {{{}}}}'
-    match = 'should escape { and }'
+    html = 'should escape {{{{{}}} and {{{}}}}}'
+    match = 'should escape {{ and }}'
     test_html(html, match)
   end
 
