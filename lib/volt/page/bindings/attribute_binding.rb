@@ -26,14 +26,22 @@ module Volt
         update(result)
       end
 
+      @is_select = `#{element}.is('select')`
+      @is_hidden = `#{element}.is('[type=hidden]')`
       @is_radio = `#{element}.is('[type=radio]')`
       @selected_value = `#{element}.attr('value') || ''` if @is_radio
 
       # Bind so when this value updates, we update
       case @attribute_name
         when 'value'
-          changed_event = proc { changed }
-          `#{element}.on('input.attrbind', #{changed_event})`
+          changed_event = Proc.new { changed }
+          if @is_select
+            `#{element}.on('change.attrbind', #{changed_event})`
+          elsif @is_hidden
+            `#{element}.watch('value', #{changed_event})`
+          else
+            `#{element}.on('input.attrbind', #{changed_event})`
+          end
         when 'checked'
           changed_event = proc { |event| changed(event) }
           `#{element}.on('change.attrbind', #{changed_event})`
@@ -120,7 +128,13 @@ module Volt
       # aren't responsible for it being there.
       case @attribute_name
         when 'value'
-          `#{element}.off('input.attrbind', #{nil})`
+          if @is_select
+            `#{element}.off('change.attrbind')`
+          elsif @is_hidden
+            `#{element}.unwatch('value')`
+          else
+            `#{element}.off('input.attrbind', #{nil})`
+          end
         when 'checked'
           `#{element}.off('change.attrbind', #{nil})`
       end
