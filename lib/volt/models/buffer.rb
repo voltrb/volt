@@ -7,8 +7,7 @@ module Volt
     def save!(&block)
       # TODO: this shouldn't need to be run, but if no attributes are assigned, then
       # if needs to be run.  Maybe there's a better way to handle it.
-      return validate!.then do
-
+      validate!.then do
         # Get errors from validate
         errors = self.errors.to_h
 
@@ -42,6 +41,9 @@ module Volt
             end.fail do |errors|
               if errors.is_a?(Hash)
                 server_errors.replace(errors)
+
+                # Merge the server errors into the main errors
+                self.errors.merge!(server_errors.to_h)
               end
 
               promise_for_errors(errors)

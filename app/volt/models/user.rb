@@ -1,6 +1,4 @@
-unless RUBY_PLATFORM == 'opal'
-  require 'bcrypt'
-end
+require 'bcrypt' unless RUBY_PLATFORM == 'opal'
 
 module Volt
   class User < Model

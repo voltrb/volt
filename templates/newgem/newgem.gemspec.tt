@@ -1,13 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-
-version = File.read(File.expand_path('../VERSION', __FILE__)).strip
-
+require '<%=config[:namespaced_path]%>/version'
 
 Gem::Specification.new do |spec|
   spec.name          = <%=config[:name].inspect%>
-  spec.version       = version
+  spec.version       = <%=config[:constant_name]%>::VERSION
   spec.authors       = [<%=config[:author].inspect%>]
   spec.email         = [<%=config[:email].inspect%>]
   spec.summary       = %q{TODO: Write a short summary. Required.}

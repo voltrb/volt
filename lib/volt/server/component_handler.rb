@@ -11,22 +11,32 @@ module Volt
     def call(env)
       req            = Rack::Request.new(env)
 
-      # TODO: Sanatize template path
-      component_name = req.path.strip.gsub(/^\/components\//, '').gsub(/[.]js$/, '')
+      path = req.path.strip
 
-      javascript_code = compile_for_component(component_name)
+      request_source_map = (File.extname(path) == '.map')
+
+      # TODO: Sanatize template path
+      component_name = path.gsub(/^\/components\//, '').gsub(/[.](js|map)$/, '')
+
+      javascript_code = compile_for_component(component_name, true, request_source_map)
 
       [200, { 'Content-Type' => 'application/javascript; charset=utf-8' }, StringIO.new(javascript_code)]
     end
 
-    def compile_for_component(component_name)
-      code = ComponentCode.new(component_name, @component_paths).code
+    def compile_for_component(component_name, for_client, map = false)
+      code = ComponentCode.new(component_name, @component_paths, for_client).code
 
       # Compile the code
       # javascript_code = Opal.compile(code)
-      javascript_code = Opal::Builder.new.build_str(code, 'app.rb').to_s
+      builder = Opal::Builder.new.build_str(code, 'app.rb')
 
-      javascript_code
+      if map
+        js_code = builder.source_map
+      else
+        js_code = builder.to_s + "\n//# sourceMappingURL=#{component_name}.map"
+      end
+
+      js_code
     end
   end
 end

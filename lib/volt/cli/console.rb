@@ -9,13 +9,13 @@ class Pry
       loop do
         case val = read
         when :control_c
-          output.puts ""
+          output.puts ''
           pry.reset_eval_string
         when :no_more_input
-          output.puts "" if output.tty?
+          output.puts '' if output.tty?
           break
         else
-          output.puts "" if val.nil? && output.tty?
+          output.puts '' if val.nil? && output.tty?
           return pry.exit_value unless pry.eval(val)
         end
 
@@ -29,6 +29,16 @@ end
 
 module Volt
   class Console
+    module Helpers
+      def store
+        $page.store
+      end
+
+      def page
+        $page.page
+      end
+    end
+
     def self.start
       require 'pry'
 
@@ -37,6 +47,7 @@ module Volt
 
       require 'volt'
       require 'volt/boot'
+      require 'volt/volt/core'
       require 'volt/server/socket_connection_handler_stub'
 
       SocketConnectionHandlerStub.dispatcher = Dispatcher.new
@@ -45,10 +56,10 @@ module Volt
 
       Pry.config.prompt_name = 'volt'
 
-      # start a REPL session
-      # Pry.start
+      Pry.main.send(:include, Volt::Console::Helpers)
 
-      $page.pry
+      # $page.pry
+      Pry.start
     end
   end
 end

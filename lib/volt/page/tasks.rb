@@ -14,7 +14,7 @@ module Volt
 
     def call(class_name, method_name, meta_data, *args)
       promise_id            = @promise_id
-      @promise_id           += 1
+      @promise_id += 1
 
       # Track the callback
       promise               = Promise.new
@@ -45,8 +45,8 @@ module Volt
       if promise
         if error
           # TODO: full error handling
-          Volt.logger.error("Task Response:")
-          Volt.logger.error(error)
+          Volt.logger.error('Task Response:')
+          Volt.logger.error(error.inspect)
           promise.reject(error)
         else
           promise.resolve(result)
@@ -67,9 +67,7 @@ module Volt
 
       # If this browser supports session storage, store the page, so it will
       # be in the same state when we reload.
-      if `sessionStorage`
-        `sessionStorage.setItem('___page', value);`
-      end
+      `sessionStorage.setItem('___page', value);` if `sessionStorage`
 
       $page.page._reloading = true
       `window.location.reload(false);`

@@ -7,11 +7,9 @@ describe 'http endpoints', type: :feature, sauce: true do
   end
 
   it 'should have access to the store' do
-    DataStore.new.drop_database
-    $page.store._simple_http_tests << { name: 'hello' }
+    store._simple_http_tests << { name: 'hello' }
     visit '/simple_http/store'
     expect(page).to have_content('You had me at hello')
-    DataStore.new.drop_database
   end
 
   it 'should upload and store a file' do

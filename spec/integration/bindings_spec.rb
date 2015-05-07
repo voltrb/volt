@@ -32,9 +32,7 @@ describe 'bindings test', type: :feature, sauce: true do
 
       # phantom does not support the html5 history api
       # TODO: We could probably polyfill this in phantom
-      if ENV['BROWSER'] != 'phantom'
-        expect(current_path).to eq('/bindings')
-      end
+      expect(current_path).to eq('/bindings') if ENV['BROWSER'] != 'phantom'
 
       # Fill in one field and see if it updates the rest
       fill_in('paramsName1', with: 'Params bindings')
@@ -59,9 +57,7 @@ describe 'bindings test', type: :feature, sauce: true do
 
       # phantom does not support the html5 history api
       # TODO: We could probably polyfill this in phantom
-      if ENV['BROWSER'] != 'phantom'
-        expect(current_path).to eq('/bindings')
-      end
+      expect(current_path).to eq('/bindings') if ENV['BROWSER'] != 'phantom'
 
       # Fill in one field and see if it updates the rest
       fill_in('routesName1', with: 'Routes bindings')
@@ -166,9 +162,7 @@ describe 'bindings test', type: :feature, sauce: true do
 
       click_link 'Bindings'
 
-      if ENV['BROWSER'] != 'phantom'
-        expect(current_path).to eq('/bindings')
-      end
+      expect(current_path).to eq('/bindings') if ENV['BROWSER'] != 'phantom'
 
       expect(find('#paramsCheck3')).to have_content('')
       # Fill in one field and see if it updates the rest

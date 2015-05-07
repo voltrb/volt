@@ -1,5 +1,5 @@
 require 'volt'
-require 'rack'
+require 'rack' if RUBY_PLATFORM != 'opal'
 
 module Volt
   # A request object for a HttpController. See Rack::Request for more details

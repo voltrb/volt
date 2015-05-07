@@ -18,6 +18,9 @@ module Volt
       end
 
       def initialize(model, tasks = nil)
+        # Keep a hash of all ids in this collection
+        @ids = {}
+
         super
 
         # The listener event counter keeps track of how many things are listening
@@ -47,23 +50,19 @@ module Volt
       end
 
       def inspect
-        "<#{self.class.to_s}:#{object_id} #{@model.path.inspect} #{@query.inspect}>"
+        "<#{self.class}:#{object_id} #{@model.path.inspect} #{@query.inspect}>"
       end
 
       # Called when an each binding is listening
       def event_added(event, first, first_for_event)
         # First event, we load the data.
-        if first
-          @listener_event_counter.add
-        end
+        @listener_event_counter.add if first
       end
 
       # Called when an each binding stops listening
       def event_removed(event, last, last_for_event)
         # Remove listener where there are no more events on this model
-        if last
-          @listener_event_counter.remove
-        end
+        @listener_event_counter.remove if last
       end
 
       # Called by child models to track their listeners
@@ -138,7 +137,7 @@ module Volt
           if parent && (attrs = parent.attributes) && attrs[:_id]
             query = query.dup
 
-            query << [:find, {:"#{@model.path[-3].singularize}_id" => attrs[:_id]}]
+            query << [:find, { :"#{@model.path[-3].singularize}_id" => attrs[:_id] }]
           end
         end
 
@@ -200,13 +199,12 @@ module Volt
         if @model.loaded_state == :loaded
           promise.resolve(@model)
         else
-          Proc.new do |comp|
+          proc do |comp|
             if @model.loaded_state == :loaded
               promise.resolve(@model)
 
               comp.stop
             end
-
           end.watch!
         end
 
@@ -226,15 +224,16 @@ module Volt
       # TODO: Deprecate
       alias_method :then, :fetch
 
-      # Called from backend
+      # Called from backend when an item is added
       def add(index, data)
         $loading_models = true
 
         Model.no_validate do
           data_id = data['_id'] || data[:_id]
 
-          # Don't add if the model is already in the ArrayModel
-          unless @model.array.find { |v| v._id == data_id }
+          # Don't add if the model is already in the ArrayModel (from the client already)
+          unless @ids[data_id]
+            @ids[data_id] = true
             # Find the existing model, or create one
             new_model = @@identity_map.find(data_id) do
               new_options = @model.options.merge(path: @model.path + [:[]], parent: @model)
@@ -248,12 +247,14 @@ module Volt
         $loading_models = false
       end
 
+      # Called from the server when it removes an item.
       def remove(ids)
         $loading_models = true
         ids.each do |id|
           # TODO: optimize this delete so we don't need to loop
           @model.each_with_index do |model, index|
             if model._id == id
+              @ids.delete(id)
               del = @model.delete_at(index)
               break
             end
@@ -263,23 +264,35 @@ module Volt
         $loading_models = false
       end
 
+      # Called when all models are removed
+      def clear
+        @ids = {}
+      end
+
       def channel_name
         @model.path[-1]
       end
 
-      # When a model is added to this collection, we call its "changed"
-      # method.  This should trigger a save.
+      # Called when the client adds an item.
       def added(model, index)
         if model.persistor
           # Tell the persistor it was added, return the promise
-          model.persistor.add_to_collection
+          promise = model.persistor.add_to_collection
+
+          # Track the the model got added
+          @ids[model._id] = true
+
+          promise
         end
       end
 
+      # Called when the client removes an item
       def removed(model)
         if model.persistor
           # Tell the persistor it was removed
           model.persistor.remove_from_collection
+
+          @ids.delete(model._id)
         end
 
         if defined?($loading_models) && $loading_models

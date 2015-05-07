@@ -1,8 +1,11 @@
 require 'volt/server/rack/source_map_server'
-if Volt.env.production?
-  # Compress assets in production
-  require 'uglifier'
-end
+
+# There is currently a weird issue with therubyracer
+# https://github.com/rails/execjs/issues/15
+# https://github.com/middleman/middleman/issues/1367
+#
+# To get around this, we just force Node for the time being
+ENV['EXECJS_RUNTIME'] = 'Node'
 
 # Sets up the maps for the opal assets, and source maps if enabled.
 module Volt
@@ -19,13 +22,10 @@ module Volt
       Opal.append_path(Volt.root + '/app')
       Opal.append_path(Volt.root + '/lib')
 
-
       Gem.loaded_specs.values.each do |gem|
         path = gem.full_gem_path + '/app'
 
-        if Dir.exists?(path)
-          Opal.append_path(path)
-        end
+        Opal.append_path(path) if Dir.exist?(path)
       end
 
       # Don't run arity checks in production
@@ -44,10 +44,16 @@ module Volt
 
       environment.cache = Sprockets::Cache::FileStore.new('./tmp')
 
-      if Volt.env.production?
-        # Compress in production
+      # Compress in production
+      if Volt.config.compress_javascript
+        require 'uglifier'
         environment.js_compressor  = Sprockets::UglifierCompressor
-        environment.css_compressor = Sprockets::YUICompressor
+      end
+
+      if Volt.config.compress_css
+        require 'ruby-clean-css'
+        require 'ruby-clean-css/sprockets'
+        RubyCleanCSS::Sprockets.register(environment)
       end
 
       server.append_path(app_path)
@@ -61,10 +67,6 @@ module Volt
       Opal.paths.each do |path|
         server.append_path(path)
       end
-
-      # opal-jquery gem
-      spec = Gem::Specification.find_by_name('opal-jquery')
-      server.append_path(spec.gem_dir + '/lib')
 
       builder.map '/assets' do
         run server

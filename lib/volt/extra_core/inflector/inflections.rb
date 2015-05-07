@@ -28,7 +28,12 @@ module Volt
       attr_reader :plurals, :singulars, :uncountables, :humans, :acronyms, :acronym_regex
 
       def initialize
-        @plurals, @singulars, @uncountables, @humans, @acronyms, @acronym_regex = [], [], [], [], {}, /(?=a)b/
+        @plurals = []
+        @singulars = []
+        @uncountables = []
+        @humans = []
+        @acronyms = {}
+        @acronym_regex = /(?=a)b/
       end
 
       # Private, for the test suite.
@@ -179,7 +184,10 @@ module Volt
       def clear(scope = :all)
         case scope
           when :all
-            @plurals, @singulars, @uncountables, @humans = [], [], [], []
+            @plurals = []
+            @singulars = []
+            @uncountables = []
+            @humans = []
           else
             instance_variable_set "@#{scope}", []
         end

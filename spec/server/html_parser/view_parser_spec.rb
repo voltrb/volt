@@ -185,7 +185,6 @@ describe Volt::ViewParser do
     END
 
     view = Volt::ViewParser.new(html, 'main/main/main/body')
-
   end
   it 'should setup a href single attribute binding correctly' do
     html = <<-END

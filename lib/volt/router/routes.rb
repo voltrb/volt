@@ -275,9 +275,7 @@ module Volt
             return false
           end
         elsif value.nil?
-          unless test_params.key?(key)
-            return false
-          end
+          return false unless test_params.key?(key)
         else
           if test_params[key] == value
             test_params.delete(key)

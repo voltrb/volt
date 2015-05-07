@@ -8,7 +8,11 @@ module Volt
       @included_components = {}
       @components          = []
 
-      component('volt')
+      # Include each of the default included components
+      Volt.config.default_components.each do |def_comp_name|
+        component(def_comp_name)
+      end
+
       component(component_name)
     end
 
@@ -67,9 +71,7 @@ module Volt
 
     def add_assets(path)
       asset_folder = File.join(path, 'assets')
-      if File.directory?(asset_folder)
-        @assets << [:folder, asset_folder]
-      end
+      @assets << [:folder, asset_folder] if File.directory?(asset_folder)
     end
 
     def javascript_files(opal_files)

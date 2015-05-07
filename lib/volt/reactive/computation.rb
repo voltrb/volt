@@ -41,8 +41,8 @@ module Volt
       if @invalidated
         # Call invalidate now, since its already invalidated
         # Computation.run_without_tracking do
-          queue_flush!
-          callback.call
+        queue_flush!
+        callback.call
         # end
       else
         # Store the invalidation
@@ -146,15 +146,17 @@ class Proc
   # @param the value to match
   # @return [Volt::Computation] the initial computation is returned.
   def watch_until!(value, &block)
-    computation = Proc.new do |comp|
+    computation = proc do |comp|
       # First fetch the value
-      result = self.call
+      result = call
 
       if result == value
         # Values match
 
         # call the block
-        block.call
+        Volt::Computation.run_without_tracking do
+          block.call
+        end
 
         # stop the computation
         comp.stop
@@ -172,11 +174,11 @@ class Proc
   #   -> { }
   def watch_and_resolve!
     unless block_given?
-      raise "watch_and_resolve! requires a block to call when the value is resolved or another value other than a promise is returned in the watch."
+      fail 'watch_and_resolve! requires a block to call when the value is resolved or another value other than a promise is returned in the watch.'
     end
 
-    computation = Proc.new do
-      result = self.call
+    computation = proc do
+      result = call
 
       if result.is_a?(Promise)
         result.then do |final|

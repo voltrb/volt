@@ -28,7 +28,7 @@ module Volt
       # manually because a promise resolved.
       @promise_dependency = Dependency.new
 
-      @computation = -> do
+      @computation = lambda do
         @promise_dependency.depend
 
         update

@@ -14,7 +14,6 @@ class Promise
     @next = nil
   end
 
-
   def >>(promise)
     @next = promise
 
@@ -58,7 +57,7 @@ class Promise
     end
 
     if error
-      raise error
+      fail error
     else
       return result
     end

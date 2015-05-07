@@ -10,7 +10,7 @@ module Volt
     end
 
     # Called from the QueryListener when the data is loaded
-    def change_state_to(state_name, new_state, trigger=true)
+    def change_state_to(state_name, new_state, trigger = true)
       # use an instance variable for the state storage
       ivar_name = :"@#{state_name}"
 
@@ -25,10 +25,11 @@ module Volt
     end
 
     private
+
     # Get a state ivar for state_name
     # @params [String] the name of the state variable
     # @params [Boolean] if true, one will be created if it does not exist
-    def state_dep_for(state_name, create=true)
+    def state_dep_for(state_name, create = true)
       dep_ivar_name = :"@#{state_name}_dep"
       dep = instance_variable_get(dep_ivar_name)
       if !dep && create
@@ -38,6 +39,5 @@ module Volt
 
       dep
     end
-
   end
 end

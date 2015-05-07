@@ -64,7 +64,7 @@ module Volt
 
     # Put in a deprecation placeholder
     def user
-      Volt.logger.warn("deprication: Volt.user has been renamed to Volt.current_user (to be more clear about what it returns).  Volt.user will be deprecated in the future.")
+      Volt.logger.warn('deprication: Volt.user has been renamed to Volt.current_user (to be more clear about what it returns).  Volt.user will be deprecated in the future.')
       current_user
     end
 
@@ -80,7 +80,7 @@ module Volt
 
     # Login the user, return a promise for success
     def login(username, password)
-      UserTasks.login({login: username, password: password}).then do |result|
+      UserTasks.login(login: username, password: password).then do |result|
         # Assign the user_id cookie for the user
         $page.cookies._user_id = result
 
@@ -112,9 +112,10 @@ module Volt
     end
 
     private
+
     # Returns a query for the current user_id or nil if there is no user_id
     def user_query
-      user_id = self.current_user_id
+      user_id = current_user_id
       if user_id
         $page.store._users.where(_id: user_id)
       else

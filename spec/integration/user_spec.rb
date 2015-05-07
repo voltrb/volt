@@ -1,16 +1,6 @@
 require 'spec_helper'
 
 describe 'user accounts', type: :feature, sauce: true do
-  before(:each) do
-    # Clear out db
-    DataStore.new.drop_database
-  end
-
-  after(:each) do
-    # Clear out db
-    DataStore.new.drop_database
-  end
-
   it 'should create an account' do
     visit '/'
 

@@ -129,6 +129,6 @@ class LiveQuery
   end
 
   def inspect
-    "<#{self.class.to_s} #{@collection}: #{@query.inspect}>"
+    "<#{self.class} #{@collection}: #{@query.inspect}>"
   end
 end

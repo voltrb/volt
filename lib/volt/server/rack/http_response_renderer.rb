@@ -6,8 +6,8 @@ module Volt
   class HttpResponseRenderer
     @renderers = {}
 
-    def self.renderers
-      @renderers
+    class << self
+      attr_reader :renderers
     end
 
     # Register renderers.

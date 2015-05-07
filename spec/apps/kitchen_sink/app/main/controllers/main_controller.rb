@@ -1,3 +1,6 @@
+# Require date for require test
+require 'date'
+
 module Main
   class MainController < Volt::ModelController
     model :page

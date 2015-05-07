@@ -43,8 +43,6 @@ else
   module Volt
     include Configurations
 
-    Bundler.require( :default )
-
     class << self
       def defaults
         app_name = File.basename(Dir.pwd)

@@ -93,13 +93,12 @@ describe Volt::Actions do
 
     expect(test_class.ran_one).to eq(true)
     expect(test_class.ran_two).to eq(true)
-
   end
 
   it 'should raise an exception if no symbol or block is provided' do
     expect do
       TestActions2.before_action
-    end.to raise_error(RuntimeError, "No callback symbol or block provided")
+    end.to raise_error(RuntimeError, 'No callback symbol or block provided')
   end
 
   it 'should support multiple symbols passed an action helper' do
@@ -116,15 +115,15 @@ describe Volt::Actions do
   end
 
   it 'should stop the chain when #stop_chain is called and return false from #run_actions' do
-   test_class = TestStopCallbacks.new
+    test_class = TestStopCallbacks.new
 
-   result = test_class.run_actions(:before, :index)
-   expect(result).to eq(true)
+    result = test_class.run_actions(:before, :index)
+    expect(result).to eq(true)
 
-   expect(test_class.ran_one).to eq(true)
-   expect(test_class.ran_two).to eq(true)
-   expect(test_class.ran_end_of_two).to eq(nil)
-   expect(test_class.ran_three).to eq(nil)
+    expect(test_class.ran_one).to eq(true)
+    expect(test_class.ran_two).to eq(true)
+    expect(test_class.ran_end_of_two).to eq(nil)
+    expect(test_class.ran_three).to eq(nil)
   end
 
   it 'should call without any callbacks' do

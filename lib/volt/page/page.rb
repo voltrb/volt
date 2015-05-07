@@ -1,7 +1,4 @@
 require 'opal'
-if RUBY_PLATFORM == 'opal'
-  require 'opal-jquery'
-end
 require 'volt/models'
 require 'volt/controllers/model_controller'
 require 'volt/tasks/task_handler'
@@ -32,7 +29,7 @@ require 'volt/page/tasks'
 
 module Volt
   class Page
-    attr_reader :url, :params, :page, :templates, :routes, :events
+    attr_reader :url, :params, :page, :routes, :events
 
     def initialize
       # Run the code to setup the page
@@ -41,6 +38,7 @@ module Volt
       @url         = URL.new
       @params      = @url.params
       @url_tracker = UrlTracker.new(self)
+      @templates   = {}
 
       @events = DocumentEvents.new
 
@@ -139,8 +137,6 @@ module Volt
     attr_reader :events
 
     def add_template(name, template, bindings)
-      @templates ||= {}
-
       # First template gets priority.  The backend will load templates in order so
       # that local templates come in before gems (so they can be overridden).
       #
@@ -152,15 +148,29 @@ module Volt
       end
     end
 
+    # On the server, we can delay loading the views until they are actually requeted.  This
+    # sets up an instance variable to call to load.
+    attr_writer :template_loader
+
+    def templates
+      if @template_loader
+        # Load the templates
+        @template_loader.call
+        @template_loader = nil
+      end
+
+      @templates
+    end
+
     def add_routes(&block)
-      @routes   ||= Routes.new
+      @routes ||= Routes.new
       @routes.define(&block)
       @url.router = @routes
     end
 
     def start
       # Setup to render template
-      Element.find('body').html = '<!-- $CONTENT --><!-- $/CONTENT -->'
+      `$('body').html('<!-- $CONTENT --><!-- $/CONTENT -->');`
 
       load_stored_page
 
@@ -207,14 +217,8 @@ module Volt
   if Volt.client?
     $page = Page.new
 
-    # Call start once the page is loaded
-    # Document.ready? do
-    #   $page.start
-    # end
-
-    # For some reason Document.ready? (using opal-jquery) quit working.
     `$(document).ready(function() {`
-      $page.start
+    $page.start
     `});`
   end
 end

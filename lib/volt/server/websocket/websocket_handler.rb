@@ -2,10 +2,9 @@ require 'faye/websocket'
 require 'volt/server/socket_connection_handler'
 require 'volt/server/websocket/rack_server_adaptor'
 
-
 module Volt
   # Setup the dispatcher for the socket connection handler.
-  SocketConnectionHandler.dispatcher = Dispatcher.new
+  # SocketConnectionHandler.dispatcher = Dispatcher.new
 
   class WebsocketHandler
     def initialize(app)

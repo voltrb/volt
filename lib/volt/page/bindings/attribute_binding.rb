@@ -15,7 +15,7 @@ module Volt
 
     def setup
       # Listen for changes
-      @computation = -> do
+      @computation = lambda do
         begin
           @context.instance_eval(&@getter)
         rescue => e
@@ -26,26 +26,26 @@ module Volt
         update(result)
       end
 
-      @is_radio = element.is('[type=radio]')
-      if @is_radio
-        @selected_value = element.attr('value')
-      end
+      @is_radio = `#{element}.is('[type=radio]')`
+      @selected_value = `#{element}.attr('value') || ''` if @is_radio
 
       # Bind so when this value updates, we update
       case @attribute_name
         when 'value'
-          element.on('input.attrbind') { changed }
+          changed_event = proc { changed }
+          `#{element}.on('input.attrbind', #{changed_event})`
         when 'checked'
-          element.on('change.attrbind') { |event| changed(event) }
+          changed_event = proc { |event| changed(event) }
+          `#{element}.on('change.attrbind', #{changed_event})`
       end
     end
 
     def changed(event = nil)
       case @attribute_name
         when 'value'
-          current_value = element.value
+          current_value = `#{element}.val() || ''`
         else
-          current_value = element.is(':checked')
+          current_value = `#{element}.is(':checked')`
       end
 
       if @is_radio
@@ -59,7 +59,7 @@ module Volt
     end
 
     def element
-      Element.find('#' + binding_name)
+      @element ||= `$('#' + #{binding_name})`
     end
 
     def update(new_value)
@@ -77,13 +77,11 @@ module Volt
         # update, we can just depend on it and update directly.
         @string_template_renderer = new_value
 
-        @string_template_renderer_computation = -> do
+        @string_template_renderer_computation = lambda do
           self.value = @string_template_renderer.html
         end.watch!
       else
-        if new_value.is_a?(NilMethodCall) || new_value.nil?
-          new_value = ''
-        end
+        new_value = '' if new_value.is_a?(NilMethodCall) || new_value.nil?
 
         self.value = new_value
       end
@@ -94,33 +92,27 @@ module Volt
         when 'value'
           # TODO: only update if its not the same, this keeps it from moving the
           # cursor in text fields.
-          if val != element.value
-            element.value = val
-          end
+          `#{element}.val(#{val})` if val != `(#{element}.val() || '')`
         when 'disabled'
           # Disabled is handled specially, you can either return a boolean:
           # (true being disabled, false not disabled), or you can optionally
           # include the "disabled" string. (or any string)
           if val != false && val.present?
-            element.attr('disabled', 'disabled')
+            `#{element}.attr('disabled', 'disabled')`
           else
-            element.remove_attr('disabled')
+            `#{element}.removeAttr('disabled')`
           end
         else
-          element[@attribute_name] = val
+          `#{element}.attr(#{@attribute_name}, #{val})`
       end
     end
 
     def update_checked(value)
-      if value.is_a?(NilMethodCall) || value.nil?
-        value = false
-      end
+      value = false if value.is_a?(NilMethodCall) || value.nil?
 
-      if @is_radio
-        value = (@selected_value == value)
-      end
+      value = (@selected_value == value) if @is_radio
 
-      element.prop('checked', value)
+      `#{element}.prop('checked', #{value})`
     end
 
     def remove
@@ -128,9 +120,9 @@ module Volt
       # aren't responsible for it being there.
       case @attribute_name
         when 'value'
-          element.off('input.attrbind', nil)
+          `#{element}.off('input.attrbind', #{nil})`
         when 'checked'
-          element.off('change.attrbind', nil)
+          `#{element}.off('change.attrbind', #{nil})`
       end
 
       if @computation

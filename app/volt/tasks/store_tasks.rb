@@ -50,11 +50,13 @@ class StoreTasks < Volt::Task
     # who sent the update.
     #
     # return another promise
-    return promise.then do |model|
+    promise.then do |model|
       Thread.current['in_channel'] = @channel
       save_promise = model.save!.then do |result|
-
         next nil
+      end.fail do |err|
+        # An error object, convert to hash
+        Promise.new.reject(err.to_h)
       end
 
       Thread.current['in_channel'] = nil
@@ -74,14 +76,14 @@ class StoreTasks < Volt::Task
     query.fetch_first do |model|
       if model
         if model.can_delete?
-          db[collection].remove('_id' => id)
+          db.delete('_id' => id)
         else
-          raise "Permissions did not allow #{collection} #{id} to be deleted."
+          fail "Permissions did not allow #{collection} #{id} to be deleted."
         end
 
         QueryTasks.live_query_pool.updated_collection(collection, @channel)
       else
-        raise "Could not find #{id} in #{collection}"
+        fail "Could not find #{id} in #{collection}"
       end
     end
   end

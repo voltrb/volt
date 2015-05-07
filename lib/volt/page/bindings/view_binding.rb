@@ -4,15 +4,13 @@ require 'volt/page/bindings/view_binding/grouped_controllers'
 require 'volt/page/bindings/view_binding/view_lookup_for_path'
 require 'volt/page/bindings/view_binding/controller_handler'
 
-
 module Volt
   class ViewBinding < BaseBinding
-
     # @param [String]     binding_in_path is the path this binding was rendered from.  Used to
     #                     lookup paths in ViewLookupForPath
     # @param [String|nil] content_template_path is the path to the template for the content
     #                     provided in the tag.
-    def initialize(page, target, context, binding_name, binding_in_path, getter, content_template_path=nil)
+    def initialize(page, target, context, binding_name, binding_in_path, getter, content_template_path = nil)
       super(page, target, context, binding_name)
 
       @content_template_path = content_template_path
@@ -23,7 +21,7 @@ module Volt
       @current_template = nil
 
       # Run the initial render
-      @computation      = -> do
+      @computation      = lambda do
         # Don't try to render if this has been removed
         if @context
           # Render
@@ -97,21 +95,25 @@ module Volt
 
     # Called when the next template is ready to render
     def render_next_template(full_path, path)
-      begin
-        remove_current_controller_and_template
+      remove_current_controller_and_template
 
-        # Switch the current template
-        @current_controller_handler = @starting_controller_handler
-        @starting_controller_handler = nil
+      # Switch the current template
+      @current_controller_handler = @starting_controller_handler
+      @starting_controller_handler = nil
 
-        # Also track the current controller directly
-        @controller = @current_controller_handler.controller if full_path
+      # Also track the current controller directly
+      @controller = @current_controller_handler.controller if full_path
 
+      render_template(full_path || path)
+    rescue => e
+      Volt.logger.error("Error during render of template at #{path}: #{e.inspect}")
+      Volt.logger.error(e.backtrace)
+    end
+
+    def stop_waiting_for_load
+      if @waiting_for_load
+        @waiting_for_load.stop
         @waiting_for_load = nil
-        render_template(full_path || path)
-      rescue => e
-        Volt.logger.error("Error during render of template at #{path}: #{e.inspect}")
-        Volt.logger.error(e.backtrace)
       end
     end
 
@@ -164,9 +166,7 @@ module Volt
     def remove_starting_controller
       # Clear any previously running wait for loads.  This is for when the path changes
       # before the view actually renders.
-      if @waiting_for_load
-        @waiting_for_load.stop
-      end
+      stop_waiting_for_load
 
       if @starting_controller_handler
         # Only call the after_..._removed because the dom never loaded.
@@ -181,11 +181,10 @@ module Volt
       args = [SubContext.new(@arguments, nil, true)]
 
       # get the controller class and action
-      controller_class, action = get_controller(controller_path)
-      controller_class ||= ModelController
+      controller_class, action = ControllerHandler.get_controller_and_action(controller_path)
 
       generated_new = false
-      new_controller = Proc.new do
+      new_controller = proc do
         # Mark that we needed to generate a new controller instance (not reused
         # from the group)
         generated_new = true
@@ -208,14 +207,12 @@ module Volt
         # Call the action
         stopped = handler.call_action
 
-        if stopped
-          controller.instance_variable_set('@chain_stopped', true)
-        end
+        controller.instance_variable_set('@chain_stopped', true) if stopped
       else
         stopped = controller.instance_variable_get('@chain_stopped')
       end
 
-      return handler, generated_new, stopped
+      [handler, generated_new, stopped]
     end
 
     # The context for templates can be either a controller, or the original context.
@@ -232,7 +229,10 @@ module Volt
         # Only assign sections for action's, so we don't get AttributeSections bound
         # also.
         if @controller.respond_to?(:section=)
-          @controller.section = @current_template.dom_section
+          dom_section = @current_template.dom_section
+
+          # Only assign dom sections that can be manipulated via the dom (so not the title for example)
+          @controller.section = dom_section unless dom_section.is_a?(Volt::AttributeSection)
         end
 
         # Call the ready callback on the controller
@@ -251,30 +251,6 @@ module Volt
       remove_current_controller_and_template
 
       super
-    end
-
-    private
-    # Fetch the controller class
-    def get_controller(controller_path)
-      raise "Invalid controller path: #{controller_path.inspect}" unless controller_path && controller_path.size > 0
-
-      action = controller_path[-1]
-
-      # Get the constant parts
-      parts  = controller_path[0..-2].map { |v| v.tr('-', '_').camelize }
-
-      # Do const lookups starting at object and working our way down.
-      # So Volt::ProgressBar would lookup Volt, then ProgressBar on Volt.
-      obj = Object
-      parts.each do |part|
-        if obj.const_defined?(part)
-          obj = obj.const_get(part)
-        else
-          return nil
-        end
-      end
-
-      [obj, action]
     end
   end
 end

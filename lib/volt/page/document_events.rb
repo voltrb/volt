@@ -22,12 +22,12 @@ module Volt
 
       end
 
-      @events[event][binding.binding_name]                    ||= {}
+      @events[event][binding.binding_name] ||= {}
       @events[event][binding.binding_name][binding.object_id] = handler
     end
 
     def handle(event_name, event, target)
-      element = Element.find(target)
+      element = `$(#{target})`
 
       loop do
         # Lookup the handler, make sure to not assume the group
@@ -35,7 +35,10 @@ module Volt
         # TODO: Sometimes the event doesn't exist, but we still get
         # an event.
         handlers = @events[event_name]
-        handlers = handlers[element.id] if handlers
+
+        element_id = `(element && element[0] && element[0].id) || ''`
+
+        handlers = handlers[element_id] if handlers
 
         if handlers
           handlers.values.each do |handler|
@@ -44,10 +47,10 @@ module Volt
           end
         end
 
-        if element.size == 0
+        if `element.length` == 0
           break
         else
-          element = element.parent
+          `element = element.parent()`
         end
       end
 

@@ -1,10 +1,14 @@
 # require 'ruby-prof'
 require 'volt/utils/logging/task_logger'
+require 'drb'
 
 module Volt
   # The task dispatcher is responsible for taking incoming messages
   # from the socket channel and dispatching them to the proper handler.
   class Dispatcher
+    # When we pass the dispatcher over DRb, don't send a copy, just proxy.
+    include DRb::DRbUndumped
+
     # Dispatch takes an incoming Task from the client and runs it on the
     # server, returning the result to the client.
     # Tasks returning a promise will wait to return.
@@ -55,7 +59,7 @@ module Volt
         Volt.logger.log_dispatch(class_name, method_name, run_time, args, error)
       end
 
-        # Run the promise and pass the return value/error back to the client
+      # Run the promise and pass the return value/error back to the client
       promise.then do |result|
         channel.send_message('response', callback_id, result, nil)
 
@@ -87,4 +91,3 @@ module Volt
     end
   end
 end
-

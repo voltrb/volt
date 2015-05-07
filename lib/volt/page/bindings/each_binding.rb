@@ -31,16 +31,10 @@ module Volt
       Computation.run_without_tracking do
         # Adjust to the new size
         values = current_values(value)
+
         @value = values
 
-        if @added_listener
-          @added_listener.remove
-          @added_listener = nil
-        end
-        if @removed_listener
-          @removed_listener.remove
-          @removed_listener = nil
-        end
+        remove_listeners
 
         if @value.respond_to?(:on)
           @added_listener   = @value.on('added') { |position| item_added(position) }
@@ -63,6 +57,7 @@ module Volt
     def item_removed(position)
       # Remove dependency
       @templates[position].context.locals[:_index_dependency].remove
+      @templates[position].context.locals["_#{@item_name}_dependency".to_sym].remove
 
       @templates[position].remove_anchors
       @templates[position].remove
@@ -95,6 +90,15 @@ module Volt
       item_context.locals[:_index=]           = proc do |val|
         position_dependency.changed!
         item_context.locals[:_index_value] = val
+      end
+
+      # Get and set value
+      value_dependency                    = Dependency.new
+      item_context.locals["_#{@item_name}_dependency".to_sym] = value_dependency
+
+      item_context.locals["#{@item_name}=".to_sym] = proc do |val|
+        value_dependency.changed!
+        @value[item_context.locals[:_index_value]] = val
       end
 
       # If the user provides an each_with_index, we can assign the lookup for the index
@@ -130,6 +134,17 @@ module Volt
       values
     end
 
+    def remove_listeners
+      if @added_listener
+        @added_listener.remove
+        @added_listener = nil
+      end
+      if @removed_listener
+        @removed_listener.remove
+        @removed_listener = nil
+      end
+    end
+
     # When this each_binding is removed, cleanup.
     def remove
       @computation.stop
@@ -140,15 +155,7 @@ module Volt
 
       @getter = nil
 
-      if @added_listener
-        @added_listener.remove
-        @added_listener = nil
-      end
-
-      if @removed_listener
-        @removed_listener.remove
-        @removed_listener = nil
-      end
+      remove_listeners
 
       if @templates
         template_count = @templates.size

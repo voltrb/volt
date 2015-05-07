@@ -21,7 +21,7 @@ module Volt
     def remove
       @count -= 1
 
-      raise "count below 0" if @count < 0
+      fail 'count below 0' if @count < 0
 
       @stop.call if @count == 0
     end

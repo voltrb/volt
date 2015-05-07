@@ -49,11 +49,11 @@ module Volt
     attr_reader :attributes, :parent, :path, :persistor, :options
 
     INVALID_FIELD_NAMES = {
-      :attributes => true,
-      :parent => true,
-      :path => true,
-      :options => true,
-      :persistor => true
+      attributes: true,
+      parent: true,
+      path: true,
+      options: true,
+      persistor: true
     }
 
     def initialize(attributes = {}, options = {}, initial_state = nil)
@@ -126,7 +126,7 @@ module Volt
     end
 
     # Assign multiple attributes as a hash, directly.
-    def assign_attributes(attrs, initial_setup=false, skip_changes=false)
+    def assign_attributes(attrs, initial_setup = false, skip_changes = false)
       @attributes ||= {}
 
       attrs = wrap_values(attrs)
@@ -227,9 +227,7 @@ module Volt
 
         @deps.changed!(attribute_name)
 
-        if old_value == nil || new_value == nil
-          @size_dep.changed!
-        end
+        @size_dep.changed! if old_value.nil? || new_value.nil?
 
         # TODO: Can we make this so it doesn't need to be handled for non store collections
         # (maybe move it to persistor, though thats weird since buffers don't have a persistor)
@@ -246,7 +244,7 @@ module Volt
     # 1) a nil model, which returns a wrapped error
     # 2) reading directly from attributes
     # 3) trying to read a key that doesn't exist.
-    def get(attr_name, expand=false)
+    def get(attr_name, expand = false)
       # Reading an attribute, we may get back a nil model.
       attr_name = attr_name.to_sym
 
@@ -286,7 +284,7 @@ module Volt
       end
     end
 
-    def respond_to_missing?(method_name, include_private=false)
+    def respond_to_missing?(method_name, include_private = false)
       method_name.to_s.start_with?('_') || super
     end
 
@@ -343,7 +341,7 @@ module Volt
         # Wrap result in a promise if it isn't one
         return Promise.new.then { result }
       else
-        fail "Model does not have a parent and cannot be deleted."
+        fail 'Model does not have a parent and cannot be deleted.'
       end
     end
 
@@ -355,12 +353,13 @@ module Volt
     end
 
     private
+
     # Volt provides a few access methods to get more data about the model,
     # we want to prevent these from being assigned or accessed through
     # underscore methods.
     def check_valid_field_name(name)
       if INVALID_FIELD_NAMES[name]
-        raise InvalidFieldName, "`#{name}` is reserved and can not be used as a field"
+        fail InvalidFieldName, "`#{name}` is reserved and can not be used as a field"
       end
     end
 
@@ -377,13 +376,11 @@ module Volt
 
     # Takes the persistor if there is one and
     def setup_persistor(persistor)
-      if persistor
-        @persistor = persistor.new(self)
-      end
+      @persistor = persistor.new(self) if persistor
     end
 
     # Used internally from other methods that assign all attributes
-    def assign_all_attributes(attrs, track_changes=false)
+    def assign_all_attributes(attrs, track_changes = false)
       # Assign each attribute using setters
       attrs.each_pair do |key, value|
         key = key.to_sym
@@ -408,7 +405,7 @@ module Volt
     #
     # @return [Promise|nil] a promise for when the save is
     #         complete
-    def run_changed(attribute_name=nil)
+    def run_changed(attribute_name = nil)
       # no_validate mode should only be used internally.  no_validate mode is a
       # performance optimization that prevents validation from running after each
       # change when assigning multile attributes.
@@ -416,7 +413,6 @@ module Volt
         # Run the validations for all fields
         result = nil
         return validate!.then do
-
           # Buffers are allowed to be in an invalid state
           unless buffer?
             # First check that all local validations pass
@@ -458,7 +454,7 @@ module Volt
       end
 
       # Didn't run validations
-      return nil
+      nil
     end
   end
 end

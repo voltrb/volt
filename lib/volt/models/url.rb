@@ -1,5 +1,8 @@
 # The url class handles parsing and updating the url
 require 'volt/reactive/reactive_accessors'
+require 'volt/models/location'
+require 'volt/utils/parsing'
+
 module Volt
   class URL
     include ReactiveAccessors
@@ -11,6 +14,7 @@ module Volt
     def initialize(router = nil)
       @router = router
       @params = Model.new({}, persistor: Persistors::Params)
+      @location = Location.new
     end
 
     # Parse takes in a url and extracts each sections.
@@ -21,8 +25,8 @@ module Volt
         self.fragment = url[1..-1]
         update!
       else
-        host     = `document.location.host`
-        protocol = `document.location.protocol`
+        host = location.host
+        protocol = location.protocol
 
         if url !~ /[:]\/\//
           # Add the host for local urls
@@ -73,13 +77,13 @@ module Volt
         query_parts = []
         nested_params_hash(params).each_pair do |key, value|
           # remove the _ from the front
-          value = `encodeURI(value)`
+          value = Volt::Parsing.encodeURI(value)
           query_parts << "#{key}=#{value}"
         end
 
         if query_parts.size > 0
           query = query_parts.join('&')
-          new_url    += '?' + query
+          new_url += "?#{query}"
         end
       end
 
@@ -135,6 +139,8 @@ module Volt
 
     private
 
+    attr_reader :location
+
     # Assigning the params is tricky since we don't want to trigger changed on
     # any values that have not changed.  So we first loop through all current
     # url params, removing any not present in the params, while also removing
@@ -142,14 +148,12 @@ module Volt
     # remaining new parameters and assign them.
     def assign_query_hash_to_params
       # Get a nested hash representing the current url params.
-      query_hash = self.query_hash
+      query_hash = parse_query
 
       # Get the params that are in the route
       new_params = @router.url_to_params(path)
 
-      if new_params == false
-        fail "no routes match path: #{path}"
-      end
+      fail "no routes match path: #{path}" if new_params == false
 
       query_hash.merge!(new_params)
 
@@ -175,9 +179,7 @@ module Volt
           assign_from_old(old_val, new_val)
         else
           # assign value
-          if old_val != new_val
-            params.set(name, new_val)
-          end
+          params.set(name, new_val) if old_val != new_val
           new_params.delete(name)
         end
       end
@@ -197,24 +199,21 @@ module Volt
       end
     end
 
-    def query_hash
+    def parse_query
       query_hash = {}
-      qury       = query
+      qury = query
+
       if qury
         qury.split('&').reject { |v| v == '' }.each do |part|
-          parts    = part.split('=').reject { |v| v == '' }
-
-          # Decode string
-          # parts[0] = `decodeURI(parts[0])`
-          parts[1] = `decodeURI(parts[1])`
+          parts = part.split('=').reject { |v| v == '' }
+          parts[1] = Volt::Parsing.decodeURI(parts[1])
 
           sections = query_key_sections(parts[0])
 
           hash_part = query_hash
           sections.each_with_index do |section, index|
             if index == sections.size - 1
-              # Last part, assign the value
-              hash_part[section] = parts[1]
+              hash_part[section] = parts[1] # Last part, assign the value
             else
               hash_part = (hash_part[section] ||= {})
             end

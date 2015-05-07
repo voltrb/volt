@@ -75,9 +75,7 @@ module Volt
     end
 
     def find_by_binding_id(binding_id)
-      if @binding_id == binding_id
-        return self
-      end
+      return self if @binding_id == binding_id
 
       @nodes.each do |node|
         if node.is_a?(ComponentNode)

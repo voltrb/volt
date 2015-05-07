@@ -1,3 +1,5 @@
+require 'volt/volt/core' if RUBY_PLATFORM != 'opal'
+
 module Volt
   class << self
     def spec_setup(app_path = '.')
@@ -9,13 +11,13 @@ module Volt
       require 'volt/boot'
 
       # Require in app
-      Volt.boot(app_path)
+      volt_app = Volt.boot(app_path)
 
       unless RUBY_PLATFORM == 'opal'
         begin
           require 'volt/spec/capybara'
 
-          setup_capybara(app_path)
+          setup_capybara(app_path, volt_app)
         rescue LoadError => e
           Volt.logger.warn("unable to load capybara, if you wish to use it for tests, be sure it is in the app's Gemfile")
           Volt.logger.error(e)
@@ -24,7 +26,7 @@ module Volt
 
       unless ENV['BROWSER']
         # Not running integration tests with ENV['BROWSER']
-        RSpec.configuration.filter_run_excluding :type => :feature
+        RSpec.configuration.filter_run_excluding type: :feature
       end
 
       # Setup the spec collection accessors
@@ -45,13 +47,12 @@ module Volt
             # Clear the database after each spec where we use store
             # @@db ||= Volt::DataStore.fetch
             # @@db.drop_database
-            ::DataStore.new.drop_database
+            Volt::DataStore.fetch.drop_database
 
             $page.instance_variable_set('@store', nil)
           end
         end
       end
-
     end
   end
 end

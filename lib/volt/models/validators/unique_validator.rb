@@ -17,7 +17,7 @@ module Volt
               message = (args.is_a?(Hash) && args[:message]) || 'is already taken'
 
               # return the error
-              next {field_name: [message]}
+              next { field_name => [message] }
             end
           end
         end

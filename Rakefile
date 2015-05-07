@@ -19,7 +19,6 @@ Opal::RSpec::RakeTask.new('opal:rspec') do |s|
   s.append_path('app')
 end
 
-
 task default: [:test]
 
 require 'rspec/core/rake_task'

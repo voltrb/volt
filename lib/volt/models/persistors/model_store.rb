@@ -23,9 +23,7 @@ module Volt
       end
 
       def loaded(initial_state = nil)
-        if model.path == []
-          initial_state = :loaded
-        end
+        initial_state = :loaded if model.path == []
 
         model.change_state_to(:loaded_state, initial_state)
       end
@@ -143,9 +141,7 @@ module Volt
       end
 
       def event_added(event, first, first_for_event)
-        if first_for_event && event == :changed
-          ensure_setup
-        end
+        ensure_setup if first_for_event && event == :changed
       end
 
       # Update the models based on the id/identity map.  Usually these requests
@@ -156,9 +152,7 @@ module Volt
 
           if model
             data.each_pair do |key, value|
-              if key != :_id
-                model.send(:"_#{key}=", value)
-              end
+              model.send(:"_#{key}=", value) if key != :_id
             end
           end
         end
@@ -195,21 +189,10 @@ module Volt
           id = values[:_id]
 
           # Try to create
-          # TODO: Seems mongo is dumb and doesn't let you upsert with custom id's
-          begin
-            # values['_id'] = BSON::ObjectId('_id') if values['_id']
-            db[collection].insert(values)
-          rescue Mongo::OperationFailure => error
-            # Really mongo client?
-            if error.message[/^11000[:]/]
-              # Update because the id already exists
-              update_values = values.dup
-              update_values.delete(:_id)
-              db[collection].update({ _id: id }, update_values)
-            else
-              return { error: error.message }
-            end
-          end
+          update_result = db.update(collection, values)
+
+          # An error hash will be returned if the update doesn't work
+          return update_result if update_result
 
           QueryTasks.live_query_pool.updated_collection(collection.to_s, Thread.current['in_channel'])
           {}
