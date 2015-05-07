@@ -191,11 +191,9 @@ describe Volt::SandlebarsParser do
     test_html(html)
   end
 
-  # it "should warn you when you over close tags" do
-  #   html = "<div><p>test</p></div></div>"
-  #
-  #   handler = HTMLHandler.new
-  #   expect { Volt::SandlebarsParser.new(html, handler) }.to raise_error(Volt::HTMLParseError)
-  # end
+  it 'should close self closing elements' do
+    html = "<p><p>"
+    test_html(html, '<p></p><p></p>')
+  end
 end
 end
