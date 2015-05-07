@@ -55,5 +55,15 @@ if RUBY_PLATFORM != 'opal'
       expect(response.status).to eq(200)
       expect(response.body).to eq(['show with id 99 and another_param called'])
     end
+
+    it 'should call the supplied app if routes are not matched and cause a 404' do
+      http_resource = Volt::HttpResource.new(app, @routes)
+      env = Rack::MockRequest.env_for('http://example.com/not_a_valid_param')
+      request = Volt::HttpRequest.new(env)
+      response = http_resource.call(env)
+      expect(response[0]).to eq(404)
+      #expect(response.body).to eq(['show with id 99 and another_param called'])
+    end
+
   end
 end

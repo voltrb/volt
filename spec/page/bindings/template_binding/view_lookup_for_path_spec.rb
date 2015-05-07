@@ -140,4 +140,14 @@ describe Volt::ViewBinding do
 
     expect(@view_lookup.path_for_template('nav', 'title').first).to eq('nav/main/index/title')
   end
+
+  it 'should return nils when given a non-existant path' do
+    @templates = {
+      'nav/main/index/title' => '',
+      'auth/login/new/title' => ''
+    }
+
+    expect(@view_lookup.path_for_template('not/a/real/item/')).to eq([nil, nil])
+  end
+    
 end
