@@ -20,7 +20,7 @@ class HTMLHandler
   end
 
   def binding(binding)
-    @html << "{#{binding}}"
+    @html << "{{#{binding}}}"
   end
 
   def start_tag(tag_name, attributes, unary)
@@ -94,12 +94,13 @@ describe Volt::SandlebarsParser do
   end
 
   it 'should handle bindings' do
-    html = '<p>some cool {text} is {awesome}</p>'
+    html = '<p>some cool {{ text }} is {{ awesome }}</p>'
+    match = '<p>some cool {{text}} is {{awesome}}</p>'
     test_html(html)
   end
 
-  it 'should handle bindings with nested { and }' do
-    html = "<p>testing with {nested { 'binding stuff' }}</p>"
+  it 'should handle bindings with nested {{and}}' do
+    html = "<p>testing with {{nested {{ 'binding stuff' }} }}</p>"
     test_html(html)
   end
 
@@ -139,7 +140,7 @@ describe Volt::SandlebarsParser do
   end
 
   it 'should not jump bindings' do
-    html = '<p>{some} text {binding}</p>'
+    html = '<p>{{ some }} text {{ binding }}</p>'
     test_html(html)
   end
 
@@ -150,8 +151,8 @@ describe Volt::SandlebarsParser do
   end
 
   it 'should let you escape { and }' do
-    html = 'should escape {{{{}}} and {{{}}}}'
-    match = 'should escape { and }'
+    html = 'should escape {{{{{}}} and {{{}}}}}'
+    match = 'should escape {{ and }}'
     test_html(html, match)
   end
 
@@ -191,11 +192,9 @@ describe Volt::SandlebarsParser do
     test_html(html)
   end
 
-  # it "should warn you when you over close tags" do
-  #   html = "<div><p>test</p></div></div>"
-  #
-  #   handler = HTMLHandler.new
-  #   expect { Volt::SandlebarsParser.new(html, handler) }.to raise_error(Volt::HTMLParseError)
-  # end
+  it 'should close self closing elements' do
+    test_html '<p><p>', '<p></p><p></p>'
+    test_html '<p><span>1</span>2<p>3</p>', '<p><span>1</span>2</p><p>3</p>'
+  end
 end
 end
