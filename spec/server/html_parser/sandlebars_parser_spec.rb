@@ -192,8 +192,8 @@ describe Volt::SandlebarsParser do
   end
 
   it 'should close self closing elements' do
-    html = "<p><p>"
-    test_html(html, '<p></p><p></p>')
+    test_html '<p><p>', '<p></p><p></p>'
+    test_html '<p><span>1</span>2<p>3</p>', '<p><span>1</span>2</p><p>3</p>'
   end
 end
 end
