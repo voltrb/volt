@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.9.2
+### Changed
+- We released 0.9.1 with a bug for destroy (doh!).  Specs added and bug fixed.
+
 ## 0.9.1
 ### Added
 - Mailer! - volt now includes the volt-mailer gem out of the box.  (you can remove it if you don't need/want it).  See https://github.com/voltrb/volt-mailer for more info.

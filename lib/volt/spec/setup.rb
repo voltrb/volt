@@ -42,14 +42,23 @@ module Volt
           $page.store
         end
 
-        after do
-          if @__store_accessed
-            # Clear the database after each spec where we use store
-            # @@db ||= Volt::DataStore.fetch
-            # @@db.drop_database
-            Volt::DataStore.fetch.drop_database
+        def cleanup_after
+          Volt::DataStore.fetch.drop_database
 
-            $page.instance_variable_set('@store', nil)
+          $page.instance_variable_set('@store', nil)
+        end
+
+        if RUBY_PLATFORM != 'opal'
+          after do
+            if @__store_accessed
+              # Clear the database after each spec where we use store
+              cleanup_after
+            end
+          end
+
+          # Cleanup after integration tests also.
+          after(:example, {type: :feature}) do
+            cleanup_after
           end
         end
       end

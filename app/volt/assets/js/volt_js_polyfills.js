@@ -10,7 +10,6 @@ if (!Function.prototype.bind) {
   };
 }
 
-
 // setImmediate
 (function (global, undefined) {
     "use strict";
