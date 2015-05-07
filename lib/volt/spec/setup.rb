@@ -45,7 +45,9 @@ module Volt
         def cleanup_after
           Volt::DataStore.fetch.drop_database
 
+          # Clear cached for a reset
           $page.instance_variable_set('@store', nil)
+          QueryTasks.class_variable_set('@@live_query_pool', nil)
         end
 
         if RUBY_PLATFORM != 'opal'
@@ -56,9 +58,14 @@ module Volt
             end
           end
 
+          # Assume store is accessed in capyabara specs
+          before(:context, {type: :feature}) do
+            @__store_accessed = true
+          end
+
           # Cleanup after integration tests also.
-          after(:example, {type: :feature}) do
-            cleanup_after
+          before(:example, {type: :feature}) do
+            @__store_accessed = true
           end
         end
       end
