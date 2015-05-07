@@ -29,7 +29,7 @@ module Volt
     end
 
     def binding(binding)
-      @scope.last.add_binding(binding)
+      last.add_binding(binding)
     end
 
     def start_tag(tag_name, attributes, unary)
