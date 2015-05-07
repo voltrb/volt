@@ -16,6 +16,12 @@ class QueryTasks < Volt::Task
     self.class.live_query_pool
   end
 
+  def self.reset!
+    @@channel_live_queries = {}
+    @@live_query_pool = nil
+    live_query_pool
+  end
+
   def add_listener(collection, query)
     live_query = @@live_query_pool.lookup(collection, query)
     track_channel_in_live_query(live_query)

@@ -47,7 +47,7 @@ module Volt
 
           # Clear cached for a reset
           $page.instance_variable_set('@store', nil)
-          QueryTasks.class_variable_set('@@live_query_pool', nil)
+          QueryTasks.reset!
         end
 
         if RUBY_PLATFORM != 'opal'
