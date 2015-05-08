@@ -11,6 +11,8 @@ module Volt
   # Include in any class to get validation logic
   module Validations
     module ClassMethods
+      # Validate is called directly on the class and sets up the validation to be run
+      # each time validate! is called on the class.
       def validate(field_name = nil, options = nil, &block)
         if block
           if field_name || options
@@ -19,16 +21,48 @@ module Volt
           self.custom_validations ||= []
           custom_validations << block
         else
-          self.validations ||= {}
-          validations[field_name] ||= {}
-          validations[field_name].merge!(options)
+          self.validations_to_run ||= {}
+          validations_to_run[field_name] ||= {}
+          validations_to_run[field_name].merge!(options)
+        end
+      end
+
+      # Validations takes a block, and can contain validate calls inside of it
+      # which will conditionally be run based on the code in the block.  The
+      # context of the block will be the current model.
+      def validations(*run_in_actions, &block)
+        unless block_given?
+          raise 'validations must take a block, use `validate` to setup a validation on a class directly.'
+        end
+
+        # Add a validation block to run during each validation
+        validate do
+          action = new? ? :create : :update
+
+          if run_in_actions.size == 0 || run_in_actions.include?(action)
+            @instance_validations = []
+
+            instance_exec(&block)
+
+            result = run_validations(@instance_variables)
+
+            @instance_variables = nil
+
+            result
+          end
         end
       end
     end
 
+    def validate(field_name = nil, options = nil)
+      puts "VALIDATE: #{field_name.inspect} - #{options.inspect}"
+      @instance_validations[field_name] ||= {}
+      @instance_validations[field_name].merge!(options)
+    end
+
     def self.included(base)
       base.send :extend, ClassMethods
-      base.class_attribute(:custom_validations, :validations)
+      base.class_attribute(:custom_validations, :validations_to_run)
     end
 
     # Once a field is ready, we can use include_in_errors! to start
@@ -43,7 +77,7 @@ module Volt
 
     # Marks all fields, useful for when a model saves.
     def mark_all_fields!
-      validations = self.class.validations
+      validations = self.class.validations_to_run
       if validations
         validations.each_key do |key|
           mark_field!(key.to_sym)
@@ -110,31 +144,42 @@ module Volt
     private
 
     # Runs through each of the normal validations.
+    # @param [Array] An array of validations to run
     # @return [Promise] a promsie to run all validations
-    def run_validations
-      promise = Promise.new.resolve(nil)
+    def run_validations(validations = nil)
+      # Default to running the class level validations
+      validations ||= self.class.validations_to_run
 
-      validations = self.class.validations
+      promise = Promise.new.resolve(nil)
       if validations
 
         # Run through each validation
         validations.each_pair do |field_name, options|
-          options.each_pair do |validation, args|
-            # Call the specific validator, then merge the results back
-            # into one large errors hash.
-            klass = validation_class(validation, args)
+          promise = promise.then { run_validation(field_name, options) }
+        end
+      end
 
-            if klass
-              # Chain on the promises
-              promise = promise.then do
-                klass.validate(self, field_name, args)
-              end.then do |errs|
-                errors.merge!(errs)
-              end
-            else
-              fail "validation type #{validation} is not specified."
-            end
+      promise
+    end
+
+    # Runs an individual validation
+    # @returns [Promise]
+    def run_validation(field_name, options)
+      promise = Promise.new.resolve(nil)
+      options.each_pair do |validation, args|
+        # Call the specific validator, then merge the results back
+        # into one large errors hash.
+        klass = validation_class(validation, args)
+
+        if klass
+          # Chain on the promises
+          promise = promise.then do
+            klass.validate(self, field_name, args)
+          end.then do |errs|
+            errors.merge!(errs)
           end
+        else
+          fail "validation type #{validation} is not specified."
         end
       end
 
