@@ -1,3 +1,5 @@
+require 'volt/server/message_bus'
+
 module Volt
   class App
     attr_reader :component_paths, :router, :page
@@ -19,6 +21,11 @@ module Volt
       # Require in app and initializers
       Volt.run_app_and_initializers unless RUBY_PLATFORM == 'opal'
 
+      # abort_on_exception is a useful debugging tool, and in my opinion something
+      # you probbaly want on.  That said you can disable it if you need.
+      Thread.abort_on_exception = Volt.config.abort_on_exception
+
+
       # Load component paths
       @component_paths = ComponentPaths.new(app_path)
       @component_paths.require_in_components(@page || $page)
@@ -26,6 +33,17 @@ module Volt
       unless RUBY_PLATFORM == 'opal'
         setup_router
         require_http_controllers
+      end
+
+      # Start the message bus
+      @message_bus = MessageBus.new(@page)
+
+      puts "Message Bus Started"
+      Thread.new do
+        # Handle incoming messages in a new thread
+        @message_bus.on('message') do |message|
+          puts "GOT MESSAGE: #{message.inspect}"
+        end
       end
     end
 

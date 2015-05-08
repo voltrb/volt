@@ -1,0 +1,54 @@
+# The server tracker uses the database to keep a list of all active servers (or
+# console, runners, etc...).  When an server instance starts, it registers with
+# the database, then reads the list of all other active servers.
+
+require 'socket'
+
+module Volt
+  class MessageBus
+    class ServerTracker
+      def initialize(page, server_id, port)
+        @page = page
+        @server_id = server_id
+        @port = port
+
+        puts 'A'
+        # Thread.new do
+        #   # Continually update the database letting the server know the server
+        #   # is active.
+        #   loop do
+        #     begin
+        #       register
+        #     rescue Exception => e
+        #       puts "MessageBus Register Error: #{e.inspect}"
+        #     end
+        #     sleep 60
+        #   end
+        # end
+        puts 'B'
+      end
+
+      # Register this server as active with the database
+      def register
+        instances = @page.store._active_volt_instances
+        instances.where(server_id: @server_id).fetch_first do |item|
+          ips = local_ips.join(',')
+          time = Time.now.to_i
+          if item
+            item.assign_attributes(ips: ips, time: time, port: @port)
+          else
+            instances << {server_id: @server_id, ips: ips, port: @port, time: time}
+          end
+        end
+      end
+
+      def local_ips
+        addr_infos = Socket.ip_address_list
+
+        ips = addr_infos.select do |addr|
+          addr.pfamily == Socket::PF_INET
+        end.map(&:ip_address)
+      end
+    end
+  end
+end

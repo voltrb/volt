@@ -57,7 +57,8 @@ else
           default_components: ['volt'],
 
           compress_javascript: Volt.env.production?,
-          compress_css:        Volt.env.production?
+          compress_css:        Volt.env.production?,
+          abort_on_exception:  true
         }
       end
 
