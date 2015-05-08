@@ -66,4 +66,12 @@ describe Volt::Eventable do
     test_eventable.trigger_works_event!
     expect(called).to eq(false)
   end
+
+  it 'Shows object ID and events when inspected' do
+    tested = TestEventable.new.on("test") { nil }
+    inspected = tested.inspect
+    expect(inspected).to include(tested.object_id.to_s)
+    expect(inspected).to include(tested.events.inspect)
+  end
+
 end
