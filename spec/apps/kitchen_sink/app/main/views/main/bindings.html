@@ -113,6 +113,26 @@
     </tr>
   </table>
 
+  <h2>If Bindings</h2>
+  <p id='ifbinding'>
+    {{ if page._show }}
+    <span>If _show</span>
+    {{ else }}
+    <span>If false _show</span>
+    {{ end }}
+  </p>
+
+  <h2>Unless Bindings</h2>
+  <p id='unlessbinding'>
+    {{ unless page._show }}
+    <span>Unless _show</span>
+    {{ else }}
+    <span>Unless false _show</span>
+    {{ end }}
+  </p>
+
+  <a id='showtrue' e-click='set_show(true)'>set _show true</a>
+  <a id='showfalse' e-click='set_show(false)'>set _show false</a>
 
   <h2>Content</h2>
 

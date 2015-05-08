@@ -186,6 +186,24 @@ describe 'bindings test', type: :feature, sauce: true do
     end
   end
 
+  describe 'if/unless binding' do
+    it 'should show corret text' do
+      visit '/'
+
+      click_link 'Bindings'
+
+      click_on 'showtrue'
+
+      expect(find('#ifbinding')).to have_content('If _show')
+      expect(find('#unlessbinding')).to have_content('Unless false _show')
+
+      click_on 'showfalse'
+
+      expect(find('#ifbinding')).to have_content('If false _show')
+      expect(find('#unlessbinding')).to have_content('Unless _show')
+    end
+  end
+
   describe 'content escaping' do
     it 'should escape in a tripple stash' do
       visit '/'
