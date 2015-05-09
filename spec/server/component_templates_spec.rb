@@ -7,8 +7,8 @@ else
   describe Volt::ComponentTemplates do
     let(:ct_haml){ Volt::ComponentTemplates.new('path/to/things.haml', 'thing') }
     it 'can be extended' do
+      ct_haml
       Volt::ComponentTemplates.register_template_handler(:haml, double(:haml_handler)) 
-
 
       expect( Volt::ComponentTemplates::Handlers.extensions ).to eq([ :html, :email, :haml ])
 
