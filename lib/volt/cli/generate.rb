@@ -75,7 +75,7 @@ class Generate < Thor
   method_option :name, type: :string, banner: 'The name of the task.'
   method_option :component, type: :string, default: 'main', banner: 'The component the task should be created in.', required: false
   def task(name, component = 'main')
-    name = name.underscore.gsub(/_tasks$/, '').singularize + '_tasks'
+    name = name.underscore.gsub(/_tasks$/, '').singularize + '_task'
     output_file = Dir.pwd + "/app/#{component}/tasks/#{name}.rb"
     spec_file = Dir.pwd + "/spec/app/#{component}/tasks/#{name}_spec.rb"
     template('task/task.rb.tt', output_file, task_name: name.camelize.singularize)
