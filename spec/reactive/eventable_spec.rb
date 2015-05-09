@@ -3,6 +3,15 @@ require 'volt/reactive/eventable'
 
 class TestEventable
   include Volt::Eventable
+  attr_reader :events_removed
+
+  def initialize
+    @events_removed = []
+  end
+
+  def event_removed(event, last, last_for_event)
+    @events_removed.push(event => [last, last_for_event])
+  end
 
   def trigger_works_event!
     trigger!('works', 20)
@@ -10,9 +19,9 @@ class TestEventable
 end
 
 describe Volt::Eventable do
-  it 'should allow events to be bound with on' do
-    test_eventable = TestEventable.new
+  let(:test_eventable) { TestEventable.new }
 
+  it 'should allow events to be bound with on' do
     count = 0
     test_eventable.on('works') do |val|
       count += 1
@@ -25,8 +34,6 @@ describe Volt::Eventable do
   end
 
   it 'should allow events to be removed with .remove' do
-    test_eventable = TestEventable.new
-
     count = 0
     listener = test_eventable.on('works') do
       count += 1
@@ -47,8 +54,6 @@ describe Volt::Eventable do
   end
 
   it 'should allow multiple events' do
-    test_eventable = TestEventable.new
-
     called = false
     listener = test_eventable.on(:broken, :works) do |arg|
       expect(arg).to eq(20)
@@ -65,5 +70,18 @@ describe Volt::Eventable do
     # Shouldn't run now
     test_eventable.trigger_works_event!
     expect(called).to eq(false)
+  end
+
+  it 'Shows object ID and events when inspected' do
+    tested = TestEventable.new.on("test") { nil }
+    inspected = tested.inspect
+    expect(inspected).to include(tested.object_id.to_s)
+    expect(inspected).to include(tested.events.first.to_s)
+  end
+
+  it 'calls event_removed on the class included on removal of event' do
+    listener = test_eventable.on("test") { nil }
+    listener.remove
+    expect(test_eventable.events_removed).to include(test: [true, true])
   end
 end
