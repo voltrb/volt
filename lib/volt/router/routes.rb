@@ -68,6 +68,7 @@ module Volt
     end
 
     # Add server side routes
+    
     def get(path, params)
       create_route(:get, path, params)
     end
@@ -86,6 +87,35 @@ module Volt
 
     def delete(path, params)
       create_route(:delete, path, params)
+    end
+
+    #Create rest endpoints
+    def rest(path, params)
+      endpoints = (params.delete(:only) || [:index, :show, :create, :update, :destroy]).to_a
+      endpoints = endpoints - params.delete(:except).to_a
+      endpoints.each do |endpoint|
+        self.send(('restful_' + endpoint.to_s).to_sym, path, params)
+      end
+    end
+
+    def restful_index(base_path, params)
+      get(base_path, params.merge(action: 'index'))
+    end
+
+    def restful_create(base_path, params)
+      post(base_path, params.merge(action: 'create'))
+    end
+
+    def restful_show(base_path, params)
+      get(path_with_id(base_path), params.merge(action: 'show'))
+    end
+
+    def restful_update(base_path, params)
+      put(path_with_id(base_path), params.merge(action: 'update'))
+    end
+
+    def restful_destroy(base_path, params)
+      delete(path_with_id(base_path), params.merge(action: 'destroy'))
     end
 
     # Takes in params and generates a path and the remaining params
@@ -295,6 +325,11 @@ module Volt
     # Check if a string has a binding in it
     def has_binding?(string)
       string.index('{{') && string.index('}}')
+    end
+
+    #Append an id to a given path
+    def path_with_id(base_path)
+      base_path + '/{{ id  }}'
     end
   end
 end
