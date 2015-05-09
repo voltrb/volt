@@ -5,7 +5,7 @@ module Volt
   # A request object for a HttpController. See Rack::Request for more details
   class HttpRequest < Rack::Request
     # Returns the request format
-    # /blub/index.html => html
+    # /acticles/index.html => html
     # Defaults to the media_type of the request
     def format
       path_format || media_type
