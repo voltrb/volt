@@ -115,7 +115,7 @@
 
   <h2>If Bindings</h2>
   <p id='ifbinding'>
-    {{ if page._show }}
+    {{ if page._show && true }}
     <span>If _show</span>
     {{ else }}
     <span>If false _show</span>
@@ -124,7 +124,7 @@
 
   <h2>Unless Bindings</h2>
   <p id='unlessbinding'>
-    {{ unless page._show }}
+    {{ unless page._show && true }}
     <span>Unless _show</span>
     {{ else }}
     <span>Unless false _show</span>
