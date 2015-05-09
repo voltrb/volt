@@ -23,7 +23,9 @@ module Volt
 
       # abort_on_exception is a useful debugging tool, and in my opinion something
       # you probbaly want on.  That said you can disable it if you need.
-      Thread.abort_on_exception = Volt.config.abort_on_exception
+      unless RUBY_PLATFORM == 'opal'
+        Thread.abort_on_exception = Volt.config.abort_on_exception
+      end
 
 
       # Load component paths
@@ -35,14 +37,16 @@ module Volt
         require_http_controllers
       end
 
-      # Start the message bus
-      @message_bus = MessageBus.new(@page)
+      unless RUBY_PLATFORM == 'opal'
+        # Start the message bus
+        @message_bus = MessageBus.new(@page)
 
-      puts "Message Bus Started"
-      Thread.new do
-        # Handle incoming messages in a new thread
-        @message_bus.on('message') do |message|
-          puts "GOT MESSAGE: #{message.inspect}"
+        puts "Message Bus Started"
+        Thread.new do
+          # Handle incoming messages in a new thread
+          @message_bus.on('message') do |message|
+            puts "GOT MESSAGE: #{message.inspect}"
+          end
         end
       end
     end
