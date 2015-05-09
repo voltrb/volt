@@ -2,6 +2,7 @@ module Volt
   # Listeners are returned from #on on a class with Eventable included.
   # Listeners can be stopped by calling #remove
   class Listener
+    attr_reader :events
     def initialize(klass, events, callback)
       @klass    = klass
       @events    = events
