@@ -4,7 +4,47 @@ require 'volt/tasks/task_handler'
 # Initialize with the path to a component and returns all the front-end
 # setup code (for controllers, models, views, and routes)
 module Volt
+  class BasicHandler
+    def call(file_contents)
+      file_contents
+    end
+  end
+
   class ComponentTemplates
+    
+    module Handlers #:nodoc:
+      # Setup default handler on extend
+      def self.extended(base)
+        base.register_template_handler :html, BasicHandler.new
+        base.register_template_handler :email, BasicHandler.new
+      end
+
+      @@template_handlers = {}
+      
+      def self.extensions
+        @@template_handlers.keys
+      end
+
+      # Register an object that knows how to handle template files with the given
+      # extensions. This can be used to implement new template types.
+      # The handler must respond to +:call+, which will be passed the template
+      # and should return the rendered template as a String.
+      def register_template_handler(extension, handler)
+        @@template_handlers[extension.to_sym] = handler
+      end
+
+      def registered_template_handler(extension)
+        extension && @@template_handlers[extension.to_sym]
+      end
+
+      def handler_for_extension(extension)
+        registered_template_handler(extension)
+      end
+    end
+
+    extend ComponentTemplates::Handlers
+
+    
     # client is if we are generating for the client or backend
     def initialize(component_path, component_name, client = true)
       @component_path = component_path
@@ -31,39 +71,47 @@ module Volt
     end
 
     def generate_view_code
-      code       = ''
+      code = ''
       views_path = "#{@component_path}/views/"
 
-      exts = ['html']
-
-      # Only load email templates on the server
-      exts << 'email' unless @client
+      exts = Handlers.extensions
 
       # Load all templates in the folder
       Dir["#{views_path}*/*.{#{exts.join(',')}}"].sort.each do |view_path|
+        # file extension
+        format = File.extname(view_path).downcase.delete('.').to_sym
+
         # Get the path for the template, supports templates in folders
         template_path = view_path[views_path.size..-1].gsub(/[.](#{exts.join('|')})$/, '')
         template_path = "#{@component_name}/#{template_path}"
 
-        all_templates = ViewParser.new(File.read(view_path), template_path)
+        file_contents = File.read(view_path)
 
-        binding_initializers = []
-        all_templates.templates.each_pair do |name, template|
-          binding_code = []
+        # Process template if we have a handler for this file type
+        if handler = ComponentTemplates.handler_for_extension(format)
+          file_contents = handler.call(file_contents)
+        
+          all_templates = ViewParser.new(file_contents, template_path)
 
-          if template['bindings']
-            template['bindings'].each_pair do |key, value|
-              binding_code << "#{key.inspect} => [#{value.join(', ')}]"
+          binding_initializers = []
+          all_templates.templates.each_pair do |name, template|
+            binding_code = []
+
+            if template['bindings']
+              template['bindings'].each_pair do |key, value|
+                binding_code << "#{key.inspect} => [#{value.join(', ')}]"
+              end
             end
+
+            binding_code = "{#{binding_code.join(', ')}}"
+
+            code << "#{page_reference}.add_template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})\n"
           end
-
-          binding_code = "{#{binding_code.join(', ')}}"
-
-          code << "#{page_reference}.add_template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})\n"
         end
       end
 
       code
+
     end
 
     def generate_controller_code
@@ -125,5 +173,6 @@ module Volt
     def generate_initializers_code
       "\nrequire_tree '#{@component_path}/config/initializers/'\n"
     end
+
   end
 end
