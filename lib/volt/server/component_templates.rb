@@ -22,7 +22,7 @@ module Volt
       @@template_handlers = {}
       
       def self.extensions
-        @@template_extensions ||= @@template_handlers.keys
+        @@template_handlers.keys
       end
 
       # Register an object that knows how to handle template files with the given
