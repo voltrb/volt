@@ -30,6 +30,8 @@ module Volt
         case first_symbol
           when 'if'
             add_if(args)
+          when 'unless'
+            add_if("!(#{args})")
           when 'elsif'
             add_else(args)
           when 'else'

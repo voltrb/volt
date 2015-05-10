@@ -50,6 +50,10 @@ module Main
       '<button id="examplebutton">Example Button</button>'
     end
 
+    def set_show(value)
+      page._show = value
+    end
+
     private
 
     # the main template contains a #template binding that shows another
