@@ -18,5 +18,11 @@ unless RUBY_PLATFORM == 'opal'
       html = Volt::PathStringRenderer.new('main/mailers/welcome/html', { name: 'Jimmy' }, @page).html
       expect(html).to eq("\n  <h1>Welcome Jimmy</h1>\n\n  <p>Glad you signed up!</p>\n\n")
     end
+
+    it 'Raises raises ViewLookupException if full_path is nil' do
+      expect do
+        Volt::PathStringRenderer.new('', { name: 'Jimmy' }, Volt::Page.new).html
+      end.to raise_error(Volt::ViewLookupException)
+    end
   end
 end
