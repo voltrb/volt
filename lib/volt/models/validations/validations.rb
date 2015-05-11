@@ -40,13 +40,13 @@ module Volt
           action = new? ? :create : :update
 
           if run_in_actions.size == 0 || run_in_actions.include?(action)
-            @instance_validations = []
+            @instance_validations = {}
 
-            instance_exec(&block)
+            instance_exec(action, &block)
 
-            result = run_validations(@instance_variables)
+            result = run_validations(@instance_validations)
 
-            @instance_variables = nil
+            @instance_validations = nil
 
             result
           end
@@ -55,7 +55,6 @@ module Volt
     end
 
     def validate(field_name = nil, options = nil)
-      puts "VALIDATE: #{field_name.inspect} - #{options.inspect}"
       @instance_validations[field_name] ||= {}
       @instance_validations[field_name].merge!(options)
     end

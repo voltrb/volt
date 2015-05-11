@@ -1,37 +1,57 @@
 require 'spec_helper'
 
-describe 'validations block' do
-  let(:model) { test_model_class.new }
+unless RUBY_PLATFORM == 'opal'
+  describe 'validations block' do
+    let(:model) { test_model_class.new }
 
-  let(:test_model_class) do
-    Class.new(Volt::Model) do
-      validations do
-        puts "RUN VALIDATIONS BLOCK: #{self.inspect}"
-        if _is_ready == true
-          puts "IS READY"
-          validate :name, length: 5
+    let(:test_model_class) do
+      Class.new(Volt::Model) do
+        validations do
+          puts "CHECK IS READY: #{_is_ready.inspect} -- #{self.inspect}"
+          if _is_ready == true
+            puts "IS READY"
+            validate :name, length: 5
+          end
+          puts "AFTER"
         end
-        puts "AFTER"
       end
     end
-  end
 
-  it 'should run conditional validations in the validations block' do
-    puts 'A'
-    a = test_model_class.new(name: 'Jo')
+    let(:test_model_action_pass_class) do
+      Class.new(Volt::Model) do
+        validations do |action|
+          # Only validation the name on update
+          if action == :update
+            validate :name, length: 5
+          end
+        end
+      end
+    end
 
-    puts 'B'
-    a.validate!.sync
+    it 'should run conditional validations in the validations block' do
+      a = test_model_class.new(name: 'Jo')
 
-    puts 'C'
-    expect(a.errors.size).to eq(0)
+      a.validate!.sync
+      expect(a.errors.size).to eq(0)
 
 
-    puts 'D'
-    a._is_ready = true
-    a.validate!.sync
+      a._is_ready = true
+      a.validate!.sync
 
-    puts "#{a.errors.inspect}"
-    expect(a.errors.size).to eq(1)
+      expect(a.errors.size).to eq(1)
+    end
+
+    it 'should send the action name to the validations block' do
+      jo = test_model_action_pass_class.new(name: 'Jo')
+
+      jo.validate!.sync
+      expect(jo.errors.size).to eq(0)
+
+      store._people << jo
+
+      jo.validate!.sync
+      expect(jo.errors.size).to eq(1)
+
+    end
   end
 end
