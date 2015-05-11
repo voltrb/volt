@@ -79,6 +79,22 @@ module Volt
       end
     end
 
+
+    def stop_child
+      # clear the drb object and kill the child process.
+      if @drb_object
+        begin
+          @drb_object = nil
+          DRb.stop_service
+          @reader.close
+          stop_change_listener
+          Process.kill(9, @child_id)
+        rescue => e
+          puts "Stop Child Error: #{e.inspect}"
+        end
+      end
+    end
+
     # In the even the parent gets killed without at_exit running,
     # we watch the pipe and close if the pipe gets closed.
     def watch_for_parent_exit
@@ -129,20 +145,6 @@ module Volt
       end
     end
 
-    def stop_child
-      # clear the drb object and kill the child process.
-      if @drb_object
-        begin
-          @drb_object = nil
-          DRb.stop_service
-          @reader.close
-          stop_change_listener
-          Process.kill(9, @child_id)
-        rescue => e
-          puts "Stop Child Error: #{e.inspect}"
-        end
-      end
-    end
 
     def reload(changed_files)
       # only reload the server code if a non-view file was changed

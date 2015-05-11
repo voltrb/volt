@@ -50,7 +50,7 @@ module Volt
     attr_reader :listener, :app_path
 
     # You can also optionally pass in a prebooted app
-    def initialize(root_path = nil, app = false)
+    def initialize(root_path = nil, app = nil)
       @root_path = root_path || Dir.pwd
       @volt_app = app
 

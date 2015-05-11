@@ -9,10 +9,11 @@ module Volt
       database_name = Volt.config.db_driver
       driver_name = database_name.camelize + 'Driver'
 
-      begin
-        driver = const_get(driver_name)
-        @driver = MongoDriver.new
-      rescue NameError => e
+      root = Volt::DataStore
+      if root.const_defined?(driver_name)
+        driver = root.const_get(driver_name)
+        @driver = driver.new
+      else
         raise "#{database_name} is not a supported database"
       end
     end

@@ -53,7 +53,7 @@ module Volt
         # Remove ourself from the available channels
         @@channels.delete(self)
 
-        QueryTasks.new(self).close!
+        @@dispatcher.close_channel(self)
       else
         Volt.logger.error("Socket Error: Connection already closed\n#{inspect}")
       end

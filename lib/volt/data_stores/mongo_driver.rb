@@ -1,5 +1,5 @@
-require 'volt/data_stores/base'
 require 'mongo'
+require 'volt/data_stores/base'
 
 module Volt
   class DataStore
@@ -8,10 +8,11 @@ module Volt
 
       def initialize
         if Volt.config.db_uri.present?
-          @mongo_db ||= Mongo::MongoClient.from_uri(Volt.config.db_uri)
+          puts "DB URI"
+          @mongo_db ||= ::Mongo::MongoClient.from_uri(Volt.config.db_uri)
           @db ||= @mongo_db.db(Volt.config.db_uri.split('/').last || Volt.config.db_name)
         else
-          @mongo_db ||= Mongo::MongoClient.new(Volt.config.db_host, Volt.config.db_path)
+          @mongo_db ||= ::Mongo::MongoClient.new(Volt.config.db_host, Volt.config.db_port)
           @db ||= @mongo_db.db(Volt.config.db_name)
         end
       end
