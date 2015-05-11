@@ -122,7 +122,9 @@ module Volt
           # or end of doc before closed binding
           raise_parse_error("unclosed binding: {#{binding.strip}")
         else
+          #:nocov:
           fail 'should not reach here'
+          #:nocov:
         end
       end
 
