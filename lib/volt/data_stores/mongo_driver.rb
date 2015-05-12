@@ -8,7 +8,6 @@ module Volt
 
       def initialize
         if Volt.config.db_uri.present?
-          puts "DB URI"
           @mongo_db ||= ::Mongo::MongoClient.from_uri(Volt.config.db_uri)
           @db ||= @mongo_db.db(Volt.config.db_uri.split('/').last || Volt.config.db_name)
         else
