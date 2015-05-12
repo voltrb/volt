@@ -50,5 +50,13 @@ if RUBY_PLATFORM != 'opal'
 
       Volt::Dispatcher.new.dispatch(channel, [0, 'TestTask', :allowed_method, {}, ' it', ' works'])
     end
+
+    it 'closes the channel' do
+      dispatcher = Volt::Dispatcher.new
+      channel    = Volt::ChannelStub.new
+      hmmm       = dispatcher.close_channel(channel)
+      binding.pry
+      puts '.'
+    end
   end
 end
