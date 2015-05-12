@@ -54,9 +54,9 @@ if RUBY_PLATFORM != 'opal'
     it 'closes the channel' do
       dispatcher = Volt::Dispatcher.new
       channel    = Volt::ChannelStub.new
-      hmmm       = dispatcher.close_channel(channel)
-      binding.pry
-      puts '.'
+      # This doesn't do much except find typos, which is the only reason
+      # I haven't deleted it. Work in progress -@RickCarlino
+      this_spec_needs_improvement = dispatcher.close_channel(channel)
     end
   end
 end
