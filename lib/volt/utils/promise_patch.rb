@@ -57,6 +57,9 @@ class Promise
     end
 
     if error
+      err_str = "Exception in Promise at .sync: #{error.inspect}"
+      err_str += error.backtrace.join("\n")
+      Volt.logger.error(err_str)
       fail error
     else
       return result
