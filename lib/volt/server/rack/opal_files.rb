@@ -23,9 +23,11 @@ module Volt
       Opal.append_path(Volt.root + '/lib')
 
       Gem.loaded_specs.values.each do |gem|
-        path = gem.full_gem_path + '/app'
+        ['app', 'lib'].each do |folder|
+          path = gem.full_gem_path + "/#{folder}"
 
-        Opal.append_path(path) if Dir.exist?(path)
+          Opal.append_path(path) if Dir.exist?(path)
+        end
       end
 
       # Don't run arity checks in production
