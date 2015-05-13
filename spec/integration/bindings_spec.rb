@@ -186,6 +186,28 @@ describe 'bindings test', type: :feature, sauce: true do
     end
   end
 
+  describe 'each binding' do
+    it 'should display the right amount of content' do
+      visit '/'
+
+      click_link 'Bindings'
+
+      expect(page).to have_selector('#eachbinding li', count: 100)
+    end
+
+    it 'should display the right amount of content after a lot of changes in the bindings' do
+      visit '/'
+
+      click_link 'Bindings'
+
+      click_link 'Jiggle'
+
+      sleep 3
+
+      expect(page).to have_selector('#eachbinding li', count: 300)
+    end
+  end
+
   describe 'if/unless binding' do
     it 'should show corret text' do
       visit '/'

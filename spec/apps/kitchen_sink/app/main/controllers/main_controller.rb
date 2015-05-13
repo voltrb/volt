@@ -8,6 +8,7 @@ module Main
     def index
       a = {}
       a[{}] = 5
+      page._items = 1.upto(100).to_a
     end
 
     def form_ready
@@ -52,6 +53,16 @@ module Main
 
     def set_show(value)
       page._show = value
+    end
+
+    def jiggle
+      101.upto(500).each do |i|
+        page._items << i
+      end
+
+      0.upto(200).each do |i|
+        page._items.delete(i)
+      end
     end
 
     private
