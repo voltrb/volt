@@ -10,6 +10,11 @@ if RUBY_PLATFORM != 'opal'
       Volt.logger = spy('Volt::VoltLogger')
     end
 
+    after do
+      # Cleanup, make volt make a new logger.  Otherwise this will leak out.
+      Volt.logger = nil
+    end
+
     it 'should only allow method calls on Task or above in the inheritance chain' do
       channel = double('channel')
 
