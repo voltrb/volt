@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.9.3.pre1
+### Added
+- Added validations block for conditional validation runs
+
 ## 0.9.2
 ### Changed
 - We released 0.9.1 with a bug for destroy (doh!).  Specs added and bug fixed.
