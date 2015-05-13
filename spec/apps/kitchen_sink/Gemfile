@@ -12,7 +12,9 @@ gem 'volt-bootstrap_jumbotron_theme'
 
 gem 'volt-fields'
 gem 'volt-user_templates'
-gem 'volt-mongo', path: '/Users/ryanstout/Sites/volt/apps/volt-mongo'
+
+# use mongo for data store while testing
+gem 'volt-mongo'
 
 gem 'opal'
 

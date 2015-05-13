@@ -2,7 +2,8 @@ source 'http://rubygems.org'
 
 gemspec
 
-gem 'volt-mongo', path: '/Users/ryanstout/Sites/volt/apps/volt-mongo'
+# volt-mongo gem for testing
+gem 'volt-mongo'
 
 group :development do
   # For testing the kitchen sink app
