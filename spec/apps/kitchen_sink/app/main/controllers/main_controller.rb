@@ -56,13 +56,21 @@ module Main
     end
 
     def jiggle
-      101.upto(500).each do |i|
-        page._items << i
-      end
+      changes = Promise.new
+      page._items = changes
+      `
+      setTimeout(function () {
+        #{changes.resolve(0.upto(100).to_a)}
+      }, 1000);
+      `
+      page._items = 901.upto(1000).to_a
+    end
 
-      0.upto(200).each do |i|
-        page._items.delete(i)
-      end
+    def wiggle
+      changes = Promise.new
+      changes.resolve(1.upto(200).to_a)
+      page._items = 901.upto(1000).to_a
+      page._items = changes
     end
 
     private

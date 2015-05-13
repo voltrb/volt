@@ -192,10 +192,11 @@ describe 'bindings test', type: :feature, sauce: true do
 
       click_link 'Bindings'
 
+      expect(find('#eachbinding li:first-child')).to have_content('1')
       expect(page).to have_selector('#eachbinding li', count: 100)
     end
 
-    it 'should display the right amount of content after a lot of changes in the bindings' do
+    it 'should display the last assignment regardless of the previous resolved a bit later' do
       visit '/'
 
       click_link 'Bindings'
@@ -204,7 +205,21 @@ describe 'bindings test', type: :feature, sauce: true do
 
       sleep 3
 
-      expect(page).to have_selector('#eachbinding li', count: 300)
+      expect(find('#eachbinding li:first-child')).to have_content('901')
+      expect(page).to have_selector('#eachbinding li', count: 100)
+    end
+
+    it 'should display the last assignment regardless whether the promise has already been resolved before' do
+      visit '/'
+
+      click_link 'Bindings'
+
+      click_link 'Wiggle'
+
+      sleep 3
+
+      expect(find('#eachbinding li:first-child')).to have_content('1')
+      expect(page).to have_selector('#eachbinding li', count: 200)
     end
   end
 
