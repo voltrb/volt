@@ -196,7 +196,7 @@ describe 'bindings test', type: :feature, sauce: true do
       expect(page).to have_selector('#eachbinding li', count: 100)
     end
 
-    it 'should display the last assignment regardless of the previous resolved a bit later' do
+    it 'should display the last assignment even if the previous assignment resolved afterwards' do
       visit '/'
 
       click_link 'Bindings'
@@ -209,7 +209,7 @@ describe 'bindings test', type: :feature, sauce: true do
       expect(page).to have_selector('#eachbinding li', count: 100)
     end
 
-    it 'should display the last assignment regardless whether the promise has already been resolved before' do
+    it 'should display the last assignment regardless whether the previous promise has already been resolved' do
       visit '/'
 
       click_link 'Bindings'
