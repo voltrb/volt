@@ -76,11 +76,21 @@ module Volt
 
     # Marks all fields, useful for when a model saves.
     def mark_all_fields!
+      # TODO: We can use a Set here, but set was having issues.  Check in a
+      # later version of opal.
+      fields_to_mark = []
+
+      # Look at each validation
       validations = self.class.validations_to_run
       if validations
-        validations.each_key do |key|
-          mark_field!(key.to_sym)
-        end
+        fields_to_mark += validations.keys
+      end
+
+      # Also include any current fields
+      fields_to_mark += attributes.keys
+
+      fields_to_mark.each do |key|
+        mark_field!(key.to_sym)
       end
     end
 

@@ -31,7 +31,6 @@ unless RUBY_PLATFORM == 'opal'
       a.validate!.sync
       expect(a.errors.size).to eq(0)
 
-
       a._is_ready = true
       a.validate!.sync
 
