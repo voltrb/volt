@@ -23,7 +23,6 @@ module Volt
     def self.adaptor_client
       # Load the client adaptor
       @adaptor_client ||= begin
-        puts "VC: #{Volt.config.to_h.inspect}"
         ds_name = Volt.config.public.datastore_name
         unless ds_name
           raise "No data store configured, please include volt-mongo or " +

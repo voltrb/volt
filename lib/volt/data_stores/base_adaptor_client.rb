@@ -17,9 +17,17 @@ module Volt
 
       # A class method that takes an array of method names we want to provide
       # on the ArrayModel class.  (These are typically query/sort/order/etc...
-      # methods)
+      # methods).  This adds a proxy method to the store persistor for all
+      # passed in method names, and then sets up a default tracking method
+      # on the ArrayStore persistor.
       def self.data_store_methods(*method_names)
         Volt::ArrayModel.proxy_to_persistor(*method_names)
+
+        method_names.each do |method_name|
+          Volt::Persistors::ArrayStore.send(:define_method, method_name) do |*args|
+            add_query_part(method_name, *args)
+          end
+        end
       end
     end
   end

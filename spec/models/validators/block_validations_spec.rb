@@ -7,12 +7,9 @@ unless RUBY_PLATFORM == 'opal'
     let(:test_model_class) do
       Class.new(Volt::Model) do
         validations do
-          puts "CHECK IS READY: #{_is_ready.inspect} -- #{self.inspect}"
           if _is_ready == true
-            puts "IS READY"
             validate :name, length: 5
           end
-          puts "AFTER"
         end
       end
     end

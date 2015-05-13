@@ -16,6 +16,8 @@ gem 'volt-mongo', path: '/Users/ryanstout/Sites/volt/apps/volt-mongo'
 
 gem 'opal'
 
+gem 'concurrent-ruby-ext'
+
 # Server for MRI
 platform :mri do
   gem 'thin', '~> 1.6.0'
