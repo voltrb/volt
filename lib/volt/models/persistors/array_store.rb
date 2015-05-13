@@ -1,6 +1,5 @@
 require 'volt/models/persistors/store'
 require 'volt/models/persistors/store_state'
-require 'volt/models/persistors/query/normalizer'
 require 'volt/models/persistors/query/query_listener_pool'
 require 'volt/utils/timers'
 
@@ -8,6 +7,7 @@ module Volt
   module Persistors
     class ArrayStore < Store
       include StoreState
+
 
       @@query_pool = QueryListenerPool.new
 
@@ -141,7 +141,7 @@ module Volt
           end
         end
 
-        query = Query::Normalizer.normalize(query)
+        query = Volt::DataStore.adaptor_client.normalize_query(query)
 
         @query_listener ||= @@query_pool.lookup(collection, query) do
           # Create if it does not exist
@@ -154,9 +154,7 @@ module Volt
       end
 
       # Find takes a query object
-      def where(query = nil)
-        query ||= {}
-
+      def where(query = {})
         add_query_part(:find, query)
       end
       alias_method :find, :where

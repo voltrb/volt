@@ -11,7 +11,7 @@ module Volt
   end
 
   class ComponentTemplates
-    
+
     module Handlers #:nodoc:
       # Setup default handler on extend
       def self.extended(base)
@@ -20,7 +20,7 @@ module Volt
       end
 
       @@template_handlers = {}
-      
+
       def self.extensions
         @@template_handlers.keys
       end
@@ -44,7 +44,7 @@ module Volt
 
     extend ComponentTemplates::Handlers
 
-    
+
     # client is if we are generating for the client or backend
     def initialize(component_path, component_name, client = true)
       @component_path = component_path
@@ -56,7 +56,8 @@ module Volt
       code = generate_routes_code + generate_view_code
       if @client
         # On the backend, we just need the views
-        code << generate_controller_code + generate_model_code + generate_tasks_code + generate_initializers_code
+        code << generate_controller_code + generate_model_code +
+                generate_tasks_code + generate_initializers_code
       end
 
       code
@@ -90,7 +91,7 @@ module Volt
         # Process template if we have a handler for this file type
         if handler = ComponentTemplates.handler_for_extension(format)
           file_contents = handler.call(file_contents)
-        
+
           all_templates = ViewParser.new(file_contents, template_path)
 
           binding_initializers = []

@@ -3,6 +3,7 @@ require 'volt/models/model_wrapper'
 require 'volt/models/model_helpers/model_helpers'
 require 'volt/models/state_manager'
 require 'volt/models/state_helpers'
+require 'volt/data_stores/data_store'
 
 module Volt
   class ArrayModel < ReactiveArray
@@ -40,7 +41,7 @@ module Volt
     end
 
     proxy_with_root_dep :[], :size, :first, :last, :state_for, :reverse
-    proxy_to_persistor :find, :where, :skip, :sort, :limit, :then, :fetch, :fetch_first, :fetch_each
+    proxy_to_persistor :then, :fetch, :fetch_first, :fetch_each
 
     def initialize(array = [], options = {})
       @options   = options

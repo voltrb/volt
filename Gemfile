@@ -2,6 +2,8 @@ source 'http://rubygems.org'
 
 gemspec
 
+gem 'volt-mongo', path: '/Users/ryanstout/Sites/volt/apps/volt-mongo'
+
 group :development do
   # For testing the kitchen sink app
   # Twitter bootstrap

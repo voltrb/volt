@@ -60,7 +60,7 @@ module Volt
           $LOAD_PATH.unshift(app_folder)
 
           # Sort so we get consistent load order across platforms
-          Dir["#{app_folder}/*/{lib,controllers,models,tasks}/*.rb"].each do |ruby_file|
+          Dir["#{app_folder}/*/{controllers,models,tasks}/*.rb"].each do |ruby_file|
             path = ruby_file.gsub(/^#{app_folder}\//, '')[0..-4]
             require(path)
           end
