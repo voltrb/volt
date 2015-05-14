@@ -39,8 +39,10 @@ module Volt
         QueryTasks.reset!
       end
 
-      # Call once during setup to clear if we killed the last run
-      cleanup_db.call
+      if RUBY_PLATFORM != 'opal'
+        # Call once during setup to clear if we killed the last run
+        cleanup_db.call
+      end
 
       # Setup the spec collection accessors
       # RSpec.shared_context "volt collections", {} do
