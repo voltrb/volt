@@ -4,6 +4,9 @@
 ### Added
 - Added validations block for conditional validation runs
 
+### Changed
+- All logic associated with mongo has been moved into the volt-mongo gem.  If you are migrating from a previous version, be sure to add ```gem 'volt-mongo'``` to the Gemfile.
+
 ## 0.9.2
 ### Changed
 - We released 0.9.1 with a bug for destroy (doh!).  Specs added and bug fixed.
