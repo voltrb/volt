@@ -26,7 +26,6 @@ module Volt
       .each do |gem|
         ['app', 'lib'].each do |folder|
           path = gem.full_gem_path + "/#{folder}"
-          puts "APPEND PATH: #{path}"
 
           Opal.append_path(path) if Dir.exist?(path)
         end
@@ -60,7 +59,6 @@ module Volt
         RubyCleanCSS::Sprockets.register(environment)
       end
 
-      puts "APPEND PATH: #{app_path}"
       server.append_path(app_path)
 
       volt_gem_lib_path = File.expand_path(File.join(File.dirname(__FILE__), '../../..'))
@@ -87,7 +85,6 @@ module Volt
 
     def add_asset_folders(environment)
       @component_paths.asset_folders do |asset_folder|
-        puts "ADD ASSET FOLDER: #{asset_folder.inspect}"
         environment.append_path(asset_folder)
       end
     end
