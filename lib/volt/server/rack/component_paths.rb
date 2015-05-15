@@ -17,7 +17,7 @@ module Volt
         # Gem folders with volt in them
         # TODO: we should probably qualify this a bit more
         app_folders += Gem.loaded_specs.values
-                       .select {|gem| gem.name =~ /volt/ }
+                       .select {|gem| gem.name =~ /^volt/ }
                        .map {|gem| "#{gem.full_gem_path}/app" }
 
         app_folders.uniq
