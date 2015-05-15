@@ -2,6 +2,9 @@ source 'http://rubygems.org'
 
 gemspec
 
+# volt-mongo gem for testing
+gem 'volt-mongo'
+
 group :development do
   # For testing the kitchen sink app
   # Twitter bootstrap

@@ -60,7 +60,27 @@ describe Volt::User do
           expect(user._hashed_password).to eq 'hashed-password'
         end
       end
+
+      it 'should allow updates without validating the password' do
+        bob = store._users.buffer(name: 'Bob', email: 'bob@bob.com', password: '39sdjkdf932jklsd')
+        bob.save!
+
+        expect(bob._password).to eq(nil)
+
+        bob_buf = bob.buffer
+
+        bob_buf._name = 'Jimmy'
+
+        saved = false
+        bob_buf.save! do
+          saved = true
+        end
+
+        expect(saved).to eq(true)
+      end
     end
+
+
 
     describe 'when it is not a Volt server' do
       before do

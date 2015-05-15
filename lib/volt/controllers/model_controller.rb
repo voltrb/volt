@@ -190,7 +190,7 @@ module Volt
     def require_login(message = 'You must login to access this area.')
       unless Volt.current_user_id
         flash._notices << message
-        go '/login'
+        redirect_to '/login'
 
         stop_chain
       end

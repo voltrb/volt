@@ -1,5 +1,7 @@
 # Config lets a user set global config options for Volt.
-# The hash is setup on the server, then passed to the client on initial page render.
+# The hash is setup on the server, then the settings under .public are passed
+# to the client on initial page render.  Volt.configure can be called multiple
+# times and settings will be added to the existing configuration.
 if RUBY_PLATFORM == 'opal'
   require 'ostruct'
 
@@ -83,8 +85,16 @@ else
       alias_method :config, :configuration
     end
 
+    inst = self
     configuration_defaults do |c|
-      c.from_h(Volt.defaults)
+      current_config = inst.instance_variable_get(:@configuration)
+      if current_config
+        # Default to the existing config, so we can extend
+        c.from_h(current_config.to_h)
+      else
+        # First call
+        c.from_h(Volt.defaults)
+      end
     end
   end
 end

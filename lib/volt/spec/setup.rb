@@ -29,6 +29,21 @@ module Volt
         RSpec.configuration.filter_run_excluding type: :feature
       end
 
+
+
+      cleanup_db = -> do
+        Volt::DataStore.fetch.drop_database
+
+        # Clear cached for a reset
+        $page.instance_variable_set('@store', nil)
+        QueryTasks.reset!
+      end
+
+      if RUBY_PLATFORM != 'opal'
+        # Call once during setup to clear if we killed the last run
+        cleanup_db.call
+      end
+
       # Setup the spec collection accessors
       # RSpec.shared_context "volt collections", {} do
       RSpec.shared_examples_for 'volt collections', {} do
@@ -42,19 +57,12 @@ module Volt
           $page.store
         end
 
-        def cleanup_after
-          Volt::DataStore.fetch.drop_database
-
-          # Clear cached for a reset
-          $page.instance_variable_set('@store', nil)
-          QueryTasks.reset!
-        end
 
         if RUBY_PLATFORM != 'opal'
           after do
             if @__store_accessed
               # Clear the database after each spec where we use store
-              cleanup_after
+              cleanup_db.call
             end
           end
 

@@ -13,6 +13,13 @@ class TestAssignsMethod < Volt::Model
 end
 
 describe Volt::Model do
+  it 'delegates unary operator to its attributes' do
+    model = Volt::Model.new
+    expect(!model).to eq(!model.attributes)
+    model = Volt::Model.new(has: 'attrs')
+    expect(!model).to eq(!model.attributes)
+  end
+
   it 'should allow _ methods to be used to store values without predefining them' do
     a = Volt::Model.new
     a._stash = 'yes'

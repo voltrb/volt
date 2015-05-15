@@ -1,6 +1,5 @@
 require 'volt/models/persistors/store'
 require 'volt/models/persistors/store_state'
-require 'volt/models/persistors/query/normalizer'
 require 'volt/models/persistors/query/query_listener_pool'
 require 'volt/utils/timers'
 
@@ -8,6 +7,7 @@ module Volt
   module Persistors
     class ArrayStore < Store
       include StoreState
+
 
       @@query_pool = QueryListenerPool.new
 
@@ -141,7 +141,7 @@ module Volt
           end
         end
 
-        query = Query::Normalizer.normalize(query)
+        query = Volt::DataStore.adaptor_client.normalize_query(query)
 
         @query_listener ||= @@query_pool.lookup(collection, query) do
           # Create if it does not exist
@@ -151,27 +151,6 @@ module Volt
         # @@query_pool.print
 
         @query_listener
-      end
-
-      # Find takes a query object
-      def where(query = nil)
-        query ||= {}
-
-        add_query_part(:find, query)
-      end
-      alias_method :find, :where
-
-      def limit(limit)
-        add_query_part(:limit, limit)
-      end
-
-      def skip(skip)
-        add_query_part(:skip, skip)
-      end
-
-      # .sort is already a ruby method, so we use order instead
-      def order(sort)
-        add_query_part(:sort, sort)
       end
 
       # Add query part adds a [method_name, *arguments] array to the query.

@@ -7,6 +7,7 @@ require 'sass'
 require 'volt/utils/tilt_patch'
 require 'sprockets-sass'
 
+
 require 'volt'
 require 'volt/tasks/dispatcher'
 require 'volt/tasks/task_handler'
@@ -49,7 +50,7 @@ module Volt
     attr_reader :listener, :app_path
 
     # You can also optionally pass in a prebooted app
-    def initialize(root_path = nil, app = false)
+    def initialize(root_path = nil, app = nil)
       @root_path = root_path || Dir.pwd
       @volt_app = app
 
@@ -83,7 +84,9 @@ module Volt
       end
 
       # Only run ForkingServer if fork is supported in this env.
-      if !can_fork || Volt.env.production? || Volt.env.test?
+      # NO_FORKING can be used to specify that you don't want to use the forking
+      # server.
+      if !can_fork || Volt.env.production? || Volt.env.test? || ENV['NO_FORKING']
         # In production/test, we boot the app and run the server
         #
         # Sometimes the app is already booted, so we can skip if it is

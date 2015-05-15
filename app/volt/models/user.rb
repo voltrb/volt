@@ -23,8 +23,13 @@ module Volt
     end
 
     if RUBY_PLATFORM == 'opal'
-      # Don't validate on the server
-      validate :password, length: 8
+      validations do
+        # Only validate password when it has changed
+        if changed?(:password)
+          # Don't validate on the server
+          validate :password, length: 8
+        end
+      end
     end
 
     def password=(val)

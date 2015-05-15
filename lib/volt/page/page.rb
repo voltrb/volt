@@ -15,6 +15,7 @@ require 'volt/page/string_template_renderer'
 require 'volt/page/document_events'
 require 'volt/page/sub_context'
 require 'volt/page/targets/dom_target'
+require 'volt/data_stores/base_adaptor_client'
 
 if RUBY_PLATFORM == 'opal'
   require 'volt/page/channel'

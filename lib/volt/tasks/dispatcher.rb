@@ -89,5 +89,9 @@ module Volt
 
       false
     end
+
+    def close_channel(channel)
+      QueryTasks.new(channel).close!
+    end
   end
 end

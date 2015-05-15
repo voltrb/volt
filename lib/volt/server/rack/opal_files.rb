@@ -22,10 +22,14 @@ module Volt
       Opal.append_path(Volt.root + '/app')
       Opal.append_path(Volt.root + '/lib')
 
-      Gem.loaded_specs.values.each do |gem|
-        path = gem.full_gem_path + '/app'
+      Gem.loaded_specs.values.select {|gem| gem.name =~ /^volt/ }
+      .each do |gem|
+        ['app', 'lib'].each do |folder|
+          path = gem.full_gem_path + "/#{folder}"
+          puts "APPEND PATH: #{path}"
 
-        Opal.append_path(path) if Dir.exist?(path)
+          Opal.append_path(path) if Dir.exist?(path)
+        end
       end
 
       # Don't run arity checks in production
@@ -56,17 +60,13 @@ module Volt
         RubyCleanCSS::Sprockets.register(environment)
       end
 
+      puts "APPEND PATH: #{app_path}"
       server.append_path(app_path)
 
       volt_gem_lib_path = File.expand_path(File.join(File.dirname(__FILE__), '../../..'))
       server.append_path(volt_gem_lib_path)
 
       add_asset_folders(server)
-
-      # Add the opal load paths
-      Opal.paths.each do |path|
-        server.append_path(path)
-      end
 
       builder.map '/assets' do
         run server
@@ -87,6 +87,7 @@ module Volt
 
     def add_asset_folders(environment)
       @component_paths.asset_folders do |asset_folder|
+        puts "ADD ASSET FOLDER: #{asset_folder.inspect}"
         environment.append_path(asset_folder)
       end
     end

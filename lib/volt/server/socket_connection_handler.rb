@@ -53,7 +53,11 @@ module Volt
         # Remove ourself from the available channels
         @@channels.delete(self)
 
-        QueryTasks.new(self).close!
+        begin
+          @@dispatcher.close_channel(self)
+        rescue DRb::DRbConnError => e
+        # ignore drb read of @@dispatcher error if child has closed
+        end
       else
         Volt.logger.error("Socket Error: Connection already closed\n#{inspect}")
       end
