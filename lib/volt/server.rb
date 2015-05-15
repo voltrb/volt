@@ -84,7 +84,9 @@ module Volt
       end
 
       # Only run ForkingServer if fork is supported in this env.
-      if !can_fork || Volt.env.production? || Volt.env.test?
+      # NO_FORKING can be used to specify that you don't want to use the forking
+      # server.
+      if !can_fork || Volt.env.production? || Volt.env.test? || ENV['NO_FORKING']
         # In production/test, we boot the app and run the server
         #
         # Sometimes the app is already booted, so we can skip if it is
