@@ -27,4 +27,12 @@ describe Volt::Persistors::Store do
 
     @model << 4
   end
+
+  it 'passes removed() to changed() by default' do
+    model     = Volt::Model.new(abc: 123)
+    persistor = Volt::Persistors::Store.new(model)
+    expect(persistor.removed(:abc)).to eq(persistor.changed(:abc))
+    model._abc = 456
+    expect(persistor.removed(:abc)).to eq(persistor.changed(:abc))
+  end
 end
