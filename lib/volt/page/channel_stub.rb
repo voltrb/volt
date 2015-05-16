@@ -13,7 +13,7 @@ module Volt
 
     attr_reader :state, :error, :reconnect_interval
 
-    def initiailze
+    def initialize
       @state = :connected
     end
 
