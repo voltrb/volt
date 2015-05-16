@@ -5,8 +5,10 @@
 - Added validations block for conditional validation runs
 - you can now set the NO_FORKING=true ENV to prevent using the forking server in development.
 
+
 ### Changed
 - All logic associated with mongo has been moved into the volt-mongo gem.  If you are migrating from a previous version, be sure to add ```gem 'volt-mongo'``` to the Gemfile.
+- fixed issue where ```volt precompile``` would compile in extra assets from non-component gems.
 
 ## 0.9.2
 ### Changed
