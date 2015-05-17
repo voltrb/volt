@@ -62,7 +62,7 @@ class Generate < Thor
   method_option :name, type: :string, banner: 'The name of the model controller.'
   method_option :component, type: :string, default: 'main', banner: 'The component the controller should be created in.', required: false
   def controller(name, component = 'main')
-    controller_name = name.underscore.singularize + '_controller' unless name =~ /_controller$/
+    controller_name = name.underscore.pluralize + '_controller' unless name =~ /_controller$/
     output_file = Dir.pwd + "/app/#{component.underscore}/controllers/#{controller_name}.rb"
     spec_file = Dir.pwd + "/spec/app/#{component.underscore}/integration/#{name.underscore.pluralize}_spec.rb"
 
@@ -85,7 +85,7 @@ class Generate < Thor
   method_option :name, type: :string, banner: 'The name of the view.'
   method_option :component, type: :string, default: 'main', banner: 'The component the view should be created in.', required: false
   def view(name, component = 'main')
-    name = name.underscore.singularize
+    name = name.underscore.pluralize
     view_folder = Dir.pwd + "/app/#{component}/views/#{name}/"
     directory('view', view_folder, view_name: name, component: component)
     controller(name, component) unless controller_exists?(name, component)
