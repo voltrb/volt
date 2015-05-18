@@ -21,6 +21,8 @@ require 'volt/server/message_bus/peer_connection'
 
 module Volt
   class MessageBus
+    # How long without an update before we mark an instance as dead (in seconds)
+    DEAD_TIME = 20
     include Eventable
 
     attr_reader :server_id
@@ -29,24 +31,28 @@ module Volt
     def initialize(page)
       # Generate a guid
       @server_id = SecureRandom.uuid
+      # The PeerConnection's to peers
       @peer_connections = {}
+      # The server id's for each peer we're connected to
+      @peer_server_ids = {}
 
       @page = page
       @peer_server = PeerServer.new(self)
-      puts "Listen on: #{@peer_server.port.inspect}"
       @server_tracker = ServerTracker.new(page, @server_id, @peer_server.port)
 
       # Do the initial registration, and wait until its done before connecting
       # to peers.
       @server_tracker.register()
 
-      connect_to_peers
-
       Thread.new do
-        loop do
-          send_message("HELLO FROM: #{@server_id}")
-          sleep 5
-        end
+        sleep 1
+
+        connect_to_peers
+
+        # loop do
+        #   send_message("HELLO FROM: #{@server_id}")
+        #   sleep 5
+        # end
       end
     end
 
@@ -79,10 +85,12 @@ module Volt
 
     def add_peer_connection(peer_connection)
       @peer_connections[peer_connection] = true
+      @peer_server_ids[peer_connection.peer_server_id] = true
     end
 
     def remove_peer_connection(peer_connection)
       @peer_connections.delete(peer_connection)
+      @peer_server_ids.delete(peer_connection.peer_server_id)
     end
 
     # Called when a message comes in
@@ -127,13 +135,11 @@ module Volt
         if peer
           # Found the peer, retry if it has reported in in the last 2
           # minutes.
-          puts "Last Peer: #{peer._time} > #{(Time.now.to_i - (2*60))}"
-          if peer._time > (Time.now.to_i - (2*60))
+          if peer._time > (Time.now.to_i - DEAD_TIME)
             # Peer reported in less than 2 minutes ago
             return true
           else
             # Delete the entry
-            puts "Destroy Peer"
             peer.destroy
           end
         end
