@@ -1,29 +1,13 @@
-require_relative 'live_query/live_query_pool'
-
 class QueryTasks < Volt::Task
-  @@channel_live_queries = {}
-
-  def self.live_query_pool
-    @@live_query_pool ||= LiveQueryPool.new(Volt::DataStore.fetch)
-  end
-
   # The dispatcher passes its self in
-  def initialize(channel, dispatcher = nil)
+  def initialize(volt_app, channel, dispatcher = nil)
+    @volt_app = volt_app
     @channel = channel
     @dispatcher = dispatcher
-
-    # Load the query pool if not already setup
-    self.class.live_query_pool
-  end
-
-  def self.reset!
-    @@channel_live_queries = {}
-    @@live_query_pool = nil
-    live_query_pool
   end
 
   def add_listener(collection, query)
-    live_query = @@live_query_pool.lookup(collection, query)
+    live_query = @volt_app.live_query_pool.lookup(collection, query)
     track_channel_in_live_query(live_query)
 
     if @channel
@@ -53,8 +37,6 @@ class QueryTasks < Volt::Task
       end
     end
 
-    # @@live_query_pool.print
-
     [initial_data, error]
   end
 
@@ -68,13 +50,13 @@ class QueryTasks < Volt::Task
   # Remove a listening channel, the LiveQuery will automatically remove
   # itsself from the pool when there are no channels.
   def remove_listener(collection, query)
-    live_query = @@live_query_pool.lookup(collection, query)
+    live_query = @volt_app.live_query_pool.lookup(collection, query)
     live_query.remove_channel(@channel)
   end
 
   # Removes a channel from all associated live queries
   def close!
-    live_queries = @@channel_live_queries[@channel]
+    live_queries = @volt_app.channel_live_queries[@channel]
 
     if live_queries
       live_queries.each do |live_query|
@@ -82,14 +64,15 @@ class QueryTasks < Volt::Task
       end
     end
 
-    @@channel_live_queries.delete(@channel)
+    @volt_app.channel_live_queries.delete(@channel)
   end
 
   private
 
   # Tracks that this channel will be notified from the live query.
   def track_channel_in_live_query(live_query)
-    @@channel_live_queries[@channel] ||= []
-    @@channel_live_queries[@channel] << live_query
+    channel_live_queries = @volt_app.channel_live_queries
+    channel_live_queries[@channel] ||= []
+    channel_live_queries[@channel] << live_query
   end
 end

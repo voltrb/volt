@@ -93,7 +93,7 @@ module Volt
         boot_volt unless @volt_app
 
         # Setup the dispatcher (it stays this class during its run)
-        SocketConnectionHandler.dispatcher = Dispatcher.new
+        SocketConnectionHandler.dispatcher = Dispatcher.new(@volt_app)
         app.run(new_server)
       else
         # In developer

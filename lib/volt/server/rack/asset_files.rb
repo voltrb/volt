@@ -87,9 +87,9 @@ module Volt
 
       opal_js_files = []
       if Volt.source_maps?
-        opal_js_files += opal_files.environment['volt/page/page'].to_a.map { |v| '/assets/' + v.logical_path + '?body=1' }
+        opal_js_files += opal_files.environment['volt/volt/app'].to_a.map { |v| '/assets/' + v.logical_path + '?body=1' }
       else
-        opal_js_files << '/assets/volt/page/page.js'
+        opal_js_files << '/assets/volt/volt/app.js'
       end
       opal_js_files << '/components/main.js'
 

@@ -194,7 +194,10 @@ module Volt
           # An error hash will be returned if the update doesn't work
           return update_result if update_result
 
-          QueryTasks.live_query_pool.updated_collection(collection.to_s, Thread.current['in_channel'])
+          # If we are running in a task, or the console, push update
+          if (volt_app = Volt.current_app)
+            volt_app.live_query_pool.updated_collection(collection.to_s, Thread.current['in_channel'])
+          end
           {}
         end
       end

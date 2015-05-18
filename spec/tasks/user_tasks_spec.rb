@@ -18,6 +18,8 @@ if RUBY_PLATFORM != 'opal'
       allow(fake_response).to receive(:fetch_first).and_yield(user)
     end
 
+    subject { UserTasks.new(Volt.current_app) }
+
     describe '#login' do
       context 'with no matching user' do
         let(:user) { false }

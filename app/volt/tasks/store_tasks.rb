@@ -2,7 +2,8 @@ require 'mongo'
 require 'volt/models'
 
 class StoreTasks < Volt::Task
-  def initialize(channel = nil, dispatcher = nil)
+  def initialize(volt_app, channel = nil, dispatcher = nil)
+    @app = volt_app
     @channel = channel
     @dispatcher = dispatcher
   end
@@ -81,7 +82,7 @@ class StoreTasks < Volt::Task
           fail "Permissions did not allow #{collection} #{id} to be deleted."
         end
 
-        QueryTasks.live_query_pool.updated_collection(collection, @channel)
+        @volt_app.live_query_pool.updated_collection(collection, @channel)
       else
         fail "Could not find #{id} in #{collection}"
       end
