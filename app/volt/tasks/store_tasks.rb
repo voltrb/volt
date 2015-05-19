@@ -3,7 +3,7 @@ require 'volt/models'
 
 class StoreTasks < Volt::Task
   def initialize(volt_app, channel = nil, dispatcher = nil)
-    @app = volt_app
+    @volt_app = volt_app
     @channel = channel
     @dispatcher = dispatcher
   end

@@ -5,12 +5,12 @@ module Volt
   # StringTemplateRenderer will intellegently update the string in the same way
   # a normal bindings will update the dom.
   class StringTemplateRenderer
-    def initialize(page, context, template_path)
+    def initialize(volt_app, context, template_path)
       @dependency = Dependency.new
 
       @template_path = template_path
       @target        = AttributeTarget.new(nil, nil, self)
-      @template      = TemplateRenderer.new(page, @target, context, 'main', template_path)
+      @template      = TemplateRenderer.new(volt_app, @target, context, 'main', template_path)
     end
 
     # Render the template and get the current value

@@ -59,6 +59,7 @@ module Volt
           $page ||= volt_app.page
           $page.store
         end
+        let(:volt_app) { volt_app }
 
 
         if RUBY_PLATFORM != 'opal'

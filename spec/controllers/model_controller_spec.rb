@@ -3,7 +3,7 @@ require 'spec_helper'
 if RUBY_PLATFORM != 'opal'
   describe Volt::ModelController do
     it 'should accept a promise as a model and resolve it' do
-      controller = Volt::ModelController.new
+      controller = Volt::ModelController.new(volt_app)
 
       promise = Promise.new
 
@@ -17,7 +17,7 @@ if RUBY_PLATFORM != 'opal'
     end
 
     it 'should not return true from loaded until the promise is resolved' do
-      controller = Volt::ModelController.new
+      controller = Volt::ModelController.new(volt_app)
 
       promise = Promise.new
       controller.model = promise

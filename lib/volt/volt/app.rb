@@ -75,7 +75,7 @@ module Volt
     # Setup a Page instance.
     def setup_page
       # Run the app config to load all users config files
-      @page = Page.new
+      @page = Page.new(self)
 
       # Setup a global for now
       $page = @page unless defined?($page)

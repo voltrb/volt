@@ -1,11 +1,18 @@
 require 'volt/reactive/reactive_accessors'
 require 'volt/controllers/actions'
+require 'volt/controllers/template_helpers'
 
 module Volt
   class ModelController
     include ReactiveAccessors
     include Actions
 
+    # A model controller will have its
+    # class VoltTemplates
+    #   include TemplateHelpers
+    # end
+
+    class_attribute :default_model
     reactive_accessor :current_model
     reactive_accessor :last_promise
 
@@ -29,8 +36,7 @@ module Volt
     # ```yield_html``` and it will be run again when anything in the template changes.
     def yield_html
       if (template_path = attrs.content_template_path)
-        # TODO: Don't use $page global
-        @yield_renderer ||= StringTemplateRenderer.new($page, self, template_path)
+        @yield_renderer ||= StringTemplateRenderer.new(@volt_app, self, template_path)
         @yield_renderer.html
       else
         # no template, empty string
@@ -39,7 +45,7 @@ module Volt
     end
 
     def self.model(val)
-      @default_model = val
+      self.default_model = val
     end
 
     # Sets the current model on this controller
@@ -85,20 +91,35 @@ module Volt
       model
     end
 
-    def self.new(*args, &block)
+    def self.new(volt_app, *args, &block)
       inst = allocate
 
-      inst.model = @default_model if @default_model
-
       # In MRI initialize is private for some reason, so call it with send
-      inst.send(:initialize, *args, &block)
+      inst.send(:initialize, volt_app, *args, &block)
+
+      if inst.instance_variable_get('@__init_called')
+        inst.instance_variable_set('@__init_called', nil)
+      else
+        # Initialize was not called, we should warn since this is probably not
+        # the intended behavior.
+        Volt.logger.warn("super should be called when creating a custom initialize on class #{inst.class.to_s}")
+      end
 
       inst
     end
 
     attr_accessor :attrs
 
-    def initialize(*args)
+    def initialize(volt_app, *args)
+      @volt_app = volt_app
+      @page = volt_app.page
+
+      # Track that the initialize was called
+      @__init_called = true
+
+      default_model = self.class.default_model
+      self.model = default_model if default_model
+
       if args[0]
         # Assign the first passed in argument to attrs
         self.attrs = args[0]
@@ -106,6 +127,7 @@ module Volt
         # If a model attribute is passed in, we assign it directly
         self.model = attrs.locals[:model] if attrs.respond_to?(:model)
       end
+
     end
 
     def go(url)
@@ -124,39 +146,39 @@ module Volt
     end
 
     def page
-      $page.page
+      @page.page
     end
 
     def store
-      $page.store
+      @page.store
     end
 
     def flash
-      $page.flash
+      @page.flash
     end
 
     def params
-      $page.params
+      @page.params
     end
 
     def local_store
-      $page.local_store
+      @page.local_store
     end
 
     def cookies
-      $page.cookies
+      @page.cookies
     end
 
     def url
-      $page.url
+      @page.url
     end
 
     def channel
-      $page.channel
+      @page.channel
     end
 
     def tasks
-      $page.tasks
+      @page.tasks
     end
 
     def controller
@@ -164,11 +186,11 @@ module Volt
     end
 
     def url_for(params)
-      $page.url.url_for(params)
+      @page.url.url_for(params)
     end
 
     def url_with(params)
-      $page.url.url_with(params)
+      @page.url.url_with(params)
     end
 
     # loaded? is a quick way to see if the model for the controller is loaded

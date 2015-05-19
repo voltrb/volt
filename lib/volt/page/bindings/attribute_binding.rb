@@ -3,8 +3,8 @@ require 'volt/page/targets/attribute_target'
 
 module Volt
   class AttributeBinding < BaseBinding
-    def initialize(page, target, context, binding_name, attribute_name, getter, setter)
-      super(page, target, context, binding_name)
+    def initialize(volt_app, target, context, binding_name, attribute_name, getter, setter)
+      super(volt_app, target, context, binding_name)
 
       @attribute_name = attribute_name
       @getter         = getter

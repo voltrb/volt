@@ -3,7 +3,8 @@ module Volt
   class Page
     attr_reader :url, :params, :page, :routes, :events
 
-    def initialize
+    def initialize(volt_app)
+      @volt_app = volt_app
       # Run the code to setup the page
       @page          = Model.new
 
@@ -151,13 +152,13 @@ module Volt
       # Do the initial url params parse
       @url_tracker.url_updated(true)
 
-      main_controller = Main::MainController.new
+      main_controller = Main::MainController.new(@volt_app)
 
       # Setup main page template
-      TemplateRenderer.new(self, DomTarget.new, main_controller, 'CONTENT', 'main/main/main/body')
+      TemplateRenderer.new(@volt_app, DomTarget.new, main_controller, 'CONTENT', 'main/main/main/body')
 
       # Setup title reactive template
-      @title_template = StringTemplateRenderer.new(self, main_controller, 'main/main/main/title')
+      @title_template = StringTemplateRenderer.new(@volt_app, main_controller, 'main/main/main/title')
 
       # Watch for changes to the title template
       proc do

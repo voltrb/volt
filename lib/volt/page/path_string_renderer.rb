@@ -9,10 +9,7 @@ module Volt
   class ViewLookupException < Exception; end
   class PathStringRenderer
     attr_reader :html
-    def initialize(path, attrs = nil, page = nil, render_from_path = nil)
-      # use the global page if one is not passed in
-      page ||= $page
-
+    def initialize(volt_app, path, attrs = nil, page = nil, render_from_path = nil)
       # where to do the path lookup from
       render_from_path ||= 'main/main/main/body'
 
@@ -26,10 +23,10 @@ module Volt
 
       controller_class, action = ControllerHandler.get_controller_and_action(controller_path)
 
-      controller = controller_class.new # (SubContext.new(attrs, nil, true))
+      controller = controller_class.new(volt_app) # (SubContext.new(attrs, nil, true))
       controller.model = SubContext.new(attrs, nil, true)
 
-      renderer = StringTemplateRenderer.new(page, controller, full_path)
+      renderer = StringTemplateRenderer.new(volt_app, controller, full_path)
 
       @html = renderer.html
 

@@ -91,6 +91,8 @@ module Volt
 
         file_contents = File.read(view_path)
 
+        template_calls = []
+
         # Process template if we have a handler for this file type
         if handler = ComponentTemplates.handler_for_extension(format)
           file_contents = handler.call(file_contents)
@@ -110,10 +112,11 @@ module Volt
             binding_code = "{#{binding_code.join(', ')}}"
 
             code << "#{page_reference}.add_template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})\n"
+            template_calls << "template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})"
           end
         end
 
-        puts "module #{component_name.camelize}\n  class #{controller_name.camelize}\n    class #{view.camelize}Template\n      ...\n    end\n  end\nend"
+        # puts "module #{component_name.camelize}\n  class #{controller_name.camelize}\n    class VoltTemplates < VoltTemplates\n      #{template_calls.join("\n")}\n    end\n  end\nend"
       end
 
       code
@@ -139,12 +142,12 @@ module Volt
         if File.exists?(path)
           code << File.read(path) + "\n\n"
         else
-          parts = path.scan(/([^\/]+)\/controllers\/([^\/]+)_controller[.]rb$/)
-          component, controller = parts[0]
+          # parts = path.scan(/([^\/]+)\/controllers\/([^\/]+)_controller[.]rb$/)
+          # component, controller = parts[0]
 
-          # Generate a blank controller.  (We need to actually generate one so
-          # the Template can be attached to it for template inheritance)
-          code << "\nmodule #{component.camelize}\n  class #{controller.camelize} < Volt::ModelController\n  end\nend\n"
+          # # Generate a blank controller.  (We need to actually generate one so
+          # # the Template can be attached to it for template inheritance)
+          # code << "\nmodule #{component.camelize}\n  class #{controller.camelize} < Volt::ModelController\n  end\nend\n"
         end
       end
 

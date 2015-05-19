@@ -4,16 +4,16 @@ module Volt
   class TemplateRenderer < BaseBinding
     attr_reader :context
 
-    def initialize(page, target, context, binding_name, template_name)
-      super(page, target, context, binding_name)
+    def initialize(volt_app, target, context, binding_name, template_name)
+      super(volt_app, target, context, binding_name)
 
       @sub_bindings = []
 
-      bindings = dom_section.set_content_to_template(page, template_name)
+      bindings = dom_section.set_content_to_template(volt_app.page, template_name)
 
       bindings.each_pair do |id, bindings_for_id|
         bindings_for_id.each do |binding|
-          @sub_bindings << binding.call(page, target, context, id)
+          @sub_bindings << binding.call(volt_app, target, context, id)
         end
       end
     end

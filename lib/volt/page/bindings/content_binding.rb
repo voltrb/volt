@@ -6,8 +6,8 @@ module Volt
     HTML_ESCAPE_REGEXP = /[&"'><\n]/
     HTML_ESCAPE = { '&' => '&amp;',  '>' => '&gt;',   '<' => '&lt;', '"' => '&quot;', "'" => '&#39;', "\n" => "<br />\n" }
 
-    def initialize(page, target, context, binding_name, getter)
-      super(page, target, context, binding_name)
+    def initialize(volt_app, target, context, binding_name, getter)
+      super(volt_app, target, context, binding_name)
 
       # Listen for changes
       @computation = lambda do
