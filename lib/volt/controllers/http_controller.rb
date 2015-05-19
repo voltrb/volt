@@ -8,7 +8,8 @@ module Volt
     attr_reader :params, :response_headers, :request
 
     # Initialzed with the params parsed from the route and the HttpRequest
-    def initialize(params, request)
+    def initialize(volt_app, params, request)
+      @volt_app = volt_app
       @response_headers = HttpResponseHeader.new
       @response_body = []
       @request = request
@@ -25,7 +26,7 @@ module Volt
     private
 
     def store
-      $page.store
+      @volt_app.page.store
     end
 
     def head(status, additional_headers = {})

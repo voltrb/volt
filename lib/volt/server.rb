@@ -135,7 +135,7 @@ module Volt
       # which JS/CSS files to serve.
       @rack_app.use IndexFiles, @volt_app.component_paths, opal_files
 
-      @rack_app.use HttpResource, @volt_app.router
+      @rack_app.use HttpResource, @volt_app, @volt_app.router
 
       @rack_app.use Rack::Static,
                     urls: ['/'],

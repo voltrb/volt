@@ -34,10 +34,10 @@ if RUBY_PLATFORM != 'opal'
     end
 
     it 'should initialize the correct controller and call the correct action' do
-      http_resource = Volt::HttpResource.new(app, @routes)
+      http_resource = Volt::HttpResource.new(app, volt_app, @routes)
       env = Rack::MockRequest.env_for('http://example.com/stuff')
       request = Volt::HttpRequest.new(env)
-      controller = SimpleController.new({}, request)
+      controller = SimpleController.new(volt_app, {}, request)
       expect(SimpleController).to receive(:new).and_return(controller)
 
       response = http_resource.call(env)
@@ -47,7 +47,7 @@ if RUBY_PLATFORM != 'opal'
     end
 
     it 'should parse the correct params to the controller' do
-      http_resource = Volt::HttpResource.new(app, @routes)
+      http_resource = Volt::HttpResource.new(app, volt_app, @routes)
       env = Rack::MockRequest.env_for('http://example.com/stuff/99?test=another_param')
       request = Volt::HttpRequest.new(env)
 
@@ -57,7 +57,7 @@ if RUBY_PLATFORM != 'opal'
     end
 
     it 'should call the supplied app if routes are not matched and cause a 404' do
-      http_resource = Volt::HttpResource.new(app, @routes)
+      http_resource = Volt::HttpResource.new(app, volt_app, @routes)
       env = Rack::MockRequest.env_for('http://example.com/not_a_valid_param')
       request = Volt::HttpRequest.new(env)
       response = http_resource.call(env)
