@@ -9,6 +9,7 @@ module Volt
         #
         # @param key [Symbol] the name of the attribute to store
         def own_by_user(key = :user_id)
+          belongs_to :user
           # When the model is created, assign it the user_id (if the user is logged in)
           on(:new) do
             # Only assign the user_id if there isn't already one and the user is logged in.
