@@ -1,19 +1,21 @@
 class Class
   # Provides a way to make class attributes that inherit.  Pass
   # in symbols for attribute names
-  def class_attribute(*attrs)
-    attrs.each do |name|
-      define_singleton_method(name) { nil }
+  unless Class.method_defined?(:class_attribute)
+    def class_attribute(*attrs)
+      attrs.each do |name|
+        define_singleton_method(name) { nil }
 
-      ivar = "@#{name}"
+        ivar = "@#{name}"
 
-      define_singleton_method("#{name}=") do |val|
-        singleton_class.class_eval do
-          remove_possible_method(name)
-          define_method(name) { val }
+        define_singleton_method("#{name}=") do |val|
+          singleton_class.class_eval do
+            remove_possible_method(name)
+            define_method(name) { val }
+          end
+
+          val
         end
-
-        val
       end
     end
   end

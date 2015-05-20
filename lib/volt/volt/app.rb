@@ -2,7 +2,7 @@ module Volt
   class App
     attr_reader :component_paths, :router, :page
 
-    def initialize(app_path)
+    def initialize(app_path, additional_paths=[])
       # Setup root path
       Volt.root = app_path
 
@@ -20,7 +20,7 @@ module Volt
       Volt.run_app_and_initializers unless RUBY_PLATFORM == 'opal'
 
       # Load component paths
-      @component_paths = ComponentPaths.new(app_path)
+      @component_paths = ComponentPaths.new(app_path, additional_paths)
       @component_paths.require_in_components(@page || $page)
 
       unless RUBY_PLATFORM == 'opal'

@@ -9,6 +9,7 @@ module Volt
     end
 
     def call(env)
+
       req            = Rack::Request.new(env)
 
       path = req.path.strip
@@ -16,9 +17,8 @@ module Volt
       request_source_map = (File.extname(path) == '.map')
 
       # TODO: Sanatize template path
-      component_name = path.gsub(/^\/components\//, '').gsub(/[.](js|map)$/, '')
-
-      javascript_code = compile_for_component(component_name, true, request_source_map)
+      component_name = path.gsub(/^\/volt\/components\//, '').gsub(/[.](js|map)$/, '')
+      javascript_code = compile_for_component(component_name, request_source_map)
 
       [200, { 'Content-Type' => 'application/javascript; charset=utf-8' }, StringIO.new(javascript_code)]
     end

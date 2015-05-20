@@ -34,7 +34,7 @@ module Volt
           var wsProto = 'ws';
         }
 
-        this.socket = new WebSocket(wsProto + '://' + document.location.host + '/socket');
+        this.socket = new WebSocket(wsProto + '://' + document.location.host + '/volt/socket');
 
         this.socket.onopen = function () {
           self.$opened();
