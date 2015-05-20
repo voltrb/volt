@@ -7,6 +7,7 @@ require 'sass'
 require 'volt/utils/tilt_patch'
 require 'sprockets-sass'
 
+
 require 'volt'
 require 'volt/tasks/dispatcher'
 require 'volt/tasks/task_handler'
@@ -36,7 +37,7 @@ module Rack
     def call(env)
       status, headers, body = @app.call(env)
 
-      if status == 304 && env['HTTP_CONNECTION'].downcase == 'keep-alive'
+      if status == 304 && env['HTTP_CONNECTION'] && env['HTTP_CONNECTION'].downcase == 'keep-alive'
         headers['Connection'] = 'keep-alive'
       end
 
@@ -50,7 +51,7 @@ module Volt
     attr_reader :listener, :app_path, :additional_paths
 
     # You can also optionally pass in a prebooted app
-    def initialize(root_path = nil, app = false, additional_paths = [])
+    def initialize(root_path = nil, app = nil, additional_paths = [])
       @root_path = root_path ? Pathname.new(root_path).expand_path.to_s :  Dir.pwd
       @volt_app = app
       @additional_paths = additional_paths
@@ -84,7 +85,9 @@ module Volt
       end
 
       # Only run ForkingServer if fork is supported in this env.
-      if !can_fork || Volt.env.production? || Volt.env.test?
+      # NO_FORKING can be used to specify that you don't want to use the forking
+      # server.
+      if !can_fork || Volt.env.production? || Volt.env.test? || ENV['NO_FORKING']
         # In production/test, we boot the app and run the server
         #
         # Sometimes the app is already booted, so we can skip if it is
@@ -136,12 +139,12 @@ module Volt
       @rack_app.use HttpResource, @volt_app.router
 
       @rack_app.use Rack::Static,
-        urls: ['/'],
-        root: 'config/base',
-        index: '',
-        header_rules: [
-          [:all, { 'Cache-Control' => 'public, max-age=86400' }]
-        ]
+                    urls: ['/'],
+                    root: 'config/base',
+                    index: '',
+                    header_rules: [
+                      [:all, { 'Cache-Control' => 'public, max-age=86400' }]
+                    ]
 
       @rack_app.run lambda { |env| [404, { 'Content-Type' => 'text/html; charset=utf-8' }, ['404 - page not found']] }
 

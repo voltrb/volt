@@ -2,7 +2,7 @@ require 'volt/spec/sauce_labs'
 
 module Volt
   class << self
-    def setup_capybara(app_path, volt_app=nil)
+    def setup_capybara(app_path, volt_app = nil)
       browser = ENV['BROWSER']
 
       if browser

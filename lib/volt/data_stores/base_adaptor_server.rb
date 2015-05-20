@@ -1,7 +1,6 @@
 module Volt
   class DataStore
-    class Base
-
+    class BaseAdaptorServer
     end
   end
 end

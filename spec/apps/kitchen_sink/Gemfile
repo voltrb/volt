@@ -13,7 +13,12 @@ gem 'volt-bootstrap_jumbotron_theme'
 gem 'volt-fields'
 gem 'volt-user_templates'
 
+# use mongo for data store while testing
+gem 'volt-mongo'
+
 gem 'opal'
+
+gem 'concurrent-ruby-ext'
 
 # Server for MRI
 platform :mri do

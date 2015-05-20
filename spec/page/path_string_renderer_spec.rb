@@ -1,7 +1,6 @@
 require 'spec_helper'
 require 'volt/page/path_string_renderer'
 
-
 unless RUBY_PLATFORM == 'opal'
   describe Volt::PathStringRenderer do
     before do
@@ -16,8 +15,14 @@ unless RUBY_PLATFORM == 'opal'
     end
 
     it 'should render a section with a variable' do
-      html = Volt::PathStringRenderer.new('main/mailers/welcome/html', {:name => 'Jimmy'}, @page).html
+      html = Volt::PathStringRenderer.new('main/mailers/welcome/html', { name: 'Jimmy' }, @page).html
       expect(html).to eq("\n  <h1>Welcome Jimmy</h1>\n\n  <p>Glad you signed up!</p>\n\n")
+    end
+
+    it 'Raises raises ViewLookupException if full_path is nil' do
+      expect do
+        Volt::PathStringRenderer.new('', { name: 'Jimmy' }, Volt::Page.new).html
+      end.to raise_error(Volt::ViewLookupException)
     end
   end
 end

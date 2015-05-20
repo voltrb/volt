@@ -20,7 +20,7 @@ describe Volt::URL do
   subject { described_class.new fake_router }
 
   describe '#parse' do
-    let(:fake_router) { double('Router', url_to_params: {foo: 'bar'}) }
+    let(:fake_router) { double('Router', url_to_params: { foo: 'bar' }) }
     context 'with a valid url' do
       it 'returns "http" for scheme' do
         expect(subject.scheme).to eq 'http'

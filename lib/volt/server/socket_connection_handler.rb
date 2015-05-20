@@ -21,9 +21,7 @@ module Volt
     def self.send_message_all(skip_channel = nil, *args)
       return unless defined?(@@channels)
       @@channels.each do |channel|
-        if skip_channel && channel == skip_channel
-          next
-        end
+        next if skip_channel && channel == skip_channel
         channel.send_message(*args)
       end
     end
@@ -55,7 +53,11 @@ module Volt
         # Remove ourself from the available channels
         @@channels.delete(self)
 
-        QueryTasks.new(self).close!
+        begin
+          @@dispatcher.close_channel(self)
+        rescue DRb::DRbConnError => e
+        # ignore drb read of @@dispatcher error if child has closed
+        end
       else
         Volt.logger.error("Socket Error: Connection already closed\n#{inspect}")
       end

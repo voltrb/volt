@@ -9,7 +9,7 @@ module Volt
     private
 
     def compile
-      print 'compiling project...'
+      puts 'compiling project...'
       require 'fileutils'
       ENV['SERVER'] = 'true'
 
@@ -18,7 +18,6 @@ module Volt
       require 'volt'
       require 'volt/volt/core'
       require 'volt/boot'
-
 
       @root_path ||= Dir.pwd
       Volt.root  = @root_path
@@ -31,7 +30,6 @@ module Volt
       require 'volt/server/rack/index_files'
       require 'volt/server/component_handler'
 
-
       @app_path = File.expand_path(File.join(@root_path, 'app'))
 
       @component_paths   = ComponentPaths.new(@root_path)
@@ -40,20 +38,35 @@ module Volt
       @index_files       = IndexFiles.new(@app, @component_paths, @opal_files)
       @component_handler = ComponentHandler.new(@component_paths)
 
+      puts 'Compile Opal for components'
       write_component_js
+      puts 'Copy assets'
       write_sprockets
+      puts 'Compile JS/CSS'
       write_js_and_css
+      puts 'Write index files'
       write_index
 
-      puts "\rcompiled                             "
+      puts "compiled"
+    end
+
+    def logical_paths_and_full_paths
+      @opal_files.environment.each_file do |full_path|
+        logical_path = @opal_files.environment.send(:logical_path_for_filename, full_path, []).to_s
+
+        yield(logical_path, full_path.to_s)
+      end
+
     end
 
     def write_sprockets
       # Serve the opal files
-      @opal_files.environment.each_logical_path do |logical_path|
-        logical_path = logical_path.to_s
+      logical_paths_and_full_paths do |logical_path, full_path|
         # Only include files that aren't compiled elsewhere, like fonts
-        if !logical_path[/[.](y|css|js|html|erb)$/] && File.extname(logical_path) != ''
+        if !logical_path[/[.](y|css|js|html|erb)$/] &&
+          File.extname(logical_path) != '' &&
+          # opal includes some node modules in the standard lib that we don't need to compile in
+          (full_path !~ /\/opal/ && full_path !~ /\/stdlib\// && logical_path !~ /^node_js\//)
           write_sprocket_file(logical_path)
         end
       end
@@ -72,8 +85,11 @@ module Volt
       path = "#{@root_path}/public/assets/#{logical_path}"
 
       begin
-        content = @opal_files.environment[logical_path].to_s
-        write_file(path, content)
+        # Only write out the assets
+        # if logical_path =~ /\/assets\//
+          content = @opal_files.environment[logical_path].to_s
+          write_file(path, content)
+        # end
       rescue Sprockets::FileNotFound, SyntaxError => e
         # ignore
       end

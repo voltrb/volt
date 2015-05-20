@@ -33,22 +33,22 @@ describe Volt::Routes do
         '*' => {
           'edit' => {
             nil => { view: 'blog/edit', id: 1 }
-            },
-            nil => { view: 'blog/show', id: 1 }
-          }
+          },
+          nil => { view: 'blog/show', id: 1 }
         }
-        )
+      }
+    )
 
     expect(indirect_routes[:get]).to eq(
       'comments' => {
         '*' => {
           'edit' => {
             nil => { controller: 'comments', action: 'edit', id: 1 }
-            },
-            nil => { controller: 'comments', action: 'show', id: 1 }
-          }
+          },
+          nil => { controller: 'comments', action: 'show', id: 1 }
         }
-        )
+      }
+    )
   end
 
   it 'should setup param matchers' do
@@ -69,14 +69,13 @@ describe Volt::Routes do
       { view: 'blog/edit', id: nil },
       { view: 'blog/tag', tag: nil },
       { view: 'login', action: 'user', name: nil, id: nil }
-      ])
+    ])
 
     expect(param_matches[:get].map { |v| v[0] }).to eq([
       { controller: 'articles', action: 'index' },
-      { controller: 'articles', action: 'show', id: nil },
-      ])
+      { controller: 'articles', action: 'show', id: nil }
+    ])
   end
-
 
   it 'should match routes' do
     routes do
@@ -93,7 +92,6 @@ describe Volt::Routes do
       put '/people', controller: 'people', action: 'update'
       patch '/people/1', controller: 'people', action: 'update'
       delete '/people/2', controller: 'people', action: 'destroy'
-
     end
 
     params = @routes.url_to_params('/blog')
@@ -174,7 +172,7 @@ describe Volt::Routes do
 
     url, params = @routes.params_to_url(controller: 'articles', action: 'update', method: :put, id: 99, other: 'xyz')
     expect(url).to eq('/articles/99')
-    expect(params).to eq({other: 'xyz'})
+    expect(params).to eq(other: 'xyz')
 
     url, params = @routes.params_to_url({})
     expect(url).to eq(nil)
@@ -213,13 +211,13 @@ describe Volt::Routes do
 
   it 'should not match params that have no matches at all' do
     routes = Volt::Routes.new
-    match, params = routes.send(:check_params_match, { view: '', id: false }, bleep: {volt: 'rocks'} )
+    match, params = routes.send(:check_params_match, { view: '', id: false }, bleep: { volt: 'rocks' })
     expect(match).to eq(false)
   end
 
   it 'should not match params that have a nil value' do
     routes = Volt::Routes.new
-    match, params = routes.send(:check_params_match, { view: 'blog', id: false }, bleep: nil )
+    match, params = routes.send(:check_params_match, { view: 'blog', id: false }, bleep: nil)
     expect(match).to eq(false)
   end
 

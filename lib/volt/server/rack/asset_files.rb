@@ -71,9 +71,7 @@ module Volt
 
     def add_assets(path)
       asset_folder = File.join(path, 'assets')
-      if File.directory?(asset_folder)
-        @assets << [:folder, asset_folder]
-      end
+      @assets << [:folder, asset_folder] if File.directory?(asset_folder)
     end
 
     def javascript_files(opal_files)

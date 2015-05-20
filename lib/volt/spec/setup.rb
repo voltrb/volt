@@ -1,6 +1,4 @@
-if RUBY_PLATFORM != 'opal'
-  require 'volt/volt/core'
-end
+require 'volt/volt/core' if RUBY_PLATFORM != 'opal'
 
 module Volt
   class << self
@@ -28,7 +26,22 @@ module Volt
 
       unless ENV['BROWSER']
         # Not running integration tests with ENV['BROWSER']
-        RSpec.configuration.filter_run_excluding :type => :feature
+        RSpec.configuration.filter_run_excluding type: :feature
+      end
+
+
+
+      cleanup_db = -> do
+        Volt::DataStore.fetch.drop_database
+
+        # Clear cached for a reset
+        $page.instance_variable_set('@store', nil)
+        QueryTasks.reset!
+      end
+
+      if RUBY_PLATFORM != 'opal'
+        # Call once during setup to clear if we killed the last run
+        cleanup_db.call
       end
 
       # Setup the spec collection accessors
@@ -44,18 +57,26 @@ module Volt
           $page.store
         end
 
-        after do
-          if @__store_accessed
-            # Clear the database after each spec where we use store
-            # @@db ||= Volt::DataStore.fetch
-            # @@db.drop_database
-            Volt::DataStore.fetch.drop_database
 
-            $page.instance_variable_set('@store', nil)
+        if RUBY_PLATFORM != 'opal'
+          after do
+            if @__store_accessed
+              # Clear the database after each spec where we use store
+              cleanup_db.call
+            end
+          end
+
+          # Assume store is accessed in capyabara specs
+          before(:context, {type: :feature}) do
+            @__store_accessed = true
+          end
+
+          # Cleanup after integration tests also.
+          before(:example, {type: :feature}) do
+            @__store_accessed = true
           end
         end
       end
-
     end
   end
 end

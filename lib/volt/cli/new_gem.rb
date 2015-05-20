@@ -51,14 +51,12 @@ class NewGem
     copy('newgem/gitignore.tt', '.gitignore')
     copy('newgem/newgem.gemspec.tt', "#{@name}.gemspec")
     copy('newgem/lib/newgem.rb.tt', "lib/#{@namespaced_path}.rb")
-    copy('newgem/VERSION', 'VERSION')
     FileUtils.mkdir_p(File.join(@target, "lib/#{@namespaced_path}"))
+    copy('newgem/lib/newgem/version.rb.tt', "lib/#{@namespaced_path}/version.rb")
   end
 
   def copy_options
-    if @options[:bin]
-      copy('newgem/bin/newgem.tt', "bin/#{@name}")
-    end
+    copy('newgem/bin/newgem.tt', "bin/#{@name}") if @options[:bin]
     case @options[:test]
     when 'rspec'
       copy('newgem/rspec.tt', '.rspec')
@@ -103,8 +101,8 @@ class NewGem
   end
 
   def volt_version_base
-    version_path = File.join(File.dirname(__FILE__), '../../../VERSION')
-    File.read(version_path).split('.').tap { |v| v[v.size - 1] = 0 }.join('.')
+    require 'volt/version'
+    Volt::Version::STRING.split('.').tap { |v| v[v.size - 1] = 0 }.join('.')
   end
 
   def get_constant_name

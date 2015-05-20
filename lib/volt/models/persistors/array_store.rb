@@ -1,6 +1,5 @@
 require 'volt/models/persistors/store'
 require 'volt/models/persistors/store_state'
-require 'volt/models/persistors/query/normalizer'
 require 'volt/models/persistors/query/query_listener_pool'
 require 'volt/utils/timers'
 
@@ -8,6 +7,7 @@ module Volt
   module Persistors
     class ArrayStore < Store
       include StoreState
+
 
       @@query_pool = QueryListenerPool.new
 
@@ -50,23 +50,19 @@ module Volt
       end
 
       def inspect
-        "<#{self.class.to_s}:#{object_id} #{@model.path.inspect} #{@query.inspect}>"
+        "<#{self.class}:#{object_id} #{@model.path.inspect} #{@query.inspect}>"
       end
 
       # Called when an each binding is listening
       def event_added(event, first, first_for_event)
         # First event, we load the data.
-        if first
-          @listener_event_counter.add
-        end
+        @listener_event_counter.add if first
       end
 
       # Called when an each binding stops listening
       def event_removed(event, last, last_for_event)
         # Remove listener where there are no more events on this model
-        if last
-          @listener_event_counter.remove
-        end
+        @listener_event_counter.remove if last
       end
 
       # Called by child models to track their listeners
@@ -141,11 +137,11 @@ module Volt
           if parent && (attrs = parent.attributes) && attrs[:_id]
             query = query.dup
 
-            query << [:find, {:"#{@model.path[-3].singularize}_id" => attrs[:_id]}]
+            query << [:find, { :"#{@model.path[-3].singularize}_id" => attrs[:_id] }]
           end
         end
 
-        query = Query::Normalizer.normalize(query)
+        query = Volt::DataStore.adaptor_client.normalize_query(query)
 
         @query_listener ||= @@query_pool.lookup(collection, query) do
           # Create if it does not exist
@@ -155,27 +151,6 @@ module Volt
         # @@query_pool.print
 
         @query_listener
-      end
-
-      # Find takes a query object
-      def where(query = nil)
-        query ||= {}
-
-        add_query_part(:find, query)
-      end
-      alias_method :find, :where
-
-      def limit(limit)
-        add_query_part(:limit, limit)
-      end
-
-      def skip(skip)
-        add_query_part(:skip, skip)
-      end
-
-      # .sort is already a ruby method, so we use order instead
-      def order(sort)
-        add_query_part(:sort, sort)
       end
 
       # Add query part adds a [method_name, *arguments] array to the query.
@@ -203,13 +178,12 @@ module Volt
         if @model.loaded_state == :loaded
           promise.resolve(@model)
         else
-          Proc.new do |comp|
+          proc do |comp|
             if @model.loaded_state == :loaded
               promise.resolve(@model)
 
               comp.stop
             end
-
           end.watch!
         end
 

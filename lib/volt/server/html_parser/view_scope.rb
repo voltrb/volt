@@ -30,6 +30,8 @@ module Volt
         case first_symbol
           when 'if'
             add_if(args)
+          when 'unless'
+            add_if("!(#{args})")
           when 'elsif'
             add_else(args)
           when 'else'
@@ -99,7 +101,7 @@ module Volt
       @binding_number += 1
     end
 
-    def add_yield(content=nil)
+    def add_yield(content = nil)
       # Strip ( and ) from the outsides
       content ||= ''
       content = content.strip.gsub(/^\(/, '').gsub(/\)$/, '')
@@ -115,9 +117,7 @@ module Volt
     def parent_fetcher(getter)
       parent = getter.strip.gsub(/[.][^.]+$/, '')
 
-      if parent.blank? || !getter.index('.')
-        parent = 'self'
-      end
+      parent = 'self' if parent.blank? || !getter.index('.')
 
       parent
     end

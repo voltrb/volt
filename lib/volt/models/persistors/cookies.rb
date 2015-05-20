@@ -30,14 +30,14 @@ module Volt
         parts << `encodeURIComponent(value)`
         parts << '; '
 
-        parts << 'path='    << options[:path] << '; '           if options[:path]
+        parts << 'path=' << options[:path] << '; '           if options[:path]
         parts << 'max-age=' << options[:max_age] << '; '        if options[:max_age]
 
         if (expires = options[:expires])
           parts << 'expires=' << `expires.toGMTString()` << '; '
         end
 
-        parts << 'domain='  << options[:domain] << '; '         if options[:domain]
+        parts << 'domain=' << options[:domain] << '; '         if options[:domain]
         parts << 'secure'                                       if options[:secure]
 
         cookie_val = parts.join

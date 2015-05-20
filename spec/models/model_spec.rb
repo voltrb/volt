@@ -13,6 +13,13 @@ class TestAssignsMethod < Volt::Model
 end
 
 describe Volt::Model do
+  it 'delegates unary operator to its attributes' do
+    model = Volt::Model.new
+    expect(!model).to eq(!model.attributes)
+    model = Volt::Model.new(has: 'attrs')
+    expect(!model).to eq(!model.attributes)
+  end
+
   it 'should allow _ methods to be used to store values without predefining them' do
     a = Volt::Model.new
     a._stash = 'yes'
@@ -201,7 +208,7 @@ describe Volt::Model do
     a = Volt::Model.new
 
     count = 0
-    -> { a._blue ; count += 1 }.watch!
+    -> { a._blue; count += 1 }.watch!
 
     expect(count).to eq(1)
 
@@ -219,7 +226,7 @@ describe Volt::Model do
 
     expect(count).to eq(0)
 
-    a._todos << {label: 'Be active'}
+    a._todos << { label: 'Be active' }
     Volt::Computation.flush!
 
     expect(count).to eq(1)
@@ -233,7 +240,7 @@ describe Volt::Model do
 
     expect(last_count).to eq(0)
 
-    a._todos! << {checked: true}
+    a._todos! << { checked: true }
     Volt::Computation.flush!
 
     expect(last_count).to eq(1)
@@ -304,7 +311,7 @@ describe Volt::Model do
     # Expand first
     a._new_item!
     count = 0
-    -> do
+    lambda do
       count += 1
       a._new_item._name
     end.watch!
@@ -459,7 +466,6 @@ describe Volt::Model do
           model.send(:"_#{attr_name}")
         end.to raise_error(Volt::InvalidFieldName, "`#{attr_name}` is reserved and can not be used as a field")
       end
-
     end
 
     it 'should prevent reserved attributes from being assigned directly' do
@@ -502,7 +508,7 @@ describe Volt::Model do
     expect(model._name).to eq('Jimmy')
   end
 
-  describe "model state" do
+  describe 'model state' do
     it 'should be new when created, then false after a change' do
       a = Volt::Model.new
       expect(a.new?).to eq(true)
@@ -515,11 +521,10 @@ describe Volt::Model do
       a = Volt::Model.new
       expect(a.new?).to eq(true)
 
-      a.attributes = {first: 'Jimmy', last: 'Dean'}
+      a.attributes = { first: 'Jimmy', last: 'Dean' }
       expect(a.new?).to eq(false)
     end
   end
-
 
   if RUBY_PLATFORM != 'opal'
     it 'should update other queries on the server when a new model is created' do
@@ -529,21 +534,21 @@ describe Volt::Model do
       count = 0
 
       # count the number of todos
-      query2.fetch {|v| count += v.size }
+      query2.fetch { |v| count += v.size }
 
       expect(count).to eq(0)
 
-      query1 << {label: 'One'}
+      query1 << { label: 'One' }
 
       count = 0
-      query2.fetch {|v| count += v.size }
+      query2.fetch { |v| count += v.size }
 
       expect(count).to eq(1)
     end
 
     it 'should query twice and return twice' do
-      store._items << {name: 'One'}
-      store._items << {name: 'Two'}
+      store._items << { name: 'One' }
+      store._items << { name: 'Two' }
 
       a = store._items.fetch.sync
       b = store._items.fetch.sync
@@ -552,6 +557,14 @@ describe Volt::Model do
       expect(b.size).to eq(2)
 
       expect(a.to_a).to eq(b.to_a)
+    end
+  end
+
+  describe 'destroy' do
+    it 'fails if attempting to destroy while parentless' do
+      model = Volt::Model.new(test: "yeah")
+      expect { model.destroy }.to raise_error(RuntimeError,
+        'Model does not have a parent and cannot be deleted.')
     end
   end
 end

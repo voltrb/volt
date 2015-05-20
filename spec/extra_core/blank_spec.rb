@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "blank" do
+describe 'blank' do
   it 'should report blank when blank' do
     expect('  '.blank?).to eq(true)
   end

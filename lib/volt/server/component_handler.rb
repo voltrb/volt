@@ -23,7 +23,7 @@ module Volt
       [200, { 'Content-Type' => 'application/javascript; charset=utf-8' }, StringIO.new(javascript_code)]
     end
 
-    def compile_for_component(component_name, for_client, map=false)
+    def compile_for_component(component_name, for_client, map = false)
       code = ComponentCode.new(component_name, @component_paths, for_client).code
 
       # Compile the code

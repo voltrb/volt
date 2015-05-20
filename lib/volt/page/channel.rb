@@ -27,7 +27,7 @@ module Volt
     end
 
     def connect!
-      %x{
+      `
         if (document.location.protocol == 'https:') {
           var wsProto = 'wss';
         } else {
@@ -53,7 +53,7 @@ module Volt
         this.socket.onclose = function(error) {
           self.$closed(error);
         };
-      }
+      `
     end
 
     def opened
@@ -78,7 +78,7 @@ module Volt
       self.status             = :reconnecting
       self.reconnect_interval ||= 0
       self.reconnect_interval += (1000 + rand(5000))
-      self.retry_count        += 1
+      self.retry_count += 1
 
       interval = self.reconnect_interval
 

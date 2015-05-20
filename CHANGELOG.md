@@ -1,6 +1,21 @@
 # Change Log
 
+## 0.9.3.pre1
+### Added
+- Added validations block for conditional validation runs
+- you can now set the NO_FORKING=true ENV to prevent using the forking server in development.
+
+### Changed
+- All logic associated with mongo has been moved into the volt-mongo gem.  If you are migrating from a previous version, be sure to add ```gem 'volt-mongo'``` to the Gemfile.
+
+## 0.9.2
+### Changed
+- We released 0.9.1 with a bug for destroy (doh!).  Specs added and bug fixed.
+
 ## 0.9.1
+### Added
+- Mailer! - volt now includes the volt-mailer gem out of the box.  (you can remove it if you don't need/want it).  See https://github.com/voltrb/volt-mailer for more info.
+
 ### Changed
 - All code in ```app``` is now automatically reloaded when any files change.  This is done through a "preforking" server.  Before your apps code is loaded (and after Volt's is), the server forks a child process to handle the request (in dev and test mode).
 - Corrected the name of StringTemplateRender to StringTemplateRenderer
@@ -12,7 +27,8 @@
 - fixed issue with require's in controllers.
 - fix class formatting issue with Pry.
 - Bundler.require is now called for the correct env when 'volt/boot' is included.  (We weren't planning to do this, but it does make life so much easier)
-
+- opal-jquery was removed as a dependency.  If you want to use it again, add ```gem 'opal-jquery'``` to your Gemfile and add ```require 'opal/jquery'` to your MainController.
+- Volt and new gems now use the standard ruby version.rb file.
 
 ## 0.9.0
 ### Added

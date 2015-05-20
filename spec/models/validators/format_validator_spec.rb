@@ -1,11 +1,19 @@
 require 'spec_helper'
 require 'models/validators/shared_examples_for_validators'
 
+# test fake used for edge cases where default_options are not Hash types.
+# Feel free to append stub methods to this class as needed for testing.
+class SpecValidator < Volt::FormatValidator
+  def default_options
+    "No hash here, no sir!"
+  end
+end
+
 describe Volt::FormatValidator do
   subject { described_class.new(*init_params) }
 
-  let(:init_params) { [ model, field_name ] }
-  let(:validate_params) { [ model, field_name, options ] }
+  let(:init_params) { [model, field_name] }
+  let(:validate_params) { [model, field_name, options] }
 
   let(:model) { Volt::Model.new field: field_content }
   let(:field_name) { :field }
@@ -37,5 +45,15 @@ describe Volt::FormatValidator do
     end
 
     specify { expect(subject).to be_valid }
+  end
+
+  context 'when default_options is not a Hash' do
+    it 'returns the options hash instead of default_options' do
+      user = Volt::Model.new(email: "rick@nolematad.io")
+      validator = SpecValidator.new(user, 'email')
+      options = { with: /.+@.+/, message: 'must include an @ symbol' }
+      results = validator.apply(options).errors
+      expect(results.empty?).to be_truthy
+    end
   end
 end

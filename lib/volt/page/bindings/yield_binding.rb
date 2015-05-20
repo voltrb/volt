@@ -25,7 +25,6 @@ module Volt
       end
 
       super
-
     end
   end
 end

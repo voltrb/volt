@@ -10,6 +10,12 @@ module Main
       a[{}] = 5
     end
 
+    def form_ready
+      `$('#title').html('form_ready')`
+      `$('select#location').val('AL').change()` # have to trigger manually as this is not user initiaized action
+      `$('input#name').val('Test')`
+    end
+
     def flash_notice
       flash._notices << 'A notice message'
     end
@@ -42,6 +48,10 @@ module Main
 
     def example_html
       '<button id="examplebutton">Example Button</button>'
+    end
+
+    def set_show(value)
+      page._show = value
     end
 
     private

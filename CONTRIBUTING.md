@@ -41,6 +41,10 @@ If not installed, you can install from the source or use Homebrew:
 brew upgrade && brew install phantomjs
 ```
 
+#### Caveat
+
+You need 2.0 for MutationObserver API support, so until this issue https://github.com/teampoltergeist/poltergeist/issues/574 is resolved that poltergeist will support phantomjs 2.0, the test for attribute binding has to be in a real browser.
+
 #### Bundle Install and Test
 
 Ensure that you can build the project and run tests.
@@ -58,7 +62,7 @@ BROWSER=firefox bundle exec rake
 
 #### Write Tests
 
-Try to write a test that reproduces the problem you're trying to fix or describes a feature that you want to build. Add to [spec/volt](spec/volt).
+Try to write a test that reproduces the problem you're trying to fix or describes a feature that you want to build. Add to [specs](https://github.com/voltrb/volt/tree/master/spec).
 
 We definitely appreciate pull requests that highlight or reproduce a problem, even without a fix.
 

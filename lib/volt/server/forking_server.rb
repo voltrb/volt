@@ -14,7 +14,7 @@ module Volt
       at_exit do
         # Only run on parent
         if @child_id
-          puts "Exiting..."
+          puts 'Exiting...'
           @exiting = true
           stop_child
         end
@@ -79,13 +79,29 @@ module Volt
       end
     end
 
+
+    def stop_child
+      # clear the drb object and kill the child process.
+      if @drb_object
+        begin
+          @drb_object = nil
+          DRb.stop_service
+          @reader.close
+          stop_change_listener
+          Process.kill(9, @child_id)
+        rescue => e
+          puts "Stop Child Error: #{e.inspect}"
+        end
+      end
+    end
+
     # In the even the parent gets killed without at_exit running,
     # we watch the pipe and close if the pipe gets closed.
     def watch_for_parent_exit
       Thread.new do
         loop do
           if @writer.closed?
-            puts "Parent process died"
+            puts 'Parent process died'
             exit
           end
 
@@ -129,29 +145,13 @@ module Volt
       end
     end
 
-    def stop_child
-      # clear the drb object and kill the child process.
-      if @drb_object
-        begin
-          @drb_object = nil
-          DRb.stop_service
-          @reader.close
-          stop_change_listener
-          Process.kill(9, @child_id)
-        rescue => e
-          puts "Stop Child Error: #{e.inspect}"
-        end
-      end
-    end
 
     def reload(changed_files)
       # only reload the server code if a non-view file was changed
-      server_code_changed = changed_files.any? {|path| File.extname(path) == '.rb' }
+      server_code_changed = changed_files.any? { |path| File.extname(path) == '.rb' }
 
       msg = 'file changed, reloading'
-      if server_code_changed
-        msg << ' server and'
-      end
+      msg << ' server and' if server_code_changed
       msg << ' client...'
 
       Volt.logger.log_with_color(msg, :light_blue)
@@ -159,7 +159,7 @@ module Volt
       begin
         SocketConnectionHandler.send_message_all(nil, 'reload')
       rescue => e
-        Volt.logger.error("Reload dispatch error: ")
+        Volt.logger.error('Reload dispatch error: ')
         Volt.logger.error(e)
       end
 
@@ -185,6 +185,5 @@ module Volt
     def stop_change_listener
       @listener.stop
     end
-
   end
 end

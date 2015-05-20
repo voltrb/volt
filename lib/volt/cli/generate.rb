@@ -22,7 +22,6 @@ class Generate < Thor
     directory('component_specs', component_spec_folder)
   end
 
-
   desc 'gem GEM', 'Creates a component gem where you can share a component'
   method_option :bin, type: :boolean, default: false, aliases: '-b', banner: 'Generate a binary for your library.'
   method_option :test, type: :string, lazy_default: 'rspec', aliases: '-t', banner: "Generate a test directory for your library: 'rspec' is the default, but 'minitest' is also supported."
@@ -35,7 +34,7 @@ class Generate < Thor
     require 'volt/cli/new_gem'
 
     if name =~ /[-]/
-      Volt.logger.error("Gem names should use underscores for their names.  Currently volt only supports a single namespace for a component.")
+      Volt.logger.error('Gem names should use underscores for their names.  Currently volt only supports a single namespace for a component.')
       return
     end
 
@@ -68,14 +67,14 @@ class Generate < Thor
     spec_file = Dir.pwd + "/spec/app/#{component.underscore}/integration/#{name.underscore.pluralize}_spec.rb"
 
     template('controller/model_controller.rb.tt', output_file, component_module: component.camelize, model_controller_name: controller_name.camelize)
-    template('controller/model_controller_spec.rb.tt', spec_file, describe: name.underscore.pluralize )
+    template('controller/model_controller_spec.rb.tt', spec_file, describe: name.underscore.pluralize)
   end
 
   desc 'task NAME COMPONENT', 'Creates a task named NAME in the app folder of the component named COMPONENT.'
   method_option :name, type: :string, banner: 'The name of the task.'
   method_option :component, type: :string, default: 'main', banner: 'The component the task should be created in.', required: false
   def task(name, component = 'main')
-    name = name.underscore.gsub(/_tasks$/, '').singularize + '_tasks'
+    name = name.underscore.gsub(/_tasks$/, '').singularize + '_task'
     output_file = Dir.pwd + "/app/#{component}/tasks/#{name}.rb"
     spec_file = Dir.pwd + "/spec/app/#{component}/tasks/#{name}_spec.rb"
     template('task/task.rb.tt', output_file, task_name: name.camelize.singularize)
@@ -96,6 +95,6 @@ class Generate < Thor
 
   def controller_exists?(name, component = 'main')
     dir = Dir.pwd + "/app/#{component}/controllers/"
-    File.exists?(dir + name.downcase.underscore.singularize + '.rb')
+    File.exist?(dir + name.downcase.underscore.singularize + '.rb')
   end
 end

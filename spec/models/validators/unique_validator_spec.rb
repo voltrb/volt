@@ -5,7 +5,6 @@ unless RUBY_PLATFORM == 'opal'
     validate :name, unique: true
   end
 
-
   describe 'unique spec' do
     it 'should reject save if there are records with existing attributes already' do
       store._fridges << { name: 'swift' }

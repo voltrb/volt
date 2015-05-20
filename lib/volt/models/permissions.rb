@@ -1,6 +1,5 @@
 module Volt
   class Model
-
     # The permissions module provides helpers for working with Volt permissions.
     module Permissions
       module ClassMethods
@@ -9,7 +8,7 @@ module Volt
         # the user can not be changed.
         #
         # @param key [Symbol] the name of the attribute to store
-        def own_by_user(key=:user_id)
+        def own_by_user(key = :user_id)
           # When the model is created, assign it the user_id (if the user is logged in)
           on(:new) do
             # Only assign the user_id if there isn't already one and the user is logged in.
@@ -29,11 +28,10 @@ module Volt
             # for a nil model.
             unless @attributes[:user_id]
               # Show an error that the user is not logged in
-              next {key => ['requires a logged in user']}
+              next { key => ['requires a logged in user'] }
             end
           end
         end
-
 
         # TODO: Change to
         # permissions(:create, :read, :update) do |action|
@@ -81,7 +79,7 @@ module Volt
             end
           end
         else
-          raise "allow should be called inside of a permissions block"
+          fail 'allow should be called inside of a permissions block'
         end
       end
 
@@ -97,7 +95,7 @@ module Volt
             end
           end
         else
-          raise "deny should be called inside of a permissions block"
+          fail 'deny should be called inside of a permissions block'
         end
       end
 
@@ -105,10 +103,10 @@ module Volt
       # in user (```Volt.current_user```) is the owner of this instance.
       #
       # @param key [Symbol] the name of the attribute where the user_id is stored
-      def owner?(key=:user_id)
+      def owner?(key = :user_id)
         # Lookup the original user_id
         owner_id = was(key) || send(:"_#{key}")
-        owner_id != nil && owner_id == Volt.current_user_id
+        !owner_id.nil? && owner_id == Volt.current_user_id
       end
 
       # Returns boolean if the model can be deleted
@@ -134,7 +132,7 @@ module Volt
 
         clear_allow_and_deny
 
-        return !deny
+        !deny
       end
 
       # Return the list of allowed fields
@@ -145,7 +143,7 @@ module Volt
 
         clear_allow_and_deny
 
-        return result
+        result
       end
 
       # Filter fields returns the attributes with any denied or not allowed fields
@@ -161,21 +159,22 @@ module Volt
           allow << :_id
 
           # Only keep fields in the allow list
-          return @attributes.select {|key| allow.include?(key) }
+          return @attributes.select { |key| allow.include?(key) }
         elsif deny == true
           # Only keep id
           # TODO: Should this be a full reject?
-          return @attributes.reject {|key| key != :_id }
+          return @attributes.reject { |key| key != :_id }
         elsif deny && deny.size > 0
           # Reject any in the deny list
-          return @attributes.reject {|key| deny.include?(key) }
+          return @attributes.reject { |key| deny.include?(key) }
         else
           return @attributes
         end
       end
 
       private
-      def run_permissions(action_name=nil)
+
+      def run_permissions(action_name = nil)
         compute_allow_and_deny(action_name)
 
         errors = {}
@@ -199,9 +198,7 @@ module Volt
         elsif @__deny_fields
           # Allow all except the denied
           @__deny_fields.each do |field_name|
-            if changed?(field_name)
-              add_error_if_changed(errors, field_name)
-            end
+            add_error_if_changed(errors, field_name) if changed?(field_name)
           end
         end
 

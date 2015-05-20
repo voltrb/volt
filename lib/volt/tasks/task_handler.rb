@@ -9,9 +9,7 @@ module Volt
         meta_data = {}
 
         user_id = $page.cookies._user_id
-        unless user_id.nil?
-          meta_data['user_id'] = user_id
-        end
+        meta_data['user_id'] = user_id unless user_id.nil?
 
         $page.tasks.call(self.name, name, meta_data, *args, &block)
       end

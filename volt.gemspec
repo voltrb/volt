@@ -1,16 +1,16 @@
-# coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-
-version = File.read(File.expand_path('../VERSION', __FILE__)).strip
+require 'volt/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'volt'
-  spec.version       = version
+  spec.version       = Volt::Version::STRING
+  spec.platform      = Gem::Platform::RUBY
+  spec.required_ruby_version = '>= 2.1'
   spec.authors       = ['Ryan Stout']
   spec.email         = ['ryan@agileproductions.com']
-  spec.summary       = 'A ruby web framework where your ruby runs on both server and client (via Opal)'
-  # spec.description   = %q{}
+  spec.summary       = 'A reactive Ruby web framework.'
+  spec.description   = 'A reactive Ruby web framework where your Ruby code runs on both the server and the client (via Opal).'
   spec.homepage      = 'http://voltframework.com'
   spec.license       = 'MIT'
 
@@ -24,15 +24,15 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rack', '~> 1.5'
   spec.add_dependency 'sprockets-sass', '~> 1.0.0'
   spec.add_dependency 'sass', '~> 3.2.5'
-  spec.add_dependency 'mongo', '~> 1.9.0'
   spec.add_dependency 'listen', '~> 2.8.0'
   spec.add_dependency 'uglifier', '>= 2.4.0'
-  spec.add_dependency "configurations", "~> 2.0.0.pre"
-  spec.add_dependency 'yui-compressor', '~> 0.12.0'
+  spec.add_dependency 'configurations', '~> 2.0.0.pre'
+  spec.add_dependency 'ruby-clean-css', '~> 1.0.0'
   spec.add_dependency 'opal', '~> 0.7.2'
   spec.add_dependency 'bundler', '>= 1.5'
   spec.add_dependency 'faye-websocket', '~> 0.9.2'
   spec.add_dependency 'concurrent-ruby', '~> 0.8.0'
+
 
   # For user passwords
   spec.add_dependency 'bcrypt', '~> 3.1.9'
@@ -41,10 +41,11 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.2.0'
   spec.add_development_dependency 'opal-rspec', '~> 0.4.2'
   spec.add_development_dependency 'capybara', '~> 2.4.2'
+
+  # There is a big performance issue with selenium-webdriver on v2.45.0
   spec.add_development_dependency 'selenium-webdriver', '~> 2.43.0'
   spec.add_development_dependency 'chromedriver2-helper', '~> 0.0.8'
   spec.add_development_dependency 'poltergeist', '~> 1.5.0'
-  # spec.add_development_dependency 'puma', '~> 2.11.2'
   spec.add_development_dependency 'thin', '~> 1.6.3'
   spec.add_development_dependency 'coveralls', '~> 0.8.1'
 
@@ -60,4 +61,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'sauce', '~> 3.5.3'
   spec.add_development_dependency 'sauce-connect', '~> 3.5.0'
   spec.add_development_dependency 'pry-byebug', '~> 2.0.0'
+
+  spec.add_development_dependency 'rubocop', '~> 0.31.0'
 end

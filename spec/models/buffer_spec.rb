@@ -37,7 +37,7 @@ describe Volt::Buffer do
       expect(then_count).to eq(0)
       expect(fail_count).to eq(1)
       expect(error.class).to eq(Volt::Errors)
-      expect(error).to eq({:name=>["must be at least 5 characters"]})
+      expect(error).to eq(name: ['must be at least 5 characters'])
     end
   end
 end

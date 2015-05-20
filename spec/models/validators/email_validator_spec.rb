@@ -41,7 +41,7 @@ describe Volt::Model do
       specify do
         expect { model.mark_field! field }
           .to change { model.marked_errors }
-          .from({}).to({ field => [message ] })
+          .from({}).to(field => [message])
       end
     end
 
@@ -89,7 +89,7 @@ describe Volt::Model do
       Class.new(Volt::Model) do
         validate :special_field, format: [
           { with: /regex/, message: 'regex failed' },
-          { with: ->(x) {x == false}, message: 'proc failed' }
+          { with: ->(x) { x == false }, message: 'proc failed' }
         ]
       end
     end
@@ -98,9 +98,7 @@ describe Volt::Model do
       before { model._special_field = 'nope' }
 
       it 'returns an array of errors' do
-        expect(model.errors).to eq({
-          special_field: [ regex_message, proc_message ]
-        })
+        expect(model.errors).to eq(special_field: [regex_message, proc_message])
       end
     end
 
@@ -112,7 +110,7 @@ describe Volt::Model do
       end
 
       it 'returns an array with a single error' do
-        expect(model.errors.to_h).to eq({ special_field: [ proc_message ] })
+        expect(model.errors.to_h).to eq(special_field: [proc_message])
       end
     end
   end

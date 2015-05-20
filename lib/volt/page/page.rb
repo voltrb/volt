@@ -15,6 +15,7 @@ require 'volt/page/string_template_renderer'
 require 'volt/page/document_events'
 require 'volt/page/sub_context'
 require 'volt/page/targets/dom_target'
+require 'volt/data_stores/base_adaptor_client'
 
 if RUBY_PLATFORM == 'opal'
   require 'volt/page/channel'
@@ -26,7 +27,6 @@ require 'volt/models/url'
 require 'volt/page/url_tracker'
 require 'volt/benchmark/benchmark'
 require 'volt/page/tasks'
-
 
 module Volt
   class Page
@@ -151,9 +151,7 @@ module Volt
 
     # On the server, we can delay loading the views until they are actually requeted.  This
     # sets up an instance variable to call to load.
-    def template_loader=(callback)
-      @template_loader = callback
-    end
+    attr_writer :template_loader
 
     def templates
       if @template_loader
@@ -166,7 +164,7 @@ module Volt
     end
 
     def add_routes(&block)
-      @routes   ||= Routes.new
+      @routes ||= Routes.new
       @routes.define(&block)
       @url.router = @routes
     end
@@ -221,7 +219,7 @@ module Volt
     $page = Page.new
 
     `$(document).ready(function() {`
-      $page.start
+    $page.start
     `});`
   end
 end

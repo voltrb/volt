@@ -14,7 +14,6 @@ class Promise
     @next = nil
   end
 
-
   def >>(promise)
     @next = promise
 
@@ -58,7 +57,10 @@ class Promise
     end
 
     if error
-      raise error
+      err_str = "Exception in Promise at .sync: #{error.inspect}"
+      err_str += error.backtrace.join("\n")
+      Volt.logger.error(err_str)
+      fail error
     else
       return result
     end

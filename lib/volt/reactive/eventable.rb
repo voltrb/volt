@@ -2,6 +2,7 @@ module Volt
   # Listeners are returned from #on on a class with Eventable included.
   # Listeners can be stopped by calling #remove
   class Listener
+    attr_reader :events
     def initialize(klass, events, callback)
       @klass    = klass
       @events    = events
@@ -18,7 +19,7 @@ module Volt
     end
 
     def remove
-      raise "Listener has already been removed" if @removed
+      fail 'Listener has already been removed' if @removed
       @removed = true
 
       @events.each do |event|
@@ -44,11 +45,11 @@ module Volt
     #
     # returns: a listener that has a #remove method to stop the listener.
     def on(*events, &callback)
-      raise '.on requires an event' if events.size == 0
+      fail '.on requires an event' if events.size == 0
 
       listener = Listener.new(self, events, callback)
 
-      @listeners        ||= {}
+      @listeners ||= {}
 
       events.each do |event|
         event             = event.to_sym
@@ -68,7 +69,6 @@ module Volt
 
       listener
     end
-
 
     # Triggers event on the class the module was includeded.  Any .on listeners
     # will have their block called passing in *args.

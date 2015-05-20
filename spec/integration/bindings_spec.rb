@@ -32,9 +32,7 @@ describe 'bindings test', type: :feature, sauce: true do
 
       # phantom does not support the html5 history api
       # TODO: We could probably polyfill this in phantom
-      if ENV['BROWSER'] != 'phantom'
-        expect(current_path).to eq('/bindings')
-      end
+      expect(current_path).to eq('/bindings') if ENV['BROWSER'] != 'phantom'
 
       # Fill in one field and see if it updates the rest
       fill_in('paramsName1', with: 'Params bindings')
@@ -59,9 +57,7 @@ describe 'bindings test', type: :feature, sauce: true do
 
       # phantom does not support the html5 history api
       # TODO: We could probably polyfill this in phantom
-      if ENV['BROWSER'] != 'phantom'
-        expect(current_path).to eq('/bindings')
-      end
+      expect(current_path).to eq('/bindings') if ENV['BROWSER'] != 'phantom'
 
       # Fill in one field and see if it updates the rest
       fill_in('routesName1', with: 'Routes bindings')
@@ -166,9 +162,7 @@ describe 'bindings test', type: :feature, sauce: true do
 
       click_link 'Bindings'
 
-      if ENV['BROWSER'] != 'phantom'
-        expect(current_path).to eq('/bindings')
-      end
+      expect(current_path).to eq('/bindings') if ENV['BROWSER'] != 'phantom'
 
       expect(find('#paramsCheck3')).to have_content('')
       # Fill in one field and see if it updates the rest
@@ -192,6 +186,24 @@ describe 'bindings test', type: :feature, sauce: true do
     end
   end
 
+  describe 'if/unless binding' do
+    it 'should show corret text' do
+      visit '/'
+
+      click_link 'Bindings'
+
+      click_on 'showtrue'
+
+      expect(find('#ifbinding')).to have_content('If _show')
+      expect(find('#unlessbinding')).to have_content('Unless false _show')
+
+      click_on 'showfalse'
+
+      expect(find('#ifbinding')).to have_content('If false _show')
+      expect(find('#unlessbinding')).to have_content('Unless _show')
+    end
+  end
+
   describe 'content escaping' do
     it 'should escape in a tripple stash' do
       visit '/'
@@ -199,6 +211,21 @@ describe 'bindings test', type: :feature, sauce: true do
       click_link 'Bindings'
 
       expect(find('#escapeContent')).to have_content('this is {{escaped}}')
+    end
+  end
+
+  if ENV['BROWSER'] != 'phantom'
+    describe 'input hidden and select' do
+      it 'should display binding value' do
+        visit '/'
+
+        click_link 'Form'
+
+        expect(find('body')).to have_content('Form Example')
+        expect(find('#title')).to have_content('form_ready')
+        expect(find('#name-display')).to have_content('Test')
+        expect(find('#location-display')).to have_content('AL')
+      end
     end
   end
 end

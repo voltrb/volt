@@ -1,17 +1,25 @@
 require_relative 'live_query/live_query_pool'
 
 class QueryTasks < Volt::Task
-  @@live_query_pool = LiveQueryPool.new(Volt::DataStore.fetch)
   @@channel_live_queries = {}
 
   def self.live_query_pool
-    @@live_query_pool
+    @@live_query_pool ||= LiveQueryPool.new(Volt::DataStore.fetch)
   end
 
   # The dispatcher passes its self in
   def initialize(channel, dispatcher = nil)
     @channel = channel
     @dispatcher = dispatcher
+
+    # Load the query pool if not already setup
+    self.class.live_query_pool
+  end
+
+  def self.reset!
+    @@channel_live_queries = {}
+    @@live_query_pool = nil
+    live_query_pool
   end
 
   def add_listener(collection, query)

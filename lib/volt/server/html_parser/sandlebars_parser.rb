@@ -122,7 +122,9 @@ module Volt
           # or end of doc before closed binding
           raise_parse_error("unclosed binding: {#{binding.strip}")
         else
+          #:nocov:
           fail 'should not reach here'
+          #:nocov:
         end
       end
 
@@ -156,16 +158,12 @@ module Volt
 
       # Some tags close themselves when a new one of themselves is reached.
       # ex, a tr will close the previous tr
-      if CLOSE_SELF[tag_name] && last == tag_name
-        end_tag(nil, tag_name)
-      end
+      end_tag(nil, tag_name) if CLOSE_SELF[tag_name] && last == tag_name
 
       unary = EMPTY[tag_name] || !unary.blank?
 
       # Section tag's are also unary
-      unless unary || section_tag
-        @stack.push(tag_name)
-      end
+      @stack.push(tag_name) unless unary || section_tag
 
       if @handler.respond_to?(:start_tag)
         attributes = {}

@@ -185,7 +185,6 @@ describe Volt::ViewParser do
     END
 
     view = Volt::ViewParser.new(html, 'main/main/main/body')
-
   end
   it 'should setup a href single attribute binding correctly' do
     html = <<-END
@@ -193,6 +192,9 @@ describe Volt::ViewParser do
     END
 
     view = Volt::ViewParser.new(html, 'main/main/main/body')
+
+    expected = "    <a href=\"{link_name}\">Link</a>\n"
+    expect(view.templates["main/main/main/body/body"]["html"]).to eq expected
   end
 
   it 'should parse components' do

@@ -50,7 +50,7 @@ module Volt
 
         val.then do |result|
           # Only assign if nothing else has been assigned since we started the resolve
-          self.model = result if self.last_promise == val
+          self.model = result if last_promise == val
         end.fail do |err|
           Volt.logger.error("Unable to resolve promise assigned to model on #{inspect}")
         end
@@ -80,9 +80,7 @@ module Volt
       model = self.current_model
 
       # If the model is a proc, call it now
-      if model && model.is_a?(Proc)
-        model = model.call
-      end
+      model = model.call if model && model.is_a?(Proc)
 
       model
     end
@@ -106,9 +104,7 @@ module Volt
         self.attrs = args[0]
 
         # If a model attribute is passed in, we assign it directly
-        if attrs.respond_to?(:model)
-          self.model = attrs.locals[:model]
-        end
+        self.model = attrs.locals[:model] if attrs.respond_to?(:model)
       end
     end
 
@@ -191,10 +187,10 @@ module Volt
       end
     end
 
-    def require_login(message="You must login to access this area.")
+    def require_login(message = 'You must login to access this area.')
       unless Volt.current_user_id
         flash._notices << message
-        go '/login'
+        redirect_to '/login'
 
         stop_chain
       end

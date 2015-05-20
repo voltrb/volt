@@ -13,12 +13,11 @@ if RUBY_PLATFORM != 'opal'
       main = Volt::AssetFiles.new('main', @component_paths)
 
       components = main.components
-      expect(components).to eq(%w(volt main shared bootstrap slideshow))
+      expect(components).to eq(%w(volt mongo main shared bootstrap slideshow))
     end
 
     it 'should list all JS files' do
       main = Volt::AssetFiles.new('main', @component_paths)
-
       expect(main.javascript_files(nil)).to eq(['/volt/assets/js/jquery-2.0.3.js', '/volt/assets/js/volt_js_polyfills.js', '/volt/assets/js/bootstrap.js', '/volt/assets/js/test2.js', '/volt/assets/js/test3.js', '/volt/assets/js/test1.js', '/volt/assets/volt/page/page.js', '/volt/components/main.js'])
     end
 

@@ -15,7 +15,7 @@ describe Volt::ContentBinding do
 
   it 'should render with a template' do
     context = { name: 'jimmy' }
-    binding = lambda { |page, target, context, id| Volt::ContentBinding.new(page, target, context, id, proc { self[:name] }) }
+    binding = ->(page, target, context, id) { Volt::ContentBinding.new(page, target, context, id, proc { self[:name] }) }
 
     templates = {
       'main/main' => {

@@ -44,7 +44,7 @@ describe Volt::Computation do
     a[:b] = 5
 
     count = 0
-    -> do
+    lambda do
       a[:b]
     end.watch_until!(10) do
       count += 1
@@ -74,7 +74,7 @@ describe Volt::Computation do
     a = Volt::Dependency.new
 
     count = 0
-    -> { count += 1 ; a.depend }.watch!
+    -> { count += 1; a.depend }.watch!
 
     expect(count).to eq(1)
 
@@ -93,10 +93,10 @@ describe Volt::Computation do
     a = Volt::ReactiveHash.new
 
     values = []
-    -> do
+    lambda do
       values << a[0]
 
-      -> do
+      lambda do
         values << a[1]
       end.watch!
     end.watch!
@@ -112,7 +112,7 @@ describe Volt::Computation do
     expect(values).to eq([nil, nil, 'inner', 'outer', 'inner'])
   end
 
-  describe "watch_and_resolve!" do
+  describe 'watch_and_resolve!' do
     it 'should resolve any returnted promises' do
       promise = Promise.new.resolve('resolved')
       count = 0
@@ -130,45 +130,44 @@ describe Volt::Computation do
   # https://github.com/opal/opal/issues/677
   unless RUBY_PLATFORM == 'opal'
     describe '#invalidate!' do
+      let(:computation) { Volt::Computation.new -> {} }
 
-    let(:computation) { Volt::Computation.new ->{} }
-
-    before(:each) do
-      Volt::Computation.class_variable_set :@@flush_queue, []
-    end
-
-    describe 'when stopped' do
-      before(:each) { computation.instance_variable_set :@stopped, true }
-
-      it "doesn't add self to flush queue" do
-        computation.invalidate!
-
-        expect(Volt::Computation.class_variable_get :@@flush_queue).to be_empty
-      end
-    end
-
-    describe 'when computing' do
-      before(:each) { computation.instance_variable_set :@computing, true }
-
-      it "should still add itself to flush queue" do
-        computation.invalidate!
-
-        expect(Volt::Computation.class_variable_get :@@flush_queue).not_to be_empty
-      end
-    end
-
-    describe 'when not stopped and not computing' do
       before(:each) do
-        computation.instance_variable_set :@stopped,   false
-        computation.instance_variable_set :@computing, false
+        Volt::Computation.class_variable_set :@@flush_queue, []
       end
 
-      it 'adds self to flush queue' do
-        computation.invalidate!
+      describe 'when stopped' do
+        before(:each) { computation.instance_variable_set :@stopped, true }
 
-        expect(Volt::Computation.class_variable_get :@@flush_queue).to match_array([computation])
+        it "doesn't add self to flush queue" do
+          computation.invalidate!
+
+          expect(Volt::Computation.class_variable_get :@@flush_queue).to be_empty
+        end
+      end
+
+      describe 'when computing' do
+        before(:each) { computation.instance_variable_set :@computing, true }
+
+        it 'should still add itself to flush queue' do
+          computation.invalidate!
+
+          expect(Volt::Computation.class_variable_get :@@flush_queue).not_to be_empty
+        end
+      end
+
+      describe 'when not stopped and not computing' do
+        before(:each) do
+          computation.instance_variable_set :@stopped,   false
+          computation.instance_variable_set :@computing, false
+        end
+
+        it 'adds self to flush queue' do
+          computation.invalidate!
+
+          expect(Volt::Computation.class_variable_get :@@flush_queue).to match_array([computation])
+        end
       end
     end
-  end
   end
 end

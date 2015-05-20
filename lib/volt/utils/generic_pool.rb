@@ -9,7 +9,7 @@ module Volt
   # all of the items at a sub-path with #lookup_all
   #
   # TODO: make the lookup/create threadsafe
-  class GenericPoolDeleteException < StandardError ; end
+  class GenericPoolDeleteException < StandardError; end
 
   class GenericPool
     attr_reader :pool
@@ -26,9 +26,7 @@ module Volt
       section = @pool
 
       # TODO: This is to work around opal issue #500
-      if RUBY_PLATFORM == 'opal'
-        args.pop if args.last.nil?
-      end
+      args.pop if args.last.nil? if RUBY_PLATFORM == 'opal'
 
       args.each_with_index do |arg, index|
         last = (args.size - 1) == index
@@ -96,7 +94,7 @@ module Volt
 
         if args.size - 1 == index
           unless section
-            raise GenericPoolDeleteException, "An attempt was made to delete at #{arg}, full path: #{args.inspect} in #{inspect}"
+            fail GenericPoolDeleteException, "An attempt was made to delete at #{arg}, full path: #{args.inspect} in #{inspect}"
           end
 
           section.delete(arg)
@@ -109,14 +107,12 @@ module Volt
         node   = stack[index]
         parent = stack[index - 1]
 
-        if node.size == 0
-          parent.delete(args[index - 1])
-        end
+        parent.delete(args[index - 1]) if node.size == 0
       end
     end
 
     def inspect
-      "<#{self.class.to_s} #{@pool.inspect}>"
+      "<#{self.class} #{@pool.inspect}>"
     end
 
     def print

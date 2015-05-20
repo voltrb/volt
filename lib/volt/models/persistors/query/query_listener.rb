@@ -49,7 +49,7 @@ module Volt
           $page.cookies.delete(:user_id)
         end
 
-        raise err
+        fail err
       end
     end
 

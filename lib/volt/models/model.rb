@@ -1,8 +1,8 @@
 require 'volt/models/model_wrapper'
 require 'volt/models/array_model'
-require 'volt/models/model_helpers'
+require 'volt/models/model_helpers/model_helpers'
 require 'volt/models/model_hash_behaviour'
-require 'volt/models/validations'
+require 'volt/models/validations/validations'
 require 'volt/utils/modes'
 require 'volt/models/state_manager'
 require 'volt/models/state_helpers'
@@ -10,8 +10,9 @@ require 'volt/models/buffer'
 require 'volt/models/field_helpers'
 require 'volt/reactive/reactive_hash'
 require 'volt/models/validators/user_validation'
-require 'volt/models/dirty'
-require 'volt/models/listener_tracker'
+require 'volt/models/model_helpers/dirty'
+require 'volt/models/model_helpers/listener_tracker'
+require 'volt/models/model_helpers/model_change_helpers'
 require 'volt/models/permissions'
 require 'volt/models/associations'
 require 'volt/reactive/class_eventable'
@@ -45,15 +46,16 @@ module Volt
     include Permissions
     include Associations
     include ReactiveAccessors
+    include ModelChangeHelpers
 
     attr_reader :attributes, :parent, :path, :persistor, :options
 
     INVALID_FIELD_NAMES = {
-      :attributes => true,
-      :parent => true,
-      :path => true,
-      :options => true,
-      :persistor => true
+      attributes: true,
+      parent: true,
+      path: true,
+      options: true,
+      persistor: true
     }
 
     def initialize(attributes = {}, options = {}, initial_state = nil)
@@ -126,7 +128,7 @@ module Volt
     end
 
     # Assign multiple attributes as a hash, directly.
-    def assign_attributes(attrs, initial_setup=false, skip_changes=false)
+    def assign_attributes(attrs, initial_setup = false, skip_changes = false)
       @attributes ||= {}
 
       attrs = wrap_values(attrs)
@@ -149,24 +151,7 @@ module Volt
       @deps.changed_all!
       @deps = HashDependency.new
 
-      # Save the changes
-      if initial_setup
-        # Run initial validation
-        if Volt.in_mode?(:no_validate)
-          # No validate, resolve nil
-          Promise.new.resolve(nil)
-        else
-          return validate!.then do |errs|
-            if errs && errs.size > 0
-              Promise.new.reject(errs)
-            else
-              Promise.new.resolve(nil)
-            end
-          end
-        end
-      else
-        return run_changed
-      end
+      run_initial_setup(initial_setup)
     end
 
     alias_method :attributes=, :assign_attributes
@@ -227,9 +212,7 @@ module Volt
 
         @deps.changed!(attribute_name)
 
-        if old_value == nil || new_value == nil
-          @size_dep.changed!
-        end
+        @size_dep.changed! if old_value.nil? || new_value.nil?
 
         # TODO: Can we make this so it doesn't need to be handled for non store collections
         # (maybe move it to persistor, though thats weird since buffers don't have a persistor)
@@ -246,7 +229,7 @@ module Volt
     # 1) a nil model, which returns a wrapped error
     # 2) reading directly from attributes
     # 3) trying to read a key that doesn't exist.
-    def get(attr_name, expand=false)
+    def get(attr_name, expand = false)
       # Reading an attribute, we may get back a nil model.
       attr_name = attr_name.to_sym
 
@@ -286,7 +269,7 @@ module Volt
       end
     end
 
-    def respond_to_missing?(method_name, include_private=false)
+    def respond_to_missing?(method_name, include_private = false)
       method_name.to_s.start_with?('_') || super
     end
 
@@ -343,7 +326,7 @@ module Volt
         # Wrap result in a promise if it isn't one
         return Promise.new.then { result }
       else
-        fail "Model does not have a parent and cannot be deleted."
+        fail 'Model does not have a parent and cannot be deleted.'
       end
     end
 
@@ -355,35 +338,45 @@ module Volt
     end
 
     private
+    def run_initial_setup(initial_setup)
+
+      # Save the changes
+      if initial_setup
+        # Run initial validation
+        if Volt.in_mode?(:no_validate)
+          # No validate, resolve nil
+          Promise.new.resolve(nil)
+        else
+          return validate!.then do |errs|
+            if errs && errs.size > 0
+              Promise.new.reject(errs)
+            else
+              Promise.new.resolve(nil)
+            end
+          end
+        end
+      else
+        return run_changed
+      end
+    end
+
+
     # Volt provides a few access methods to get more data about the model,
     # we want to prevent these from being assigned or accessed through
     # underscore methods.
     def check_valid_field_name(name)
       if INVALID_FIELD_NAMES[name]
-        raise InvalidFieldName, "`#{name}` is reserved and can not be used as a field"
+        fail InvalidFieldName, "`#{name}` is reserved and can not be used as a field"
       end
-    end
-
-    def setup_buffer(model)
-      Volt::Model.no_validate do
-        model.assign_attributes(attributes, true)
-      end
-
-      model.change_state_to(:loaded_state, :loaded)
-
-      # Set new to the same as the main model the buffer is from
-      model.instance_variable_set('@new', @new)
     end
 
     # Takes the persistor if there is one and
     def setup_persistor(persistor)
-      if persistor
-        @persistor = persistor.new(self)
-      end
+      @persistor = persistor.new(self) if persistor
     end
 
     # Used internally from other methods that assign all attributes
-    def assign_all_attributes(attrs, track_changes=false)
+    def assign_all_attributes(attrs, track_changes = false)
       # Assign each attribute using setters
       attrs.each_pair do |key, value|
         key = key.to_sym
@@ -400,65 +393,6 @@ module Volt
           send(:"_#{key}=", value)
         end
       end
-    end
-
-    # Called when something in the model changes.  Saves
-    # the model if there is a persistor, and changes the
-    # model to not be new.
-    #
-    # @return [Promise|nil] a promise for when the save is
-    #         complete
-    def run_changed(attribute_name=nil)
-      # no_validate mode should only be used internally.  no_validate mode is a
-      # performance optimization that prevents validation from running after each
-      # change when assigning multile attributes.
-      unless Volt.in_mode?(:no_validate)
-        # Run the validations for all fields
-        result = nil
-        return validate!.then do
-
-          # Buffers are allowed to be in an invalid state
-          unless buffer?
-            # First check that all local validations pass
-            if error_in_changed_attributes?
-              # Some errors are present, revert changes
-              revert_changes!
-
-              # After we revert, we need to validate again to get the error messages back
-              # TODO: Could probably cache the previous errors.
-              result = validate!.then do
-                # Reject the promise with the errors
-                Promise.new.reject(errs)
-              end
-            else
-              # No errors, tell the persistor to handle the change (usually save)
-
-              # Don't save right now if we're in a nosave block
-              unless Volt.in_mode?(:no_save)
-                # the changed method on a persistor should return a promise that will
-                # be resolved when the save is complete, or fail with a hash of errors.
-                if @persistor
-                  result = @persistor.changed(attribute_name)
-                else
-                  result = Promise.new.resolve(nil)
-                end
-
-                # Saved, no longer new
-                @new = false
-
-                # Clear the change tracking
-                clear_tracked_changes!
-              end
-            end
-          end
-
-          # Return result inside of the validate! promise
-          result
-        end
-      end
-
-      # Didn't run validations
-      return nil
     end
   end
 end

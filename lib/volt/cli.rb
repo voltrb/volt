@@ -4,6 +4,7 @@ require 'bundler/setup'
 require 'thor'
 require 'volt/extra_core/extra_core'
 require 'volt/cli/generate'
+require 'volt/version'
 
 module Volt
   class CLI < Thor
@@ -17,8 +18,7 @@ module Volt
       require 'securerandom'
 
       # Grab the current volt version
-      version = File.read(File.join(File.dirname(__FILE__), '../../VERSION'))
-      directory('project', name, version: version, name: name)
+      directory('project', name, version: Volt::Version::STRING, name: name, domain: name.dasherize.downcase, app_name: name.capitalize)
 
       say 'Bundling Gems...'
       `cd #{name} && bundle`
@@ -72,7 +72,6 @@ module Volt
           server.timeout = 0
         end
       end
-
     end
 
     desc 'runner FILEPATH', 'Runs a ruby file at FILEPATH in the volt app'
@@ -114,5 +113,5 @@ end
 # Add in more features
 require 'volt/cli/asset_compile'
 
-puts "Volt #{File.read(File.join(File.dirname(__FILE__), '../../VERSION'))}"
+puts "Volt #{Volt::Version::STRING}"
 Volt::CLI.start(ARGV)

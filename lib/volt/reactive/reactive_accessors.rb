@@ -42,6 +42,5 @@ module Volt
       value_dep = instance_variable_get(:"@__#{var_name}_dependency")
       value_dep ||= instance_variable_set(:"@__#{var_name}_dependency", Dependency.new)
     end
-
   end
 end
