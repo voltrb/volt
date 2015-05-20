@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'thor', '~> 0.19.0'
   spec.add_dependency 'pry', '~> 0.10.1'
-  spec.add_dependency 'rack', '~> 1.5.0'
+  spec.add_dependency 'rack', '~> 1.5'
   spec.add_dependency 'sprockets-sass', '~> 1.0.0'
   spec.add_dependency 'sass', '~> 3.2.5'
   spec.add_dependency 'listen', '~> 2.8.0'

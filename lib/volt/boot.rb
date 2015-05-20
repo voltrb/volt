@@ -17,8 +17,8 @@ end
 require 'volt/volt/app'
 
 module Volt
-  def self.boot(app_path)
+  def self.boot(app_path, additional_paths=[])
     # Boot the app
-    App.new(app_path)
+    App.new(app_path, additional_paths)
   end
 end

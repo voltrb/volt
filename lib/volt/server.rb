@@ -23,6 +23,7 @@ require 'volt/volt/core'
 require 'volt/server/websocket/websocket_handler'
 require 'volt/utils/read_write_lock'
 require 'volt/server/forking_server'
+require 'pathname'
 
 module Rack
   # TODO: For some reason in Rack (or maybe thin), 304 headers close
@@ -47,12 +48,13 @@ end
 
 module Volt
   class Server
-    attr_reader :listener, :app_path
+    attr_reader :listener, :app_path, :additional_paths
 
     # You can also optionally pass in a prebooted app
-    def initialize(root_path = nil, app = nil)
-      @root_path = root_path || Dir.pwd
+    def initialize(root_path = nil, app = nil, additional_paths = [])
+      @root_path = root_path ? Pathname.new(root_path).expand_path.to_s :  Dir.pwd
       @volt_app = app
+      @additional_paths = additional_paths
 
       @app_path        = File.expand_path(File.join(@root_path, 'app'))
 
@@ -66,8 +68,7 @@ module Volt
     def boot_volt
       # Boot the volt app
       require 'volt/boot'
-
-      @volt_app ||= Volt.boot(@root_path)
+      @volt_app ||= Volt.boot(@root_path, additional_paths)
     end
 
     # App returns the main rack app.  In development it will fork a
@@ -149,5 +150,6 @@ module Volt
 
       @rack_app
     end
+
   end
 end
