@@ -67,7 +67,8 @@ module Volt
 
         reset_query_pool!
 
-        start_message_bus
+        # message bus isn't ready yet.
+        # start_message_bus
       end
     end
 
