@@ -3,10 +3,6 @@ require 'volt/models/persistors/base'
 module Volt
   module Persistors
     class Params < Base
-      def initialize(model)
-        @model = model
-      end
-
       def changed(attribute_name)
         if RUBY_PLATFORM == 'opal'
           `

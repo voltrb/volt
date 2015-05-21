@@ -6,10 +6,6 @@ module Volt
   module Persistors
     # Backs a collection in the local store
     class LocalStore < Base
-      def initialize(model)
-        @model = model
-      end
-
       # Called when a model is added to the collection
       def added(model, index)
         root_model.persistor.save_all

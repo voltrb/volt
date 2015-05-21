@@ -45,10 +45,6 @@ module Volt
         `document.cookie = cookie_val`
       end
 
-      def initialize(model)
-        @model = model
-      end
-
       # Called when a model is added to the collection
       def added(model, index)
         # Save an added cookie

@@ -2,6 +2,10 @@ module Volt
   module Persistors
     # Implements the base persistor functionality.
     class Base
+      def initialize(model)
+        @model = model
+      end
+
       def loaded(initial_state = nil)
         @model.change_state_to(:loaded_state, initial_state || :loaded)
       end

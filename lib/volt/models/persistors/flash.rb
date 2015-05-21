@@ -3,10 +3,6 @@ require 'volt/models/persistors/base'
 module Volt
   module Persistors
     class Flash < Base
-      def initialize(model)
-        @model = model
-      end
-
       def added(model, index)
         if Volt.client?
           # Setup a new timer for clearing the flash.
