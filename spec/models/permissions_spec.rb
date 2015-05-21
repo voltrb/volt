@@ -47,6 +47,13 @@ class ::TestUpdateReadCheck < Volt::Model
 end
 
 describe 'model permissions' do
+  let(:user_todo) { TestUserTodo.new }
+
+  it 'auto-associates users via own_by_user' do
+    #TODO: better assertions
+    expect(user_todo.respond_to?(:user)).to be(true)
+  end
+
   it 'should follow CRUD states when checking permissions' do
     todo = TestUserTodoWithCrudStates.new.buffer
 
