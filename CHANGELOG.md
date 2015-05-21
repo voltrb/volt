@@ -9,6 +9,9 @@
 ### Changed
 - All logic associated with mongo has been moved into the volt-mongo gem.  If you are migrating from a previous version, be sure to add ```gem 'volt-mongo'``` to the Gemfile.
 - fixed issue where ```volt precompile``` would compile in extra assets from non-component gems.
+- Lots of internal changes:
+    - bindings were refactored to pass around a Volt::App instead of a Volt::Page.
+    - controllers now take a Volt::App when created directly.
 
 ## 0.9.2
 ### Changed
