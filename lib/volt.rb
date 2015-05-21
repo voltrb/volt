@@ -12,7 +12,9 @@ require 'volt/volt/users'
 
 module Volt
   @in_browser = if RUBY_PLATFORM == 'opal'
-                  `!!document && !window.OPAL_SPEC_PHANTOM`
+                  # When testing with opal-rspec, it technically is in a browser
+                  # but its not setup with our own app code.
+                  `!!document && !window.OPAL_SPEC_PHANTOM && window.$`
                 else
                   false
                 end
@@ -51,6 +53,25 @@ module Volt
 
     def in_browser?
       @in_browser
+    end
+
+    # When we use something like a Task, we don't specify an app, so we use
+    # a thread local or global to lookup the current app.  This lets us run
+    # more than one app at once, giving deference to a global app.
+    def current_app
+      Thread.current['volt_app'] || $volt_app
+    end
+
+    # Runs code in the context of this app.
+    def in_app
+      previous_app = Thread.current['volt_app']
+      Thread.current['volt_app'] = self
+
+      begin
+        yield
+      ensure
+        Thread.current['volt_app'] = previous_app
+      end
     end
   end
 end

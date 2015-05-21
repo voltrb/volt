@@ -79,6 +79,9 @@ module Volt
 
       # Load all templates in the folder
       Dir["#{views_path}*/*.{#{exts.join(',')}}"].sort.each do |view_path|
+        path_parts = view_path.scan(/([^\/]+)\/([^\/]+)\/[^\/]+\/([^\/]+)[.](html|email)$/)
+        component_name, controller_name, view, _ = path_parts[0]
+
         # file extension
         format = File.extname(view_path).downcase.delete('.').to_sym
 
@@ -87,6 +90,8 @@ module Volt
         template_path = "#{@component_name}/#{template_path}"
 
         file_contents = File.read(view_path)
+
+        template_calls = []
 
         # Process template if we have a handler for this file type
         if handler = ComponentTemplates.handler_for_extension(format)
@@ -107,8 +112,11 @@ module Volt
             binding_code = "{#{binding_code.join(', ')}}"
 
             code << "#{page_reference}.add_template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})\n"
+            template_calls << "template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})"
           end
         end
+
+        # puts "module #{component_name.camelize}\n  class #{controller_name.camelize}\n    class VoltTemplates < VoltTemplates\n      #{template_calls.join("\n")}\n    end\n  end\nend"
       end
 
       code
@@ -118,9 +126,29 @@ module Volt
     def generate_controller_code
       code             = ''
       controllers_path = "#{@component_path}/controllers/"
+      views_path = "#{@component_path}/views/"
 
-      Dir["#{controllers_path}*_controller.rb"].sort.each do |controller_path|
-        code << File.read(controller_path) + "\n\n"
+      # Controllers are optional, specifying a view folder is enough to auto
+      # generate the controller.
+
+      implicit_controllers = Dir["#{views_path}*"].sort.map do |path|
+        # remove the /views/ folder and add _controller.rb
+        path.split('/').tap {|v| v[-2] = 'controllers' }.join('/') + '_controller.rb'
+      end
+      explicit_controllers = Dir["#{controllers_path}*_controller.rb"].sort
+
+      controllers = (implicit_controllers + explicit_controllers).uniq
+      controllers.each do |path|
+        if File.exists?(path)
+          code << File.read(path) + "\n\n"
+        else
+          # parts = path.scan(/([^\/]+)\/controllers\/([^\/]+)_controller[.]rb$/)
+          # component, controller = parts[0]
+
+          # # Generate a blank controller.  (We need to actually generate one so
+          # # the Template can be attached to it for template inheritance)
+          # code << "\nmodule #{component.camelize}\n  class #{controller.camelize} < Volt::ModelController\n  end\nend\n"
+        end
       end
 
       code

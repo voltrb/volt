@@ -29,8 +29,8 @@ module Volt
   class EventBinding < BaseBinding
     attr_accessor :context, :binding_name
 
-    def initialize(page, target, context, binding_name, event_name, call_proc)
-      super(page, target, context, binding_name)
+    def initialize(volt_app, target, context, binding_name, event_name, call_proc)
+      super(volt_app, target, context, binding_name)
       @event_name = event_name
 
       handler = proc do |js_event|
@@ -42,12 +42,12 @@ module Volt
         result = @context.instance_exec(event, &call_proc)
       end
 
-      @listener = @page.events.add(event_name, self, handler)
+      @listener = page.events.add(event_name, self, handler)
     end
 
     # Remove the event binding
     def remove
-      @page.events.remove(@event_name, self)
+      page.events.remove(@event_name, self)
     end
   end
 end

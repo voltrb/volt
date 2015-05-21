@@ -10,15 +10,19 @@
 #                   binding will be inserted.
 module Volt
   class BaseBinding
-    attr_accessor :target, :context, :binding_name
+    attr_accessor :target, :context, :binding_name, :volt_app
 
-    def initialize(page, target, context, binding_name)
-      @page         = page
+    def initialize(volt_app, target, context, binding_name)
+      @volt_app     = volt_app
       @target       = target
       @context      = context
       @binding_name = binding_name
 
       @@binding_number ||= 10_000
+    end
+
+    def page
+      @volt_app.page
     end
 
     def dom_section

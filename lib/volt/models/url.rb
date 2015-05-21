@@ -102,7 +102,7 @@ module Volt
     # browser should be updated
     # Called when an attribute changes to update the url
     def update!
-      if Volt.client?
+      if Volt.in_browser?
         new_url = url_for(@params.to_h)
 
         # Push the new url if pushState is supported
@@ -116,7 +116,7 @@ module Volt
     end
 
     def scroll
-      if Volt.client?
+      if Volt.in_browser?
         frag = fragment
         if frag.present?
           # Scroll to anchor via http://www.w3.org/html/wg/drafts/html/master/browsers.html#scroll-to-fragid

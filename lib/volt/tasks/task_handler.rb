@@ -14,7 +14,8 @@ module Volt
         $page.tasks.call(self.name, name, meta_data, *args, &block)
       end
     else
-      def initialize(channel = nil, dispatcher = nil)
+      def initialize(volt_app, channel = nil, dispatcher = nil)
+        @volt_app = volt_app
         @channel    = channel
         @dispatcher = dispatcher
       end
@@ -35,7 +36,7 @@ module Volt
         # TODO: optimize: this could run the inside first to see if it
         # returns a promise, so we don't have to wrap it.
         Promise.new.then do
-          new(nil, nil).send(name, *args, &block)
+          new(Volt.current_app, nil, nil).send(name, *args, &block)
         end.resolve(nil)
       end
 

@@ -58,11 +58,11 @@ module Volt
           # Running as child
           @reader.close
 
-          @server.boot_volt
+          volt_app = @server.boot_volt
           @rack_app = @server.new_server
 
           # Set the drb object locally
-          @dispatcher = Dispatcher.new
+          @dispatcher = Dispatcher.new(volt_app)
           drb_object = DRb.start_service('drbunix:', [self, @dispatcher])
 
           @writer.puts(drb_object.uri)

@@ -16,6 +16,7 @@ else
 end
 require 'volt/volt/app'
 
+
 module Volt
   def self.boot(app_path)
     # Boot the app

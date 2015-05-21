@@ -15,7 +15,7 @@ describe Volt::ContentBinding do
 
   it 'should render with a template' do
     context = { name: 'jimmy' }
-    binding = ->(page, target, context, id) { Volt::ContentBinding.new(page, target, context, id, proc { self[:name] }) }
+    binding = ->(volt_app, target, context, id) { Volt::ContentBinding.new(volt_app, target, context, id, proc { self[:name] }) }
 
     templates = {
       'main/main' => {
@@ -27,9 +27,13 @@ describe Volt::ContentBinding do
     page = double('volt/page')
     expect(page).to receive(:templates).and_return(templates)
 
+    volt_app = double('volt/app')
+    expect(volt_app).to receive(:page).and_return(page)
+
+
     dom = Volt::AttributeTarget.new(0)
 
-    Volt::TemplateRenderer.new(page, dom, context, 'main', 'main/main')
+    Volt::TemplateRenderer.new(volt_app, dom, context, 'main', 'main/main')
 
     expect(dom.to_html).to eq('hello jimmy')
   end

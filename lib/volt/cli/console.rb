@@ -31,11 +31,11 @@ module Volt
   class Console
     module Helpers
       def store
-        $page.store
+        @volt_app.page.store
       end
 
       def page
-        $page.page
+        @volt_app.page.page
       end
     end
 
@@ -50,15 +50,16 @@ module Volt
       require 'volt/volt/core'
       require 'volt/server/socket_connection_handler_stub'
 
-      SocketConnectionHandlerStub.dispatcher = Dispatcher.new
+      # Boot the volt app
+      volt_app = Volt.boot(Dir.pwd)
 
-      Volt.boot(Dir.pwd)
+      SocketConnectionHandlerStub.dispatcher = Dispatcher.new(volt_app)
 
       Pry.config.prompt_name = 'volt'
 
+      Pry.main.instance_variable_set('@volt_app', volt_app)
       Pry.main.send(:include, Volt::Console::Helpers)
 
-      # $page.pry
       Pry.start
     end
   end

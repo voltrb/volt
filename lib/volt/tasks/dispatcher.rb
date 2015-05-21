@@ -9,6 +9,12 @@ module Volt
     # When we pass the dispatcher over DRb, don't send a copy, just proxy.
     include DRb::DRbUndumped
 
+    attr_reader :volt_app
+
+    def initialize(volt_app)
+      @volt_app = volt_app
+    end
+
     # Dispatch takes an incoming Task from the client and runs it on the
     # server, returning the result to the client.
     # Tasks returning a promise will wait to return.
@@ -31,17 +37,7 @@ module Volt
         # Init and send the method
         promise = promise.then do
           Thread.current['meta'] = meta_data
-
-          # # Profile the code
-          # RubyProf.start
-
-          result = klass.new(channel, self).send(method_name, *args)
-
-          # res = RubyProf.stop
-          #
-          # # Print a flat profile to text
-          # printer = RubyProf::FlatPrinter.new(res)
-          # printer.print(STDOUT)
+          result = klass.new(@volt_app, channel, self).send(method_name, *args)
 
           Thread.current['meta'] = nil
 
@@ -91,7 +87,7 @@ module Volt
     end
 
     def close_channel(channel)
-      QueryTasks.new(channel).close!
+      QueryTasks.new(@volt_app, channel).close!
     end
   end
 end

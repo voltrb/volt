@@ -10,8 +10,8 @@ module Volt
     #                     lookup paths in ViewLookupForPath
     # @param [String|nil] content_template_path is the path to the template for the content
     #                     provided in the tag.
-    def initialize(page, target, context, binding_name, binding_in_path, getter, content_template_path = nil)
-      super(page, target, context, binding_name)
+    def initialize(volt_app, target, context, binding_name, binding_in_path, getter, content_template_path = nil)
+      super(volt_app, target, context, binding_name)
 
       @content_template_path = content_template_path
 
@@ -189,7 +189,7 @@ module Volt
         # from the group)
         generated_new = true
         # Setup the controller
-        controller_class.new(*args)
+        controller_class.new(@volt_app, *args)
       end
 
       # Fetch grouped controllers if we're grouping
@@ -217,7 +217,7 @@ module Volt
 
     # The context for templates can be either a controller, or the original context.
     def render_template(full_path, path)
-      @current_template = TemplateRenderer.new(@page, @target, @controller, @binding_name, full_path, path)
+      @current_template = TemplateRenderer.new(@volt_app, @target, @controller, @binding_name, full_path, path)
 
       call_ready
     end

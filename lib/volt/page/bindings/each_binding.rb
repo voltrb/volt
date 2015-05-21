@@ -2,8 +2,8 @@ require 'volt/page/bindings/base_binding'
 
 module Volt
   class EachBinding < BaseBinding
-    def initialize(page, target, context, binding_name, getter, variable_name, index_name, template_name)
-      super(page, target, context, binding_name)
+    def initialize(volt_app, target, context, binding_name, getter, variable_name, index_name, template_name)
+      super(volt_app, target, context, binding_name)
 
       @item_name     = variable_name
       @index_name    = index_name
@@ -110,7 +110,7 @@ module Volt
         end
       end
 
-      item_template = TemplateRenderer.new(@page, @target, item_context, binding_name, @template_name)
+      item_template = TemplateRenderer.new(@volt_app, @target, item_context, binding_name, @template_name)
       @templates.insert(position, item_template)
 
       update_indexes_after(position)

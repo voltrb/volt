@@ -10,7 +10,7 @@ module Volt
 
       require 'volt/boot'
 
-      # Require in app
+      # Create a main volt app for tests
       volt_app = Volt.boot(app_path)
 
       unless RUBY_PLATFORM == 'opal'
@@ -32,17 +32,20 @@ module Volt
 
 
       cleanup_db = -> do
-        Volt::DataStore.fetch.drop_database
+        volt_app.database.drop_database
 
         # Clear cached for a reset
-        $page.instance_variable_set('@store', nil)
-        QueryTasks.reset!
+        volt_app.page.instance_variable_set('@store', nil)
+        volt_app.reset_query_pool!
       end
 
       if RUBY_PLATFORM != 'opal'
         # Call once during setup to clear if we killed the last run
         cleanup_db.call
       end
+
+      # Run everything in the context of this app
+      Thread.current['volt_app'] = volt_app
 
       # Setup the spec collection accessors
       # RSpec.shared_context "volt collections", {} do
@@ -53,9 +56,10 @@ module Volt
         let(:the_page) { Model.new }
         let(:store) do
           @__store_accessed = true
-          $page ||= Page.new
+          $page ||= volt_app.page
           $page.store
         end
+        let(:volt_app) { volt_app }
 
 
         if RUBY_PLATFORM != 'opal'

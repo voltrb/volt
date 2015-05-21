@@ -6,8 +6,9 @@ require 'volt/server/rack/http_request'
 module Volt
   # Rack middleware for HttpController
   class HttpResource
-    def initialize(app, router)
+    def initialize(app, volt_app, router)
       @app = app
+      @volt_app = volt_app
       @router = router
     end
 
@@ -38,7 +39,7 @@ module Volt
 
       namespace_module = Object.const_get(namespace.camelize.to_sym)
       klass = namespace_module.const_get(controller_name.camelize.to_sym)
-      controller = klass.new(params, request)
+      controller = klass.new(@volt_app, params, request)
       controller.perform(action)
     end
   end

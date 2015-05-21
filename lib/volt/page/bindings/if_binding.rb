@@ -2,8 +2,8 @@ require 'volt/page/bindings/base_binding'
 
 module Volt
   class IfBinding < BaseBinding
-    def initialize(page, target, context, binding_name, branches)
-      super(page, target, context, binding_name)
+    def initialize(volt_app, target, context, binding_name, branches)
+      super(volt_app, target, context, binding_name)
 
       getter, template_name = branches[0]
 
@@ -88,7 +88,7 @@ module Volt
         end
 
         if true_template
-          @template = TemplateRenderer.new(@page, @target, @context, binding_name, true_template)
+          @template = TemplateRenderer.new(@volt_app, @target, @context, binding_name, true_template)
         end
       end
     end

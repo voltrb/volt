@@ -1,38 +1,10 @@
-require 'opal'
-require 'volt/models'
-require 'volt/controllers/model_controller'
-require 'volt/tasks/task_handler'
-require 'volt/page/bindings/attribute_binding'
-require 'volt/page/bindings/content_binding'
-require 'volt/page/bindings/each_binding'
-require 'volt/page/bindings/if_binding'
-require 'volt/page/bindings/view_binding'
-require 'volt/page/bindings/yield_binding'
-require 'volt/page/bindings/component_binding'
-require 'volt/page/bindings/event_binding'
-require 'volt/page/template_renderer'
-require 'volt/page/string_template_renderer'
-require 'volt/page/document_events'
-require 'volt/page/sub_context'
-require 'volt/page/targets/dom_target'
-require 'volt/data_stores/base_adaptor_client'
-
-if RUBY_PLATFORM == 'opal'
-  require 'volt/page/channel'
-else
-  require 'volt/page/channel_stub'
-end
-require 'volt/router/routes'
-require 'volt/models/url'
-require 'volt/page/url_tracker'
-require 'volt/benchmark/benchmark'
-require 'volt/page/tasks'
 
 module Volt
   class Page
     attr_reader :url, :params, :page, :routes, :events
 
-    def initialize
+    def initialize(volt_app)
+      @volt_app = volt_app
       # Run the code to setup the page
       @page          = Model.new
 
@@ -44,24 +16,26 @@ module Volt
       @events = DocumentEvents.new
 
       if RUBY_PLATFORM == 'opal'
-        # Setup escape binding for console
-        `
-          $(document).keyup(function(e) {
-            if (e.keyCode == 27) {
-              Opal.gvars.page.$launch_console();
-            }
-          });
+        if Volt.in_browser?
+          # Setup escape binding for console
+          `
+            $(document).keyup(function(e) {
+              if (e.keyCode == 27) {
+                Opal.gvars.page.$launch_console();
+              }
+            });
 
-          $(document).on('click', 'a', function(event) {
-            return Opal.gvars.page.$link_clicked($(this).attr('href'), event);
-          });
-        `
+            $(document).on('click', 'a', function(event) {
+              return Opal.gvars.page.$link_clicked($(this).attr('href'), event);
+            });
+          `
+        end
       end
 
       # Initialize tasks so we can get the reload message
       tasks if Volt.env.development?
 
-      if Volt.client?
+      if Volt.in_browser?
         channel.on('reconnected') do
           @page._reconnected = true
 
@@ -178,13 +152,13 @@ module Volt
       # Do the initial url params parse
       @url_tracker.url_updated(true)
 
-      main_controller = Main::MainController.new
+      main_controller = Main::MainController.new(@volt_app)
 
       # Setup main page template
-      TemplateRenderer.new(self, DomTarget.new, main_controller, 'CONTENT', 'main/main/main/body')
+      TemplateRenderer.new(@volt_app, DomTarget.new, main_controller, 'CONTENT', 'main/main/main/body')
 
       # Setup title reactive template
-      @title_template = StringTemplateRenderer.new(self, main_controller, 'main/main/main/title')
+      @title_template = StringTemplateRenderer.new(@volt_app, main_controller, 'main/main/main/title')
 
       # Watch for changes to the title template
       proc do
@@ -213,13 +187,5 @@ module Volt
     rescue => e
       Volt.logger.error("Unable to restore: #{e.inspect}")
     end
-  end
-
-  if Volt.client?
-    $page = Page.new
-
-    `$(document).ready(function() {`
-    $page.start
-    `});`
   end
 end

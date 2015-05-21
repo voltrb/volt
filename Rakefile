@@ -31,6 +31,23 @@ task :test do
   Rake::Task['ruby:rspec'].invoke
 end
 
+task :opal_specs_in_browser do
+  require 'volt/server/websocket/rack_server_adaptor'
+  require 'rack/cascade'
+
+  server = Rack::Handler.get(RUNNING_SERVER)
+
+  Opal::Processor.source_map_enabled = false
+  app = Opal::Server.new { |s|
+    s.main = 'opal/rspec/sprockets_runner'
+    s.append_path 'spec'
+    s.append_path 'app'
+    s.debug = false
+  }
+
+  server.run(app, {})
+end
+
 # Rubocop task
 RuboCop::RakeTask.new(:rubocop) do |task|
   task.options = ['--display-cop-names']

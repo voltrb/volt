@@ -53,13 +53,13 @@ if RUBY_PLATFORM != 'opal'
                                   'CONTENT_TYPE' => 'text/plain;charset=utf-8'))
     end
 
-    let(:controller) { TestHttpController.new({}, request) }
+    let(:controller) { TestHttpController.new(volt_app, {}, request) }
 
     it 'should merge the request params and the url params' do
       request = Volt::HttpRequest.new(
         Rack::MockRequest.env_for('http://example.com/test.html?this=is_a&test=param'))
       controller = TestHttpController.new(
-        { another: 'params', 'and_a' => 'string' }, request)
+        volt_app, { another: 'params', 'and_a' => 'string' }, request)
       expect(controller.params.size).to eq(4)
       expect(controller.params._and_a).to eq('string')
       expect(controller.params._this).to eq('is_a')
@@ -117,7 +117,7 @@ if RUBY_PLATFORM != 'opal'
     end
 
     it 'should have access to the body' do
-      http_app = Volt::HttpResource.new(app, nil)
+      http_app = Volt::HttpResource.new(app, volt_app, nil)
       allow(http_app).to receive(:routes_match?)
         .and_return(controller: 'test_http',
                     action: 'access_body')
