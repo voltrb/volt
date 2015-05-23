@@ -23,8 +23,8 @@ class QueryTracker
     @results = @data_store.query(@live_query.collection, @live_query.query)
 
     # Update the current_ids
-    @current_ids = @results.map { |r| r['_id'] }
-    @results_hash = Hash[@results.map { |r| [r['_id'], r] }]
+    @current_ids = @results.map { |r| r[:id] }
+    @results_hash = Hash[@results.map { |r| [r[:id], r] }]
 
     process_changes(skip_channel)
   end

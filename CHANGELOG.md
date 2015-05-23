@@ -4,7 +4,8 @@
 ### Added
 - Added validations block for conditional validation runs
 - you can now set the NO_FORKING=true ENV to prevent using the forking server in development.
-
+- models without an assigned persistor now use the page persistor (which now can provide basic querying)
+- models using the page or store persistor now auto-generate an id when created.  This simplifies things since models always have an id.  It makes association easier as well. (internally that is)
 
 ### Changed
 - All logic associated with mongo has been moved into the volt-mongo gem.  If you are migrating from a previous version, be sure to add ```gem 'volt-mongo'``` to the Gemfile.

@@ -39,15 +39,6 @@ module Volt
           end
         end
 
-        # TODO: Change to
-        # permissions(:create, :read, :update) do |action|
-        #   if owner?
-        #     allow
-        #   else
-        #     deny :user_id
-        #   end
-        # end
-
         # permissions takes a block and yields
         def permissions(*actions, &block)
           # Store the permissions block so we can run it in validations
@@ -162,14 +153,14 @@ module Volt
 
         if allow && allow != true && allow.size > 0
           # always keep id
-          allow << :_id
+          allow << :id
 
           # Only keep fields in the allow list
           return @attributes.select { |key| allow.include?(key) }
         elsif deny == true
           # Only keep id
           # TODO: Should this be a full reject?
-          return @attributes.reject { |key| key != :_id }
+          return @attributes.reject { |key| key != :id }
         elsif deny && deny.size > 0
           # Reject any in the deny list
           return @attributes.reject { |key| deny.include?(key) }

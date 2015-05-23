@@ -19,7 +19,7 @@ class StoreTasks < Volt::Task
     collection = store.send(:"_#{path[-2]}")
 
     # See if the model has already been made
-    collection.find(_id: data[:_id]).fetch_first do |model|
+    collection.where(id: data[:id]).fetch_first do |model|
       # Otherwise assign to the collection
       model ||= collection
 
@@ -71,13 +71,13 @@ class StoreTasks < Volt::Task
     query = nil
 
     Volt.skip_permissions do
-      query = store.send(:"_#{collection}").where(_id: id)
+      query = store.get(collection).where(id: id)
     end
 
     query.fetch_first do |model|
       if model
         if model.can_delete?
-          db.delete(collection, '_id' => id)
+          db.delete(collection, 'id' => id)
         else
           fail "Permissions did not allow #{collection} #{id} to be deleted."
         end

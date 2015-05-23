@@ -9,7 +9,7 @@ module Volt
   class ComponentNode < BaseNode
     include Eventable
 
-    attr_accessor :parent, :binding_id, :nodes
+    attr_accessor :parent, :binding_id, :nodes, :root
 
     def initialize(binding_id = nil, parent = nil, root = nil)
       @nodes      = []
@@ -63,6 +63,11 @@ module Volt
 
     def <<(node)
       @nodes << node
+    end
+
+    def insert(index, node)
+      @nodes.insert(index, node)
+      changed!
     end
 
     def to_html

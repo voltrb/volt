@@ -32,7 +32,7 @@ if RUBY_PLATFORM != 'opal'
 
       context 'with a matching user' do
         let(:password) { BCrypt::Password.create(login_info['password']) }
-        let(:user) { double('User', _id: 1, _hashed_password: password) }
+        let(:user) { double('User', id: 1, _hashed_password: password) }
 
         it 'fails on bad password' do
           expect { subject.login(login_info.merge 'password' => 'Not McFly') }.
@@ -52,7 +52,7 @@ if RUBY_PLATFORM != 'opal'
           subject.login(login_info)
 
           expect(Digest::SHA256).to have_received(:hexdigest).with(
-            "#{Volt.config.app_secret}::#{user._id}"
+            "#{Volt.config.app_secret}::#{user.id}"
           )
         end
       end

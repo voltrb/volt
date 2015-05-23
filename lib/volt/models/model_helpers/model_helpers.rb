@@ -21,6 +21,17 @@ module Volt
       @persistor.event_removed(event, last, last_for_event) if @persistor
     end
 
+    ID_CHARS = [('a'..'f'), ('0'..'9')].map(&:to_a).flatten
+
+    # Create a random unique id that can be used as the mongo id as well
+    def generate_id
+      id = []
+      24.times { id << ID_CHARS.sample }
+
+      id.join
+    end
+
+
     module ClassMethods
       # Gets the class for a model at the specified path.
       def class_at_path(path)

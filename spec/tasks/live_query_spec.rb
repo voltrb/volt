@@ -9,7 +9,7 @@ if RUBY_PLATFORM != 'opal'
       data_store = double('volt/data store')
 
       expect(data_store).to receive(:query).with('_items', {}).and_return([
-        { '_id' => 0, '_name' => 'one' }
+        { 'id' => 0, '_name' => 'one' }
       ])
 
       live_query = LiveQuery.new(pool, data_store, '_items', {})

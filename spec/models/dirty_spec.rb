@@ -79,27 +79,27 @@ describe 'Volt::Dirty' do
   end
 
   it 'should revert changes' do
-    expect(model.attributes).to eq({})
+    expect(model.attributes.without(:id)).to eq({})
     model.attributes = { first: 'Bob', last: 'Smith' }
-    expect(model.attributes).to eq(first: 'Bob', last: 'Smith')
+    expect(model.attributes.without(:id)).to eq(first: 'Bob', last: 'Smith')
 
     model.revert_changes!
-    expect(model.attributes).to eq(first: nil, last: nil)
+    expect(model.attributes.without(:id)).to eq(first: nil, last: nil)
   end
 
   it 'should revert changes after a clear_tracked_changed!' do
-    expect(model.attributes).to eq({})
+    expect(model.attributes.without(:id)).to eq({})
     model.attributes = { first: 'Bob', last: 'Smith' }
-    expect(model.attributes).to eq(first: 'Bob', last: 'Smith')
+    expect(model.attributes.without(:id)).to eq(first: 'Bob', last: 'Smith')
 
     model.clear_tracked_changes!
     expect(model.changed_attributes).to eq({})
 
     model._first = 'Jimmy'
     model._last = 'Dean'
-    expect(model.attributes).to eq(first: 'Jimmy', last: 'Dean')
+    expect(model.attributes.without(:id)).to eq(first: 'Jimmy', last: 'Dean')
 
     model.revert_changes!
-    expect(model.attributes).to eq(first: 'Bob', last: 'Smith')
+    expect(model.attributes.without(:id)).to eq(first: 'Bob', last: 'Smith')
   end
 end

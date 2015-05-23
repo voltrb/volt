@@ -13,7 +13,7 @@ module Volt
       @response_headers = HttpResponseHeader.new
       @response_body = []
       @request = request
-      @params = Volt::Model.new(params.symbolize_keys.merge(request.params))
+      @params = Volt::Model.new(params.symbolize_keys.merge(request.params), persistor: Volt::Persistors::Params)
     end
 
     def perform(action)

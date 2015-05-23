@@ -104,13 +104,16 @@ module Volt
       super
     end
 
-    # the id is stored in a field named _id, so we setup _id to proxy to this
-    def _id
-      __id
+    def id
+      get(:id)
     end
 
-    def _id=(val)
-      self.__id = val
+    def id=(val)
+      set(:id, val)
+    end
+
+    def _id
+      raise "Accessing  _id has been deprecated in favor of id"
     end
 
     # Return true if the model hasn't been saved yet
@@ -302,14 +305,14 @@ module Volt
 
     def inspect
       Computation.run_without_tracking do
-        str = "<#{self.class}:#{object_id}"
+        str = "<#{self.class}"
 
         # Get path, loaded_state, and persistor, but cache in local var
-        path = self.path
-        str += " path:#{path}" if path
+        # path = self.path
+        # str += " path:#{path}" if path
 
-        loaded_state = self.loaded_state
-        str += " state:#{loaded_state}" if loaded_state
+        # loaded_state = self.loaded_state
+        # str += " state:#{loaded_state}" if loaded_state
 
         persistor = self.persistor
         # str += " persistor:#{persistor.inspect}" if persistor
@@ -339,7 +342,6 @@ module Volt
 
     private
     def run_initial_setup(initial_setup)
-
       # Save the changes
       if initial_setup
         # Run initial validation
@@ -372,7 +374,9 @@ module Volt
 
     # Takes the persistor if there is one and
     def setup_persistor(persistor)
-      @persistor = persistor.new(self) if persistor
+      # Use page as the default persistor
+      persistor ||= Persistors::Page
+      @persistor = persistor.new(self)
     end
 
     # Used internally from other methods that assign all attributes
@@ -390,8 +394,13 @@ module Volt
           send(:"#{key}=", value)
         else
           # Otherwise, use the _ version
-          send(:"_#{key}=", value)
+          set(key, value)
         end
+      end
+
+      # Make an id if there isn't one yet
+      if @attributes[:id].nil? && persistor.try(:auto_generate_id)
+        self.id = generate_id
       end
     end
   end

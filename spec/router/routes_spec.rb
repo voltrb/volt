@@ -233,7 +233,7 @@ describe Volt::Routes do
 
     path, cleaned_params = @routes.params_to_url(params.to_h)
     expect(path).to eq('/blog')
-    expect(cleaned_params).to eq(index: '5')
+    expect(cleaned_params.without(:id)).to eq(index: '5')
   end
 
   it 'should handle routes with bindings in them' do

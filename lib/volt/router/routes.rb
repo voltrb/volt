@@ -5,8 +5,8 @@ module Volt
   # a url to params, and params to url.
   # routes do
   #   client "/about", _view: 'about'
-  #   client "/blog/{_id}/edit", _view: 'blog/edit', _action: 'edit'
-  #   client "/blog/{_id}", _view: 'blog/show', _action: 'show'
+  #   client "/blog/{id}/edit", _view: 'blog/edit', _action: 'edit'
+  #   client "/blog/{id}", _view: 'blog/show', _action: 'show'
   #   client "/blog", _view: 'blog'
   #   client "/blog/new", _view: 'blog/new', _action: 'new'
   #   client "/cool/{_name}", _view: 'cool'
@@ -27,16 +27,16 @@ module Volt
   # @indirect_routes = {
   #     '*' => {
   #       'edit' => {
-  #         nil => {_id: 1, _view: 'blog/edit', _action: 'edit'}
+  #         nil => {id: 1, _view: 'blog/edit', _action: 'edit'}
   #       }
-  #       nil => {_id: 1, _view: 'blog/show', _action: 'show'}
+  #       nil => {id: 1, _view: 'blog/show', _action: 'show'}
   #     }
   #   }
   # }
   #
   # Match for params
   # @param_matches = [
-  #   {_id: nil, _view: 'blog/edit', _action: 'edit'} => Proc.new {|params| "/blog/#{params.id}/edit", params.reject {|k,v| k == :id }}
+  #   {id: nil, _view: 'blog/edit', _action: 'edit'} => Proc.new {|params| "/blog/#{params.id}/edit", params.reject {|k,v| k == :id }}
   # ]
   class Routes
     def initialize

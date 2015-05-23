@@ -6,19 +6,19 @@ module Volt
     @@template_cache = {}
 
     def remove
-      fail 'not implemented'
+      fail 'remove is not implemented'
     end
 
     def remove_anchors
-      fail 'not implemented'
+      fail 'remove_anchors is not implemented'
     end
 
-    def insert_anchor_before_end
-      fail 'not implemented'
+    def insert_anchor_before_end(binding_name)
+      fail 'insert_anchor_before_end is not implemented'
     end
 
     def set_template
-      fail 'not implemented'
+      fail 'set_template is not implemented'
     end
 
     def set_content_to_template(page, template_name)

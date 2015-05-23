@@ -114,7 +114,7 @@ describe Volt::Computation do
 
   describe 'watch_and_resolve!' do
     it 'should resolve any returnted promises' do
-      promise = Promise.new.resolve('resolved')
+      promise = Promise.new
       count = 0
 
       -> { promise }.watch_and_resolve! do |result|
@@ -122,7 +122,52 @@ describe Volt::Computation do
         count += 1
       end
 
+      expect(count).to eq(0)
+
+      promise.resolve('resolved')
+
+      Volt::Computation.flush!
       expect(count).to eq(1)
+    end
+
+    it 'should not resolve a promise if another value came in' do
+      dep = Volt::Dependency.new
+
+      promise = Promise.new
+      cur_val = promise
+
+      results = []
+      -> { dep.depend ; cur_val }.watch_and_resolve! do |val|
+        results << val
+      end
+
+      expect(results).to eq([])
+
+      cur_val = 5
+      dep.changed!
+      Volt::Computation.flush!
+
+      expect(results).to eq([5])
+
+      promise.resolve(10)
+      expect(results).to eq([5])
+    end
+
+    it 'should yield nil for an unresolved promise when asked' do
+      dep = Volt::Dependency.new
+
+      cur_val = Promise.new
+
+      results = []
+      -> { dep.depend ; cur_val }.watch_and_resolve!(true) do |val|
+        results << val
+      end
+
+      expect(results).to eq([nil])
+
+      cur_val.resolve(5)
+
+      expect(results).to eq([nil, 5])
     end
   end
 

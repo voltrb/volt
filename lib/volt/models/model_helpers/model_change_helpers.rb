@@ -46,7 +46,6 @@ module Volt
       nil
     end
 
-
     # Should only be called from run_changed.  Saves the changes back to the persistor
     # and clears the tracked changes.
     def persist_changes(attribute_name)

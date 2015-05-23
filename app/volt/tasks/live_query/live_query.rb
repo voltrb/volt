@@ -68,7 +68,6 @@ class LiveQuery
   def initial_data
     @query_tracker.results.map.with_index do |data, index|
       data = data.dup
-      data['_id'] = data['_id'].to_s
 
       [index, data]
     end

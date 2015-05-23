@@ -14,7 +14,7 @@ gem 'volt-fields'
 gem 'volt-user_templates'
 
 # use mongo for data store while testing
-gem 'volt-mongo'
+gem 'volt-mongo', path: '/Users/ryanstout/Sites/volt/apps/volt-mongo'
 
 gem 'opal'
 

@@ -67,7 +67,7 @@ module Volt
     # Make sure it gets wrapped
     def <<(model)
       if model.is_a?(Model)
-        # Set the new path
+        # Set the new path and the persistor.
         model.options = @options.merge(path: @options[:path] + [:[]])
       else
         model = wrap_values([model]).first
@@ -77,12 +77,17 @@ module Volt
         fail "permissions did not allow create for #{model.inspect}"
       end
 
+      # Add it to the array and trigger any watches or on events.
       super(model)
 
       if @persistor
         promise = @persistor.added(model, @array.size - 1)
         if promise && promise.is_a?(Promise)
           return promise.then do
+
+            # Mark the model as not new
+            model.instance_variable_set('@new', false)
+
             # Mark the model as loaded
             model.change_state_to(:loaded_state, :loaded)
 
@@ -191,8 +196,9 @@ module Volt
       Computation.run_without_tracking do
         # Track on size
         @size_dep.depend
-        str = "#<#{self.class}:#{object_id} #{loaded_state}"
-        str += " path:#{path.join('.')}" if path
+        str = "#<#{self.class}"
+        # str += " state:#{loaded_state}"
+        # str += " path:#{path.join('.')}" if path
         # str += " persistor:#{persistor.inspect}" if persistor
         str += " #{@array.inspect}>"
 
@@ -214,7 +220,9 @@ module Volt
 
     # Takes the persistor if there is one and
     def setup_persistor(persistor)
-      @persistor = persistor.new(self) if persistor
+      # Use page as the default persistor
+      persistor ||= Persistors::Page
+      @persistor = persistor.new(self)
     end
   end
 end

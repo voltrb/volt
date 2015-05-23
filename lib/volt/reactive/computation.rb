@@ -172,20 +172,42 @@ class Proc
   #
   # Example:
   #   -> { }
-  def watch_and_resolve!
+  def watch_and_resolve!(yield_nil_for_unresolved_promise=false)
     unless block_given?
       fail 'watch_and_resolve! requires a block to call when the value is resolved or another value other than a promise is returned in the watch.'
     end
 
+    # Keep results between runs
+    result = nil
+
     computation = proc do
       result = call
+      last_promise = nil
 
       if result.is_a?(Promise)
+        last_promise = result
+
+        # Often you want a to be alerted that an unresolved promise is waiting
+        # to be resolved.
+        if yield_nil_for_unresolved_promise && !result.resolved?
+          yield(nil)
+        end
+
         result.then do |final|
-          yield(final)
+          # Check to make sure that a new value didn't get reactively pushed
+          # before the promise resolved.
+          if last_promise.is_a?(Promise) && last_promise == result
+            yield(final)
+
+            # Clear result for GC
+            result = nil
+          end
         end
       else
         yield(result)
+
+        # Clear result for GC
+        result = nil
       end
     end.watch!
 

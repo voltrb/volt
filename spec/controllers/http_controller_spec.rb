@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 if RUBY_PLATFORM != 'opal'
   require 'volt/controllers/http_controller'
   require 'volt/server/rack/http_request'

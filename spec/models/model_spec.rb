@@ -61,7 +61,7 @@ describe Volt::Model do
 
   it "should return an empty model for an underscore value that doesn't exist" do
     a = Volt::Model.new
-    expect(a._something!.attributes).to eq({})
+    expect(a._something!.attributes.without(:id)).to eq({})
   end
 
   it 'should trigger changed once when a new value is assigned.' do
@@ -425,7 +425,15 @@ describe Volt::Model do
       { name: 'Test1', other: { time: 'Now' } },
       { name: 'Test2', other: { time: 'Later' } }
     ]
-    expect(all_items).to eq(a)
+
+    # Remove id's nested
+    items = all_items.map do |hash|
+      hash.without(:id).map do |k,v|
+        v = v.without(:id) if v.is_a?(Hash)
+        [k,v]
+      end.to_h
+    end
+    expect(items).to eq(a)
   end
 
   describe 'model paths' do

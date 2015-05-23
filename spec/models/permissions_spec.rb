@@ -118,6 +118,8 @@ describe 'model permissions' do
     it 'should not check the read permissions when updating (so that all fields are present for the permissions check)' do
       model = store._test_update_read_checks!.append(name: 'Ryan').sync
 
+      expect(model.new?).to eq(false)
+
       expect(model.create_check).to eq(true)
       expect(model.read_check).to eq(nil)
 

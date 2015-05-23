@@ -134,10 +134,10 @@ module Volt
 
           parent.persistor.ensure_setup if parent.persistor
 
-          if parent && (attrs = parent.attributes) && attrs[:_id]
+          if parent && (attrs = parent.attributes) && attrs[:id]
             query = query.dup
 
-            query << [:find, { :"#{@model.path[-3].singularize}_id" => attrs[:_id] }]
+            query << [:find, { :"#{@model.path[-3].singularize}_id" => attrs[:id] }]
           end
         end
 
@@ -208,7 +208,7 @@ module Volt
         $loading_models = true
 
         Model.no_validate do
-          data_id = data['_id'] || data[:_id]
+          data_id = data['id'] || data[:id]
 
           # Don't add if the model is already in the ArrayModel (from the client already)
           unless @ids[data_id]
@@ -232,7 +232,7 @@ module Volt
         ids.each do |id|
           # TODO: optimize this delete so we don't need to loop
           @model.each_with_index do |model, index|
-            if model._id == id
+            if model.id == id
               @ids.delete(id)
               del = @model.delete_at(index)
               break
@@ -259,7 +259,7 @@ module Volt
           promise = model.persistor.add_to_collection
 
           # Track the the model got added
-          @ids[model._id] = true
+          @ids[model.id] = true
 
           promise
         end
@@ -271,13 +271,13 @@ module Volt
           # Tell the persistor it was removed
           model.persistor.remove_from_collection
 
-          @ids.delete(model._id)
+          @ids.delete(model.id)
         end
 
         if defined?($loading_models) && $loading_models
           return
         else
-          StoreTasks.delete(channel_name, model.attributes[:_id])
+          StoreTasks.delete(channel_name, model.attributes[:id])
         end
       end
     end

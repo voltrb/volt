@@ -20,7 +20,7 @@ describe Volt::Associations do
     it 'should associate via belongs_to' do
       address = store._addresses!.fetch_first.sync
 
-      expect(address.person.sync._id).to eq(@person._id)
+      expect(address.person.sync.id).to eq(@person.id)
     end
 
     it 'should associate via has_many' do
@@ -35,8 +35,16 @@ describe Volt::Associations do
       store = Volt::Model.new({}, persistor: Volt::Persistors::Flash)
       expect do
         store.send(:association_with_root_model, :blah)
-      end.to raise_error("blah currently only works on the store collection "\
+      end.to raise_error("blah currently only works on the store and page collection "\
                          "(support for other collections coming soon)")
     end
+
+    # it 'should assign the reference_id for has_many' do
+    #   bob = Person.new
+    #   bob.addresses << {:street => '1234 awesome street'}
+    #   puts "Bob: #{bob.inspect} - #{bob.addresses.size}"
+    #   expect(bob.addresses[0].person_id).to eq(bob.id)
+    #   expect(bob.id).to_not eq(nil)
+    # end
   end
 end

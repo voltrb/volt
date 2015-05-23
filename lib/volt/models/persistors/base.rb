@@ -31,6 +31,11 @@ module Volt
       def event_removed(event, last, last_for_event)
       end
 
+      # Specify if this collection should auto-generate id's
+      def auto_generate_id
+        false
+      end
+
       # Find the root for this model
       def root_model
         node = @model

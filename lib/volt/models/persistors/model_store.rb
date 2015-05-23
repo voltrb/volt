@@ -11,8 +11,6 @@ module Volt
     class ModelStore < Store
       include StoreState
 
-      ID_CHARS = [('a'..'f'), ('0'..'9')].map(&:to_a).flatten
-
       attr_reader :model
       attr_accessor :in_identity_map
 
@@ -40,30 +38,21 @@ module Volt
         @in_collection = false
       end
 
+      def auto_generate_id
+        true
+      end
+
       # Called the first time a value is assigned into this model
       def ensure_setup
-        if (attrs = @model.attributes)
-          # Do a nil check incase there is a nil model there
-          @model.__id = generate_id if attrs[:_id].nil?
-
-          add_to_identity_map
-        end
+        add_to_identity_map
       end
 
       def add_to_identity_map
         unless @in_identity_map
-          @@identity_map.add(@model._id, @model)
+          @@identity_map.add(@model.id, @model)
 
           @in_identity_map = true
         end
-      end
-
-      # Create a random unique id that can be used as the mongo id as well
-      def generate_id
-        id = []
-        24.times { id << ID_CHARS.sample }
-
-        id.join
       end
 
       def save_changes?
@@ -85,7 +74,7 @@ module Volt
         path_size = path.size
         if save_changes? && path_size > 0 && !@model.nil?
           if path_size > 3 && (parent = @model.parent) && (source = parent.parent)
-            @model.attributes[:"#{path[-4].singularize}_id"] = source._id
+            @model.attributes[:"#{path[-4].singularize}_id"] = source.id
           end
 
           if !collection
@@ -152,7 +141,7 @@ module Volt
 
           if model
             data.each_pair do |key, value|
-              model.send(:"_#{key}=", value) if key != :_id
+              model.set(key, value)# if key != :id
             end
           end
         end
@@ -186,7 +175,7 @@ module Volt
           return errors if errors.present?
 
           # Passed, save it
-          id = values[:_id]
+          id = values[:id]
 
           # Try to create
           update_result = db.update(collection, values)

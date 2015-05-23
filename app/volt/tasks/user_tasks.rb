@@ -21,10 +21,10 @@ class UserTasks < Volt::Task
         # TODO: returning here should be possible, but causes some issues
         # Salt the user id with the app_secret so the end user can't
         # tamper with the cookie
-        signature = Digest::SHA256.hexdigest(salty_user_id(user._id))
+        signature = Digest::SHA256.hexdigest(salty_user_id(user.id))
 
         # Return user_id:hash on user id
-        next "#{user._id}:#{signature}"
+        next "#{user.id}:#{signature}"
       end
     end
   end

@@ -18,7 +18,7 @@ if RUBY_PLATFORM != 'opal'
 
       def notify_removed(ids, skip_channel)
         # Remove the id's that need to be removed
-        @items.reject! { |item| ids.include?(item['_id']) }
+        @items.reject! { |item| ids.include?(item[:id]) }
       end
 
       def notify_added(index, data, skip_channel)
@@ -26,14 +26,14 @@ if RUBY_PLATFORM != 'opal'
       end
 
       def notify_moved(id, index, skip_channel)
-        item = @items.find { |item| item['_id'] == id }
+        item = @items.find { |item| item[:id] == id }
         @items.delete(item)
 
         @items.insert(index, item)
       end
 
       def notify_changed(id, data, skip_channel)
-        item = @items.find { |item| item['_id'] == id }
+        item = @items.find { |item| item[:id] == id }
         idx  = @items.index(item)
         @items.delete(item)
         @items.insert(idx, data)
@@ -55,7 +55,7 @@ if RUBY_PLATFORM != 'opal'
 
     it 'should add items' do
       @items = [
-        { '_id' => 1, '_name' => 'one' }
+        { id: 1, name: 'one' }
       ]
 
       expect(@live_query.items).to eq([])
@@ -67,14 +67,14 @@ if RUBY_PLATFORM != 'opal'
 
     it 'should remove items' do
       @items = [
-        { '_id' => 1, '_name' => 'one' },
-        { '_id' => 2, '_name' => 'two' }
+        { id: 1, name: 'one' },
+        { id: 2, name: 'two' }
       ]
       @query_tracker.run
       expect(@live_query.items).to eq(@items)
 
       @items = [
-        { '_id' => 2, '_name' => 'two' }
+        { id: 2, name: 'two' }
       ]
       @query_tracker.run
       expect(@live_query.items).to eq(@items)
@@ -82,17 +82,17 @@ if RUBY_PLATFORM != 'opal'
 
     it 'should move items' do
       @items = [
-        { '_id' => 1, '_name' => 'one' },
-        { '_id' => 2, '_name' => 'two' },
-        { '_id' => 3, '_name' => 'three' }
+        { id: 1, name: 'one' },
+        { id: 2, name: 'two' },
+        { id: 3, name: 'three' }
       ]
       @query_tracker.run
       expect(@live_query.items).to eq(@items)
 
       @items = [
-        { '_id' => 2, '_name' => 'two' },
-        { '_id' => 3, '_name' => 'three' },
-        { '_id' => 1, '_name' => 'one' }
+        { id: 2, name: 'two' },
+        { id: 3, name: 'three' },
+        { id: 1, name: 'one' }
       ]
       @query_tracker.run
       expect(@live_query.items).to eq(@items)
@@ -100,22 +100,22 @@ if RUBY_PLATFORM != 'opal'
 
     it 'should handle complex transforms' do
       @items = [
-        { '_id' => 1, '_name' => 'one' },
-        { '_id' => 2, '_name' => 'two' },
-        { '_id' => 3, '_name' => 'three' },
-        { '_id' => 4, '_name' => 'four' },
-        { '_id' => 5, '_name' => 'five' }
+        { id: 1, name: 'one' },
+        { id: 2, name: 'two' },
+        { id: 3, name: 'three' },
+        { id: 4, name: 'four' },
+        { id: 5, name: 'five' }
       ]
       @query_tracker.run
       expect(@live_query.items).to eq(@items)
 
       @items = [
-        { '_id' => 7, '_name' => 'seven' },
-        { '_id' => 4, '_name' => 'four' },
-        { '_id' => 1, '_name' => 'one' },
-        { '_id' => 5, '_name' => 'five' },
-        { '_id' => 3, '_name' => 'three' },
-        { '_id' => 6, '_name' => 'five' }
+        { id: 7, name: 'seven' },
+        { id: 4, name: 'four' },
+        { id: 1, name: 'one' },
+        { id: 5, name: 'five' },
+        { id: 3, name: 'three' },
+        { id: 6, name: 'five' }
       ]
       @query_tracker.run
       expect(@live_query.items).to eq(@items)
@@ -123,19 +123,19 @@ if RUBY_PLATFORM != 'opal'
 
     it 'should notify data hash has changed' do
       @items = [
-        { '_id' => 1, '_name' => 'one' },
-        { '_id' => 2, '_name' => 'two' },
-        { '_id' => 3, '_name' => 'three' },
-        { '_id' => 4, '_name' => 'four' },
-        { '_id' => 5, '_name' => 'five' }
+        { id: 1, name: 'one' },
+        { id: 2, name: 'two' },
+        { id: 3, name: 'three' },
+        { id: 4, name: 'four' },
+        { id: 5, name: 'five' }
       ]
       @query_tracker.run
       @items = [
-        { '_id' => 1, '_name' => 'some' },
-        { '_id' => 2, '_name' => 'values' },
-        { '_id' => 3, '_name' => 'have' },
-        { '_id' => 4, '_name' => 'changed' },
-        { '_id' => 5, '_name' => 'other' }
+        { id: 1, name: 'some' },
+        { id: 2, name: 'values' },
+        { id: 3, name: 'have' },
+        { id: 4, name: 'changed' },
+        { id: 5, name: 'other' }
       ]
       expect(@live_query.items).to_not eq(@items)
       @query_tracker.run

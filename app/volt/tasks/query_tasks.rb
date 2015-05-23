@@ -42,7 +42,7 @@ class QueryTasks < Volt::Task
 
   def initial_data
     data = live_query.initial_data
-    data[:_id] = data[:_id].to_s
+    data[:id] = data[:id].to_s
 
     data
   end

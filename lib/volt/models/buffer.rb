@@ -33,7 +33,7 @@ module Volt
                 new_model.change_state_to(:loaded_state, :loaded)
 
                 # Set the buffer's id to track the main model's id
-                attributes[:_id] = new_model._id
+                attributes[:id] = new_model.id
                 options[:save_to]     = new_model
               end
 

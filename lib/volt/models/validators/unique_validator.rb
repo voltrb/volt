@@ -8,7 +8,7 @@ module Volt
           query = {}
           # Check to see if any other documents have this value.
           query[field_name.to_s] = value
-          query['_id'] = { '$ne' => model._id }
+          query['id'] = { '$ne' => model.id }
 
           # Check if the value is taken
           # TODO: need a way to handle scope for unique
