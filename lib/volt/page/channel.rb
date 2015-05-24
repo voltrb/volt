@@ -64,12 +64,18 @@ module Volt
       @queue.each do |message|
         send_message(message)
       end
+
+      # Trigger a connect event
+      trigger!('connect')
     end
 
     def closed(error)
       self.status    = :closed
       self.connected = false
       self.error     = `error.reason`
+
+      # Trigger a disconnect event
+      trigger!('disconnect')
 
       reconnect!
     end

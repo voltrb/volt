@@ -5,8 +5,9 @@ require 'volt/utils/generic_pool'
 # queries.
 
 class LiveQueryPool < Volt::GenericPool
-  def initialize(data_store)
+  def initialize(data_store, volt_app)
     @data_store = data_store
+    @volt_app = volt_app
     super()
   end
 
@@ -17,10 +18,15 @@ class LiveQueryPool < Volt::GenericPool
     super(collection, query)
   end
 
-  def updated_collection(collection, skip_channel)
+  def updated_collection(collection, skip_channel, from_message_bus=false)
     # collection = collection.to_sym
     lookup_all(collection).each do |live_query|
       live_query.run(skip_channel)
+    end
+
+    msg_bus = @volt_app.message_bus
+    if !from_message_bus && collection != 'active_volt_instances' && msg_bus
+      msg_bus.publish('volt_collection_update', collection)
     end
   end
 

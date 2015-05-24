@@ -84,6 +84,31 @@ Volt.configure do |config|
   #   :domain         => "localhost.localdomain" # the HELO domain provided by the client to the server
   # }
 
-
-
+  #############
+  # Message Bus
+  #############
+  # Volt provides a "Message Bus" out of the box.  The message bus provides
+  # a pub/sub service between any volt instance (server, client, runner, etc..)
+  # that share the same database.  The message bus can be used by app code.  It
+  # is also used internally to push data to any listening clients.
+  #
+  # The default message bus (called "peer_to_peer") uses the database to sync
+  # socket ip's/ports.
+  # config.message_bus.bus_name = 'peer_to_peer'
+  #
+  # Encrypt message bus - messages on the message bus are encrypted by default
+  # using rbnacl.
+  # config.message_bus.disable_encryption = true
+  #
+  # ## MessageBus Server -- the message bus binds to a port and ip which the
+  # other volt instances need to be able to connect to.  You can customize
+  # the server below:
+  #
+  # Port range - you can specify a range of ports that an instance can bind the
+  # message bus on.  You can specify a range, an array of Integers, or an array
+  # of ranges.
+  # config.message_bus.bind_port_ranges = (58000..61000)
+  #
+  # Bind Ip - specifies the ip address the message bus server should bind on.
+  # config.message_bus.bind_ip = '127.0.0.1'
 end

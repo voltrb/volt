@@ -1,14 +1,18 @@
-# The peer client manages the connection to a peer.
+# PeerConnection manages the connection to a peer, it takes a socket and
+# optionally the ip and port it connected to.  If ip and port are given, it
+# will try to reconnect until the server is marked as dead (as checked by
+# message_bus.still_alive?)
 
 require 'thread'
-require 'volt/server/message_bus/socket_with_timeout'
+require 'volt/server/message_bus/peer_to_peer/socket_with_timeout'
+require 'volt/server/message_bus/message_encoder'
 
 module Volt
-  class MessageBus
+  module MessageBus
     class PeerConnection
       CONNECT_TIMEOUT = 2
       # The server id for the connected server
-      attr_reader :peer_server_id
+      attr_reader :peer_server_id, :socket
 
       def initialize(socket, ip, port, message_bus, server=false)
         @message_bus = message_bus
@@ -20,16 +24,20 @@ module Volt
         @message_queue = SizedQueue.new(500)
         @reconnect_mutex = Mutex.new
 
+        # The encoder handles things like formatting and encryption
+        @message_encoder = MessageEncoder.new
+
+
         failed = false
         begin
           if server
             # Wait for announcement
-            @peer_server_id = @socket.gets.strip
-            @socket.puts(@server_id)
+            @peer_server_id = @message_encoder.receive_message(@socket)
+            @message_encoder.send_message(@socket, @server_id)
           else
             # Announce
-            @socket.puts(@server_id)
-            @peer_server_id = @socket.gets.strip
+            @message_encoder.send_message(@socket, @server_id)
+            @peer_server_id = @message_encoder.receive_message(@socket)
           end
         rescue IOError => e
           failed = true
@@ -72,7 +80,7 @@ module Volt
         @message_bus.remove_peer_connection(self)
       end
 
-      def send_message(message)
+      def publish(message)
         @message_queue.push(message)
       end
 
@@ -81,8 +89,9 @@ module Volt
           break if message == :QUIT
 
           begin
-            @socket.puts(message)
-          rescue Errno::ECONNREFUSED, Errno::EPIPE => e
+            @message_encoder.send_message(@socket, message)
+            # 'Error: closed stream' comes in sometimes
+          rescue Errno::ECONNREFUSED, Errno::EPIPE, Error => e
             if reconnect!
               retry
             else
@@ -97,14 +106,14 @@ module Volt
       def listen
         loop do
           begin
-            while (message = @socket.gets)
+            while (message = @message_encoder.receive_message(@socket))
               # puts "Message: #{message.inspect}"
               break if @disconnected
               @message_bus.handle_message(message)
             end
 
             # Got nil from socket
-          rescue Errno::ECONNRESET, Errno::EPIPE => e
+          rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
             # handle below
           end
 
@@ -129,7 +138,7 @@ module Volt
           begin
             socket = SocketWithTimeout.new(ip, port, CONNECT_TIMEOUT)
             return PeerConnection.new(socket, ip, port, message_bus)
-          rescue Errno::ECONNREFUSED => e
+          rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT => e
             # Unable to connect, next
             next
           end

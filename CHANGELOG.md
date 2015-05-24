@@ -1,24 +1,30 @@
 # Change Log
 
-## 0.9.3.pre1
+## 0.9.3.pre2
 ### Added
 - Added validations block for conditional validation runs
 - you can now set the NO_FORKING=true ENV to prevent using the forking server in development.
 - models without an assigned persistor now use the page persistor (which now can provide basic querying)
-- models using the page or store persistor now auto-generate an id when created.  This simplifies things since models always have an id.  It makes association easier as well. (internally that is)
+- Volt now pushes updates between mulitple app instances.  Updates are pushed between any servers, clients, runners, etc.. that are connected to the same database via the MessageBus (see next)
+- Volt now comes with a "MessageBus" built in.  The message bus provides a pub/sub interface for the app "cluster".  Volt provides a default message bus implementation using peer to peer sockets that are automatically managed via the database.
 
 ### Changed
 - All logic associated with mongo has been moved into the volt-mongo gem.  If you are migrating from a previous version, be sure to add ```gem 'volt-mongo'``` to the Gemfile.
+- models using the page or store persistor now auto-generate an id when created.  This simplifies things since models always have an id.  It makes association easier as well. (internally that is)
+- models now use ```.id``` instead of ```._id```  Queries and saves are mapped to _id in the volt-mongo gem
 - fixed issue where ```volt precompile``` would compile in extra assets from non-component gems.
 - Lots of internal changes:
     - bindings were refactored to pass around a Volt::App instead of a Volt::Page.
     - controllers now take a Volt::App when created directly.
+- You can now use .each in attribute bindings.
 
 ## 0.9.2
 ### Changed
 - We released 0.9.1 with a bug for destroy (doh!).  Specs added and bug fixed.
 
 ## 0.9.1
+[0.9.1 Update Blog Post](http://blog.voltframework.com/post/118260814159/0-9-1-already-thats-how-we-roll)
+
 ### Added
 - Mailer! - volt now includes the volt-mailer gem out of the box.  (you can remove it if you don't need/want it).  See https://github.com/voltrb/volt-mailer for more info.
 

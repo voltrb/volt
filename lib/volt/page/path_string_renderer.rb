@@ -13,6 +13,8 @@ module Volt
       # where to do the path lookup from
       render_from_path ||= 'main/main/main/body'
 
+      page ||= volt_app.page
+
       # Make path into a full path
       @view_lookup = Volt::ViewLookupForPath.new(page, render_from_path)
       full_path, controller_path = @view_lookup.path_for_template(path, nil)

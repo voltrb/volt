@@ -13,7 +13,16 @@ unless RUBY_PLATFORM == 'opal'
 
   SimpleCov.start do
     add_filter 'spec/'
-    add_filter 'lib/volt/page/bindings' # all Opal / Front end stuff.
+
+    # all Opal / Front end stuff.
+    add_filter 'lib/volt/page/bindings'
+    add_filter 'lib/volt/page/document_events'
+    add_filter 'lib/volt/page/targets/dom_template'
+    add_filter 'lib/volt/utils/local_storage'
+    add_filter 'lib/volt/benchmark'
+
+    # Copied in from concurrent-ruby, waiting for gem release
+    add_filter 'lib/volt/utils/read_write_lock.rb'
   end
 end
 

@@ -5,6 +5,12 @@ gemspec
 # volt-mongo gem for testing
 gem 'volt-mongo', path: '/Users/ryanstout/Sites/volt/apps/volt-mongo'
 
+# Use rbnacl for message bus encrpytion
+# (optional, if you don't need encryption, disable in app.rb and remove)
+gem 'rbnacl', require: false
+gem 'rbnacl-libsodium', require: false
+
+
 group :development do
   # For testing the kitchen sink app
   # Twitter bootstrap

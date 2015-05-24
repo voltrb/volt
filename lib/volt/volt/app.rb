@@ -27,7 +27,6 @@ require 'volt/page/page'
 
 unless RUBY_PLATFORM == 'opal'
   require 'volt/volt/server_setup/app'
-  require 'volt/server/message_bus'
 end
 
 module Volt
@@ -38,7 +37,7 @@ module Volt
     end
 
     attr_reader :component_paths, :router, :page, :live_query_pool,
-                :channel_live_queries, :app_path, :database
+                :channel_live_queries, :app_path, :database, :message_bus
 
     def initialize(app_path=nil)
       if Volt.server? && !app_path
@@ -67,8 +66,7 @@ module Volt
 
         reset_query_pool!
 
-        # message bus isn't ready yet.
-        # start_message_bus
+        start_message_bus
       end
     end
 

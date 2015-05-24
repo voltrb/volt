@@ -5,7 +5,7 @@
 require 'socket'
 
 module Volt
-  class MessageBus
+  module MessageBus
     class ServerTracker
       UPDATE_INTERVAL = 10
       def initialize(page, server_id, port)
@@ -13,7 +13,7 @@ module Volt
         @server_id = server_id
         @port = port
 
-        Thread.new do
+        @main_thread = Thread.new do
           # Continually update the database letting the server know the server
           # is active.
           loop do
@@ -25,6 +25,10 @@ module Volt
             sleep UPDATE_INTERVAL
           end
         end
+      end
+
+      def stop
+        @main_thread.kill
       end
 
       # Register this server as active with the database

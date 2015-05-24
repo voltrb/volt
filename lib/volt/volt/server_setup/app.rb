@@ -1,4 +1,7 @@
 # The following setup handles setting up the app on the server.
+unless RUBY_PLATFORM == 'opal'
+  require 'volt/server/message_bus/peer_to_peer'
+end
 
 module Volt
   module ServerSetup
@@ -39,7 +42,7 @@ module Volt
 
           # Setup LiveQueryPool for the app
           @database = Volt::DataStore.fetch
-          @live_query_pool = LiveQueryPool.new(@database)
+          @live_query_pool = LiveQueryPool.new(@database, self)
           @channel_live_queries = {}
         end
       end
@@ -52,18 +55,22 @@ module Volt
           # updating each other.
           unless Volt.env.test?
             # Start the message bus
-            @message_bus = MessageBus.new(@page)
+            bus_name = Volt.config.message_bus.try(:bus_name) || 'peer_to_peer'
+            begin
+              message_bus_class = MessageBus.const_get(bus_name.camelize)
+            rescue NameError => e
+              raise "message bus name #{bus_name} was not found, be sure its "
+                    + "gem is included in the gemfile."
+            end
+
+            @message_bus = message_bus_class.new(self)
 
             Thread.new do
               # Handle incoming messages in a new thread
-              @message_bus.on('message') do |message|
-                cmd, msg = message.split('|')
-
-                if cmd == 'u'
-                  # update a collection
-
-                end
-                # puts "GOT MESSAGE: #{message.inspect}"
+              @message_bus.subscribe('volt_collection_update') do |collection_name|
+                # update a collection, don't resend since we're coming from
+                # the message bus.
+                live_query_pool.updated_collection(collection_name, nil, true)
               end
             end
           end
