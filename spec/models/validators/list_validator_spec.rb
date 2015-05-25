@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Volt::ListValidator, focus: true do
+describe Volt::ListValidator do
   subject { Volt::ListValidator.validate(*params) }
   let(:params) { [model, field_name, options] }
 
@@ -10,7 +10,7 @@ describe Volt::ListValidator, focus: true do
 
   describe '.validate' do
     describe 'when options is an array' do
-      let(:options) { ['John', 'Susie', 'Mary'] }
+      let(:options) { %w(John Susie Mary) }
 
       describe 'when name is "John"' do
         let(:name) { 'John' }
@@ -27,7 +27,7 @@ describe Volt::ListValidator, focus: true do
 
     describe 'when options is a Hash' do
       let(:options) do
-        { list: ['John', 'Susie', 'Mary'], message: 'Choose one from the list.' }
+        { list: %w(John Susie Mary), message: 'Choose one from the list.' }
       end
 
       describe 'when name is "John"' do
@@ -41,7 +41,6 @@ describe Volt::ListValidator, focus: true do
           expect(subject).to eq(name: ['Choose one from the list.'])
         end
       end
-
     end
 
     describe 'when options not a Fixnum or a Hash' do
