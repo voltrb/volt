@@ -53,12 +53,6 @@ Gem::Specification.new do |spec|
 
   # Yard and formatting
   spec.add_development_dependency 'yard', '~> 0.8.7.0'
-  spec.add_development_dependency 'redcarpet', '~> 3.2.2'
-  spec.add_development_dependency 'github-markup', '~> 1.3.1'
-
-  spec.add_development_dependency 'sauce', '~> 3.5.3'
-  spec.add_development_dependency 'sauce-connect', '~> 3.5.0'
-  spec.add_development_dependency 'pry-byebug', '~> 2.0.0'
 
   spec.add_development_dependency 'rubocop', '~> 0.31.0'
 end

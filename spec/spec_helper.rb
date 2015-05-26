@@ -2,7 +2,11 @@
 require 'volt/spec/setup'
 
 unless RUBY_PLATFORM == 'opal'
-  require 'pry-byebug'
+  begin
+    require 'pry-byebug'
+  rescue LoadError => e
+    # Ignore if not installed
+  end
   require 'coveralls'
   Coveralls.wear!
 

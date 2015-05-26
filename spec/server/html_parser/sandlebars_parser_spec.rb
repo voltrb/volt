@@ -176,15 +176,19 @@ describe Volt::SandlebarsParser do
     test_html(html)
   end
 
-  it 'should be fast' do
-    html = File.read(File.join(File.dirname(__FILE__), 'sample_page.html'))
-    handler = HTMLHandler.new
-    time = Benchmark.measure do
-      Volt::SandlebarsParser.new(html, handler)
-    end
+  # On jruby, hotspot will optimize this, but it takes a while, so we should
+  # just look for MRI performance regresions
+  if RUBY_PLATFORM != 'java'
+    it 'should be fast' do
+      html = File.read(File.join(File.dirname(__FILE__), 'sample_page.html'))
+      handler = HTMLHandler.new
+      time = Benchmark.measure do
+        Volt::SandlebarsParser.new(html, handler)
+      end
 
-    # Less than 100ms
-    expect(time.total).to be < 0.1
+      # Less than 100ms
+      expect(time.total).to be < 0.1
+    end
   end
 
   it 'should parse nested components' do
