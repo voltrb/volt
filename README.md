@@ -1,4 +1,4 @@
-[![Gratipay](http://img.shields.io/gratipay/voltframework.svg)](https://www.gratipay.com/voltframework/)
+[![Pledgie](https://pledgie.com/campaigns/26731.png?skin_name=chrome)](https://pledgie.com/campaigns/26731)
 [![Gem Version](https://badge.fury.io/rb/volt.svg)](http://badge.fury.io/rb/volt)
 [![Code Climate](https://codeclimate.com/github/voltrb/volt/badges/gpa.svg)](https://codeclimate.com/github/voltrb/volt)
 [![Coverage Status](https://coveralls.io/repos/voltrb/volt/badge.svg?branch=master)](https://coveralls.io/r/voltrb/volt?branch=master)[![Build Status](http://img.shields.io/travis/voltrb/volt/master.svg?style=flat)](https://travis-ci.org/voltrb/volt)
@@ -36,5 +36,9 @@ There is also a [work in progress tutorial](https://github.com/rhgraysonii/volt_
 
 You want to contribute? Great! Thanks for being awesome! At the moment, we have a big internal todo list, hop on https://gitter.im/voltrb/volt so we don't duplicate work. Pull requests are always welcome, but asking about helping on Gitter should save some duplication.
 
+# Support
 
-[![Gratipay](http://img.shields.io/gratipay/voltframework.svg)](https://www.gratipay.com/voltframework/)
+VoltFramework is currently a labor of love mainly built by a small group of core developers.  Donations are always welcome and will help Volt get to production faster :-)  Also, if you or your company is interested in sponsoring Volt, please talk to @ryanstout in the [gitter](https://gitter.im/voltrb/volt)
+
+[We accept bitcoin](https://bitpay.com/331455/donate)
+[![Pledgie](https://pledgie.com/campaigns/26731.png?skin_name=chrome)](https://pledgie.com/campaigns/26731)
