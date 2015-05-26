@@ -63,16 +63,11 @@ module Volt
 
 
         if RUBY_PLATFORM != 'opal'
-          after do
-            if @__store_accessed
+          after do |example|
+            if @__store_accessed || example.metadata[:type] == :feature
               # Clear the database after each spec where we use store
               cleanup_db.call
             end
-          end
-
-          # Assume store is accessed in capyabara specs
-          before(:context, {type: :feature}) do
-            @__store_accessed = true
           end
 
           # Cleanup after integration tests also.

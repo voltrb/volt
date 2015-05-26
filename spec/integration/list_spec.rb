@@ -12,7 +12,7 @@ if ENV['BROWSER'] == 'firefox'
       fill_in('newtodo', with: "Item 3\n")
     end
 
-    it 'should add items to the list' do
+    it 'should add items to the list', type: :feature do
       expect(find('#todos-table')).to have_content('Item 1')
     end
 
@@ -28,7 +28,7 @@ if ENV['BROWSER'] == 'firefox'
       expect(find('#todos-table')).to_not have_css('td.name.complete')
     end
 
-    it 'should delete items' do
+    it 'should delete items', type: :feature do
       expect(find('#todos-table')).to have_content('Item 1')
       expect(find('#todos-table')).to have_content('Item 2')
       expect(find('#todos-table')).to have_content('Item 3')
@@ -41,7 +41,7 @@ if ENV['BROWSER'] == 'firefox'
       expect(find('#todos-table')).to have_content('Item 3')
     end
 
-    it 'should track the number of todos and the numbers that are complete' do
+    it 'should track the number of todos and the numbers that are complete', type: :feature do
       count = find('#count')
 
       expect(count).to have_content('0 of 3')
