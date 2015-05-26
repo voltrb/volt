@@ -5,8 +5,16 @@ module Volt
     class MessageEncoder
       attr_reader :encrypted
       def initialize
+        # rbnacl is not supported on windows.
+        windows = Gem.win_platform?
+
+        if windows
+          Volt.logger.warn('Currently Message Bus encryption is not supported on windows.')
+        end
+
         # Message bus is encrypted by default
-        @encrypted = (Volt.config.message_bus.try(:disable_encryption) != true)
+        disable = Volt.config.message_bus.try(:disable_encryption)
+        @encrypted = !windows && (disable != true)
 
         if @encrypted
           # Setup a RbNaCl simple box for handling encryption

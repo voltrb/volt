@@ -22,7 +22,7 @@ module Volt
       @root_path ||= Dir.pwd
       Volt.root  = @root_path
 
-      Volt.boot(@root_path)
+      volt_app = Volt.boot(@root_path)
 
       require 'volt/server/rack/component_paths'
       require 'volt/server/rack/component_code'
@@ -35,7 +35,7 @@ module Volt
       @component_paths   = ComponentPaths.new(@root_path)
       @app               = Rack::Builder.new
       @opal_files        = OpalFiles.new(@app, @app_path, @component_paths)
-      @index_files       = IndexFiles.new(@app, @component_paths, @opal_files)
+      @index_files       = IndexFiles.new(@app, volt_app, @component_paths, @opal_files)
       @component_handler = ComponentHandler.new(@component_paths)
 
       puts 'Compile Opal for components'

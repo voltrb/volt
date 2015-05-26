@@ -133,7 +133,7 @@ module Volt
 
       # Serve the main html files from public, also figure out
       # which JS/CSS files to serve.
-      @rack_app.use IndexFiles, @volt_app.component_paths, opal_files
+      @rack_app.use IndexFiles, @volt_app, @volt_app.component_paths, opal_files
 
       @rack_app.use HttpResource, @volt_app, @volt_app.router
 

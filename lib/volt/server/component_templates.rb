@@ -91,7 +91,7 @@ module Volt
 
         file_contents = File.read(view_path)
 
-        template_calls = []
+        # template_calls = []
 
         # Process template if we have a handler for this file type
         if handler = ComponentTemplates.handler_for_extension(format)
@@ -112,7 +112,7 @@ module Volt
             binding_code = "{#{binding_code.join(', ')}}"
 
             code << "#{page_reference}.add_template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})\n"
-            template_calls << "template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})"
+            # template_calls << "template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})"
           end
         end
 

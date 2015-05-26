@@ -16,12 +16,7 @@ module Volt
       end
 
       def setup_router
-        # Find the route file
-        home_path  = @component_paths.component_paths('main').first
-        routes = File.read("#{home_path}/config/routes.rb")
-        @router = Routes.new.define do
-          eval(routes)
-        end
+        @router = Routes.new
       end
 
       def require_http_controllers
@@ -48,6 +43,8 @@ module Volt
       end
 
       def start_message_bus
+        return if ENV['NO_MESSAGE_BUS']
+
         unless RUBY_PLATFORM == 'opal'
 
           # Don't run in test env, since you probably only have one set of tests

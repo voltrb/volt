@@ -4,12 +4,15 @@ require 'volt/router/routes'
 # Serves the main pages
 module Volt
   class IndexFiles
-    def initialize(app, component_paths, opal_files)
+    def initialize(app, volt_app, component_paths, opal_files)
       @app             = app
+      @volt_app        = volt_app
       @component_paths = component_paths
       @opal_files      = opal_files
 
-      @@router ||= Routes.new.define do
+      @@router = volt_app.router
+
+      @@router.define do
         # Load routes for each component
         component_paths.components.values.flatten.uniq.each do |component_path|
           routes_path = "#{component_path}/config/routes.rb"
