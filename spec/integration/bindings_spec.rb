@@ -186,6 +186,43 @@ describe 'bindings test', type: :feature, sauce: true do
     end
   end
 
+  describe 'each binding' do
+    it 'should display the right amount of content' do
+      visit '/'
+
+      click_link 'Bindings'
+
+      expect(find('#eachbinding li:first-child')).to have_content('1')
+      expect(page).to have_selector('#eachbinding li', count: 100)
+    end
+
+    it 'should display the last assignment even if the previous assignment resolved afterwards' do
+      visit '/'
+
+      click_link 'Bindings'
+
+      click_link 'Jiggle'
+
+      sleep 3
+
+      expect(find('#eachbinding li:first-child')).to have_content('901')
+      expect(page).to have_selector('#eachbinding li', count: 100)
+    end
+
+    it 'should display the last assignment regardless whether the previous promise has already been resolved' do
+      visit '/'
+
+      click_link 'Bindings'
+
+      click_link 'Wiggle'
+
+      sleep 3
+
+      expect(find('#eachbinding li:first-child')).to have_content('1')
+      expect(page).to have_selector('#eachbinding li', count: 200)
+    end
+  end
+
   describe 'if/unless binding' do
     it 'should show corret text' do
       visit '/'

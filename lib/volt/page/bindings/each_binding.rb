@@ -13,19 +13,24 @@ module Volt
 
       @getter      = getter
 
+      @reloading = Promise.new.resolve
+
       # Listen for changes
-      @computation = -> { reload }.watch!
+      @computation = -> do
+        begin
+          value = @context.instance_eval(&@getter)
+        rescue => e
+          Volt.logger.error("EachBinding Error: #{e.inspect}")
+          value = []
+        end
+        value
+      end.watch_and_resolve! do |value|
+        @reloading = @reloading.then { reload(value) }
+      end
     end
 
     # When a changed event happens, we update to the new size.
-    def reload
-      begin
-        value = @context.instance_eval(&@getter)
-      rescue => e
-        Volt.logger.error("EachBinding Error: #{e.inspect}")
-        value = []
-      end
-
+    def reload(value)
       # Since we're checking things like size, we don't want this to be re-triggered on a
       # size change, so we run without tracking.
       Computation.run_without_tracking do

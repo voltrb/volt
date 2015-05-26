@@ -134,6 +134,16 @@
   <a id='showtrue' e-click='set_show(true)'>set _show true</a>
   <a id='showfalse' e-click='set_show(false)'>set _show false</a>
 
+  <h2>Each Bindings</h2>
+  <ul id='eachbinding'>
+    {{ _items.each do |item| }}
+    <li>{{ item }}</li>
+    {{ end }}
+  </ul>
+
+  <a id='each-jiggle' e-click='jiggle'>Jiggle</a>
+  <a id='each-wiggle' e-click='wiggle'>Wiggle</a>
+
   <h2>Content</h2>
 
   <p id="escapeContent">{{{this is {{escaped}}}}}</p>

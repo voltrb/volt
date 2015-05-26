@@ -8,6 +8,7 @@ module Main
     def index
       a = {}
       a[{}] = 5
+      page._items = 1.upto(100).to_a
     end
 
     def form_ready
@@ -52,6 +53,24 @@ module Main
 
     def set_show(value)
       page._show = value
+    end
+
+    def jiggle
+      changes = Promise.new
+      page._items = changes
+      `
+      setTimeout(function () {
+        #{changes.resolve(0.upto(100).to_a)}
+      }, 1000);
+      `
+      page._items = 901.upto(1000).to_a
+    end
+
+    def wiggle
+      changes = Promise.new
+      changes.resolve(1.upto(200).to_a)
+      page._items = 901.upto(1000).to_a
+      page._items = changes
     end
 
     private
