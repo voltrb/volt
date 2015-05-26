@@ -55,4 +55,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'yard', '~> 0.8.7.0'
 
   spec.add_development_dependency 'rubocop', '~> 0.31.0'
+
+  # NOTE: Some development dependencies are specified in the Gemfile because
+  # bundler has platform support.
 end

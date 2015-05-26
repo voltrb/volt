@@ -37,20 +37,6 @@ class HTMLHandler
   end
 end
 
-def parse_url(url)
-  require 'open-uri'
-  html = open("http://#{url}").read
-
-  # html = File.read("/Users/ryanstout/Desktop/tests/#{url}1.html")
-
-  File.open("/Users/ryanstout/Desktop/tests/#{url}1.html", 'w') { |f| f.write(html) }
-
-  handler = HTMLHandler.new
-  Volt::SandlebarsParser.new(html, handler)
-
-  File.open("/Users/ryanstout/Desktop/tests/#{url}2.html", 'w') { |f| f.write(handler.html) }
-end
-
 describe Volt::SandlebarsParser do
   def test_html(html, match = nil)
     handler = HTMLHandler.new
