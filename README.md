@@ -40,6 +40,6 @@ You want to contribute? Great! Thanks for being awesome! At the moment, we have 
 
 VoltFramework is currently a labor of love mainly built by a small group of core developers.  Donations are always welcome and will help Volt get to production faster :-)  Also, if you or your company is interested in sponsoring Volt, please talk to @ryanstout in the [gitter](https://gitter.im/voltrb/volt)
 
-[We accept bitcoin](https://bitpay.com/331455/donate)
-
 [![Pledgie](https://pledgie.com/campaigns/26731.png?skin_name=chrome)](https://pledgie.com/campaigns/26731)
+
+Bitcoins can also be sent to 1AYiL3MiSVe2QFyexzozUvFFH7uGCJgJMZ
