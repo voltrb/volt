@@ -169,6 +169,25 @@ describe Volt::Computation do
 
       expect(results).to eq([nil, 5])
     end
+
+    it 'should not resolve if the computation was stopped' do
+      dep = Volt::Dependency.new
+
+      cur_val = Promise.new
+
+      results = []
+      computation = -> { dep.depend ; cur_val }.watch_and_resolve! do |val|
+        results << val
+      end
+
+      expect(results).to eq([])
+
+      computation.stop
+
+      cur_val.resolve(5)
+
+      expect(results).to eq([])
+    end
   end
 
   # Currently Class#class_variable_set/get isn't in opal

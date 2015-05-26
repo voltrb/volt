@@ -14,18 +14,22 @@ module Volt
       @getter      = getter
 
       # Listen for changes
-      @computation = -> { reload }.watch!
+      @computation = lambda do
+        begin
+          value = @context.instance_eval(&@getter)
+        rescue => e
+          Volt.logger.error("EachBinding Error: #{e.inspect}")
+          value = []
+        end
+
+        value
+      end.watch_and_resolve! do |value|
+        update(value)
+      end
     end
 
     # When a changed event happens, we update to the new size.
-    def reload
-      begin
-        value = @context.instance_eval(&@getter)
-      rescue => e
-        Volt.logger.error("EachBinding Error: #{e.inspect}")
-        value = []
-      end
-
+    def update(value)
       # Since we're checking things like size, we don't want this to be re-triggered on a
       # size change, so we run without tracking.
       Computation.run_without_tracking do

@@ -74,6 +74,10 @@ module Volt
       end
     end
 
+    def stopped?
+      @stopped
+    end
+
     # Runs in this computation as the current computation, returns the computation
     def run_in
       previous            = Computation.current
@@ -180,7 +184,7 @@ class Proc
     # Keep results between runs
     result = nil
 
-    computation = proc do
+    computation = proc do |comp|
       result = call
       last_promise = nil
 
@@ -197,7 +201,10 @@ class Proc
           # Check to make sure that a new value didn't get reactively pushed
           # before the promise resolved.
           if last_promise.is_a?(Promise) && last_promise == result
-            yield(final)
+            # Don't resolve if the computation was stopped
+            unless comp.stopped?
+              yield(final)
+            end
 
             # Clear result for GC
             result = nil
