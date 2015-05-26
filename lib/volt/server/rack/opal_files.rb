@@ -54,9 +54,10 @@ module Volt
       end
 
       if Volt.config.compress_css
-        require 'ruby-clean-css'
-        require 'ruby-clean-css/sprockets'
-        RubyCleanCSS::Sprockets.register(environment)
+        # Use csso for css compression by default.
+        require 'volt/utils/csso_patch'
+        require 'csso'
+        Csso.install(environment)
       end
 
       server.append_path(app_path)

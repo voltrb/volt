@@ -23,6 +23,10 @@ gem 'volt-mailer', '~> 0.0.2'
 gem 'rbnacl', require: false
 gem 'rbnacl-libsodium', require: false
 
+# Asset compilation gems, they will be required when needed.
+gem 'csso-rails', '~> 0.3.4', require: false
+gem 'uglifier', '>= 2.4.0', require: false
+
 group :test do
   # Testing dependencies
   gem 'rspec', '~> 3.2.0'
@@ -37,6 +41,8 @@ end
 platform :mri do
   # The implementation of ReadWriteLock in Volt uses concurrent ruby and ext helps performance.
   gem 'concurrent-ruby-ext', '~> 0.8.0'
+
+  # Thin is the default volt server, you Puma is also supported
   gem 'thin', '~> 1.6.0'
   gem 'bson_ext', '~> 1.9.0'
 end
