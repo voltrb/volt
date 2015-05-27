@@ -403,5 +403,11 @@ module Volt
         self.id = generate_id
       end
     end
+
+    def self.inherited(subclass)
+      @subclasses ||= []
+      @subclasses << subclass
+    end
+
   end
 end

@@ -11,4 +11,6 @@ gem 'rbnacl-libsodium', require: false
 # Asset compilation gems, they will be required when needed.
 gem 'csso-rails', '~> 0.3.4', require: false
 gem 'uglifier', '>= 2.4.0', require: false
+
+gem 'volt-mongo'
 ```

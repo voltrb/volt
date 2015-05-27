@@ -2,12 +2,6 @@ require 'mongo'
 require 'volt/models'
 
 class StoreTasks < Volt::Task
-  def initialize(volt_app, channel = nil, dispatcher = nil)
-    @volt_app = volt_app
-    @channel = channel
-    @dispatcher = dispatcher
-  end
-
   def db
     @@db ||= Volt::DataStore.fetch
   end

@@ -1,11 +1,4 @@
 class QueryTasks < Volt::Task
-  # The dispatcher passes its self in
-  def initialize(volt_app, channel, dispatcher = nil)
-    @volt_app = volt_app
-    @channel = channel
-    @dispatcher = dispatcher
-  end
-
   def add_listener(collection, query)
     live_query = @volt_app.live_query_pool.lookup(collection, query)
     track_channel_in_live_query(live_query)

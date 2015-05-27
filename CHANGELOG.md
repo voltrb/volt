@@ -18,6 +18,7 @@
     - controllers now take a Volt::App when created directly.
 - You can now use .each in attribute bindings.
 - We moved to csso as the css compressor because it does not require libv8, only an execjs runtime.
+- Each bindings now support promises.
 
 ## 0.9.2
 ### Changed

@@ -1,3 +1,5 @@
+require 'volt/controllers/collection_helpers'
+
 module Volt
   class Task
     if RUBY_PLATFORM == 'opal'
@@ -14,8 +16,11 @@ module Volt
         $page.tasks.call(self.name, name, meta_data, *args, &block)
       end
     else
+      include CollectionHelpers
+
       def initialize(volt_app, channel = nil, dispatcher = nil)
-        @volt_app = volt_app
+        @volt_app   = volt_app
+        @page       = volt_app.page
         @channel    = channel
         @dispatcher = dispatcher
       end
@@ -38,11 +43,6 @@ module Volt
         Promise.new.then do
           new(Volt.current_app, nil, nil).send(name, *args, &block)
         end.resolve(nil)
-      end
-
-      # Provide access to the store collection
-      def store
-        $page.store
       end
     end
   end

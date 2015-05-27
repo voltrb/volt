@@ -1,5 +1,5 @@
 require 'volt/server/html_parser/view_parser'
-require 'volt/tasks/task_handler'
+require 'volt/tasks/task'
 
 # Initialize with the path to a component and returns all the front-end
 # setup code (for controllers, models, views, and routes)

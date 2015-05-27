@@ -1,11 +1,13 @@
 require 'volt/reactive/reactive_accessors'
 require 'volt/controllers/actions'
 require 'volt/controllers/template_helpers'
+require 'volt/controllers/collection_helpers'
 
 module Volt
   class ModelController
     include ReactiveAccessors
     include Actions
+    include CollectionHelpers
 
     # A model controller will have its
     # class VoltTemplates
@@ -149,10 +151,6 @@ module Volt
       @page.page
     end
 
-    def store
-      @page.store
-    end
-
     def flash
       @page.flash
     end
@@ -183,14 +181,6 @@ module Volt
 
     def controller
       @controller ||= Model.new
-    end
-
-    def url_for(params)
-      @page.url.url_for(params)
-    end
-
-    def url_with(params)
-      @page.url.url_with(params)
     end
 
     # loaded? is a quick way to see if the model for the controller is loaded

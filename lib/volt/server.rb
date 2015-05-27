@@ -10,7 +10,7 @@ require 'sprockets-sass'
 
 require 'volt'
 require 'volt/tasks/dispatcher'
-require 'volt/tasks/task_handler'
+require 'volt/tasks/task'
 require 'volt/server/component_handler'
 require 'volt/server/rack/component_paths'
 require 'volt/server/rack/index_files'
