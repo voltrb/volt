@@ -191,18 +191,17 @@ module Volt
     end
 
     def +(array)
-      fail 'not implemented yet'
       old_size = size
+      if array.is_a? ReactiveArray
+        dup = array.clone
+        dup_array = dup.instance_variable_get(:@array)
 
-      # TODO: += is funky here, might need to make a .plus! method
-      result   = ReactiveArray.new(@array.dup + array)
-
-      old_size.upto(result.size - 1) do |index|
-        trigger_for_index!('changed', index)
-        trigger_added!(old_size + index)
+        result = ReactiveArray.new(dup_array + @array)
+      else
+        fail 'not implemented yet'
+        # TODO: += is funky here, might need to make a .plus! method
+        result = ReactiveArray.new(@array.dup + array)
       end
-
-      trigger_size_change!
 
       result
     end
