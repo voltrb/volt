@@ -62,7 +62,12 @@ module Volt
 
       begin
         filtered_callbacks.each do |callback|
-          instance_eval(&callback)
+          case callback
+          when Symbol
+            send(callback)
+          when Proc
+            instance_eval(&callback)
+          end
         end
 
         return false
