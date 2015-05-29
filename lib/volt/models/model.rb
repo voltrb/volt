@@ -405,8 +405,9 @@ module Volt
     end
 
     def self.inherited(subclass)
-      @subclasses ||= []
-      @subclasses << subclass
+      if defined?(RootModels)
+        RootModels.add_model_class(subclass)
+      end
     end
 
   end

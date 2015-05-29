@@ -9,6 +9,9 @@ require 'volt/models/persistors/params'
 require 'volt/models/persistors/cookies' if RUBY_PLATFORM == 'opal'
 require 'volt/models/persistors/flash'
 require 'volt/models/persistors/local_store'
+require 'volt/models/root_models/root_models'
+
+
 if RUBY_PLATFORM == 'opal'
   require 'promise'
 else

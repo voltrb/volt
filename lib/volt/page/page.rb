@@ -6,7 +6,7 @@ module Volt
     def initialize(volt_app)
       @volt_app = volt_app
       # Run the code to setup the page
-      @page          = Model.new
+      @page          = PageRoot.new
 
       @url         = URL.new
       @params      = @url.params
@@ -47,19 +47,19 @@ module Volt
     end
 
     def flash
-      @flash ||= Model.new({}, persistor: Persistors::Flash)
+      @flash ||= FlashRoot.new({}, persistor: Persistors::Flash)
     end
 
     def store
-      @store ||= Model.new({}, persistor: Persistors::StoreFactory.new(tasks))
+      @store ||= StoreRoot.new({}, persistor: Persistors::StoreFactory.new(tasks))
     end
 
     def local_store
-      @local_store ||= Model.new({}, persistor: Persistors::LocalStore)
+      @local_store ||= LocalStoreRoot.new({}, persistor: Persistors::LocalStore)
     end
 
     def cookies
-      @cookies ||= Model.new({}, persistor: Persistors::Cookies)
+      @cookies ||= CookiesRoot.new({}, persistor: Persistors::Cookies)
     end
 
     def tasks
