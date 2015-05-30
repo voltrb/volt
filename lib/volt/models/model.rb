@@ -59,6 +59,9 @@ module Volt
     }
 
     def initialize(attributes = {}, options = {}, initial_state = nil)
+      # Start off with empty attributes
+      @attributes = {}
+
       # The listener event counter keeps track of how many computations are listening on this model
       @listener_event_counter = EventCounter.new(
         -> { parent.try(:persistor).try(:listener_added) },
@@ -132,8 +135,6 @@ module Volt
 
     # Assign multiple attributes as a hash, directly.
     def assign_attributes(attrs, initial_setup = false, skip_changes = false)
-      @attributes ||= {}
-
       attrs = wrap_values(attrs)
 
       if attrs
@@ -146,8 +147,8 @@ module Volt
           assign_all_attributes(attrs)
         end
       else
-        # Assign to nil
-        @attributes = attrs
+        # Assign to empty
+        @attributes = {}
       end
 
       # Trigger and change all
@@ -294,7 +295,7 @@ module Volt
     def new_model(attributes = {}, new_options = {}, initial_state = nil)
       new_options = new_options.merge(persistor: @persistor)
 
-      Volt::Model.class_at_path(options[:path]).new(attributes, new_options, initial_state)
+      Volt::Model.class_at_path(new_options[:path]).new(attributes, new_options, initial_state)
     end
 
     def new_array_model(attributes, options)
@@ -316,7 +317,7 @@ module Volt
         # loaded_state = self.loaded_state
         # str += " state:#{loaded_state}" if loaded_state
 
-        persistor = self.persistor
+        # persistor = self.persistor
         # str += " persistor:#{persistor.inspect}" if persistor
 
         # Show the :id first, then sort the rest of the attributes

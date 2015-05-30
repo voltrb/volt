@@ -54,4 +54,13 @@ describe Volt::Persistors::Store do
       expect(model.persistor).to eq(model._subone.persistor)
     end
   end
+
+  unless RUBY_PLATFORM == 'opal'
+    it 'should sync properties on the root' do
+      store._name = 'Jim'
+      store._name.then do |name|
+        expect(name).to eq('Jim')
+      end
+    end
+  end
 end

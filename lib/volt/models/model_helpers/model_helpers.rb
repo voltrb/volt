@@ -36,16 +36,13 @@ module Volt
     # but not any sub-associations.
     def self_attributes
       # Don't store any sub-models, those will do their own saving.
-      sa = attributes.reject { |k, v| v.is_a?(ArrayModel) }.map do |k,v|
+      attributes.reject { |k, v| v.is_a?(ArrayModel) }.map do |k,v|
         if v.is_a?(Model)
           v = v.self_attributes
         end
 
         [k,v]
       end.to_h
-
-      # puts sa.inspect
-      sa
     end
 
 

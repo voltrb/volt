@@ -3,33 +3,34 @@
 #
 # In order to support setting properties directly on store, we create a table
 # called "root_store_models", and create a single
-class StoreRoot
-  def model_for_root
-    root = get(:root_store_models).first_or_create
 
-    root
-  end
+require 'volt/models/root_models/root_models'
+
+module Volt
+  module StoreRootHelpers
+    def model_for_root
+      root = get(:root_store_models).first_or_create
+
+      root
+    end
 
 
-  def get(attr_name, expand = false)
-    if attr_name.singular?
-      model_for_root.get(attr_name, expand).fail do |err|
-        puts "GOT ERR: #{err.inspect}"
+    def get(attr_name, expand = false)
+      if attr_name.singular? && attr_name.to_sym != :id
+        model_for_root.get(attr_name, expand)
+      else
+        super
       end
-    else
-      super
+    end
+
+    def set(attr_name, value, &block)
+      if attr_name.singular? && attr_name.to_sym != :id
+        model_for_root.set(attr_name, value, &block)
+      else
+        super
+      end
     end
   end
-
-  def set(attribute_name, value, &block)
-    if attribute_name.singular?
-      model_for_root.set(attribute_name, value, &block).fail do |err|
-        puts "GOT ERR: #{err.inspect}"
-      end
-    else
-      super
-    end
-  end
-
-
 end
+
+StoreRoot.send(:include, Volt::StoreRootHelpers)

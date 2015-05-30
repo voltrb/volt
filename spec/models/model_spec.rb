@@ -436,6 +436,22 @@ describe Volt::Model do
     expect(items).to eq(a)
   end
 
+  describe "first or create" do
+    it 'should create an item if one does not exist in the collection' do
+      page = Volt::Model.new
+
+      result = page._items.first_or_create
+      expect(result.class).to eq(Promise)
+
+      result.then do |item|
+        expect(page._items.size).to eq(1)
+        page._items[0].then do |item2|
+          expect(item).to eq(item2)
+        end
+      end
+    end
+  end
+
   describe 'model paths' do
     before do
       @model = Volt::Model.new

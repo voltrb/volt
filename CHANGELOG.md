@@ -10,6 +10,7 @@
 - You can now nest models on store.  Previously store was limited to only storing either values or ArrayModels (associations).  You can now store directly, in mongo this will be stored as a nested value.
 - Promises got more awesome.  Promises in volt can now proxy methods to their future resolved value.  Something like: ```promise.then {|v| v.name }``` can now be written simply as: ```promise.name```  It will still return a promise, but to make life easier:
 - All bindings now support promises directly.
+- You can now set/get properties directly on ```store``` and they will be saved to a ```root_stores_models``` table.
 
 ### Changed
 - All methods on ArrayModel's under the store collection now return a Promise.
