@@ -12,7 +12,7 @@ describe Volt::Associations do
   if RUBY_PLATFORM != 'opal'
     before do
       store._people! << { name: 'Jimmy' }
-      @person = store._people[0]
+      @person = store._people[0].sync
       @person._addresses! << { city: 'Bozeman' }
       @person._addresses << { city: 'Portland' }
     end
@@ -24,11 +24,12 @@ describe Volt::Associations do
     end
 
     it 'should associate via has_many' do
-      person = store._people!.fetch_first.sync
+      store._people!.first do |person|
 
-      addresses = person.addresses.fetch.sync
-      expect(addresses.size).to eq(2)
-      expect(addresses[0]._city).to eq('Bozeman')
+        addresses = person.addresses.all
+        expect(addresses.size.sync).to eq(2)
+        expect(addresses[0]._city.sync).to eq('Bozeman')
+      end
     end
 
     it 'warns users if persistor is not a ModelStore' do

@@ -14,15 +14,28 @@ module Volt
 
     attr_reader :parent, :path, :persistor, :options, :array
 
-    # For many methods, we want to call load data as soon as the model is interacted
-    # with, so we proxy the method, then call super.
-    def self.proxy_with_root_dep(*method_names)
+    # For many methods, we want to register a dependency on the root_dep as soon
+    # as the method is called, so it can begin loading.  Also, some persistors
+    # need to have special loading logic (such as returning a promise instead
+    # of immediately returning).  To accomplish this, we call the
+    # #run_once_loaded method on the persistor.
+    def self.proxy_with_load(*method_names)
       method_names.each do |method_name|
-        define_method(method_name) do |*args|
+        old_method_name = :"__old_#{method_name}"
+        alias_method(old_method_name, method_name)
+
+        define_method(method_name) do |*args, &block|
           # track on the root dep
           persistor.try(:root_dep).try(:depend)
 
-          super(*args)
+          if persistor.respond_to?(:run_once_loaded) &&
+              !Volt.in_mode?(:no_model_promises)
+            persistor.run_once_loaded(block) do
+              send(old_method_name, *args)
+            end
+          else
+            send(old_method_name, *args)
+          end
         end
       end
     end
@@ -40,7 +53,6 @@ module Volt
       end
     end
 
-    proxy_with_root_dep :[], :size, :first, :last, :state_for, :reverse
     proxy_to_persistor :then, :fetch, :fetch_first, :fetch_each
 
     def initialize(array = [], options = {})
@@ -62,6 +74,13 @@ module Volt
 
     def attributes
       self
+    end
+
+    def state_for(*args)
+      # Track on root dep
+      persistor.try(:root_dep).try(:depend)
+
+      super
     end
 
     # Make sure it gets wrapped
@@ -129,15 +148,22 @@ module Volt
       end
     end
 
-    # Find one does a query, but only returns the first item or
-    # nil if there is no match.  Unlike #find, #find_one does not
-    # return another cursor that you can call .then on.
-    def find_one(*args, &block)
-      find(*args, &block).limit(1)[0]
-    end
-
     def first
       self[0]
+    end
+
+    def last
+      self[-1]
+    end
+
+    def reverse
+      super
+    end
+
+    # Return the model, on store, .all is proxied to wait for load and return
+    # a promise.
+    def all
+      self
     end
 
     # returns a promise to fetch the first instance
@@ -186,8 +212,10 @@ module Volt
     def to_a
       @size_dep.depend
       array = []
-      attributes.size.times do |index|
-        array << deep_unwrap(self[index])
+      Volt.run_in_mode(:no_model_promises) do
+        attributes.size.times do |index|
+          array << deep_unwrap(self[index])
+        end
       end
       array
     end
@@ -224,5 +252,9 @@ module Volt
       persistor ||= Persistors::Page
       @persistor = persistor.new(self)
     end
+
+    # We need to setup the proxy methods below where they are defined.
+    proxy_with_load :first, :[], :size, :last, :reverse, :all, :to_a
+
   end
 end

@@ -25,6 +25,27 @@ class Pry
       end
     end
   end
+
+  # The following causes promises in the console to auto-resolve, making it
+  # easier to see your data, but harder to follow along.  Currently off by
+  # default.
+  if ENV['AUTO_RESOLVE']
+    def evaluate_ruby(code)
+      inject_sticky_locals!
+      exec_hook :before_eval, code, self
+
+      result = current_binding.eval(code, Pry.eval_path, Pry.current_line)
+
+      if result.is_a?(Promise)
+        result = result.sync
+      end
+
+      set_last_result(result, code)
+    ensure
+      update_input_history(code)
+      exec_hook :after_eval, result, self
+    end
+  end
 end
 
 module Volt

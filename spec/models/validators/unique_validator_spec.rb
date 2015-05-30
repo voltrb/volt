@@ -19,7 +19,7 @@ unless RUBY_PLATFORM == 'opal'
     it 'should not increase count of the total records in the store' do
       store._fridges << { name: 'swift' }
       store._fridges << { name: 'swift' }
-      expect(store._fridges.count).to eq(1)
+      expect(store._fridges.count.sync).to eq(1)
     end
   end
 end

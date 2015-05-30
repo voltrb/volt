@@ -45,8 +45,13 @@ module Volt
           @removed_listener = @value.on('removed') { |position| item_removed(position) }
         end
 
-        templates_size = @templates.size
-        values_size    = values.size
+        templates_size = nil
+        values_size = nil
+
+        Volt.run_in_mode(:no_model_promises) do
+          templates_size = @templates.size
+          values_size    = values.size
+        end
 
         # Start over, re-create all nodes
         (templates_size - 1).downto(0) do |index|
@@ -59,65 +64,69 @@ module Volt
     end
 
     def item_removed(position)
-      # Remove dependency
-      @templates[position].context.locals[:_index_dependency].remove
-      @templates[position].context.locals["_#{@item_name}_dependency".to_sym].remove
+      Volt.run_in_mode(:no_model_promises) do
+        # Remove dependency
+        @templates[position].context.locals[:_index_dependency].remove
+        @templates[position].context.locals["_#{@item_name}_dependency".to_sym].remove
 
-      @templates[position].remove_anchors
-      @templates[position].remove
-      @templates.delete_at(position)
+        @templates[position].remove_anchors
+        @templates[position].remove
+        @templates.delete_at(position)
 
-      # Removed at the position, update context for every item after this position
-      update_indexes_after(position)
+        # Removed at the position, update context for every item after this position
+        update_indexes_after(position)
+      end
     end
 
     def item_added(position)
-      binding_name     = @@binding_number
-      @@binding_number += 1
+      Volt.run_in_mode(:no_model_promises) do
+        binding_name     = @@binding_number
+        @@binding_number += 1
 
-      if position >= @templates.size
-        # Setup new bindings in the spot we want to insert the item
-        dom_section.insert_anchor_before_end(binding_name)
-      else
-        # Insert the item before an existing item
-        dom_section.insert_anchor_before(binding_name, @templates[position].binding_name)
-      end
-
-      # TODORW: :parent => @value may change
-      item_context                           = SubContext.new({ _index_value: position, parent: @value }, @context)
-      item_context.locals[@item_name.to_sym] = proc { @value[item_context.locals[:_index_value]] }
-
-      position_dependency                    = Dependency.new
-      item_context.locals[:_index_dependency] = position_dependency
-
-      # Get and set index
-      item_context.locals[:_index=]           = proc do |val|
-        position_dependency.changed!
-        item_context.locals[:_index_value] = val
-      end
-
-      # Get and set value
-      value_dependency                    = Dependency.new
-      item_context.locals["_#{@item_name}_dependency".to_sym] = value_dependency
-
-      item_context.locals["#{@item_name}=".to_sym] = proc do |val|
-        value_dependency.changed!
-        @value[item_context.locals[:_index_value]] = val
-      end
-
-      # If the user provides an each_with_index, we can assign the lookup for the index
-      # variable here.
-      if @index_name
-        item_context.locals[@index_name.to_sym] = proc do
-          position_dependency.depend
-          item_context.locals[:_index_value]
+        if position >= @templates.size
+          # Setup new bindings in the spot we want to insert the item
+          dom_section.insert_anchor_before_end(binding_name)
+        else
+          # Insert the item before an existing item
+          dom_section.insert_anchor_before(binding_name, @templates[position].binding_name)
         end
+
+        # TODORW: :parent => @value may change
+        item_context                           = SubContext.new({ _index_value: position, parent: @value }, @context)
+        item_context.locals[@item_name.to_sym] = proc { @value[item_context.locals[:_index_value]] }
+
+        position_dependency                    = Dependency.new
+        item_context.locals[:_index_dependency] = position_dependency
+
+        # Get and set index
+        item_context.locals[:_index=]           = proc do |val|
+          position_dependency.changed!
+          item_context.locals[:_index_value] = val
+        end
+
+        # Get and set value
+        value_dependency                    = Dependency.new
+        item_context.locals["_#{@item_name}_dependency".to_sym] = value_dependency
+
+        item_context.locals["#{@item_name}=".to_sym] = proc do |val|
+          value_dependency.changed!
+          @value[item_context.locals[:_index_value]] = val
+        end
+
+        # If the user provides an each_with_index, we can assign the lookup for the index
+        # variable here.
+        if @index_name
+          item_context.locals[@index_name.to_sym] = proc do
+            position_dependency.depend
+            item_context.locals[:_index_value]
+          end
+        end
+
+        item_template = TemplateRenderer.new(@volt_app, @target, item_context, binding_name, @template_name)
+        @templates.insert(position, item_template)
+
+        update_indexes_after(position)
       end
-
-      item_template = TemplateRenderer.new(@volt_app, @target, item_context, binding_name, @template_name)
-      @templates.insert(position, item_template)
-
-      update_indexes_after(position)
     end
 
     # When items are added or removed in the middle of the list, we need

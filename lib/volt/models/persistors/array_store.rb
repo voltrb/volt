@@ -167,6 +167,46 @@ module Volt
         Cursor.new([], opts)
       end
 
+      # Call a method on the model once the model is loaded.  Return a promise
+      # that will resolve the result of the method, or reject with any
+      # Exceptions.
+      def run_once_loaded(block)
+        promise = Promise.new
+
+        # call once the method is loaded.
+        model_loaded = proc do
+          begin
+            result = yield
+            promise.resolve(result)
+          rescue Exception => error
+            promise.reject(error)
+          end
+        end
+
+        # Run the block after resolve if a block is passed in
+        if block
+          promise2 = promise.then do |val|
+            block.call(val)
+          end
+        else
+          promise2 = promise
+        end
+
+        if @model.loaded_state == :loaded
+          model_loaded.call
+        else
+          proc do |comp|
+            if @model.loaded_state == :loaded
+              model_loaded.call
+
+              comp.stop
+            end
+          end.watch!
+        end
+
+        promise2
+      end
+
       # Returns a promise that is resolved/rejected when the query is complete.  Any
       # passed block will be passed to the promises then.  Then will be passed the model.
       def fetch(&block)

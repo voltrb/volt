@@ -39,8 +39,10 @@ module Volt
       if block
         count = 0
 
-        size.times do |index|
-          count += 1 if block.call(self[index])
+        Volt.run_in_mode(:no_model_promises) do
+          size.times do |index|
+            count += 1 if block.call(self[index])
+          end
         end
 
         count
@@ -90,7 +92,7 @@ module Volt
     # TODO: Handle a range
     def [](index)
       # Handle a negative index, depend on size
-      index = size + index if index < 0
+      index = @array.size + index if index < 0
 
       # Get or create the dependency
       dep   = (@array_deps[index] ||= Dependency.new)
@@ -120,6 +122,7 @@ module Volt
     alias_method :length, :size
 
     def delete_at(index)
+      size = @array.size
       # Handle a negative index
       index = size + index if index < 0
 
@@ -183,8 +186,8 @@ module Volt
     def <<(value)
       result = (@array << value)
 
-      trigger_for_index!(size - 1)
-      trigger_added!(size - 1)
+      trigger_for_index!(@array.size - 1)
+      trigger_added!(@array.size - 1)
       trigger_size_change!
 
       result
@@ -192,7 +195,7 @@ module Volt
 
     def +(array)
       fail 'not implemented yet'
-      old_size = size
+      old_size = @array.size
 
       # TODO: += is funky here, might need to make a .plus! method
       result   = ReactiveArray.new(@array.dup + array)

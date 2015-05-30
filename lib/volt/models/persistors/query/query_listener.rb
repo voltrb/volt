@@ -26,7 +26,9 @@ module Volt
         # When the initial data comes back, add it into the stores.
         @stores.dup.each do |store|
           # Clear if there are existing items
-          store.model.clear if store.model.size > 0
+          Volt.run_in_mode(:no_model_promises) do
+            store.model.clear if store.model.size > 0
+          end
 
           results.each do |index, data|
             store.add(index, data)

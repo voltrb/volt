@@ -542,14 +542,14 @@ describe Volt::Model do
       count = 0
 
       # count the number of todos
-      query2.fetch { |v| count += v.size }
+      query2.all.each { |v| count += 1 }
 
       expect(count).to eq(0)
 
       query1 << { label: 'One' }
 
       count = 0
-      query2.fetch { |v| count += v.size }
+      query2.all.each { |v| count += 1 }
 
       expect(count).to eq(1)
     end
@@ -558,13 +558,13 @@ describe Volt::Model do
       store._items << { name: 'One' }
       store._items << { name: 'Two' }
 
-      a = store._items.fetch.sync
-      b = store._items.fetch.sync
+      a = store._items
+      b = store._items
 
-      expect(a.size).to eq(2)
-      expect(b.size).to eq(2)
+      expect(a.size.sync).to eq(2)
+      expect(b.size.sync).to eq(2)
 
-      expect(a.to_a).to eq(b.to_a)
+      expect(a.all.to_a.sync).to eq(b.all.to_a.sync)
     end
   end
 

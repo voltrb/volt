@@ -12,7 +12,7 @@ module Volt
 
           # Check if the value is taken
           # TODO: need a way to handle scope for unique
-          return $page.store.get(model.path[-2]).where(query).fetch_first do |item|
+          return $page.store.get(model.path[-2]).where(query).first do |item|
             if item
               message = (args.is_a?(Hash) && args[:message]) || 'is already taken'
 

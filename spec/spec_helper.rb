@@ -25,6 +25,9 @@ unless RUBY_PLATFORM == 'opal'
     add_filter 'lib/volt/utils/local_storage'
     add_filter 'lib/volt/benchmark'
 
+    # Copied in from opal until 0.8 comes out.
+    add_filter 'lib/volt/utils/promise'
+
     # Copied in from concurrent-ruby, waiting for gem release
     add_filter 'lib/volt/utils/read_write_lock.rb'
   end

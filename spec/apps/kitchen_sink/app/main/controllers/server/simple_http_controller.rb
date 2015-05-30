@@ -5,7 +5,7 @@ module Main
     end
 
     def show
-      render text: "You had me at #{store._simple_http_tests.first._name}"
+      render text: "You had me at #{store._simple_http_tests.first._name.sync}"
     end
 
     def upload
