@@ -291,8 +291,10 @@ module Volt
       end
     end
 
-    def new_model(*args)
-      Volt::Model.class_at_path(options[:path]).new(*args)
+    def new_model(attributes = {}, new_options = {}, initial_state = nil)
+      new_options = new_options.merge(persistor: @persistor)
+
+      Volt::Model.class_at_path(options[:path]).new(attributes, new_options, initial_state)
     end
 
     def new_array_model(attributes, options)
@@ -316,7 +318,16 @@ module Volt
 
         persistor = self.persistor
         # str += " persistor:#{persistor.inspect}" if persistor
-        str += " #{attributes.inspect}>"
+
+        # Show the :id first, then sort the rest of the attributes
+        attrs = attributes.dup
+
+        id = attrs.delete(:id)
+
+        attrs = attrs.sort
+        attrs.insert(0, [:id, id])
+
+        str += " #{attrs.to_h.inspect}>"
 
         str
       end
@@ -370,13 +381,6 @@ module Volt
       if INVALID_FIELD_NAMES[name]
         fail InvalidFieldName, "`#{name}` is reserved and can not be used as a field"
       end
-    end
-
-    # Takes the persistor if there is one and
-    def setup_persistor(persistor)
-      # Use page as the default persistor
-      persistor ||= Persistors::Page
-      @persistor = persistor.new(self)
     end
 
     # Used internally from other methods that assign all attributes

@@ -151,22 +151,33 @@ module Volt
         # Run the read permission check
         allow, deny = allow_and_deny_fields(:read)
 
+        result = nil
+
         if allow && allow != true && allow.size > 0
           # always keep id
           allow << :id
 
           # Only keep fields in the allow list
-          return @attributes.select { |key| allow.include?(key) }
+          result = @attributes.select { |key| allow.include?(key) }
         elsif deny == true
           # Only keep id
           # TODO: Should this be a full reject?
-          return @attributes.reject { |key| key != :id }
+          result = @attributes.reject { |key| key != :id }
         elsif deny && deny.size > 0
           # Reject any in the deny list
-          return @attributes.reject { |key| deny.include?(key) }
+          result = @attributes.reject { |key| deny.include?(key) }
         else
-          return @attributes
+          result = @attributes
         end
+
+        # Deeply filter any nested models
+        return result.map do |key, value|
+          if value.is_a?(Model)
+            value = value.filtered_attributes
+          end
+
+          [key, value]
+        end.to_h
       end
 
       private

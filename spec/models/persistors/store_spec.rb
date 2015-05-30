@@ -35,4 +35,23 @@ describe Volt::Persistors::Store do
     model._abc = 456
     expect(persistor.removed(:abc)).to eq(persistor.changed(:abc))
   end
+
+  unless RUBY_PLATFORM == 'opal'
+    before do
+      model = store._nesters.create(name: 'One').sync
+      model._subone = {name: 'Two'}
+    end
+
+    it 'should reload a model with nested hash models' do
+      model2 = store._nesters.first.sync
+
+      expect(model2.to_h.without(:id, :subone)).to eq(name: 'One')
+      expect(model2._subone.to_h.without(:id)).to eq(name: 'Two')
+    end
+
+    it 'should reload nested hash models with the same parent persistor' do
+      model = store._nesters.first.sync
+      expect(model.persistor).to eq(model._subone.persistor)
+    end
+  end
 end

@@ -7,8 +7,13 @@
 - models without an assigned persistor now use the page persistor (which now can provide basic querying)
 - Volt now pushes updates between mulitple app instances.  Updates are pushed between any servers, clients, runners, etc.. that are connected to the same database via the MessageBus (see next)
 - Volt now comes with a "MessageBus" built in.  The message bus provides a pub/sub interface for the app "cluster".  Volt provides a default message bus implementation using peer to peer sockets that are automatically managed via the database.
+- You can now nest models on store.  Previously store was limited to only storing either values or ArrayModels (associations).  You can now store directly, in mongo this will be stored as a nested value.
+- Promises got more awesome.  Promises in volt can now proxy methods to their future resolved value.  Something like: ```promise.then {|v| v.name }``` can now be written simply as: ```promise.name```  It will still return a promise, but to make life easier:
+- All bindings now support promises directly.
 
 ### Changed
+- All methods on ArrayModel's under the store collection now return a Promise.
+- A #create method was added to ArrayModel.
 - All logic associated with mongo has been moved into the volt-mongo gem.  If you are migrating from a previous version, be sure to add ```gem 'volt-mongo'``` to the Gemfile.
 - models using the page or store persistor now auto-generate an id when created.  This simplifies things since models always have an id.  It makes association easier as well. (internally that is)
 - models now use ```.id``` instead of ```._id```  Queries and saves are mapped to _id in the volt-mongo gem

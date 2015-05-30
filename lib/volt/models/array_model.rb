@@ -138,6 +138,11 @@ module Volt
       end
     end
 
+    # Create does append with a default empty model
+    def create(model={})
+      append(model)
+    end
+
     def delete(val)
       # Check to make sure the models are allowed to be deleted
       if !val.is_a?(Model) || val.can_delete?
@@ -150,6 +155,17 @@ module Volt
 
     def first
       self[0]
+    end
+
+    def first_or_create
+      first.then do |item|
+        if item
+          item
+        else
+          # puts "Create"
+          create
+        end
+      end
     end
 
     def last
@@ -242,15 +258,6 @@ module Volt
       model       = model_klass.new(attrs, new_options)
 
       model
-    end
-
-    private
-
-    # Takes the persistor if there is one and
-    def setup_persistor(persistor)
-      # Use page as the default persistor
-      persistor ||= Persistors::Page
-      @persistor = persistor.new(self)
     end
 
     # We need to setup the proxy methods below where they are defined.

@@ -32,6 +32,38 @@ module Volt
     end
 
 
+    # Return the attributes that are only for this model and any hash sub models
+    # but not any sub-associations.
+    def self_attributes
+      # Don't store any sub-models, those will do their own saving.
+      sa = attributes.reject { |k, v| v.is_a?(ArrayModel) }.map do |k,v|
+        if v.is_a?(Model)
+          v = v.self_attributes
+        end
+
+        [k,v]
+      end.to_h
+
+      # puts sa.inspect
+      sa
+    end
+
+
+    # Takes the persistor if there is one and
+    def setup_persistor(persistor)
+      # Use page as the default persistor
+      persistor ||= Persistors::Page
+      if persistor.respond_to?(:new)
+        @persistor = persistor.new(self)
+      else
+        # an already initialized persistor was passed in
+        @persistor = persistor
+      end
+    end
+
+
+
+
     module ClassMethods
       # Gets the class for a model at the specified path.
       def class_at_path(path)

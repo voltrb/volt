@@ -26,7 +26,8 @@ module Volt
         if method_name.plural?
           model = @model.new_array_model([], options)
         else
-          model                          = @model.new_model(nil, options)
+          options[:persistor] = @model.persistor
+          model= @model.new_model(nil, options)
 
           # TODO: Might not need to assign this
           @model.attributes ||= {}
