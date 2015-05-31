@@ -11,6 +11,11 @@
 - Promises got more awesome.  Promises in volt can now proxy methods to their future resolved value.  Something like: ```promise.then {|v| v.name }``` can now be written simply as: ```promise.name```  It will still return a promise, but to make life easier:
 - All bindings now support promises directly.
 - You can now set/get properties directly on ```store``` and they will be saved to a ```root_stores_models``` table.
+- All code in config/initializers is now run on app startup.
+- All code in any components config/initializers (app/main/config/initializers/*.rb) is now run on the server during app startup.  On the client, only the included components initializers will be run.
+- all initializers folders now support a ```client``` and ```server``` folder.
+- has_one is now supported.
+- You can now use .create to make a new item on a collection.
 
 ### Changed
 - All methods on ArrayModel's under the store collection now return a Promise.

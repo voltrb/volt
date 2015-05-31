@@ -27,7 +27,14 @@ module Volt
     end
 
     def generate_config_code
-      "\nVolt.setup_client_config(#{Volt.config.public.to_h.inspect})\n"
+      # Setup Volt.config on the client
+      code = "\nVolt.setup_client_config(#{Volt.config.public.to_h.inspect})\n"
+
+      # Include the root initializers
+      code << "require_tree '#{Volt.root}/config/initializers'\n"
+      code << "require_tree '#{Volt.root}/config/initializers/client'\n"
+
+      code
     end
   end
 end

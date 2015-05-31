@@ -200,7 +200,10 @@ module Volt
     end
 
     def generate_initializers_code
-      "\nrequire_tree '#{@component_path}/config/initializers/'\n"
+      code = "\nrequire_tree '#{@component_path}/config/initializers/'\n"
+      code << "require_tree '#{@component_path}/config/initializers/client'\n"
+
+      code
     end
 
   end

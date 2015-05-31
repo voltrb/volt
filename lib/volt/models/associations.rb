@@ -13,7 +13,7 @@ module Volt
             lookup_key = get(key_name)
 
             # Return a promise for the belongs_to
-            root.get(method_name.pluralize).where(id: lookup_key).fetch_first
+            root.get(method_name.pluralize).where(id: lookup_key).first
           end
         end
       end
@@ -21,6 +21,21 @@ module Volt
       def has_many(method_name, remote_key_name = nil)
         define_method(method_name) do
           get(method_name.pluralize, true)
+        end
+      end
+
+      # has_one creates a method on the Volt::Model that returns a promise
+      # to get the associated model.
+      def has_one(method_name)
+        if method_name.plural?
+          raise NameError, "has_one takes a singluar association name"
+        end
+
+        define_method(method_name) do
+          association_with_root_model('has_one') do |root|
+            key = self.class.to_s.underscore + '_id'
+            root.send(method_name.pluralize).where(key => id).first
+          end
         end
       end
     end

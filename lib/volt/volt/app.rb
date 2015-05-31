@@ -53,8 +53,11 @@ module Volt
       setup_page
 
       if RUBY_PLATFORM != 'opal'
+        # Setup all app paths
+        setup_paths
+
         # Require in app and initializers
-        Volt.run_app_and_initializers unless RUBY_PLATFORM == 'opal'
+        run_app_and_initializers unless RUBY_PLATFORM == 'opal'
 
         # abort_on_exception is a useful debugging tool, and in my opinion something
         # you probbaly want on.  That said you can disable it if you need.

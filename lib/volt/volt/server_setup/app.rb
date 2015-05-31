@@ -6,11 +6,13 @@ end
 module Volt
   module ServerSetup
     module App
-      def load_app_code
+      def setup_paths
         # Load component paths
         @component_paths = ComponentPaths.new(@app_path)
         @component_paths.require_in_components(@page || $page)
+      end
 
+      def load_app_code
         setup_router
         require_http_controllers
       end
@@ -29,6 +31,28 @@ module Volt
           end
         end
       end
+
+
+      # Load in all .rb files in the initializers folders and the config/app.rb
+      # file.
+      def run_app_and_initializers
+        files = ["#{Volt.root}/config/app.rb"]
+
+        # Include the root initializers
+        files += Dir[Volt.root + '/config/initializers/*.rb']
+        files += Dir[Volt.root + '/config/initializers/server/*.rb']
+
+        # Get initializers for each component
+        component_paths.app_folders do |app_folder|
+          files += Dir["#{app_folder}/*/config/initializers/*.rb"]
+          files += Dir["#{app_folder}/*/config/initializers/server/*.rb"]
+        end
+
+        files.each do |initializer|
+          require(initializer)
+        end
+      end
+
 
       def reset_query_pool!
         if RUBY_PLATFORM != 'opal'

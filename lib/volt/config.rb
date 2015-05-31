@@ -71,16 +71,6 @@ else
         end
       end
 
-      # Load in all .rb files in the config folder
-      def run_app_and_initializers
-        files = ["#{Volt.root}/config/app.rb"]
-        files += Dir[Volt.root + '/config/initializers/*.rb']
-
-        files.each do |config_file|
-          require(config_file)
-        end
-      end
-
       alias_method :setup,  :configure
       alias_method :config, :configuration
     end
