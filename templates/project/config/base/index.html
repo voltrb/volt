@@ -1,8 +1,12 @@
+<%# IMPORTANT: Please read before changing!                                   %>
+<%# This file is rendered on the server using ERB, so it does NOT use Volt's  %>
+<%# normal template system. You can add to it, but keep in mind the template  %>
+<%# language difference. This file handles auto-loading all JS/Opal and CSS.  %>
+
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8" />
-    <%# This file is rendered on the server and does not uses erb instead of Volt's normal template system.  You can add to it, but keep in mind the template language difference. It handles auto-loading all JS/Opal and Css %>
     <% javascript_files.each do |javascript_file| %>
       <script src="<%= javascript_file %>"></script>
     <% end %>
