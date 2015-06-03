@@ -8,18 +8,20 @@ module Volt
 
     def initialize(volt_app, target, context, binding_name, getter)
       super(volt_app, target, context, binding_name)
+      @getter = getter
 
       # Listen for changes
       @computation = lambda do
         begin
-          res = @context.instance_eval(&getter)
+          @context.instance_eval(&getter)
         rescue => e
-          Volt.logger.error("ContentBinding Error: #{e.inspect}")
+          getter_fail(e)
           ''
         end
-      end.watch_and_resolve! do |result|
-        update(result)
-      end
+      end.watch_and_resolve!(
+        method(:update),
+        method(:getter_fail)
+      )
     end
 
     def update(value)

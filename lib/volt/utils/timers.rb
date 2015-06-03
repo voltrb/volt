@@ -14,6 +14,18 @@ module Volt
       end
     end
 
+    # yields the passed in block after interval ms, or immediately if on the
+    # server.
+    def self.client_set_timeout(interval)
+      if Volt.in_browser?
+        `setTimeout(function() {`
+          yield
+        `}, interval)`
+      else
+        yield
+      end
+    end
+
     # On the server, we need to manually flush next tick timers.
     # This is done automatically in the console after each enter.
     def self.flush_next_tick_timers!

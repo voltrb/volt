@@ -117,10 +117,16 @@ describe Volt::Computation do
       promise = Promise.new
       count = 0
 
-      -> { promise }.watch_and_resolve! do |result|
+      success = lambda do |result|
         expect(result).to eq('resolved')
         count += 1
       end
+
+      failure = lambda do |error|
+
+      end
+
+      -> { promise }.watch_and_resolve!(success, failure)
 
       expect(count).to eq(0)
 
@@ -137,9 +143,10 @@ describe Volt::Computation do
       cur_val = promise
 
       results = []
-      -> { dep.depend ; cur_val }.watch_and_resolve! do |val|
+      success = lambda do |val|
         results << val
       end
+      -> { dep.depend ; cur_val }.watch_and_resolve!(success)
 
       expect(results).to eq([])
 
@@ -153,15 +160,17 @@ describe Volt::Computation do
       expect(results).to eq([5])
     end
 
-    it 'should yield nil for an unresolved promise when asked' do
+    it 'should call success with nil for an unresolved promise when asked' do
       dep = Volt::Dependency.new
 
       cur_val = Promise.new
 
       results = []
-      -> { dep.depend ; cur_val }.watch_and_resolve!(true) do |val|
+      success = lambda do |val|
         results << val
       end
+
+      -> { dep.depend ; cur_val }.watch_and_resolve!(success, nil, true)
 
       expect(results).to eq([nil])
 
@@ -176,9 +185,11 @@ describe Volt::Computation do
       cur_val = Promise.new
 
       results = []
-      computation = -> { dep.depend ; cur_val }.watch_and_resolve! do |val|
+      success = lambda  do |val|
         results << val
       end
+
+      computation = -> { dep.depend ; cur_val }.watch_and_resolve!(success)
 
       expect(results).to eq([])
 
@@ -187,6 +198,23 @@ describe Volt::Computation do
       cur_val.resolve(5)
 
       expect(results).to eq([])
+    end
+
+    it 'should call the fail on a failure' do
+      cur_val = Promise.new
+
+      results = []
+      success = lambda {}
+      failure = lambda do |error|
+        results << error
+      end
+
+      computation = -> { cur_val }.watch_and_resolve!(success, failure)
+
+      cur_val.reject('broken')
+      computation.stop
+
+      expect(results).to eq(['broken'])
     end
   end
 

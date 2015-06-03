@@ -69,7 +69,7 @@ class Promise
 
     if error
       err_str = "Exception in Promise at .sync: #{error.inspect}"
-      err_str += error.backtrace.join("\n")
+      err_str += error.backtrace.join("\n") if error.respond_to?(:backtrace)
       Volt.logger.error(err_str)
       fail error
     else

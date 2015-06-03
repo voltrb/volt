@@ -2,6 +2,11 @@ require 'bcrypt' unless RUBY_PLATFORM == 'opal'
 
 module Volt
   class User < Model
+    field :username
+    field :email
+    field :name
+    field :password
+
     # returns login field name depending on config settings
     def self.login_field
       if Volt.config.try(:public).try(:auth).try(:use_username)

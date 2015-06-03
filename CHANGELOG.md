@@ -10,12 +10,13 @@
 - You can now nest models on store.  Previously store was limited to only storing either values or ArrayModels (associations).  You can now store directly, in mongo this will be stored as a nested value.
 - Promises got more awesome.  Promises in volt can now proxy methods to their future resolved value.  Something like: ```promise.then {|v| v.name }``` can now be written simply as: ```promise.name```  It will still return a promise, but to make life easier:
 - All bindings now support promises directly.
-- You can now set/get properties directly on ```store``` and they will be saved to a ```root_stores_models``` table.
 - All code in config/initializers is now run on app startup.
 - All code in any components config/initializers (app/main/config/initializers/*.rb) is now run on the server during app startup.  On the client, only the included components initializers will be run.
 - all initializers folders now support a ```client``` and ```server``` folder.
 - has_one is now supported.
 - You can now use .create to make a new item on a collection.
+- .inspect for models is now cleaner
+- Volt.current_user now works in HttpController's
 
 ### Changed
 - All methods on ArrayModel's under the store collection now return a Promise.
@@ -30,6 +31,8 @@
 - You can now use .each in attribute bindings.
 - We moved to csso as the css compressor because it does not require libv8, only an execjs runtime.
 - Each bindings now support promises.
+- Volt.fetch_current_user has been deprecated and Volt.current_user now returns a promise.
+- Volt.current_user? now returns a promise that yields a boolean
 
 ## 0.9.2
 ### Changed

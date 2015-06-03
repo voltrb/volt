@@ -10,6 +10,10 @@ module Main
       a[{}] = 5
     end
 
+    def store_demo
+      puts "STORE DEMO"
+    end
+
     def form_ready
       `$('#title').html('form_ready')`
       `$('select#location').val('AL').change()` # have to trigger manually as this is not user initiaized action

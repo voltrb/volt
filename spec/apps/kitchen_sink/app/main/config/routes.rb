@@ -3,7 +3,7 @@
 client '/bindings/{{ route_test }}', action: 'bindings'
 client '/bindings', action: 'bindings'
 client '/form', action: 'form'
-client '/store', action: 'store'
+client '/store', action: 'store_demo'
 client '/cookie_test', action: 'cookie_test'
 client '/flash', action: 'flash'
 client '/yield', action: 'yield'

@@ -106,13 +106,16 @@ describe 'model permissions' do
         # Saved
         count = 0
 
-        store._test_deny_deletes.delete(model).then do
+        store._test_deny_deletes.delete(model).fail do |err|
           # deleted
           count += 1
-        end
+
+          match = !!(err =~ /permissions did not allow delete for /)
+          expect(match).to eq(true)
+        end.sync
 
         expect(count).to eq(1)
-      end
+      end.sync
     end
 
     it 'should not check the read permissions when updating (so that all fields are present for the permissions check)' do

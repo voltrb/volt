@@ -118,13 +118,16 @@ module Volt
           # Start connecting to all at the same time.  Since most will connect or
           # timeout, this is the desired behaviour.
           Thread.new do
-            peer_connection = PeerConnection.connect_to(self, peer._ips, peer._port)
+            # sometimes we get nil peers for some reason
+            if peer
+              peer_connection = PeerConnection.connect_to(self, peer._ips, peer._port)
 
-            if peer_connection
-              add_peer_connection(peer_connection)
-            else
-              # remove if not alive anymore.
-              still_alive?(peer._server_id)
+              if peer_connection
+                add_peer_connection(peer_connection)
+              else
+                # remove if not alive anymore.
+                still_alive?(peer._server_id)
+              end
             end
           end
         end

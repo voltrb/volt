@@ -154,7 +154,11 @@ module Volt
     end
 
     def first
-      self[0]
+      if persistor.is_a?(Persistors::ArrayStore)
+        limit(1)[0]
+      else
+        self[0]
+      end
     end
 
     # Return the first item in the collection, or create one if one does not
@@ -262,7 +266,7 @@ module Volt
     end
 
     # We need to setup the proxy methods below where they are defined.
-    proxy_with_load :first, :[], :size, :last, :reverse, :all, :to_a
+    proxy_with_load :[], :size, :last, :reverse, :all, :to_a
 
   end
 end

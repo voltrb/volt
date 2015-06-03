@@ -53,13 +53,19 @@ module Volt
 
     # True if the user is logged in and the user is loaded
     def current_user?
-      !!current_user
+      current_user.then do |user|
+        !!user
+      end
     end
 
     # Return the current user.
     def current_user
-      # Run first on the query, or return nil
-      user_query.try(:first)
+      user_id = current_user_id
+      if user_id
+        $page.store._users.where(id: user_id).first
+      else
+        Promise.new.resolve(nil)
+      end
     end
 
     # Put in a deprecation placeholder
@@ -69,13 +75,8 @@ module Volt
     end
 
     def fetch_current_user
-      u_query = user_query
-      if u_query
-        u_query.fetch_first
-      else
-        # No user, resolve nil
-        Promise.new.resolve(nil)
-      end
+      Volt.logger.warn("Deprication Warning: fetch current user have been depricated, Volt.current_user returns a promise now.")
+      current_user
     end
 
     # Login the user, return a promise for success
@@ -109,18 +110,6 @@ module Volt
       end
 
       user_id_signature
-    end
-
-    private
-
-    # Returns a query for the current user_id or nil if there is no user_id
-    def user_query
-      user_id = current_user_id
-      if user_id
-        $page.store._users.where(_id: user_id)
-      else
-        nil
-      end
     end
   end
 end

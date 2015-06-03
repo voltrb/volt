@@ -91,7 +91,7 @@ module Volt
           begin
             @message_encoder.send_message(@socket, message)
             # 'Error: closed stream' comes in sometimes
-          rescue Errno::ECONNREFUSED, Errno::EPIPE, Error => e
+          rescue Errno::ECONNREFUSED, Errno::EPIPE, IOError => e # was also rescuing Error
             if reconnect!
               retry
             else

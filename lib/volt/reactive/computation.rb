@@ -1,7 +1,9 @@
+require 'set'
+
 module Volt
   class Computation
     @@current     = nil
-    @@flush_queue = []
+    @@flush_queue = Set.new
 
     def self.current=(val)
       @@current = val
@@ -111,7 +113,7 @@ module Volt
       @@timer    = nil
 
       computations  = @@flush_queue
-      @@flush_queue = []
+      @@flush_queue = Set.new
 
       computations.each(&:compute!)
 
@@ -171,16 +173,12 @@ class Proc
   end
 
   # Does an watch and if the result is a promise, resolves the promise.
-  # #watch_and_resolve! takes a block that will be passed the resolved results
-  # of the proc.
+  # #watch_and_resolve! takes two procs, one for the promise resolution (then), and
+  # one for promise rejection (fail).
   #
   # Example:
   #   -> { }
-  def watch_and_resolve!(yield_nil_for_unresolved_promise=false)
-    unless block_given?
-      fail 'watch_and_resolve! requires a block to call when the value is resolved or another value other than a promise is returned in the watch.'
-    end
-
+  def watch_and_resolve!(success, failure=nil, yield_nil_for_unresolved_promise=false)
     # Keep results between runs
     result = nil
 
@@ -194,24 +192,35 @@ class Proc
         # Often you want a to be alerted that an unresolved promise is waiting
         # to be resolved.
         if yield_nil_for_unresolved_promise && !result.resolved?
-          yield(nil)
+          success.call(nil)
         end
 
-        result.then do |final|
+        # The handler gets called once the promise resolves or is rejected.
+        handler = lambda do |&after_handle|
           # Check to make sure that a new value didn't get reactively pushed
           # before the promise resolved.
           if last_promise.is_a?(Promise) && last_promise == result
             # Don't resolve if the computation was stopped
             unless comp.stopped?
-              yield(final)
+              # Call the passed in proc
+              after_handle.call
             end
 
             # Clear result for GC
             result = nil
           end
+
+        end
+
+        result.then do |final|
+          # Call the success proc passing in the resolved value
+          handler.call { success.call(final) }
+        end.fail do |err|
+          # call the fail callback, passing in the error
+          handler.call { failure.call(err) if failure }
         end
       else
-        yield(result)
+        success.call(result)
 
         # Clear result for GC
         result = nil

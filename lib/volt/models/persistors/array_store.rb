@@ -79,7 +79,7 @@ module Volt
       # sync with the database.  The data is kept in memory and the model's
       # loaded_state is marked as "dirty" meaning it may not be in sync.
       def stop_listening
-        Timers.next_tick do
+        Timers.client_set_timeout(5000) do
           Computation.run_without_tracking do
             if @listener_event_counter.count == 0
               if @added_to_query

@@ -33,7 +33,11 @@ class Generate < Thor
   def gem(name)
     require 'volt/cli/new_gem'
 
+    # remove prefixed volt-
+    name = name.gsub(/^volt[-]/, '')
+
     if name =~ /[-]/
+      require 'volt/extra_core/logger'
       Volt.logger.error('Gem names should use underscores for their names.  Currently volt only supports a single namespace for a component.')
       return
     end

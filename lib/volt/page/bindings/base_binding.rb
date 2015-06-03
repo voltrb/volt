@@ -41,5 +41,22 @@ module Volt
     def remove_anchors
       @dom_section.remove_anchors if @dom_section
     end
+
+    # log out a message about a failed computation or Promise.
+    def getter_fail(error)
+      message = "#{self.class.to_s} Error: #{error.inspect}"
+
+      if RUBY_PLATFORM == 'opal'
+        if `#{@getter}`
+          message += "\n" + `#{@getter}.toString()`
+        end
+      else
+        if error.respond_to?(:backtrace)
+          message += "\n" + error.backtrace.join("\n")
+        end
+      end
+
+      Volt.logger.error(message)
+    end
   end
 end

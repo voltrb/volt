@@ -5,6 +5,7 @@ require 'volt/reactive/dependency'
 require 'volt/utils/modes'
 require 'volt/utils/volt_user_error'
 require 'volt/utils/boolean_patch'
+require 'volt/utils/set_patch'
 
 require 'volt/config'
 require 'volt/data_stores/data_store' unless RUBY_PLATFORM == 'opal'

@@ -19,12 +19,13 @@ module Volt
         begin
           @context.instance_eval(&@getter)
         rescue => e
-          Volt.logger.error("AttributeBinding Error: #{e.inspect}")
+          getter_fail(e)
           ''
         end
-      end.watch_and_resolve! do |result|
-        update(result)
-      end
+      end.watch_and_resolve!(
+        method(:update),
+        method(:getter_fail)
+      )
 
       @is_select = `#{element}.is('select')`
       @is_hidden = `#{element}.is('[type=hidden]')`

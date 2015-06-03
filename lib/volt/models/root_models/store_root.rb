@@ -9,28 +9,41 @@ require 'volt/models/root_models/root_models'
 module Volt
   module StoreRootHelpers
     def model_for_root
-      root = get(:root_store_models).first_or_create
+      root = nil
+      Volt::Computation.run_without_tracking do
+        root = get(:root_store_models).first_or_create
+      end
 
       root
     end
 
 
     def get(attr_name, expand = false)
-      if attr_name.singular? && attr_name.to_sym != :id
+      res = if attr_name.singular? && attr_name.to_sym != :id
+        puts "GET: #{attr_name}"
         model_for_root.get(attr_name, expand)
       else
         super
       end
+
+      # puts "GOT: #{res.inspect}"
+      res
     end
 
     def set(attr_name, value, &block)
       if attr_name.singular? && attr_name.to_sym != :id
-        model_for_root.set(attr_name, value, &block)
+        puts "SET ATTR NAME: #{attr_name.inspect}: #{value.inspect}"
+        Volt::Computation.run_without_tracking do
+          model_for_root.then do |model|
+            model.set(attr_name, value, &block)
+          end
+        end
       else
         super
       end
+      # puts "SET---"
     end
   end
 end
 
-StoreRoot.send(:include, Volt::StoreRootHelpers)
+# StoreRoot.send(:include, Volt::StoreRootHelpers)

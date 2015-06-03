@@ -10,7 +10,7 @@ require 'volt/models/persistors/cookies' if RUBY_PLATFORM == 'opal'
 require 'volt/models/persistors/flash'
 require 'volt/models/persistors/local_store'
 require 'volt/models/root_models/root_models'
-require 'volt/models/root_models/store_root'
+# require 'volt/models/root_models/store_root'
 
 # Fow now, we're keeping a volt copy of the promise library from opal 0.8,
 # since opal 0.7.x's version has some bugs.
