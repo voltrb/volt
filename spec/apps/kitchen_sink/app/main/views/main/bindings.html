@@ -134,6 +134,16 @@
   <a id='showtrue' e-click='set_show(true)'>set _show true</a>
   <a id='showfalse' e-click='set_show(false)'>set _show false</a>
 
+  <h2>Each Bindings</h2>
+  <ul id='eachbinding'>
+    {{ _items.each do |item| }}
+    <li>{{ item }}</li>
+    {{ end }}
+  </ul>
+
+  <a id='each-show-with-delay' e-click='show_with_delay'>Show with Delay</a>
+  <a id='each-show-without-delay' e-click='show_without_delay'>Show without Delay</a>
+
   <h2>Content</h2>
 
   <p id="escapeContent">{{{this is {{escaped}}}}}</p>

@@ -58,6 +58,24 @@ module Main
       page._show = value
     end
 
+    def show_with_delay
+      changes = Promise.new
+      page._items = changes
+      `
+      setTimeout(function () {
+        #{changes.resolve(0.upto(100).to_a)}
+      }, 50);
+      `
+      page._items = 901.upto(1000).to_a
+    end
+
+    def show_without_delay
+      changes = Promise.new
+      changes.resolve(1.upto(200).to_a)
+      page._items = 901.upto(1000).to_a
+      page._items = changes
+    end
+
     private
 
     # the main template contains a #template binding that shows another
