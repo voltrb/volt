@@ -72,7 +72,7 @@ module Volt
       # model.  That information is relayed to the ArrayModel so it knows when it can
       # stop subscribing.
       # @root_dep    = Dependency.new(@listener_event_counter.method(:add), @listener_event_counter.method(:remove))
-      @root_dep    = Dependency.new(-> { add_list }, -> { remove_list })
+      @root_dep    = Dependency.new(-> { retain }, -> { release })
 
       @deps        = HashDependency.new
       @size_dep    = Dependency.new
@@ -94,11 +94,11 @@ module Volt
       trigger!(:new, :new)
     end
 
-    def add_list
+    def retain
       @listener_event_counter.add
     end
 
-    def remove_list
+    def release
       @listener_event_counter.remove
     end
 
@@ -308,28 +308,23 @@ module Volt
 
     def inspect
       Computation.run_without_tracking do
-        str = "<#{self.class}"
+        str = "#<#{self.class}"
+        # str += ":#{object_id}"
 
-        # Get path, loaded_state, and persistor, but cache in local var
-        # path = self.path
-        # str += " path:#{path}" if path
-
-        # loaded_state = self.loaded_state
-        # str += " state:#{loaded_state}" if loaded_state
-
-        # persistor = self.persistor
-        # str += " persistor:#{persistor.inspect}" if persistor
+        # First, select all of the non-ArrayModel values
+        attrs = attributes.reject {|key, val| val.is_a?(ArrayModel) }.to_h
 
         # Show the :id first, then sort the rest of the attributes
-        attrs = attributes.dup
-
         id = attrs.delete(:id)
+        id = id[0..3] + '..' + id[-4..-1] if id
 
         attrs = attrs.sort
-        attrs.insert(0, [:id, id])
+        attrs.insert(0, [:id, id]) if id
 
-        str += " #{attrs.to_h.inspect}>"
-
+        str += attrs.map do |key, value|
+          " #{key}: #{value.inspect}"
+        end.join(',')
+        str += '>'
         str
       end
     end
@@ -405,7 +400,7 @@ module Volt
 
       # Make an id if there isn't one yet
       if @attributes[:id].nil? && persistor.try(:auto_generate_id)
-        self.id = generate_id
+        @attributes[:id] = generate_id
       end
     end
 
