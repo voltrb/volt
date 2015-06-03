@@ -347,6 +347,10 @@ module Volt
       end
     end
 
+    def to_json
+      to_h.to_json
+    end
+
     private
     def run_initial_setup(initial_setup)
       # Save the changes

@@ -591,4 +591,14 @@ describe Volt::Model do
         'Model does not have a parent and cannot be deleted.')
     end
   end
+
+  describe 'serialization' do
+    it 'supports JSON via to_json' do
+      model = Volt::Model.new({})
+      expect(model.to_json).to eq(model.to_h.to_json)
+      expect(model.to_json).to eq(model.to_h.to_json)
+      array_model = Volt::ArrayModel.new([model])
+      expect(array_model.to_json).to eq(array_model.to_a.to_json)
+    end
+  end
 end

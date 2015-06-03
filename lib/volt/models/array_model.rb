@@ -241,6 +241,11 @@ module Volt
       array
     end
 
+    def to_json
+      to_a.to_json
+    end
+
+
     def inspect
       Computation.run_without_tracking do
         # Track on size
