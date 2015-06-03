@@ -1,11 +1,17 @@
 require 'volt/server/rack/http_response_header'
 require 'volt/server/rack/http_response_renderer'
+require 'volt/controllers/actions'
 
 module Volt
   # Allow you to create controllers that act as http endpoints
   class HttpController
-    attr_accessor :response_body
-    attr_reader :params, :response_headers, :request
+    include Actions
+
+    #TODO params is only public for testing
+    attr_accessor :params
+
+    # Setup before_action and after_action
+    setup_action_helpers_in_class(:before, :after)
 
     # Initialzed with the params parsed from the route and the HttpRequest
     def initialize(volt_app, params, request)
@@ -13,17 +19,20 @@ module Volt
       @response_headers = HttpResponseHeader.new
       @response_body = []
       @request = request
-      @params = Volt::Model.new(params.symbolize_keys.merge(request.params), persistor: Volt::Persistors::Params)
+      @params = Volt::Model.new(request.params.symbolize_keys.merge(params), persistor: Volt::Persistors::Params)
     end
 
     def perform(action)
-      # TODO: before actions
-      send(action.to_sym)
-      # TODO: after actions / around actions
+      filtered = run_actions(:before, action)
+      send(action.to_sym) unless filtered
+      run_actions(:after, action) unless filtered
       respond
     end
 
     private
+
+    attr_accessor :response_body
+    attr_reader :response_headers, :request
 
     def store
       @volt_app.page.store
@@ -49,7 +58,7 @@ module Volt
       Rack::Response.new(response_body, response_status, response_headers)
     end
 
-    # Get the http status code as integer
+    # Returns the http status code as integer
     def response_status
       if @response_status.is_a?(Symbol)
         Rack::Utils::SYMBOL_TO_STATUS_CODE[@response_status]

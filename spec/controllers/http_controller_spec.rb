@@ -7,7 +7,12 @@ if RUBY_PLATFORM != 'opal'
 
   describe Volt::HttpController do
     class TestHttpController < Volt::HttpController
+      attr_reader :ran_action1
       attr_reader :action_called
+      attr_reader :stoped_action_called
+
+      before_action :run_action1
+      before_action :run_action2, only: [:stoped_action]
 
       def just_call_an_action
         @action_called = true
@@ -44,6 +49,18 @@ if RUBY_PLATFORM != 'opal'
 
       def access_body
         render json: JSON.parse(request.body.read)
+      end
+
+      def stoped_action
+        @stoped_action_called = true
+      end
+
+      def run_action1
+        @ran_action1 = true
+      end
+
+      def run_action2
+        stop_chain
       end
     end
 
@@ -127,6 +144,16 @@ if RUBY_PLATFORM != 'opal'
       response = request.post('http://example.com/test.html', input:
         { test: 'params' }.to_json)
       expect(response.body).to eq({ test: 'params' }.to_json)
+    end
+
+    it 'should run the before action' do
+      controller.perform(:render_plain_text)
+      expect(controller.ran_action1).to be(true)
+    end
+
+    it 'should not call the stoped_action' do
+      controller.perform(:stoped_action)
+      expect(controller.stoped_action_called).to be_nil
     end
   end
 end

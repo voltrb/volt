@@ -246,4 +246,73 @@ describe Volt::Routes do
 
     params = @routes.url_to_params('/blog/20')
   end
+
+  it 'should setup RESTful routes' do
+    routes do
+      rest '/api/v1/articles', controller: 'articles'
+    end
+
+    params = @routes.url_to_params(:get, '/api/v1/articles')
+    expect(params).to eq(controller: 'articles', action: 'index')
+
+    params = @routes.url_to_params(:get, '/api/v1/articles/1')
+    expect(params).to eq(controller: 'articles', action: 'show', id: '1')
+
+    params = @routes.url_to_params(:post, '/api/v1/articles')
+    expect(params).to eq(controller: 'articles', action: 'create')
+
+    params = @routes.url_to_params(:put, '/api/v1/articles/1')
+    expect(params).to eq(controller: 'articles', action: 'update', id: '1')
+
+    params = @routes.url_to_params(:delete, '/api/v1/articles/1')
+    expect(params).to eq(controller: 'articles', action: 'destroy', id: '1')
+  end
+
+  it 'should only setup desired RESTful routes' do
+    routes do
+      rest '/api/v1/articles', controller: 'articles', only: [:index, :show]
+    end
+
+    params = @routes.url_to_params(:get, '/api/v1/articles')
+    expect(params).to eq(controller: 'articles', action: 'index')
+
+    params = @routes.url_to_params(:get, '/api/v1/articles/1')
+    expect(params).to eq(controller: 'articles', action: 'show', id: '1')
+
+    expect(@routes.url_to_params(:post, '/api/v1/articles')).to be_nil
+    expect(@routes.url_to_params(:put, '/api/v1/articles/1')).to be_nil
+    expect(@routes.url_to_params(:delete, '/api/v1/articles/1')).to be_nil
+
+    routes do
+      rest '/api/v1/articles', controller: 'articles', only: [:update, :destroy, :create]
+    end
+
+    expect(@routes.url_to_params(:get, '/api/v1/articles')).to be_nil
+    expect(@routes.url_to_params(:get, '/api/v1/articles/1')).to be_nil
+
+    params = @routes.url_to_params(:post, '/api/v1/articles')
+    expect(params).to eq(controller: 'articles', action: 'create')
+
+    params = @routes.url_to_params(:put, '/api/v1/articles/1')
+    expect(params).to eq(controller: 'articles', action: 'update', id: '1')
+
+    params = @routes.url_to_params(:delete, '/api/v1/articles/1')
+    expect(params).to eq(controller: 'articles', action: 'destroy', id: '1')
+  end
+
+  it 'should exclude undesired RESTful routes' do
+    routes do
+      rest '/api/v1/articles', controller: 'articles', except: [:update, :destroy, :create]
+    end
+
+    params = @routes.url_to_params(:get, '/api/v1/articles')
+    expect(params).to eq(controller: 'articles', action: 'index')
+
+    params = @routes.url_to_params(:get, '/api/v1/articles/1')
+    expect(params).to eq(controller: 'articles', action: 'show', id: '1')
+
+    expect(@routes.url_to_params(:post, '/api/v1/articles')).to be_nil
+    expect(@routes.url_to_params(:put, '/api/v1/articles/1')).to be_nil
+    expect(@routes.url_to_params(:delete, '/api/v1/articles/1')).to be_nil
+  end
 end
