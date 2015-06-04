@@ -1,6 +1,9 @@
 # The following setup handles setting up the app on the server.
 unless RUBY_PLATFORM == 'opal'
   require 'volt/server/message_bus/peer_to_peer'
+  require 'volt/server/middleware/middleware_stack'
+  require 'volt/volt/core'
+
 end
 
 module Volt
@@ -19,6 +22,10 @@ module Volt
 
       def setup_router
         @router = Routes.new
+      end
+
+      def setup_middleware
+        @middleware = MiddlewareStack.new
       end
 
       def require_http_controllers

@@ -37,7 +37,8 @@ module Volt
     end
 
     attr_reader :component_paths, :router, :page, :live_query_pool,
-                :channel_live_queries, :app_path, :database, :message_bus
+                :channel_live_queries, :app_path, :database, :message_bus,
+                :middleware
 
     def initialize(app_path=nil)
       if Volt.server? && !app_path
@@ -53,6 +54,8 @@ module Volt
       setup_page
 
       if RUBY_PLATFORM != 'opal'
+        setup_middleware
+
         # Setup all app paths
         setup_paths
 

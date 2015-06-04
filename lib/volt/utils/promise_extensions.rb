@@ -12,6 +12,10 @@ class Promise
     promise
   end
 
+  def respond_to_missing(method_name, include_private = false)
+    true
+  end
+
   # Allow .each to be called directly on promises
   def each(&block)
     raise ArgumentError, 'no block given' unless block

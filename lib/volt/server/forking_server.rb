@@ -110,7 +110,19 @@ module Volt
       end
     end
 
-    def call_on_child(env)
+    # When passing an object, Drb will not marshal it if any of its subobjects
+    # are not marshalable.  So we split the marshable and not marshalbe objects
+    # then re-merge them so we get real copies of most values (which are
+    # needed in some cases)  Then we merge them back into a new hash.
+    def call_on_child(env_base, env_other)
+      env = env_base
+
+      # TODO: this requires quite a few trips, there's probably a faster way
+      # to handle this.
+      env_other.each_pair do |key, value|
+        env[key] = value
+      end
+
       status, headers, body = @rack_app.call(env)
 
       # Extract the body to pass as a string.  We need to do this
@@ -138,7 +150,18 @@ module Volt
         if @exiting
           [500, {}, 'Server Exiting']
         else
-          status, headers, body_str = @server_proxy.call_on_child(env)
+          env_base = {}
+          env_other = {}
+
+          env.each_pair do |key, value|
+            if [String, TrueClass, FalseClass, Array].include?(value.class)
+              env_base.merge!(key => value)
+            else
+              env_other.merge!(key => value)
+            end
+          end
+
+          status, headers, body_str = @server_proxy.call_on_child(env_base, env_other)
 
           [status, headers, StringIO.new(body_str)]
         end
