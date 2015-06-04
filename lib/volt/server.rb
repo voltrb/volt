@@ -7,7 +7,6 @@ require 'sass'
 require 'volt/utils/tilt_patch'
 require 'sprockets-sass'
 
-
 require 'volt'
 require 'volt/tasks/dispatcher'
 require 'volt/tasks/task'
@@ -19,10 +18,10 @@ require 'volt/server/rack/opal_files'
 require 'volt/server/rack/quiet_common_logger'
 require 'volt/page/page'
 
-require 'volt/volt/core'
 require 'volt/server/websocket/websocket_handler'
 require 'volt/utils/read_write_lock'
 require 'volt/server/forking_server'
+require 'volt/server/middleware/middleware_handler'
 
 module Rack
   # TODO: For some reason in Rack (or maybe thin), 304 headers close
@@ -54,7 +53,7 @@ module Volt
       @root_path = root_path || Dir.pwd
       @volt_app = app
 
-      @app_path        = File.expand_path(File.join(@root_path, 'app'))
+      @app_path = File.expand_path(File.join(@root_path, 'app'))
 
       display_welcome
     end
@@ -115,13 +114,23 @@ module Volt
       end
 
       @rack_app.use Rack::ContentLength
-
       @rack_app.use Rack::KeepAlive
       @rack_app.use Rack::ConditionalGet
       @rack_app.use Rack::ETag
 
+      @rack_app.use Rack::Session::Cookie, {
+        :key => 'rack.session',
+        # :domain => 'localhost.com',
+        :path => '/',
+        :expire_after => 2592000,
+        :secret => Volt.config.app_secret
+      }
+
       @rack_app.use QuietCommonLogger
       @rack_app.use Rack::ShowExceptions
+
+
+      @rack_app.use MiddlewareHandler, @volt_app
 
       component_paths = @volt_app.component_paths
       @rack_app.map '/components' do
