@@ -39,4 +39,12 @@ describe Promise do
 
     expect(count_occurences(b.inspect, 'Promise')).to eq(1)
   end
+
+  it 'delegates to_json to the value or error (respectively)' do
+    a = Promise.new.tap { |p| p.resolve(hello: 'world') }
+    expect(a.to_json).to eq("{\"hello\":\"world\"}")
+    b = Promise.new.tap { |p| p.reject(goodbye: 'jupiter') }
+    expect(b.to_json).to eq("{\"goodbye\":\"jupiter\"}")
+    expect(Promise.new.to_json).to eq('null')
+  end
 end

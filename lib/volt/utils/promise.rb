@@ -127,6 +127,10 @@ class Promise
     @next = nil
   end
 
+  def to_json(*args)
+    (@value || @error || nil).to_json(*args)
+  end
+
   def value
     if Promise === @value
       @value.value
