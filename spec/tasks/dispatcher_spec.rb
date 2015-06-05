@@ -7,12 +7,19 @@ if RUBY_PLATFORM != 'opal'
     end
   end
 
+  class WorkerPoolStub
+    def post(*args)
+      yield(*args)
+    end
+  end
+
   describe Volt::Dispatcher do
+    let(:dispatcher) { Volt::Dispatcher.new(Volt.current_app) }
+
     before do
       Volt.logger = spy('Volt::VoltLogger')
+      allow(Concurrent::ThreadPoolExecutor).to receive(:new).and_return(WorkerPoolStub.new)
     end
-
-    let(:dispatcher) { Volt::Dispatcher.new(Volt.current_app) }
 
     after do
       # Cleanup, make volt make a new logger.  Otherwise this will leak out.

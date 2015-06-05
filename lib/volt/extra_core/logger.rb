@@ -41,7 +41,10 @@ else
         if error
           text += "\n" + colorize(error.to_s, :red)
           if error.is_a?(Exception) && !error.is_a?(VoltUserError)
-            text += "\n" + colorize(error.backtrace.join("\n"), :red)
+            backtrace = error.try(:backtrace)
+            if backtrace
+              text += "\n" + colorize(error.backtrace.join("\n"), :red)
+            end
           end
         end
 
@@ -66,6 +69,11 @@ else
 
       def log_with_color(msg, color)
         Volt.logger.info(colorize(msg, color))
+      end
+
+      def error(msg)
+        msg ||= yield
+        super(colorize(msg, :red))
       end
 
       private

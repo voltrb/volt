@@ -114,4 +114,19 @@ Volt.configure do |config|
   #
   # Bind Ip - specifies the ip address the message bus server should bind on.
   # config.message_bus.bind_ip = '127.0.0.1'
+
+  #############
+  # Concurrency
+  #############
+  # Volt provides a thread worker pool for incoming task requests (and all
+  # database requests, since those use tasks to do their work.)  The following
+  # lets you control the size of the worker pool.  Threads are only created as
+  # needed, and are removed after a certain amount of inactivity.
+  # config.min_worker_threads = 1
+  # config.max_worker_threads = 10
+  #
+  # You can also specify the amount of time a Task should run for before it
+  # timeout's.  Setting this to short can cause unexpected results, currently
+  # we recomend it be at least 10 seconds.
+  # config.worker_timeout = 60
 end

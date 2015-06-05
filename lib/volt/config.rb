@@ -60,7 +60,11 @@ else
 
           compress_javascript: Volt.env.production?,
           compress_css:        Volt.env.production?,
-          abort_on_exception:  true
+          abort_on_exception:  true,
+
+          min_worker_threads: 1,
+          max_worker_threads: 10,
+          worker_timeout: 60
         }
       end
 
