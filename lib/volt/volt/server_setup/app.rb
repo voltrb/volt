@@ -2,6 +2,7 @@
 unless RUBY_PLATFORM == 'opal'
   require 'volt/server/message_bus/peer_to_peer'
   require 'volt/server/middleware/middleware_stack'
+  require 'volt/server/middleware/default_middleware_stack'
   require 'volt/volt/core'
 
 end
@@ -24,8 +25,14 @@ module Volt
         @router = Routes.new
       end
 
-      def setup_middleware
+
+      def setup_preboot_middleware
         @middleware = MiddlewareStack.new
+        DefaultMiddlewareStack.preboot_setup(self, @middleware)
+      end
+
+      def setup_postboot_middleware
+        DefaultMiddlewareStack.postboot_setup(self, @middleware)
       end
 
       def require_http_controllers
@@ -39,11 +46,15 @@ module Volt
         end
       end
 
+      # This config needs to run earlier than others
+      def run_config
+        require("#{Volt.root}/config/app.rb")
+      end
 
       # Load in all .rb files in the initializers folders and the config/app.rb
       # file.
       def run_app_and_initializers
-        files = ["#{Volt.root}/config/app.rb"]
+        files = []
 
         # Include the root initializers
         files += Dir[Volt.root + '/config/initializers/*.rb']

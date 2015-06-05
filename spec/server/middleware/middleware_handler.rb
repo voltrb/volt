@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 unless RUBY_PLATFORM == 'opal'
-  describe Volt::MiddlewareHandler do
+  describe Volt::MiddlewareStack do
     before do
       @stack = Volt::MiddlewareStack.new
     end

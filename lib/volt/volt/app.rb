@@ -54,7 +54,13 @@ module Volt
       setup_page
 
       if RUBY_PLATFORM != 'opal'
-        setup_middleware
+        # We need to run the root config first so we can setup the Rack::Session
+        # middleware.
+        run_config
+
+        # Setup all of the middleware we can before we load the users components
+        # since the users components might want to add middleware during boot.
+        setup_preboot_middleware
 
         # Setup all app paths
         setup_paths
@@ -71,6 +77,9 @@ module Volt
         load_app_code
 
         reset_query_pool!
+
+        # Setup the middleware that we can only setup after all components boot.
+        setup_postboot_middleware
 
         start_message_bus
       end

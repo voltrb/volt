@@ -26,8 +26,6 @@ module Volt
 
       require 'volt/server/rack/component_paths'
       require 'volt/server/rack/component_code'
-      require 'volt/server/rack/opal_files'
-      require 'volt/server/rack/index_files'
       require 'volt/server/component_handler'
 
       @app_path = File.expand_path(File.join(@root_path, 'app'))

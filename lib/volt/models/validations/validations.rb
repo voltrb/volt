@@ -217,7 +217,7 @@ module Volt
     def validation_class(validation, args)
       Volt.const_get(:"#{validation.camelize}Validator")
     rescue NameError => e
-      puts "Unable to find #{validation} validator"
+      Volt.logger.error "Unable to find #{validation} validator"
     end
   end
 end

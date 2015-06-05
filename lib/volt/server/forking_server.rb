@@ -59,7 +59,7 @@ module Volt
           @reader.close
 
           volt_app = @server.boot_volt
-          @rack_app = @server.new_server
+          @rack_app = volt_app.middleware
 
           # Set the drb object locally
           @dispatcher = Dispatcher.new(volt_app)
