@@ -16,6 +16,7 @@ Pages HTML is written in a template language where you can put Ruby between `{{`
 See some demo videos here:
 - [Volt Todos Example](https://www.youtube.com/watch?v=KbFtIt7-ge8)
 - [What Is Volt in 6 Minutes](https://www.youtube.com/watch?v=P27EPQ4ne7o)
+- [Promises in 0.9.3 prerelease](https://www.youtube.com/watch?v=1RX9i8ivtWI)
 - [Pagination Example](https://www.youtube.com/watch?v=1uanfzMLP9g)
 - [Routes and Templates](https://www.youtube.com/watch?v=1yNMP3XR6jU)
 - [Isomorphic App Development - RubyConf 2014](https://www.youtube.com/watch?v=7i6AL7Walc4)
