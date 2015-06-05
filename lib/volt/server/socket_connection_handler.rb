@@ -38,7 +38,16 @@ module Volt
       # Messages are json and wrapped in an array
       message = JSON.parse(message).first
 
-      @@dispatcher.dispatch(self, message)
+      begin
+        @@dispatcher.dispatch(self, message)
+      rescue => e
+        if defined?(DRb::DRbConnError) && e.is_a?(DRb::DRbConnError)
+          # The child process was restarting, so drb failed to send
+        else
+          # re-raise the issue
+          raise
+        end
+      end
     end
 
     def send_message(*args)

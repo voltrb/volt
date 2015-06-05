@@ -24,7 +24,7 @@ describe Volt::Associations do
       end
 
       it 'should associate via belongs_to' do
-        address = store._addresses!.fetch_first.sync
+        address = store._addresses!.first.sync
 
         expect(address.person.sync.id).to eq(@person.id)
       end

@@ -58,22 +58,26 @@ module Volt
       attr_reader :server_id, :page
 
       def initialize(volt_app)
-        # Generate a guid
-        @server_id = SecureRandom.uuid
-        # The PeerConnection's to peers
-        @peer_connections = {}
-        # The server id's for each peer we're connected to
-        @peer_server_ids = {}
+        if Volt::DataStore.fetch.connected?
+          # Generate a guid
+          @server_id = SecureRandom.uuid
+          # The PeerConnection's to peers
+          @peer_connections = {}
+          # The server id's for each peer we're connected to
+          @peer_server_ids = {}
 
-        @page = volt_app.page
+          @page = volt_app.page
 
-        setup_peer_server
-        start_tracker
+          setup_peer_server
+          start_tracker
 
-        Thread.new do
-          sleep 1
+          Thread.new do
+            sleep 1
 
-          connect_to_peers
+            connect_to_peers
+          end
+        else
+          Volt.logger.error('Unable to connect to the database.  Volt will still run, but the message bus requires a database connection to setup connections between nodes, so the message bus has been disabled.  This means updates will not be propigated between instances (server, console, runners, etc...)')
         end
       end
 
@@ -110,7 +114,7 @@ module Volt
       def peers
         instances = @page.store._active_volt_instances
 
-        instances.where(server_id: {'$ne' => @server_id}).fetch.sync
+        instances.where(server_id: {'$ne' => @server_id}).all.sync
       end
 
       def connect_to_peers
@@ -180,7 +184,7 @@ module Volt
         # Unable to write to the socket, retry until the instance is no
         # longer marking its self as active in the database
         peer_table = @page.store._active_volt_instances
-        peer = peer_table.where(server_id: peer_server_id).fetch_first.sync
+        peer = peer_table.where(server_id: peer_server_id).first.sync
         if peer
           # Found the peer, retry if it has reported in in the last 2
           # minutes.

@@ -37,6 +37,7 @@ class Generate < Thor
     name = name.gsub(/^volt[-]/, '')
 
     if name =~ /[-]/
+      require 'volt'
       require 'volt/extra_core/logger'
       Volt.logger.error('Gem names should use underscores for their names.  Currently volt only supports a single namespace for a component.')
       return
@@ -66,12 +67,12 @@ class Generate < Thor
   method_option :name, type: :string, banner: 'The name of the model controller.'
   method_option :component, type: :string, default: 'main', banner: 'The component the controller should be created in.', required: false
   def controller(name, component = 'main')
-    controller_name = name.underscore.pluralize + '_controller' unless name =~ /_controller$/
+    controller_name = name.underscore + '_controller' unless name =~ /_controller$/
     output_file = Dir.pwd + "/app/#{component.underscore}/controllers/#{controller_name}.rb"
-    spec_file = Dir.pwd + "/spec/app/#{component.underscore}/integration/#{name.underscore.pluralize}_spec.rb"
+    spec_file = Dir.pwd + "/spec/app/#{component.underscore}/integration/#{name.underscore}_spec.rb"
 
     template('controller/model_controller.rb.tt', output_file, component_module: component.camelize, model_controller_name: controller_name.camelize)
-    template('controller/model_controller_spec.rb.tt', spec_file, describe: name.underscore.pluralize)
+    template('controller/model_controller_spec.rb.tt', spec_file, describe: name.underscore)
   end
 
   desc 'task NAME COMPONENT', 'Creates a task named NAME in the app folder of the component named COMPONENT.'

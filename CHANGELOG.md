@@ -17,6 +17,7 @@
 - You can now use .create to make a new item on a collection.
 - .inspect for models is now cleaner
 - Volt.current_user now works in HttpController's
+- You can now add your own middleware to the middleware stack.  (see docs)
 
 ### Changed
 - All methods on ArrayModel's under the store collection now return a Promise.

@@ -92,7 +92,7 @@ describe 'model permissions' do
         # Clear the identity map, so we can load up a fresh copy
         model.save_to.persistor.clear_identity_map
 
-        reloaded = store._test_deny_read_names.fetch_first.sync
+        reloaded = store._test_deny_read_names.first.sync
 
         expect(reloaded._name).to eq(nil)
         expect(reloaded._other).to eq('should be visible')

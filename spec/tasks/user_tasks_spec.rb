@@ -2,7 +2,8 @@ require 'spec_helper'
 
 if RUBY_PLATFORM != 'opal'
   describe UserTasks do
-    let(:fake_response) { double('FakeResponse', fetch_first: true) }
+    let(:user_promise) { double('UserPromise', then: true) }
+    let(:fake_response) { double('FakeResponse', first: user_promise) }
 
     let(:fake_users_collection) do
       double('FakeUsersCollection', where: fake_response)
@@ -15,7 +16,7 @@ if RUBY_PLATFORM != 'opal'
     before do
       allow($page).to receive(:store).and_return fake_store
       allow(User).to receive(:login_field).and_return 'user'
-      allow(fake_response).to receive(:fetch_first).and_yield(user)
+      allow(user_promise).to receive(:then).and_yield(user)
     end
 
     subject { UserTasks.new(Volt.current_app) }

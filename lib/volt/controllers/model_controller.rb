@@ -34,6 +34,27 @@ module Volt
       section.range
     end
 
+    # Walks the dom_nodes range until it finds an element.  Typically this will
+    # be the container element without the whitespace text nodes.
+    def first_element
+      range = dom_nodes
+      nodes = `range.startContainer.childNodes`
+
+      start_index = `range.startOffset`
+      end_index = `range.endOffset`
+
+      start_index.upto(end_index) do |index|
+        node = `nodes[index]`
+
+        # Return if an element
+        if `node.nodeType === 1`
+          return node
+        end
+      end
+
+      return nil
+    end
+
     # yield_html renders the content passed into a tag as a string.  You can ```.watch!```
     # ```yield_html``` and it will be run again when anything in the template changes.
     def yield_html

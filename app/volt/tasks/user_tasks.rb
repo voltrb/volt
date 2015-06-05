@@ -11,7 +11,7 @@ class UserTasks < Volt::Task
 
     # During login we need access to the user's info even though we aren't the user
     Volt.skip_permissions do
-      store._users.where(query).fetch_first do |user|
+      store._users.where(query).first.then do |user|
         fail VoltUserError, 'User could not be found' unless user
 
         match_pass = BCrypt::Password.new(user._hashed_password)

@@ -13,7 +13,7 @@ class StoreTasks < Volt::Task
     collection = store.send(:"_#{path[-2]}")
 
     # See if the model has already been made
-    collection.where(id: data[:id]).fetch_first do |model|
+    collection.where(id: data[:id]).first.then do |model|
       # Otherwise assign to the collection
       model ||= collection
 
@@ -68,7 +68,7 @@ class StoreTasks < Volt::Task
       query = store.get(collection).where(id: id)
     end
 
-    query.fetch_first do |model|
+    query.first.then do |model|
       if model
         if model.can_delete?
           db.delete(collection, 'id' => id)

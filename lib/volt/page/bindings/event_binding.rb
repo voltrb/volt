@@ -40,6 +40,20 @@ module Volt
         # Call the proc the user setup for the event in context,
         # pass in the wrapper for the JS event
         result = @context.instance_exec(event, &call_proc)
+
+        # The following doesn't work due to the promise already chained issue.
+        # # Ignore native objects.
+        # result = nil unless BasicObject === result
+
+        # # if the result is a promise, log an exception if it failed and wasn't
+        # # handled
+        # if result.is_a?(Promise) && !result.next
+        #   result.fail do |err|
+        #     Volt.logger.error("EventBinding Error: promise returned from event binding #{@event_name} was rejected")
+        #     Volt.logger.error(err)
+        #   end
+        # end
+
       end
 
       @listener = page.events.add(event_name, self, handler)

@@ -178,7 +178,21 @@ module Volt
     end
 
     def reverse
-      super
+      @size_dep.depend
+      @array.reverse
+    end
+
+    # Array#select, with reactive notification
+    def select
+      new_array = []
+      @array.size.times do |index|
+        value = @array[index]
+        if yield(value)
+          new_array << value
+        end
+      end
+
+      new_array
     end
 
     # Return the model, on store, .all is proxied to wait for load and return

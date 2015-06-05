@@ -225,7 +225,7 @@ module Volt
     def call_ready
       if @controller
         # Set the current section on the controller if it wants so it can manipulate
-        # the dom if needed
+        # the dom if needed.
         # Only assign sections for action's, so we don't get AttributeSections bound
         # also.
         if @controller.respond_to?(:section=)
