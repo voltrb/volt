@@ -51,6 +51,10 @@ unless RUBY_PLATFORM == 'opal'
       def handle_message(message)
         @receiver << message
       end
+
+      def still_alive?(*args)
+        false
+      end
     end
 
     # Disable for jruby for now

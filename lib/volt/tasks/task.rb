@@ -18,6 +18,8 @@ module Volt
     else
       include CollectionHelpers
 
+      class_attribute :__timeout
+
       def initialize(volt_app, channel = nil, dispatcher = nil)
         @volt_app   = volt_app
         @page       = volt_app.page
@@ -32,6 +34,12 @@ module Volt
 
       def self.known_handlers
         @subclasses ||= []
+      end
+
+      # Set the timeout for method calls on this task.  (The default is
+      # Volt.config.worker_timeout)
+      def timeout(value)
+        self.__timeout = value
       end
 
       # On the backend, we proxy all class methods like we would

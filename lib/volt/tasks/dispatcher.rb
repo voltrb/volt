@@ -15,10 +15,17 @@ module Volt
     def initialize(volt_app)
       @volt_app = volt_app
 
-      @worker_pool = Concurrent::ThreadPoolExecutor.new(
+      if Volt.env.test?
+        # When testing, we want to run immediately so it blocks and doesn't
+        # start the next thread.
+        @worker_pool = Concurrent::ImmediateExecutor.new
+      else
+        @worker_pool = Concurrent::ThreadPoolExecutor.new(
         min_threads: Volt.config.min_worker_threads,
         max_threads: Volt.config.max_worker_threads
       )
+      end
+
       @worker_timeout = Volt.config.worker_timeout || 60
     end
 
@@ -87,7 +94,8 @@ module Volt
 
         # Init and send the method
         promise = promise.then do
-          Concurrent.timeout(@worker_timeout) do
+          result = nil
+          Concurrent.timeout(klass.__timeout || @worker_timeout) do
             Thread.current['meta'] = meta_data
             result = klass.new(@volt_app, channel, self).send(method_name, *args)
 
