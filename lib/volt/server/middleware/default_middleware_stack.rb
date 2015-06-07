@@ -46,6 +46,7 @@ module Volt
 
       # Serve the opal files
       opal_files = OpalFiles.new(rack_app, volt_app.app_path, volt_app.component_paths)
+      volt_app.sprockets = opal_files.environment
 
       # Serve the main html files from public, also figure out
       # which JS/CSS files to serve.

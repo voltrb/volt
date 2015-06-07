@@ -21,7 +21,7 @@ module Volt
 
     # Iterate through @renderes to find a matching renderer for the given
     # content and call the given proc.
-    # Other params fromt he content are returned as additional headers
+    # Other params from the content are returned as additional headers
     # Returns an empty string if no renderer could be found
     def render(content)
       content = content.symbolize_keys

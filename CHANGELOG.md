@@ -18,6 +18,7 @@
 - .inspect for models is now cleaner
 - Volt.current_user now works in HttpController's
 - You can now add your own middleware to the middleware stack.  (see docs)
+- Added a threadpool for Tasks, and options to customize pool size in config/app.rb
 
 ### Changed
 - All methods on ArrayModel's under the store collection now return a Promise.
