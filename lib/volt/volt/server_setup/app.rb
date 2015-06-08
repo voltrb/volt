@@ -48,7 +48,8 @@ module Volt
 
       # This config needs to run earlier than others
       def run_config
-        require("#{Volt.root}/config/app.rb")
+        path = "#{Volt.root}/config/app.rb"
+        require(path) if File.exists?(path)
       end
 
       # Load in all .rb files in the initializers folders and the config/app.rb
