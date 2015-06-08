@@ -57,15 +57,9 @@ class NewGem
 
   def copy_options
     copy('newgem/bin/newgem.tt', "bin/#{@name}") if @options[:bin]
-    case @options[:test]
-    when 'rspec'
-      copy('newgem/rspec.tt', '.rspec')
-      copy('newgem/spec/spec_helper.rb.tt', 'spec/spec_helper.rb')
-      copy('newgem/spec/newgem_spec.rb.tt', "spec/#{@namespaced_path}_spec.rb")
-    when 'minitest'
-      copy('newgem/test/minitest_helper.rb.tt', 'test/minitest_helper.rb')
-      copy('newgem/test/test_newgem.rb.tt', "test/test_#{@namespaced_path}.rb")
-    end
+    copy('newgem/rspec.tt', '.rspec')
+    copy('newgem/spec/spec_helper.rb.tt', 'spec/spec_helper.rb')
+    copy('newgem/spec/newgem_spec.rb.tt', "spec/#{@namespaced_path}_spec.rb")
     puts "Initializing git repo in #{@target}"
     Dir.chdir(@target) { `git init`; `git add .` }
 
