@@ -14,7 +14,7 @@ module Volt
         adaptor_name = root.const_get(adaptor_name)
         @adaptor = adaptor_name.new
       else
-        raise "#{database_name} is not a supported database"
+        raise "#{database_name} is not a supported database, you might be missing a volt-#{database_name} gem"
       end
 
       @adaptor

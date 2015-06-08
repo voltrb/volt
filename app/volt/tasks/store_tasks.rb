@@ -1,4 +1,3 @@
-require 'mongo'
 require 'volt/models'
 
 class StoreTasks < Volt::Task

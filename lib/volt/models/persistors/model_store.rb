@@ -1,11 +1,6 @@
 require 'volt/models/persistors/store'
 require 'volt/models/persistors/store_state'
 
-if RUBY_PLATFORM == 'opal'
-else
-  require 'mongo'
-end
-
 module Volt
   module Persistors
     class ModelStore < Store
