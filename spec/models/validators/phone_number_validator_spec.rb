@@ -15,8 +15,8 @@ describe Volt::PhoneNumberValidator do
   let(:valid_intl_number) { '+12 123 123 1234' }
   let(:invalid_number) { '1234-123-123456' }
 
-  let(:validate) { described_class.validate(*params) }
-  let(:params) { [model, field_name, options] }
+  let(:validate) { described_class.validate(*use_params) }
+  let(:use_params) { [model, field_name, options] }
   let(:message) { 'must be a phone number with area or country code' }
 
   it_behaves_like 'a format validator'

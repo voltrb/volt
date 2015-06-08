@@ -8,13 +8,16 @@ module Volt
     include ReactiveAccessors
 
     # TODO: we need to make it so change events only trigger on changes
-    reactive_accessor :scheme, :host, :port, :path, :query, :params, :fragment
+    reactive_accessor :scheme, :host, :port, :path, :query, :fragment
     attr_accessor :router
 
     def initialize(router = nil)
       @router = router
-      @params = Model.new({}, persistor: Persistors::Params)
       @location = Location.new
+    end
+
+    def params
+      @params ||= Model.new({}, persistor: Persistors::Params)
     end
 
     # Parse takes in a url and extracts each sections.
@@ -95,7 +98,7 @@ module Volt
     end
 
     def url_with(params)
-      url_for(@params.to_h.merge(params))
+      url_for(params.to_h.merge(params))
     end
 
     # Called when the state has changed and the url in the
@@ -103,7 +106,7 @@ module Volt
     # Called when an attribute changes to update the url
     def update!
       if Volt.in_browser?
-        new_url = url_for(@params.to_h)
+        new_url = url_for(params.to_h)
 
         # Push the new url if pushState is supported
         # TODO: add fragment fallback
@@ -158,8 +161,9 @@ module Volt
       query_hash.merge!(new_params)
 
       # Loop through the .params we already have assigned.
-      assign_from_old(@params, query_hash)
-      assign_new(@params, query_hash)
+      lparams = params
+      assign_from_old(lparams, query_hash)
+      assign_new(lparams, query_hash)
     end
 
     # Loop through the old params, and overwrite any existing values,
