@@ -4,16 +4,25 @@ require 'volt/utils/promise'
 # A temp patch for promises until https://github.com/opal/opal/pull/725 is released.
 class Promise
 
-  def method_missing(method_name, *args, &block)
-    promise = self.then do |value|
-      value.send(method_name, *args, &block)
-    end
-
-    promise
+  # We made a choice not to support comparitors and << and >> on method_missing
+  # on Promises.  This makes it easier to understand what promise proxying does
+  # and how it works.  It also prevents confusing situations where you try to
+  # == compare two Promises for example.  The cost though is more code to do
+  # comparisons, but we feel it is worth it.
+  def respond_to_missing?(method_name, include_private = false)
+    !!(method_name =~ /[a-z_]\w*[?!=]?/)
   end
 
-  def respond_to_missing(method_name, include_private = false)
-    true
+  def method_missing(method_name, *args, &block)
+    if respond_to_missing?(method_name)
+      promise = self.then do |value|
+        value.send(method_name, *args, &block)
+      end
+
+      promise
+    else
+      super
+    end
   end
 
   # Allow .each to be called directly on promises

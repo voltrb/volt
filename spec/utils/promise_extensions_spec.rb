@@ -39,4 +39,20 @@ describe Promise do
 
     expect(count_occurences(b.inspect, 'Promise')).to eq(1)
   end
+
+  it 'should not respond to comparitors' do
+    [:>, :<].each do |comp|
+      a = Promise.new
+      expect do
+        a.send(comp, 5)
+      end.to raise_error(NoMethodError)
+    end
+  end
+
+  it 'should proxy methods on promises' do
+    a = Promise.new
+    expect do
+      a.something
+    end.not_to raise_error
+  end
 end
