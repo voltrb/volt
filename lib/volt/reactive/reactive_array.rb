@@ -45,7 +45,8 @@ module Volt
           end
         end
 
-        count
+        # return as a promise
+        count.then
       else
         size
       end

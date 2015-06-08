@@ -232,18 +232,20 @@ describe Volt::Model do
     expect(count).to eq(1)
   end
 
-  it 'should track changes through an expansion' do
-    a = Volt::Model.new
+  unless RUBY_PLATFORM == 'opal'
+    it 'should track changes through an expansion' do
+      a = Volt::Model.new
 
-    last_count = 0
-    -> { last_count = a._todos.count(&:_checked) }.watch!
+      last_count = 0
+      -> { last_count = a._todos.count(&:_checked).sync }.watch!
 
-    expect(last_count).to eq(0)
+      expect(last_count).to eq(0)
 
-    a._todos! << { checked: true }
-    Volt::Computation.flush!
+      a._todos! << { checked: true }
+      Volt::Computation.flush!
 
-    expect(last_count).to eq(1)
+      expect(last_count).to eq(1)
+    end
   end
 
   it 'should call changed when a the reference to a submodel is assigned to another value' do
