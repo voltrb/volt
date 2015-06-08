@@ -56,6 +56,20 @@ class Promise
     @value || @error
   end
 
+  # When testing with rspec, add in a custom exception! method that doesn't
+  # swallow ExpectationNotMetError's.
+  if defined?(RSpec::Expectations::ExpectationNotMetError)
+    def exception!(error)
+      if error.is_a?(RSpec::Expectations::ExpectationNotMetError)
+        raise error
+      end
+      @exception = true
+
+      reject!(error)
+    end
+  end
+
+
 
   # Waits for the promise to resolve (assuming it is blocking on
   # the server) and returns the result.
