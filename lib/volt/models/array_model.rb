@@ -116,12 +116,10 @@ module Volt
             model
           end.fail do |err|
             # remove from the collection because it failed to save on the server
-            @array.delete(model)
+            # we don't need to call delete on the server.
+            index = @array.index(model)
+            delete_at(index, true)
 
-            # TODO: the model might be in at a different position already, so we should use a full delete
-            trigger_removed!(@array.size - 1)
-            trigger_size_change!
-            #
             # re-raise, err might not be an Error object, so we use a rejected promise to re-raise
             Promise.new.reject(err)
           end

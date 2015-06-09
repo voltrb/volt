@@ -122,7 +122,7 @@ module Volt
 
     alias_method :length, :size
 
-    def delete_at(index)
+    def delete_at(index, skip_persistor=false)
       size = @array.size
       # Handle a negative index
       index = size + index if index < 0
@@ -143,7 +143,7 @@ module Volt
 
       trigger_size_change!
 
-      @persistor.removed(model) if @persistor
+      @persistor.removed(model) if @persistor && !skip_persistor
 
       model
     end
