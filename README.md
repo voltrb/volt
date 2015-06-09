@@ -37,9 +37,9 @@ There is also a [work in progress tutorial](https://github.com/rhgraysonii/volt_
 
 Rick Carlino has been putting together some great volt tutorial videos also.
 
-[Volt Tasks](http://datamelon.io/blog/2015/creating-volt-task-objects.html)
-[Build a Realtime Chat App with Volt](http://datamelon.io/blog/2015/building-a-chat-app-in-volt.html)
-[Understanding Volt Views](http://datamelon.io/blog/2015/understanding-views-in-volt-with-a-card-game.html)
+- [Volt Tasks](http://datamelon.io/blog/2015/creating-volt-task-objects.html)
+- [Build a Realtime Chat App with Volt](http://datamelon.io/blog/2015/building-a-chat-app-in-volt.html)
+- [Understanding Volt Views](http://datamelon.io/blog/2015/understanding-views-in-volt-with-a-card-game.html)
 
 # Getting Help
 
