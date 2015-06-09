@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+
+    <script>
+        // Simple code to handle reload messages
+        if (document.location.protocol == 'https:') {
+          var wsProto = 'wss';
+        } else {
+          var wsProto = 'ws';
+        }
+
+        this.socket = new WebSocket(wsProto + '://' + document.location.host + '/socket');
+
+        // Log errors
+        this.socket.onerror = function (error) {
+          document.location.reload();
+        };
+
+        // Log messages from the server
+        this.socket.onmessage = function(message) {
+          if (message.data == '["reload"]') {
+            document.location.reload();
+          }
+        };
+
+        this.socket.onclose = function(error) {
+          document.location.reload();
+        };
+    </script>
+  </head>
+  <body>
+    <h2><%= CGI::escapeHTML(error.inspect) %></h2>
+
+    <% if error.respond_to?(:backtrace) %>
+<pre>
+<%= error.backtrace.map {|l| CGI::escapeHTML(l) }.join("<br />") %>
+</pre>
+    <% end %>
+  </body>
+</html>

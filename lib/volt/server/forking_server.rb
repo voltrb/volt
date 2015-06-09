@@ -4,6 +4,15 @@ require 'drb'
 require 'stringio'
 require 'listen'
 
+class ErrorDispatcher
+  def dispatch(channel, message)
+    Volt.logger.error("The app failed to start, so the following message can not be run: #{message}")
+  end
+
+  def close_channel(channel)
+  end
+end
+
 module Volt
   class ForkingServer
     def initialize(server)
@@ -58,11 +67,17 @@ module Volt
           # Running as child
           @reader.close
 
-          volt_app = @server.boot_volt
-          @rack_app = volt_app.middleware
+          begin
+            volt_app = @server.boot_volt
+            @rack_app = volt_app.middleware
 
-          # Set the drb object locally
-          @dispatcher = Dispatcher.new(volt_app)
+            # Set the drb object locally
+            @dispatcher = Dispatcher.new(volt_app)
+          rescue Exception => error
+            boot_error(error)
+          end
+
+
           drb_object = DRb.start_service('drbunix:', [self, @dispatcher])
 
           @writer.puts(drb_object.uri)
@@ -77,6 +92,28 @@ module Volt
           end
         end
       end
+    end
+
+    # called from the child when the boot failes.  Sets up an error page rack
+    # app to show the user the error and handle reloading requests.
+    def boot_error(error)
+      msg = error.inspect
+      if error.respond_to?(:backtrace)
+        msg << "\n" + error.backtrace.join("\n")
+      end
+      Volt.logger.error(msg)
+
+      # Only require when needed
+      require 'cgi'
+      @rack_app = Proc.new do
+        path = File.join(File.dirname(__FILE__), "forking_server/boot_error.html.erb")
+        html = File.read(path)
+        error_page = ERB.new(html, nil, '-').result(binding)
+
+        [500, {"Content-Type" => "text/html"}, error_page]
+      end
+
+      @dispatcher = ErrorDispatcher.new
     end
 
 

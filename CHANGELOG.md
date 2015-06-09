@@ -19,6 +19,8 @@
 - Volt.current_user now works in HttpController's
 - You can now add your own middleware to the middleware stack.  (see docs)
 - Added a threadpool for Tasks, and options to customize pool size in config/app.rb
+- Volt now handles Syntax errors much better, it will display an error message when your app does not compile, and can reload from that page when things change. (in development)
+- Time objects can now be saved in models.
 
 ### Changed
 - All methods on ArrayModel's under the store collection now return a Promise.
