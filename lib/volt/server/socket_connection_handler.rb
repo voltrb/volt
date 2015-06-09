@@ -9,6 +9,14 @@ module Volt
     # This may be changed as new listeners connect, which is fine.
     attr_accessor :user_id
 
+
+    def initialize(session, *args)
+      @session = session
+
+      @@channels ||= []
+      @@channels << self
+    end
+
     def self.dispatcher=(val)
       @@dispatcher = val
     end
@@ -24,13 +32,6 @@ module Volt
         next if skip_channel && channel == skip_channel
         channel.send_message(*args)
       end
-    end
-
-    def initialize(session, *args)
-      @session = session
-
-      @@channels ||= []
-      @@channels << self
     end
 
     def process_message(message)
@@ -54,6 +55,14 @@ module Volt
       str = JSON.dump([*args])
 
       @session.send(str)
+
+      if RUNNING_SERVER == 'thin'
+        # This might seem strange, but it prevents a delay with outgoing
+        # messages.
+        # TODO: Figure out the cause of the issue and submit a fix upstream.
+        EM.next_tick {}
+      end
+
     end
 
     def closed
