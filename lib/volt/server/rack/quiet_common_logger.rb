@@ -16,9 +16,11 @@ class QuietCommonLogger < Rack::CommonLogger
       ext = nil
     end
 
+    @logged = false
+
     body = BodyProxy.new(body) do
       # Don't log on ignored extensions
-      unless @@ignore_extensions.include?(ext)
+      if !@@ignore_extensions.include?(ext) && !@logged
         log(env, status, header, began_at)
       end
     end
@@ -26,6 +28,7 @@ class QuietCommonLogger < Rack::CommonLogger
     # Because of web sockets, the initial request doesn't finish, so we
     # can just trigger it now.
     unless ext || path.start_with?('/channel')
+      @logged = true
       log(env, status, header, began_at)
     end
 

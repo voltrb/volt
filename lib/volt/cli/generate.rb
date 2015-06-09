@@ -54,7 +54,7 @@ class Generate < Thor
   method_option :name, type: :string, banner: 'The name of the HTTP Controller.'
   method_option :component, type: :string, default: 'main', banner: 'The component the http_controller should be created in.', required: false
   def http_controller(name, component = 'main')
-    name = name.underscore.pluralize + '_controller' unless name =~ /_controller$/
+    name = name.underscore + '_controller' unless name =~ /_controller$/
 
     output_file = Dir.pwd + "/app/#{component}/controllers/server/#{name.underscore}.rb"
     spec_file = Dir.pwd + "/spec/app/#{component.underscore}/controllers/server/#{name}_spec.rb"

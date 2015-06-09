@@ -78,6 +78,11 @@ class Promise
     end
   end
 
+  # Forward to resolved value
+  def to_json(*args, &block)
+    self.then {|v| v.to_json(*args, &block) }
+  end
+
 
 
   # Waits for the promise to resolve (assuming it is blocking on

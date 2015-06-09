@@ -22,7 +22,7 @@ module Volt
       @params = Volt::Model.new(request.params.symbolize_keys.merge(params), persistor: Volt::Persistors::Params)
     end
 
-    def perform(action)
+    def perform(action='index')
       filtered = run_actions(:before, action)
       send(action.to_sym) unless filtered
       run_actions(:after, action) unless filtered
@@ -55,6 +55,12 @@ module Volt
     end
 
     def respond
+      unless @response_status
+        # render was not called, show an error
+        @response_body = ['Error: render was not called in controller action']
+        @response_status = 500
+      end
+
       Rack::Response.new(response_body, response_status, response_headers)
     end
 

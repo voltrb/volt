@@ -30,12 +30,18 @@ module Volt
           renderer = self.class.renderers[renderer_name]
           to_render = content.delete(renderer_name)
           rendered = renderer[:proc].call(to_render)
+
+          # Unwrap a promise if we got one back
+          if rendered.is_a?(Promise)
+            rendered = rendered.sync
+          end
+
           return [rendered, content.merge(content_type: renderer[:content_type])]
         end
       end
 
       # If we couldn't find a renderer - just render an empty string
-      ['', content_type: 'text/plain']
+      ["Error: render only supports #{self.class.renderers.keys.join(', ')}", content_type: 'text/plain']
     end
   end
 end

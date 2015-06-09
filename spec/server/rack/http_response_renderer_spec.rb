@@ -17,9 +17,9 @@ describe Volt::HttpResponseRenderer do
     expect(additional_headers[:content_type]).to eq('text/plain')
   end
 
-  it 'should default to text/plain if no suitable renderer could be found' do
+  it 'should give renderer error if no suitable renderer could be found' do
     body, additional_headers = renderer.render(some: 'text')
-    expect(body).to eq('')
+    expect(body).to eq('Error: render only supports json, text')
     expect(additional_headers[:content_type]).to eq('text/plain')
   end
 
