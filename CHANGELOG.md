@@ -1,6 +1,8 @@
 # Change Log
 
 ## 0.9.3
+[0.9.3 Update Blog Post](http://blog.voltframework.com/post/121128931859/0-9-3-stuff-you-asked-for)
+[Upgrade Guide](https://github.com/voltrb/volt/blob/master/docs/UPGRADE_GUIDE.md)
 
 ### Added
 - Added validations block for conditional validation runs
