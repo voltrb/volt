@@ -33,6 +33,18 @@ Read the [full docs on Volt here](http://voltframework.com/docs)
 
 There is also a [work in progress tutorial](https://github.com/rhgraysonii/volt_tutorial) by @rhgraysonii
 
+# More Videos
+
+Rick Carlino has been putting together some great volt tutorial videos also.
+
+[Volt Tasks](http://datamelon.io/blog/2015/creating-volt-task-objects.html)
+[Build a Realtime Chat App with Volt](http://datamelon.io/blog/2015/building-a-chat-app-in-volt.html)
+[Understanding Volt Views](http://datamelon.io/blog/2015/understanding-views-in-volt-with-a-card-game.html)
+
+# Getting Help
+
+Have a question and need help?  The volt team watches [stackoverflow](http://stackoverflow.com/search?q=voltrb) for questions and will get back to you quickly.  Be sure to post the question with the #voltrb tag.  If you have something you need to discuss, drop into our [gitter room](gitter.im/voltrb/volt).
+
 # Contributing
 
 You want to contribute? Great! Thanks for being awesome! At the moment, we have a big internal todo list, hop on https://gitter.im/voltrb/volt so we don't duplicate work. Pull requests are always welcome, but asking about helping on Gitter should save some duplication.
