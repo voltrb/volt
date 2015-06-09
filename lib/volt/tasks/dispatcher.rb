@@ -2,6 +2,7 @@
 require 'volt/utils/logging/task_logger'
 require 'drb'
 require 'concurrent'
+require 'timeout'
 
 module Volt
   # The task dispatcher is responsible for taking incoming messages
@@ -95,11 +96,13 @@ module Volt
         # Init and send the method
         promise = promise.then do
           result = nil
-          Concurrent.timeout(klass.__timeout || @worker_timeout) do
+          Timeout.timeout(klass.__timeout || @worker_timeout) do
             Thread.current['meta'] = meta_data
-            result = klass.new(@volt_app, channel, self).send(method_name, *args)
-
-            Thread.current['meta'] = nil
+            begin
+              result = klass.new(@volt_app, channel, self).send(method_name, *args)
+            ensure
+              Thread.current['meta'] = nil
+            end
           end
 
           result
@@ -112,8 +115,9 @@ module Volt
 
       # Called after task runs or fails
       finish = proc do |error|
-        if error.is_a?(Concurrent::TimeoutError)
-          error = Concurrent::TimeoutError.new("Task Timed Out after #{@worker_timeout} seconds: #{message}")
+        if error.is_a?(Timeout::Error)
+          # re-raise with a message
+          error = Timeout::Error.new("Task Timed Out after #{@worker_timeout} seconds: #{message}")
         end
 
         run_time = ((Time.now.to_f - start_time) * 1000).round(3)
