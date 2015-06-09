@@ -1,4 +1,4 @@
-require 'ejson_ext'
+require 'volt/utils/ejson'
 
 module Volt
   class Page
@@ -179,7 +179,7 @@ module Volt
           `if (page_obj_str) {`
           `sessionStorage.removeItem('___page');`
 
-          EJSONExt.parse(page_obj_str).each_pair do |key, value|
+          EJSON.parse(page_obj_str).each_pair do |key, value|
             page.send(:"_#{key}=", value)
           end
           `}`

@@ -1,4 +1,4 @@
-require 'ejson_ext'
+require 'volt/utils/ejson'
 
 module Volt
   # The tasks class provides an interface to call tasks on
@@ -65,7 +65,7 @@ module Volt
 
     def reload
       # Stash the current page value
-      value = EJSONExt.stringify($page.page.to_h)
+      value = EJSON.stringify($page.page.to_h)
 
       # If this browser supports session storage, store the page, so it will
       # be in the same state when we reload.

@@ -1,6 +1,6 @@
 # The channel is the connection between the front end and the backend.
 
-require 'ejson_ext'
+require 'volt/utils/ejson'
 require 'volt/reactive/reactive_accessors'
 require 'volt/reactive/eventable'
 
@@ -94,7 +94,7 @@ module Volt
     end
 
     def message_received(message)
-      message = EJSONExt.parse(message)
+      message = EJSON.parse(message)
 
       trigger!('message', *message)
     end
@@ -104,7 +104,7 @@ module Volt
         @queue << message
       else
         # TODO: Temp: wrap message in an array, so we're sure its valid JSON
-        message = EJSONExt.stringify([message])
+        message = EJSON.stringify([message])
         `
           this.socket.send(message);
         `
