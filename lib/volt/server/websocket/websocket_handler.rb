@@ -1,13 +1,10 @@
 require 'faye/websocket'
 require 'volt/server/socket_connection_handler'
-require 'volt/server/websocket/rack_server_adaptor'
+
 
 module Volt
   class WebsocketHandler
     def initialize(app)
-      # Setup the rack server and adaptor
-      RackServerAdaptor.load
-
       @app = app
     end
 
