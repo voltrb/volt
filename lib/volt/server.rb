@@ -17,6 +17,7 @@ require 'volt/page/page'
 require 'volt/server/websocket/websocket_handler'
 require 'volt/utils/read_write_lock'
 require 'volt/server/forking_server'
+require 'volt/server/websocket/rack_server_adaptor'
 
 
 module Volt
@@ -49,6 +50,9 @@ module Volt
     # killed when code changes and reforked.  (This provides simple fast code
     # reloading)
     def app
+      # Setup the rack server and adaptor
+      RackServerAdaptor.load
+
       app = Rack::Builder.new
 
       # Handle websocket connections
