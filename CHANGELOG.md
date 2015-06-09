@@ -1,6 +1,7 @@
 # Change Log
 
-## 0.9.3.pre4
+## 0.9.3
+
 ### Added
 - Added validations block for conditional validation runs
 - you can now set the NO_FORKING=true ENV to prevent using the forking server in development.
@@ -17,6 +18,7 @@
 - You can now use .create to make a new item on a collection.
 - .inspect for models is now cleaner
 - Volt.current_user now works in HttpController's
+- HttpControllers now can take promises in render.
 - You can now add your own middleware to the middleware stack.  (see docs)
 - Added a threadpool for Tasks, and options to customize pool size in config/app.rb
 - Volt now handles Syntax errors much better, it will display an error message when your app does not compile, and can reload from that page when things change. (in development)
@@ -37,6 +39,7 @@
 - Each bindings now support promises.
 - Volt.fetch_current_user has been deprecated and Volt.current_user now returns a promise.
 - Volt.current_user? now returns a promise that yields a boolean
+- Lots of bug fixes. (see github)
 
 ## 0.9.2
 ### Changed
