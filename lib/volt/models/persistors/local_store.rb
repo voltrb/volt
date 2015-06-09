@@ -1,6 +1,6 @@
 require 'volt/models/persistors/base'
 require 'volt/utils/local_storage'
-require 'json'
+require 'ejson_ext'
 
 module Volt
   module Persistors
@@ -17,7 +17,7 @@ module Volt
         if @model.path == []
           json_data = LocalStorage['volt-store']
           if json_data
-            root_attributes = JSON.parse(json_data)
+            root_attributes = EJSONExt.parse(json_data)
 
             @loading_data = true
             root_attributes.each_pair do |key, value|
@@ -37,7 +37,7 @@ module Volt
       def save_all
         return if @loading_data
 
-        json_data = JSON.dump(@model.to_h)
+        json_data = EJSONExt.stringify(@model.to_h)
 
         LocalStorage['volt-store'] = json_data
       end

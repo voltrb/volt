@@ -1,4 +1,4 @@
-require 'json'
+require 'ejson_ext'
 require File.join(File.dirname(__FILE__), '../../../app/volt/tasks/query_tasks')
 
 module Volt
@@ -37,7 +37,7 @@ module Volt
     def process_message(message)
       # self.class.message_all(message)
       # Messages are json and wrapped in an array
-      message = JSON.parse(message).first
+      message = EJSONExt.parse(message).first
 
       begin
         @@dispatcher.dispatch(self, message)
@@ -52,7 +52,7 @@ module Volt
     end
 
     def send_message(*args)
-      str = JSON.dump([*args])
+      str = EJSONExt.stringify([*args])
 
       @session.send(str)
 

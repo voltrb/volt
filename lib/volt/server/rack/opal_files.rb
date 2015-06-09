@@ -22,7 +22,7 @@ module Volt
       Opal.append_path(Volt.root + '/app')
       Opal.append_path(Volt.root + '/lib')
 
-      Gem.loaded_specs.values.select {|gem| gem.name =~ /^volt/ }
+      Gem.loaded_specs.values.select {|gem| gem.name =~ /^(volt|ejson_ext)/ }
       .each do |gem|
         ['app', 'lib'].each do |folder|
           path = gem.full_gem_path + "/#{folder}"

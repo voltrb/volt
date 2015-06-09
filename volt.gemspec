@@ -30,6 +30,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'bundler', '>= 1.5'
   spec.add_dependency 'faye-websocket', '~> 0.9.2'
 
+  # For transmiting data between the client and server (with dates)
+  spec.add_dependency 'ejson_ext', '~> 0.1.0'
+
   # Locking down concurrent-ruby because one currently used feature is going to
   # be deprecated (which we need to build a work around for)
   spec.add_dependency 'concurrent-ruby', '= 0.8.0'
