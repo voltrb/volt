@@ -6,6 +6,8 @@ require 'volt/models/state_helpers'
 require 'volt/data_stores/data_store'
 
 module Volt
+  class RecordNotFoundException < Exception ; end
+
   class ArrayModel < ReactiveArray
     include ModelWrapper
     include ModelHelpers
@@ -161,6 +163,12 @@ module Volt
       end
     end
 
+    # Same as first, except it returns a promise (even on page collection), and
+    # it fails with a RecordNotFoundException if no result is found.
+    def first!
+      fail_not_found_if_nil(first)
+    end
+
     # Return the first item in the collection, or create one if one does not
     # exist yet.
     def first_or_create
@@ -256,7 +264,13 @@ module Volt
     end
 
     def to_json
-      to_a.to_json
+      array = to_a
+
+      if array.is_a?(Promise)
+        array.then(&:to_json)
+      else
+        array.to_json
+      end
     end
 
 
@@ -282,6 +296,17 @@ module Volt
       model       = model_klass.new(attrs, new_options)
 
       model
+    end
+
+    # Raise a RecordNotFoundException if the promise returns a nil.
+    def fail_not_found_if_nil(promise)
+      promise.then do |val|
+        if val
+          val
+        else
+          raise RecordNotFoundException.new
+        end
+      end
     end
 
     # We need to setup the proxy methods below where they are defined.
