@@ -11,7 +11,7 @@ module Volt
     attr_accessor :params
 
     # Setup before_action and after_action
-    setup_action_helpers_in_class(:before, :after)
+    setup_action_helpers_in_class(:before_action, :after_action)
 
     # Initialzed with the params parsed from the route and the HttpRequest
     def initialize(volt_app, params, request)
@@ -23,9 +23,9 @@ module Volt
     end
 
     def perform(action='index')
-      filtered = run_actions(:before, action)
+      filtered = run_actions(:before_action, action)
       send(action.to_sym) unless filtered
-      run_actions(:after, action) unless filtered
+      run_actions(:after_action, action) unless filtered
       respond
     end
 

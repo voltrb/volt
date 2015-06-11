@@ -4,7 +4,7 @@ require 'volt/controllers/model_controller'
 class BaseTestActions
   include Volt::Actions
 
-  setup_action_helpers_in_class(:before, :after)
+  setup_action_helpers_in_class(:before_action, :after_action)
 end
 
 class TestActionsBlocks < BaseTestActions
@@ -77,7 +77,7 @@ describe Volt::Actions do
     expect(test_class.ran_before1).to eq(nil)
     expect(test_class.ran_before2).to eq(nil)
 
-    test_class.run_actions(:before, :index)
+    test_class.run_actions(:before_action, :index)
 
     expect(test_class.ran_before1).to eq(true)
     expect(test_class.ran_before2).to eq(true)
@@ -89,7 +89,7 @@ describe Volt::Actions do
     expect(test_class.ran_one).to eq(nil)
     expect(test_class.ran_two).to eq(nil)
 
-    test_class.run_actions(:before, :index)
+    test_class.run_actions(:before_action, :index)
 
     expect(test_class.ran_one).to eq(true)
     expect(test_class.ran_two).to eq(true)
@@ -107,7 +107,7 @@ describe Volt::Actions do
     expect(test_class.ran_one).to eq(nil)
     expect(test_class.ran_two).to eq(nil)
 
-    result = test_class.run_actions(:before, :index)
+    result = test_class.run_actions(:before_action, :index)
     expect(result).to eq(false)
 
     expect(test_class.ran_one).to eq(true)
@@ -117,7 +117,7 @@ describe Volt::Actions do
   it 'should stop the chain when #stop_chain is called and return false from #run_actions' do
     test_class = TestStopCallbacks.new
 
-    result = test_class.run_actions(:before, :index)
+    result = test_class.run_actions(:before_action, :index)
     expect(result).to eq(true)
 
     expect(test_class.ran_one).to eq(true)
@@ -129,18 +129,18 @@ describe Volt::Actions do
   it 'should call without any callbacks' do
     test_class = TestNoCallbacks.new
 
-    result = test_class.run_actions(:before, :index)
+    result = test_class.run_actions(:before_action, :index)
     expect(result).to eq(false)
   end
 
   it 'should follow only limitations' do
     test_only = TestOnlyCallbacks.new
 
-    test_only.run_actions(:before, :index)
+    test_only.run_actions(:before_action, :index)
     expect(test_only.ran_one).to eq(nil)
     expect(test_only.ran_two).to eq(nil)
 
-    test_only.run_actions(:before, :new)
+    test_only.run_actions(:before_action, :new)
     expect(test_only.ran_one).to eq(true)
     expect(test_only.ran_two).to eq(true)
   end

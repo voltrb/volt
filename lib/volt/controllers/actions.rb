@@ -1,7 +1,7 @@
 # The Actions module adds helpers for setting up and using
 # actions on a class.  You can setup helpers for an action with
 #
-#   setup_action_helpers_in_class(:before, :after)
+#   setup_action_helpers_in_class(:before_action, :after_action)
 #
 # The above will setup before_action and after_action methods on
 # the class.  Typically setup_action_helpers_in_class will be run
@@ -21,11 +21,11 @@ module Volt
       def setup_action_helpers_in_class(*groups)
         groups.each do |group|
           # Setup a class attribute to track the
-          callbacks_var_name = :"#{group}_action_callbacks"
+          callbacks_var_name = :"#{group}_callbacks"
           class_attribute(callbacks_var_name)
 
           # Create the method on the class
-          define_singleton_method(:"#{group}_action") do |*args, &block|
+          define_singleton_method(group) do |*args, &block|
             # Add the block in place of the symbol
             args.unshift(block) if block
 
@@ -56,7 +56,7 @@ module Volt
     # and the action being called on.  If the callback chain was stopped with
     # #stop_chain, it will return true, otherwise false.
     def run_actions(group, action)
-      callbacks = self.class.send(:"#{group}_action_callbacks")
+      callbacks = self.class.send(:"#{group}_callbacks")
 
       filtered_callbacks = filter_actions_by_only_exclude(callbacks || [], action)
 
