@@ -42,11 +42,11 @@ group :test do
 end
 
 # Server for MRI
-platform :mri do
+platform :mri, :mingw do
   # The implementation of ReadWriteLock in Volt uses concurrent ruby and ext helps performance.
   gem 'concurrent-ruby-ext', '~> 0.8.0'
 
-  # Thin is the default volt server, you Puma is also supported
+  # Thin is the default volt server, Puma is also supported
   gem 'thin', '~> 1.6.0'
   gem 'bson_ext', '~> 1.9.0'
 end
