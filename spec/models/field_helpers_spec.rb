@@ -7,8 +7,8 @@ class ExampleModelWithField < Volt::Model
 end
 
 describe 'field helpers' do
+  let(:model) { ExampleModelWithField.new }
   it 'should allow a user to setup a field that can be written to and read' do
-    model = ExampleModelWithField.new
 
     expect(model.name).to eq(nil)
     model.name = 'jimmy'
@@ -25,5 +25,21 @@ describe 'field helpers' do
     expect do
       ExampleModelWithField.field :awesome, Array
     end.to raise_error(FieldHelpers::InvalidFieldClass)
+  end
+
+  it 'should convert numeric strings to Fixnum when Fixnum is specified as a type restriction' do
+    model.value = '22'
+    expect(model.value).to eq(22)
+  end
+
+  it 'should not convert non-numeric strings (and have a validation error)' do
+    # use a buffer, so we can put the model into an invalid state
+    buf = model.buffer
+    buf.value = 'cats'
+    expect(buf.value).to eq('cats')
+
+    buf.validate!.fail do |error|
+      expect(error).to eq({})
+    end
   end
 end

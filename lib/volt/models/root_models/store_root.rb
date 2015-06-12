@@ -20,7 +20,6 @@ module Volt
 
     def get(attr_name, expand = false)
       res = if attr_name.singular? && attr_name.to_sym != :id
-        puts "GET: #{attr_name}"
         model_for_root.get(attr_name, expand)
       else
         super
@@ -32,7 +31,6 @@ module Volt
 
     def set(attr_name, value, &block)
       if attr_name.singular? && attr_name.to_sym != :id
-        puts "SET ATTR NAME: #{attr_name.inspect}: #{value.inspect}"
         Volt::Computation.run_without_tracking do
           model_for_root.then do |model|
             model.set(attr_name, value, &block)

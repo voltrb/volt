@@ -6,6 +6,7 @@ require 'volt/models/validators/numericality_validator'
 require 'volt/models/validators/phone_number_validator'
 require 'volt/models/validators/presence_validator'
 require 'volt/models/validators/unique_validator'
+require 'volt/models/validators/type_validator'
 
 module Volt
   # Include in any class to get validation logic

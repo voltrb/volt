@@ -65,6 +65,10 @@ module Volt
       @hash
     end
 
+    def to_json
+      @hash.to_json
+    end
+
     def inspect
       @all_deps.depend
       "#<#{self.class.name} #{@hash.inspect}>"

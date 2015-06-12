@@ -10,6 +10,11 @@ module FieldHelpers
         fail FieldHelpers::InvalidFieldClass, 'valid field types is currently limited to String or Numeric'
       end
 
+      if klass
+      # Add type validation
+        validate name, type: klass
+      end
+
       define_method(name) do
         get(name)
       end
@@ -21,7 +26,20 @@ module FieldHelpers
           if klass == String
             val = val.to_s
           elsif klass == Numeric
-            val = val.to_f
+            begin
+              orig = val
+              unless val.is_a?(Numeric)
+                val = Float(val)
+              end
+
+              if RUBY_PLATFORM == 'opal'
+                # Opal has a bug in 0.7.2 that gives us back NaN without an
+                # error sometimes.
+                val = orig if val.nan?
+              end
+            rescue TypeError, ArgumentError => e
+              # ignore, unmatched types will be caught below.
+            end
           end
         end
 
