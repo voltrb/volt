@@ -48,7 +48,7 @@ else
     class << self
       def defaults
         app_name = File.basename(Dir.pwd)
-        {
+        opts = {
           app_name:  app_name,
           db_name:   (ENV['DB_NAME'] || (app_name + '_' + Volt.env.to_s)).gsub('.', '_'),
           db_host:   ENV['DB_HOST'] || 'localhost',
@@ -66,6 +66,10 @@ else
           max_worker_threads: 10,
           worker_timeout: 60
         }
+
+        opts[:db_uri] = ENV['DB_URI'] if ENV['DB_URI']
+
+        opts
       end
 
       # Resets the configuration to the default (empty hash)
