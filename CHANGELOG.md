@@ -1,5 +1,12 @@
 # Change Log
 
+## 0.9.4.pre1
+### Added
+
+### Changed
+- fixed bug with ReactiveHash#to_json
+- fixed bug with field Numeric coersion
+
 ## 0.9.3
 [0.9.3 Update Blog Post](http://blog.voltframework.com/post/121128931859/0-9-3-stuff-you-asked-for)
 [Upgrade Guide](https://github.com/voltrb/volt/blob/master/docs/UPGRADE_GUIDE.md)
