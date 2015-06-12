@@ -15,6 +15,10 @@ module Volt
         nil
       else
         index = user_id_signature.index(':')
+
+        # If no index, the cookie is invalid
+        return nil unless index
+
         user_id = user_id_signature[0...index]
 
         if RUBY_PLATFORM != 'opal'
