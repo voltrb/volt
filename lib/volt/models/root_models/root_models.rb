@@ -19,7 +19,12 @@ end
 
 module Volt
   class RootModels
+    class_attribute :model_classes
+    self.model_classes = []
+
     def self.add_model_class(klass)
+      self.model_classes << klass
+
       method_name = klass.to_s.underscore.pluralize
 
       # Create a getter for each model class off of root.
