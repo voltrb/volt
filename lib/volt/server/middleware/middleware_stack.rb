@@ -9,13 +9,7 @@ module Volt
     def initialize
       # Setup the next app
       @middlewares = []
-      @maps = []
     end
-
-    # Set the app that gets called after the middleware runs
-    # def set_app(app)
-    #   @app = app
-    # end
 
     def use(*args, &block)
       @middlewares << [args, block]
@@ -25,7 +19,10 @@ module Volt
     end
 
     def map(path, &block)
-      @maps << [path, block]
+      @middlewares << [:map, path, block]
+
+      # invalidate builder
+      @builder = nil
     end
 
     def run(app)
@@ -36,12 +33,12 @@ module Volt
     def build
       @builder = Rack::Builder.new
 
-      @maps.each do |path, block|
-        @builder.map(path, &block)
-      end
-
       @middlewares.each do |middleware|
-        @builder.use(*middleware[0], &middleware[1])
+        if middleware[0] == :map
+          @builder.map(middleware[1], &middleware[2])
+        else
+          @builder.use(*middleware[0], &middleware[1])
+        end
       end
 
       @builder.run(@app)
