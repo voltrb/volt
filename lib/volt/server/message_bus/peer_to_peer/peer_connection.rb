@@ -91,7 +91,7 @@ module Volt
           begin
             @message_encoder.send_message(@socket, message)
             # 'Error: closed stream' comes in sometimes
-          rescue Errno::ECONNREFUSED, Errno::EPIPE, IOError => e # was also rescuing Error
+          rescue Errno::ECONNREFUSED, Errno::ENETUNREACH, Errno::EPIPE, IOError => e # was also rescuing Error
             if reconnect!
               retry
             else
@@ -113,7 +113,7 @@ module Volt
             end
 
             # Got nil from socket
-          rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
+          rescue Errno::ECONNRESET, Errno::ENETUNREACH, Errno::EPIPE, IOError => e
             # handle below
           end
 
@@ -138,7 +138,7 @@ module Volt
           begin
             socket = SocketWithTimeout.new(ip, port, CONNECT_TIMEOUT)
             return PeerConnection.new(socket, ip, port, message_bus)
-          rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT => e
+          rescue Errno::ECONNREFUSED, Errno::ENETUNREACH, Errno::ETIMEDOUT => e
             # Unable to connect, next
             next
           end
