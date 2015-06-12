@@ -36,6 +36,16 @@ module Volt
     method_option :bind, type: :string, aliases: '-b', banner: 'the ip the server should bind to'
 
     def server
+      if ENV['PROFILE_BOOT']
+        begin
+          require 'ruby-prof'
+
+          RubyProf.start
+        rescue LoadError => e
+          puts "To run volt in a profile mode, you must add ruby-prof gem to the app's Gemfile"
+        end
+      end
+
       require 'fileutils'
       require 'volt/server'
 
