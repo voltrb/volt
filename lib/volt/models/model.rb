@@ -334,7 +334,7 @@ module Volt
         result = parent.delete(self)
 
         # Wrap result in a promise if it isn't one
-        return Promise.new.then { result }
+        return result.then
       else
         fail 'Model does not have a parent and cannot be deleted.'
       end
