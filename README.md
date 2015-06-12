@@ -43,7 +43,7 @@ Rick Carlino has been putting together some great volt tutorial videos also.
 
 # Getting Help
 
-Have a question and need help?  The volt team watches [stackoverflow](http://stackoverflow.com/search?q=voltrb) for questions and will get back to you quickly.  Be sure to post the question with the #voltrb tag.  If you have something you need to discuss, drop into our [gitter room](gitter.im/voltrb/volt).
+Have a question and need help?  The volt team watches [stackoverflow](http://stackoverflow.com/search?q=voltrb) for questions and will get back to you quickly.  Be sure to post the question with the #voltrb tag.  If you have something you need to discuss, drop into our [gitter room](https://gitter.im/voltrb/volt).
 
 # Contributing
 
