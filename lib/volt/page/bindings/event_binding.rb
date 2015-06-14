@@ -56,6 +56,16 @@ module Volt
 
       end
 
+      event_name = case event_name
+      when 'blur'
+        'focusout'
+      when 'focus'
+        'focusin'
+      else
+        event_name
+      end
+
+
       @listener = page.events.add(event_name, self, handler)
     end
 

@@ -148,4 +148,10 @@
 
   <p id="escapeContent">{{{this is {{escaped}}}}}</p>
 
+  <h2>Event</h2>
+
+  <input e-blur="blur" e-focus="focus" id="blurFocusField" />
+  <div id="blurCount">{{ blur_count || 0 }}</div>
+  <div id="focusCount">{{ focus_count || 0 }}</div>
+
 
