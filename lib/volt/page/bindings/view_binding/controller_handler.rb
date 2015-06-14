@@ -25,7 +25,7 @@ module Volt
       # If no stage, then we are calling the main action method,
       # so we should call the before/after actions
       unless has_stage
-        if @controller.run_actions(:before_action, @action)
+        if @controller.run_callbacks(:before_action, @action)
           # stop_chain was called
           return true
         end
@@ -33,7 +33,7 @@ module Volt
 
       @controller.send(method_name) if @controller.respond_to?(method_name)
 
-      @controller.run_actions(:after_action, @action) unless has_stage
+      @controller.run_callbacks(:after_action, @action) unless has_stage
 
       # before_action chain was not stopped
       false

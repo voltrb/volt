@@ -23,9 +23,9 @@ module Volt
     end
 
     def perform(action='index')
-      filtered = run_actions(:before_action, action)
+      filtered = run_callbacks(:before_action, action)
       send(action.to_sym) unless filtered
-      run_actions(:after_action, action) unless filtered
+      run_callbacks(:after_action, action) unless filtered
       respond
     end
 

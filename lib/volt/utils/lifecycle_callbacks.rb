@@ -52,10 +52,10 @@ module Volt
       end
     end
 
-    # To run the actions on a class, call #run_actions passing in the group
+    # To run the actions on a class, call #run_callbacks passing in the group
     # and the action being called on.  If the callback chain was stopped with
     # #stop_chain, it will return true, otherwise false.
-    def run_actions(group, action)
+    def run_callbacks(group, action)
       callbacks = self.class.send(:"#{group}_callbacks")
 
       filtered_callbacks = filter_actions_by_only_exclude(callbacks || [], action)
