@@ -31,6 +31,7 @@ module Volt
   end
 
   class Model
+    include LifecycleCallbacks
     include ModelWrapper
     include ModelHelpers
     include ModelHashBehaviour
@@ -48,7 +49,6 @@ module Volt
     include Associations
     include ReactiveAccessors
     include ModelChangeHelpers
-    include LifecycleCallbacks
 
     attr_reader :attributes, :parent, :path, :persistor, :options
 

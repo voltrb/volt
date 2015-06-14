@@ -15,17 +15,18 @@ module Volt
     class StopChainException < Exception; end
 
     module ClassMethods
-      # Takes a list of action groups (as symbols).  An action group is typically used for before/after, but
-      # can be used anytime you have multiple sets of actions.  The method will create an {x}_action method for each
-      # group passed in.
-      def setup_action_helpers_in_class(*groups)
-        groups.each do |group|
+      # Takes a list of callbacks (as symbols).  A callback is typically used
+      # for before/after actions, but can be used anytime you have callbacks
+      # that may be filtered by action.  The method will create an callback
+      # method for each callback name passed in.
+      def setup_action_helpers_in_class(*callback_names)
+        callback_names.each do |callback_name|
           # Setup a class attribute to track the
-          callbacks_var_name = :"#{group}_callbacks"
+          callbacks_var_name = :"#{callback_name}_callbacks"
           class_attribute(callbacks_var_name)
 
           # Create the method on the class
-          define_singleton_method(group) do |*args, &block|
+          define_singleton_method(callback_name) do |*args, &block|
             # Add the block in place of the symbol
             args.unshift(block) if block
 
@@ -52,16 +53,19 @@ module Volt
       end
     end
 
-    # To run the actions on a class, call #run_callbacks passing in the group
-    # and the action being called on.  If the callback chain was stopped with
-    # #stop_chain, it will return true, otherwise false.
-    def run_callbacks(group, action)
-      callbacks = self.class.send(:"#{group}_callbacks")
+    # To run the callbacks on a class, call #run_callbacks passing in the
+    # callback_name and the action it runs with.  If the callback chain was
+    # stopped with #stop_chain, it will return true, otherwise false.
+    def run_callbacks(callback_name, action=nil)
+      callbacks = self.class.send(:"#{callback_name}_callbacks")
 
-      filtered_callbacks = filter_actions_by_only_exclude(callbacks || [], action)
+      callbacks ||= []
+      if action
+        callbacks = filter_actions_by_only_exclude(callbacks || [], action)
+      end
 
       begin
-        filtered_callbacks.each do |callback|
+        callbacks.map { |v| v[0] }.each do |callback|
           case callback
           when Symbol
             send(callback)
@@ -100,7 +104,7 @@ module Volt
           # If no only, include it
           true
         end
-      end.map { |v| v[0] }
+      end
     end
   end
 end

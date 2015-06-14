@@ -3,6 +3,10 @@
 
 module Volt
   module ModelChangeHelpers
+    def self.included(base)
+      base.setup_action_helpers_in_class(:before_save)
+    end
+
     private
 
     # Called when something in the model changes.  Saves
@@ -53,6 +57,10 @@ module Volt
 
       # Don't save right now if we're in a nosave block
       unless Volt.in_mode?(:no_save)
+        # Call the before_save callback
+        run_callbacks(:before_save)
+
+
         # the changed method on a persistor should return a promise that will
         # be resolved when the save is complete, or fail with a hash of errors.
         if @persistor

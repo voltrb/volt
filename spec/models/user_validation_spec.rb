@@ -1,5 +1,13 @@
 require 'spec_helper'
 
+class TestUserTodo < Volt::Model
+  own_by_user
+
+  permissions(:update) do
+    deny :user_id
+  end
+end
+
 describe Volt::UserValidatorHelpers do
   context 'with user' do
     before do
