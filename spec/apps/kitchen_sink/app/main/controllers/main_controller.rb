@@ -5,6 +5,8 @@ module Main
   class MainController < Volt::ModelController
     model :page
 
+    reactive_accessor :blur_count, :focus_count
+
     def index
       a = {}
       a[{}] = 5
@@ -74,6 +76,16 @@ module Main
       changes.resolve(1.upto(200).to_a)
       page._items = 901.upto(1000).to_a
       page._items = changes
+    end
+
+    def blur
+      self.blur_count ||= 0
+      self.blur_count += 1
+    end
+
+    def focus
+      self.focus_count ||= 0
+      self.focus_count += 1
     end
 
     private

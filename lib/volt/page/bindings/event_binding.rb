@@ -31,7 +31,17 @@ module Volt
 
     def initialize(volt_app, target, context, binding_name, event_name, call_proc)
       super(volt_app, target, context, binding_name)
-      @event_name = event_name
+
+      # Map blur/focus to focusout/focusin
+      @event_name = case event_name
+      when 'blur'
+        'focusout'
+      when 'focus'
+        'focusin'
+      else
+        event_name
+      end
+
 
       handler = proc do |js_event|
         event = JSEvent.new(js_event)
@@ -56,7 +66,7 @@ module Volt
 
       end
 
-      @listener = page.events.add(event_name, self, handler)
+      @listener = page.events.add(@event_name, self, handler)
     end
 
     # Remove the event binding
