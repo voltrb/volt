@@ -9,7 +9,7 @@
 #
 #   before_action :require_login
 module Volt
-  module Actions
+  module LifecycleCallbacks
     # StopChainException inherits from Exception directly so it will not be handled by a
     # default rescue.
     class StopChainException < Exception; end

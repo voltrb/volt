@@ -1,11 +1,11 @@
 require 'volt/server/rack/http_response_header'
 require 'volt/server/rack/http_response_renderer'
-require 'volt/controllers/actions'
+require 'volt/utils/lifecycle_callbacks'
 
 module Volt
   # Allow you to create controllers that act as http endpoints
   class HttpController
-    include Actions
+    include LifecycleCallbacks
 
     #TODO params is only public for testing
     attr_accessor :params

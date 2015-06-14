@@ -1,12 +1,12 @@
 require 'volt/reactive/reactive_accessors'
-require 'volt/controllers/actions'
+require 'volt/utils/lifecycle_callbacks'
 require 'volt/controllers/template_helpers'
 require 'volt/controllers/collection_helpers'
 
 module Volt
   class ModelController
     include ReactiveAccessors
-    include Actions
+    include LifecycleCallbacks
     include CollectionHelpers
 
     # A model controller will have its

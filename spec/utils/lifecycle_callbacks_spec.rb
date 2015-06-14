@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'volt/controllers/model_controller'
 
 class BaseTestActions
-  include Volt::Actions
+  include Volt::LifecycleCallbacks
 
   setup_action_helpers_in_class(:before_action, :after_action)
 end
@@ -70,7 +70,7 @@ class TestOnlyCallbacks < TestActionsSymbolsBase
   before_action :run_one, :run_two, only: [:new]
 end
 
-describe Volt::Actions do
+describe Volt::LifecycleCallbacks do
   it 'should trigger before actions via blocks' do
     test_class = TestActionsBlocks.new
 

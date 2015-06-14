@@ -18,6 +18,7 @@ require 'volt/models/associations'
 require 'volt/reactive/class_eventable'
 require 'volt/utils/event_counter'
 require 'volt/reactive/reactive_accessors'
+require 'volt/utils/lifecycle_callbacks'
 require 'thread'
 
 module Volt
@@ -47,6 +48,7 @@ module Volt
     include Associations
     include ReactiveAccessors
     include ModelChangeHelpers
+    include LifecycleCallbacks
 
     attr_reader :attributes, :parent, :path, :persistor, :options
 

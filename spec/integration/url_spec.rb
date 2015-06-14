@@ -12,6 +12,7 @@ if ENV['BROWSER'] && ENV['BROWSER'] != 'phantom'
 
       click_link 'Todos'
       expect(current_url).to match(/\/todos$/)
+      sleep 20
       expect(page).to have_content('Todos Example')
 
       # "Click" back button
