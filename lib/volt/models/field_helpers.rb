@@ -11,8 +11,10 @@ module FieldHelpers
       end
 
       if klass
-      # Add type validation
-        validate name, type: klass
+      # Add type validation, execpt for String, since anything can be a string.
+        unless klass == String
+          validate name, type: klass
+        end
       end
 
       define_method(name) do
