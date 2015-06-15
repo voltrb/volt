@@ -49,6 +49,22 @@ module Volt
       Thread.current['with_user_id'] = previous_id
     end
 
+    unless RUBY_PLATFORM == 'opal'
+      # Takes a user and returns a signed string that can be used for the
+      # user_id cookie to login a user.
+      def user_login_signature(user)
+        fail 'app_secret is not configured' unless Volt.config.app_secret
+
+        # TODO: returning here should be possible, but causes some issues
+        # Salt the user id with the app_secret so the end user can't
+        # tamper with the cookie
+        signature = Digest::SHA256.hexdigest(salty_user_id(user.id))
+
+        # Return user_id:hash on user id
+        "#{user.id}:#{signature}"
+      end
+    end
+
     def skip_permissions
       Volt.run_in_mode(:skip_permissions) do
         yield
@@ -114,6 +130,14 @@ module Volt
       end
 
       user_id_signature
+    end
+
+
+    private
+    unless RUBY_PLATFORM == 'opal'
+      def salty_user_id(user_id)
+        "#{Volt.config.app_secret}::#{user_id}"
+      end
     end
   end
 end

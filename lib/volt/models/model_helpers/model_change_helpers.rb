@@ -4,7 +4,7 @@
 module Volt
   module ModelChangeHelpers
     def self.included(base)
-      base.setup_action_helpers_in_class(:before_save)
+      base.setup_action_helpers_in_class(:before_save, :before_validate)
     end
 
     private

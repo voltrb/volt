@@ -16,22 +16,9 @@ class UserTasks < Volt::Task
 
         match_pass = BCrypt::Password.new(user._hashed_password)
         fail 'Password did not match' unless  match_pass == password
-        fail 'app_secret is not configured' unless Volt.config.app_secret
 
-        # TODO: returning here should be possible, but causes some issues
-        # Salt the user id with the app_secret so the end user can't
-        # tamper with the cookie
-        signature = Digest::SHA256.hexdigest(salty_user_id(user.id))
-
-        # Return user_id:hash on user id
-        next "#{user.id}:#{signature}"
+        next Volt.user_login_signature(user)
       end
     end
-  end
-
-  private
-
-  def salty_user_id(user_id)
-    "#{Volt.config.app_secret}::#{user_id}"
   end
 end
