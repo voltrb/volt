@@ -2,11 +2,6 @@ require 'bcrypt' unless RUBY_PLATFORM == 'opal'
 
 module Volt
   class User < Model
-    field :username
-    field :email
-    field :name
-    field :password
-
     # returns login field name depending on config settings
     def self.login_field
       if Volt.config.try(:public).try(:auth).try(:use_username)
@@ -15,9 +10,6 @@ module Volt
         :email
       end
     end
-
-    validate login_field, unique: true, length: 8
-    validate :email, email: true
 
     permissions(:read) do
       # Never pass the hashed_password to the client
@@ -35,6 +27,11 @@ module Volt
           validate :password, length: 8
         end
       end
+    end
+
+    # Getter for password
+    def password
+      get('password')
     end
 
     def password=(val)

@@ -252,6 +252,7 @@ describe 'bindings test', type: :feature, sauce: true do
       expect(find('#blurCount')).to have_content('0')
 
       page.execute_script("$('#blurFocusField').focus()")
+      sleep 0.1
       expect(find('#focusCount')).to have_content('1')
 
       page.execute_script("$('#blurFocusField').blur()")

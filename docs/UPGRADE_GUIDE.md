@@ -1,3 +1,22 @@
+# 0.9.3 to 0.9.4
+
+We moved logic out of Volt::User and into the generated user file, so it is easier to customize.  Add the following to your app/main/models/user.rb:
+
+```ruby
+# The login_field method returns the name that should be used for the field
+# where the users e-mail is stored.  (usually :username or :email)
+def self.login_field
+  :email
+end
+
+# login_field is set to :email by default and can be set to
+field login_field
+field :name
+
+validate login_field, unique: true, length: 8
+validate :email, email: true
+```
+
 # 0.9.2 to 0.9.3
 
 Upgrading from 0.9.2 should be fairly simple, just implement the following:
