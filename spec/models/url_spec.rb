@@ -63,4 +63,20 @@ describe Volt::URL do
       expect(subject.url_for params).to eq uri
     end
   end
+
+  describe '#url_with' do
+    let(:uri) { 'http://voltframework.com:8888/path/1?query=val&page=1#fragment' }
+    let(:fake_router) do
+      router = Volt::Routes.new
+
+      router.define do
+        client '/path/{{ id }}', view: 'blog/show'
+      end
+    end
+
+    it 'regenerates the URL and merges the given params' do
+      params = { page: 1 }
+      expect(subject.url_with params).to eq uri
+    end
+  end
 end
