@@ -97,8 +97,8 @@ module Volt
       new_url
     end
 
-    def url_with(params)
-      url_for(params.to_h.merge(params))
+    def url_with(passed_params)
+      url_for(params.to_h.merge(passed_params))
     end
 
     # Called when the state has changed and the url in the
