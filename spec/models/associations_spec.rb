@@ -17,14 +17,14 @@ describe Volt::Associations do
   if RUBY_PLATFORM != 'opal'
     describe "with samples" do
       before do
-        store._people! << { name: 'Jimmy' }
-        @person = store._people[0].sync
-        @person._addresses! << { city: 'Bozeman' }
-        @person._addresses << { city: 'Portland' }
+        @person = Person.new(name: 'Jimmy')
+        store.people << @person
+        @person.addresses << Address.new(city: 'Bozeman')
+        @person.addresses << Address.new(city: 'Portland')
       end
 
       it 'should associate via belongs_to' do
-        address = store._addresses!.first.sync
+        address = store.addresses.first.sync
 
         expect(address.person.sync.id).to eq(@person.id)
       end
@@ -64,7 +64,7 @@ describe Volt::Associations do
 
     it 'should assign the reference_id for has_many' do
       bob = store.people.create.sync
-      bob.addresses.create({:street => '1234 awesome street'})
+      address = bob.addresses.create({:street => '1234 awesome street'})
       expect(bob.addresses[0].sync.person_id).to eq(bob.id)
       expect(bob.id).to_not eq(nil)
     end

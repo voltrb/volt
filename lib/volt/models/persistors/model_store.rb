@@ -68,8 +68,10 @@ module Volt
 
         path_size = path.size
         if save_changes? && path_size > 0 && !@model.nil?
-          if path_size > 3 && (parent = @model.parent) && (source = parent.parent)
-            @model.attributes[:"#{path[-4].singularize}_id"] = source.id
+          if path_size > 3 && (parent = @model.parent)
+            # If we have a collection, go up one more.
+            parent = parent.parent unless parent.is_a?(Volt::Model)
+            @model.attributes[:"#{path[-4].singularize}_id"] = parent.id
           end
 
           if !collection

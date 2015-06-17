@@ -16,6 +16,13 @@ module Volt
             root.get(method_name.pluralize).where(id: lookup_key).first
           end
         end
+
+        define_method(:"#{method_name}=") do |obj|
+          id = obj.is_a?(Fixnum) ? obj : obj.id
+
+          # Assign the current model's something_id to the object's id
+          set("#{method_name}_id", id)
+        end
       end
 
       def has_many(method_name, remote_key_name = nil)
