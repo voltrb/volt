@@ -200,8 +200,13 @@ module Volt
     end
 
     def generate_initializers_code
-      code = "\nrequire_tree '#{@component_path}/config/initializers/'\n"
-      code << "require_tree '#{@component_path}/config/initializers/client'\n"
+      paths = Dir["#{@component_path}/config/initializers/*.rb"]
+      paths += Dir["#{@component_path}/config/initializers/client/*.rb"]
+
+      cpath_size = @component_path.size
+      paths.map! {|path| @component_name + path[cpath_size..-1]}
+
+      code = "\n" + paths.map { |path| "require '#{path}'" }.join("\n")
 
       code
     end
