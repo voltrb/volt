@@ -2,6 +2,8 @@
 
 ## 0.9.4.pre1
 ### Added
+- ```root``` can now be called from a model to get the root model on the collection.  (So if the model is on store, it will return ```store```)
+- ```store``` can now be called from inside of a model
 
 ### Changed
 - fixed bug with ReactiveHash#to_json

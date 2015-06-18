@@ -37,9 +37,7 @@ describe Volt::User do
   end
 
   describe '#password=' do
-    let!(:user) { Volt::User.new }
-
-    subject { user.password = 'test' }
+    subject { Volt::User.new(password: 'test') }
 
     if RUBY_PLATFORM != 'opal'
       describe 'when it is a Volt server' do
@@ -49,34 +47,37 @@ describe Volt::User do
         end
 
         it 'encrypts password' do
-          subject
+          the_page._users << subject
 
           expect(BCrypt::Password).to have_received :create
         end
 
         it 'sets _hashed_password to passed value' do
-          subject
+          the_page._users << subject
 
-          expect(user._hashed_password).to eq 'hashed-password'
+          expect(subject.get('hashed_password')).to eq 'hashed-password'
         end
       end
 
       it 'should allow updates without validating the password' do
         bob = store._users.buffer(name: 'Bob', email: 'bob@bob.com', password: '39sdjkdf932jklsd')
-        bob.save!
+        bob.save!.sync
 
-        expect(bob._password).to eq(nil)
+        Volt.as_user(bob) do
 
-        bob_buf = bob.buffer
+          expect(bob.password).to eq(nil)
 
-        bob_buf._name = 'Jimmy'
+          bob_buf = bob.buffer
 
-        saved = false
-        bob_buf.save! do
-          saved = true
+          bob_buf.name = 'Jimmy'
+
+          saved = false
+          bob_buf.save! do
+            saved = true
+          end
+
+          expect(saved).to eq(true)
         end
-
-        expect(saved).to eq(true)
       end
     end
 
@@ -87,12 +88,10 @@ describe Volt::User do
         allow(Volt).to receive(:server?).and_return false
       end
 
-      subject { user.password = 'a valid test password' }
+      subject { Volt::User.new(password: 'a valid test password') }
 
-      it 'sets _password to passed value' do
-        subject
-
-        expect(user._password).to eq('a valid test password')
+      it 'sets password to passed value' do
+        expect(subject.password).to eq('a valid test password')
       end
     end
   end

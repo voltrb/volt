@@ -287,29 +287,26 @@ module Volt
       # Called when the client adds an item.
       def added(model, index)
         if model.persistor
-          # Tell the persistor it was added, return the promise
-          promise = model.persistor.add_to_collection
-
           # Track the the model got added
           @ids[model.id] = true
-
-          promise
         end
       end
 
       # Called when the client removes an item
       def removed(model)
-        if model.persistor
-          # Tell the persistor it was removed
-          model.persistor.remove_from_collection
-
-          @ids.delete(model.id)
-        end
+        remove_tracking_id(model)
 
         if defined?($loading_models) && $loading_models
           return
         else
           StoreTasks.delete(channel_name, model.attributes[:id])
+        end
+      end
+
+      def remove_tracking_id(model)
+        if model.persistor
+          # Tell the persistor it was removed
+          @ids.delete(model.id)
         end
       end
     end

@@ -4,9 +4,18 @@ class ::TestSaveFailure < Volt::Model
   validate :name, length: 5
 end
 
+class ::TestChangedAttribute < Volt::Model
+  before_save :change_attributes
+
+  def change_attributes
+    set('one', 1)
+    set('two', 2)
+  end
+end
+
 describe Volt::Buffer do
   it 'should let you pass a block that evaluates to the then of the promise' do
-    buffer = the_page._items!.buffer
+    buffer = the_page._items.buffer
 
     count = 0
     result = buffer.save! do
@@ -18,6 +27,15 @@ describe Volt::Buffer do
   end
 
   if RUBY_PLATFORM != 'opal'
+    it 'should copy attributes back from the save_to model incase it changes them during save' do
+      buffer = the_page._test_changed_attributes.buffer
+
+      buffer.save!.sync
+      expect(buffer.save_to.attributes.without(:id)).to eq({one: 1, two: 2})
+      expect(buffer.attributes.without(:id)).to eq({one: 1, two: 2})
+      expect(buffer.id).to eq(buffer.save_to.id)
+    end
+
     it 'should reject a failed save! with the errors object' do
       buffer = the_page._test_save_failures.buffer
 

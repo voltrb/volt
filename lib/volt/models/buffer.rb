@@ -18,7 +18,7 @@ module Volt
           if save_to
             if save_to.is_a?(ArrayModel)
               # Add to the collection
-              promise = save_to.append(attributes)
+              promise = save_to.create(attributes)
             else
               # We have a saved model
               promise = save_to.assign_attributes(attributes)
@@ -33,11 +33,13 @@ module Volt
                 new_model.change_state_to(:loaded_state, :loaded)
 
                 # Set the buffer's id to track the main model's id
-                attributes[:id] = new_model.id
-                options[:save_to]     = new_model
+                options[:save_to] = new_model
               end
 
-              nil
+              # Copy attributes back from save_to model
+              @attributes = new_model.attributes
+
+              new_model
             end.fail do |errors|
               if errors.is_a?(Hash)
                 server_errors.replace(errors)

@@ -21,18 +21,6 @@ module Volt
         model.change_state_to(:loaded_state, initial_state)
       end
 
-      def add_to_collection
-        @in_collection = true
-        ensure_setup
-
-        # Call changed, return the promise
-        changed
-      end
-
-      def remove_from_collection
-        @in_collection = false
-      end
-
       def auto_generate_id
         true
       end

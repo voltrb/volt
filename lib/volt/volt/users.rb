@@ -39,8 +39,11 @@ module Volt
 
     # as_user lets you run a block as another user
     #
-    # @param user_id [Integer]
-    def as_user(user_id)
+    # @param user_or_user_id [Integer|Volt::Model]
+    def as_user(user_or_id)
+      # if we have a user, get the id
+      user_id = user_or_id.is_a?(Volt::Model) ? user_or_id.id : user_or_id
+
       previous_id = Thread.current['with_user_id']
       Thread.current['with_user_id'] = user_id
 

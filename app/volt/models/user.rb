@@ -2,6 +2,8 @@ require 'bcrypt' unless RUBY_PLATFORM == 'opal'
 
 module Volt
   class User < Model
+    field :password
+
     # returns login field name depending on config settings
     def self.login_field
       if Volt.config.try(:public).try(:auth).try(:use_username)
@@ -19,28 +21,32 @@ module Volt
       deny if !id == Volt.current_user_id && !new?
     end
 
-    if RUBY_PLATFORM == 'opal'
-      validations do
-        # Only validate password when it has changed
-        if changed?(:password)
-          # Don't validate on the server
-          validate :password, length: 8
-        end
+    unless RUBY_PLATFORM == 'opal'
+      permissions(:update) do
+        deny unless id == Volt.current_user_id
       end
     end
 
-    # Getter for password
-    def password
-      get('password')
+    validations do
+      # Only validate password when it has changed
+      if changed?(:password)
+        # Don't validate on the server
+        validate :password, length: 8
+      end
     end
 
-    def password=(val)
-      if Volt.server?
-        # on the server, we bcrypt the password and store the result
-        self._hashed_password = BCrypt::Password.create(val)
-      else
-        # Assign the attribute
-        self._password = val
+    # On the server, we hash the password and remove it (so we just store the hash)
+    unless RUBY_PLATFORM == 'opal'
+      before_save :hash_password
+
+      def hash_password
+        password = get('password')
+
+        # Clear the password
+        set('password', nil)
+
+        # Set the hashed_password field instead
+        set('hashed_password', BCrypt::Password.create(password))
       end
     end
   end

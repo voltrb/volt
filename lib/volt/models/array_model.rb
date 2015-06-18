@@ -94,40 +94,50 @@ module Volt
         model = wrap_values([model]).first
       end
 
-      if model.is_a?(Model) && !model.can_create?
-        fail "permissions did not allow create for #{model.inspect}"
-      end
 
-      # Add it to the array and trigger any watches or on events.
-      super(model)
+      if model.is_a?(Model)
+        if !model.can_create?
+          fail "permissions did not allow create for #{model.inspect}"
+        end
 
-      if @persistor
-        promise = @persistor.added(model, @array.size - 1)
-        if promise && promise.is_a?(Promise)
-          return promise.then do
+        # Add it to the array and trigger any watches or on events.
+        super(model)
 
-            # Mark the model as not new
-            model.instance_variable_set('@new', false)
+        @persistor.added(model, @array.size - 1)
 
-            # Mark the model as loaded
-            model.change_state_to(:loaded_state, :loaded)
+        # Validate and save
+        promise = model.run_changed.then do
+          # Mark the model as not new
+          model.instance_variable_set('@new', false)
 
-            # return the model
-            model
-          end.fail do |err|
-            # remove from the collection because it failed to save on the server
-            # we don't need to call delete on the server.
-            index = @array.index(model)
-            delete_at(index, true)
+          # Mark the model as loaded
+          model.change_state_to(:loaded_state, :loaded)
 
-            # re-raise, err might not be an Error object, so we use a rejected promise to re-raise
-            Promise.new.reject(err)
-          end
+       end.fail do |err|
+          # remove from the collection because it failed to save on the server
+          # we don't need to call delete on the server.
+          index = @array.index(model)
+          delete_at(index, true)
+
+          # remove from the id list
+          @persistor.try(:remove_tracking_id, model)
+
+          # re-raise, err might not be an Error object, so we use a rejected promise to re-raise
+          Promise.new.reject(err)
+        end
+      else
+        promise = nil.then do
+          # Add it to the array and trigger any watches or on events.
+          super(model)
+
+          @persistor.added(model, @array.size - 1)
         end
       end
 
-      # Return this model
-      Promise.new.resolve(model)
+      promise.then do
+        # resolve the model
+        model
+      end
     end
 
     # Works like << except it always returns a promise

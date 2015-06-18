@@ -58,6 +58,17 @@ module Volt
       end
     end
 
+    def store
+      # TODO: Move away from $page
+      $page.store
+    end
+
+    # returns the root model for the collection the model is currently on.  So
+    # if the model is persisted somewhere on store, it will return ```store```
+    def root
+      persistor.try(:root_model)
+    end
+
 
 
 

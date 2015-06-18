@@ -359,14 +359,14 @@ module Volt
       if initial_setup
         # Run initial validation
         if Volt.in_mode?(:no_validate)
-          # No validate, resolve nil
-          Promise.new.resolve(nil)
+          # No validate, resolve self
+          Promise.new.resolve(self)
         else
           return validate!.then do |errs|
             if errs && errs.size > 0
               Promise.new.reject(errs)
             else
-              Promise.new.resolve(nil)
+              Promise.new.resolve(self)
             end
           end
         end
