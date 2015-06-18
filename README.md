@@ -7,11 +7,11 @@
 
 For the current status of Volt, read: http://voltframework.com/blog
 
-Volt is a Ruby web framework where your Ruby code runs on both the server and the client (via [Opal](https://github.com/opal/opal)). The DOM automatically updates as the user interacts with the page. Page state can be stored in the URL. If the user hits a URL directly, the HTML will first be rendered on the server for faster load times and easier indexing by search engines.
+Volt is a Ruby web framework where your Ruby code runs on both the server and the client (via [Opal](https://github.com/opal/opal)). The DOM automatically updates as the user interacts with the page. Page state can be stored in the URL. If the user hits a URL directly, the HTML will first be rendered on the server for faster load times and easier indexing by search engines.  Subsequent local page interactions will be rendered on the client.
 
 Instead of syncing data between the client and server via HTTP, Volt uses a persistent connection between the client and server. When data is updated on one client, it is updated in the database and any other listening clients (with almost no setup code needed).
 
-Pages HTML is written in a template language where you can put Ruby between `{{` and `}}`. Volt uses data flow/reactive programming to automatically and intelligently propagate changes to the DOM (or any other code wanting to know when a value updates). When something in the DOM changes, Volt intelligently updates only the nodes that need to be changed.
+Page HTML is written in a templating language where you can put Ruby between `{{` and `}}`. Volt uses data flow/reactive programming to automatically and intelligently propagate changes to the DOM (or to any other code that wants to know when a value has changed). When something in the DOM changes, Volt intelligently updates only the DOM nodes that need to be changed.
 
 See some demo videos here:
 - [Volt Todos Example](https://www.youtube.com/watch?v=KbFtIt7-ge8)
@@ -43,15 +43,15 @@ Rick Carlino has been putting together some great volt tutorial videos also.
 
 # Getting Help
 
-Have a question and need help?  The volt team watches [stackoverflow](http://stackoverflow.com/search?q=voltrb) for questions and will get back to you quickly.  Be sure to post the question with the #voltrb tag.  If you have something you need to discuss, drop into our [gitter room](gitter.im/voltrb/volt).
+Have a question and need help?  The volt team watches [stackoverflow](http://stackoverflow.com/search?q=voltrb) for questions and will get back to you quickly.  Be sure to post the question with the #voltrb tag.  If you have something you'd like to discuss, drop into our [gitter room](https://gitter.im/voltrb/volt).
 
 # Contributing
 
-You want to contribute? Great! Thanks for being awesome! At the moment, we have a big internal todo list, hop on https://gitter.im/voltrb/volt so we don't duplicate work. Pull requests are always welcome, but asking about helping on Gitter should save some duplication.
+You want to contribute? Great! Thanks for being awesome! At the moment, we have a big internal todo list.  Please hop on https://gitter.im/voltrb/volt so that we don't duplicate work. Pull requests are always welcome, but asking about helping on Gitter should save some duplication.
 
 # Support
 
-VoltFramework is currently a labor of love mainly built by a small group of core developers.  Donations are always welcome and will help Volt get to production faster :-)  Also, if you or your company is interested in sponsoring Volt, please talk to @ryanstout in the [gitter](https://gitter.im/voltrb/volt)
+VoltFramework is currently a labor of love mainly built by a small group of core developers.  Donations are always welcome and will help Volt get to production faster :-)  Also, if you or your company is interested in sponsoring Volt, please talk to @ryanstout in [gitter](https://gitter.im/voltrb/volt).
 
 [![Pledgie](https://pledgie.com/campaigns/26731.png?skin_name=chrome)](https://pledgie.com/campaigns/26731)
 
