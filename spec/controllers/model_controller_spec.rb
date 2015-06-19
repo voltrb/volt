@@ -27,5 +27,12 @@ if RUBY_PLATFORM != 'opal'
       promise.resolve(Volt::Model.new)
       expect(controller.loaded?).to eq(true)
     end
+
+    it 'should provide a u method that disables reactive updates' do
+      expect(Volt::Computation).to receive(:run_without_tracking)
+
+      controller = Volt::ModelController.new(volt_app)
+      controller.u { 5 }
+    end
   end
 end

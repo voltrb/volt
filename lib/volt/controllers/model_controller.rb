@@ -55,6 +55,15 @@ module Volt
       return nil
     end
 
+    # the u method provides an easy helper to render an unbonud binding.  This
+    # means that the binding will not reactively update.  If no bindings are
+    # bound on any model's from a query, the query will not be reactively
+    # listened to.
+    def u
+      raise "the 'u' method requires a block" unless block_given?
+      Volt::Computation.run_without_tracking { yield }
+    end
+
     # yield_html renders the content passed into a tag as a string.  You can ```.watch!```
     # ```yield_html``` and it will be run again when anything in the template changes.
     def yield_html
