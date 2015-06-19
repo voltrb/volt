@@ -123,15 +123,20 @@ module Volt
         frag = fragment
         if frag.present?
           # Scroll to anchor via http://www.w3.org/html/wg/drafts/html/master/browsers.html#scroll-to-fragid
+          # Sometimes the fragment will cause a jquery parsing error, so we
+          # catch any exceptions.
           `
-          var anchor = $('#' + frag);
-          if (anchor.length == 0) {
-            anchor = $('*[name="' + frag + '"]:first');
+          try {
+            var anchor = $('#' + frag);
+            if (anchor.length == 0) {
+              anchor = $('*[name="' + frag + '"]:first');
+            }
+            if (anchor && anchor.length > 0) {
+              console.log('scroll to: ', anchor.offset().top);
+              $(document.body).scrollTop(anchor.offset().top);
+            }
           }
-          if (anchor && anchor.length > 0) {
-            console.log('scroll to: ', anchor.offset().top);
-            $(document.body).scrollTop(anchor.offset().top);
-          }
+          catch(e) {}
         `
         else
           # Scroll to the top by default
