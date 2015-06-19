@@ -9,6 +9,7 @@ class NewGem
     @thor = thor
     @component_name = name.chomp('/')
     @name = 'volt-' + @component_name # remove trailing slash if present
+    @shell = Thor::Base.shell.new
 
     if gem_is_available?
       @thor.say("#{@name} is available!  Making gem files.", :green)
@@ -56,6 +57,24 @@ class NewGem
   end
 
   def copy_options
+    if @options[:coc] or yes?("\nDo you want to include a code of conduct in this gem?\n\n\
+Codes of conduct can increase contributions to your project by contributors who \
+prefer collaborative, safe spaces. You can read more about the code of conduct at \
+contributor-covenant.org. Having a code of conduct means agreeing to the responsibility \
+of enforcing it, so be sure that you are prepared to do that. For suggestions about \
+how to enforce codes of conduct, see bit.ly/coc-enforcement.\n\ny/(n):")
+
+      copy('newgem/CODE_OF_CONDUCT.md.tt', 'CODE_OF_CONDUCT.md')
+    end
+
+    if @options[:mit] or yes?("\nDo you want to license your code permissively under the MIT license?\n\n\
+This means that any other developer or company will be legally allowed to use your code \
+for free as long as they admit you created it. You can read more about the MIT license \
+at choosealicense.com/licenses/mit.\n\ny/(n):")
+
+      copy('newgem/LICENSE.txt.tt', 'LICENSE.txt')
+    end
+
     copy('newgem/bin/newgem.tt', "bin/#{@name}") if @options[:bin]
     copy('newgem/rspec.tt', '.rspec')
     copy('newgem/spec/spec_helper.rb.tt', 'spec/spec_helper.rb')
@@ -104,5 +123,9 @@ class NewGem
     constant_name = constant_name.split('-').map { |q| q[0..0].upcase + q[1..-1] }.join('::') if constant_name =~ /-/
 
     constant_name
+  end
+
+  def yes?(msg)
+    @shell.yes?(msg)
   end
 end
