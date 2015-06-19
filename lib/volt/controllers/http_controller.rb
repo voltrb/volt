@@ -1,15 +1,12 @@
 require 'volt/server/rack/http_response_header'
 require 'volt/server/rack/http_response_renderer'
+require 'volt/controllers/http_controller/http_cookie_persistor'
 require 'volt/utils/lifecycle_callbacks'
 
 module Volt
   # Allow you to create controllers that act as http endpoints
   class HttpController
     include LifecycleCallbacks
-
-    #TODO params is only public for testing
-    attr_accessor :params
-
     # Setup before_action and after_action
     setup_action_helpers_in_class(:before_action, :after_action)
 
@@ -19,7 +16,18 @@ module Volt
       @response_headers = HttpResponseHeader.new
       @response_body = []
       @request = request
-      @params = Volt::Model.new(request.params.symbolize_keys.merge(params), persistor: Volt::Persistors::Params)
+      @initial_params = params
+    end
+
+    def params
+      @params ||= begin
+        params = request.params.symbolize_keys.merge(@initial_params)
+        Volt::Model.new(params, persistor: Volt::Persistors::Params)
+      end
+    end
+
+    def cookies
+      @cookies ||= Volt::Model.new(request.cookies, persistor: Volt::Persistors::HttpCookiePersistor)
     end
 
     def perform(action='index')
@@ -61,7 +69,21 @@ module Volt
         @response_status = 500
       end
 
-      Rack::Response.new(response_body, response_status, response_headers)
+      resp = Rack::Response.new(response_body, response_status, response_headers)
+
+      # Update any changed cookies
+      new_cookies = cookies.persistor.changed_cookies
+
+      new_cookies.each_pair do |key, value|
+        if value.is_a?(String)
+          value = {value: value}
+        end
+        value[:path] = '/'
+
+        resp.set_cookie(key.to_s, value)
+      end
+
+      resp
     end
 
     # Returns the http status code as integer

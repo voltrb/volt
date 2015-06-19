@@ -56,12 +56,12 @@ module Volt
         self.fragment = fragment
         self.query    = query
 
-        assign_query_hash_to_params
+        result = assign_query_hash_to_params
       end
 
       scroll
 
-      true
+      result
     end
 
     # Full url rebuilds the url from it's constituent parts.
@@ -158,12 +158,16 @@ module Volt
 
       fail "no routes match path: #{path}" if new_params == false
 
+      return false if new_params == nil
+
       query_hash.merge!(new_params)
 
       # Loop through the .params we already have assigned.
       lparams = params
       assign_from_old(lparams, query_hash)
       assign_new(lparams, query_hash)
+
+      true
     end
 
     # Loop through the old params, and overwrite any existing values,

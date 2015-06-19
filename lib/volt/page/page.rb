@@ -72,7 +72,6 @@ module Volt
       return false if url.blank?
 
       # Normalize url
-      # Benchmark.bm(1) do
       if @url.parse(url)
         if event
           # Handled new url
@@ -85,7 +84,6 @@ module Volt
         # return false to stop the event propigation
         return false
       end
-      # end
 
       # Not stopping, process link normally
       true
