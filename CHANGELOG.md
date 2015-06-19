@@ -11,6 +11,7 @@
 - fixed bug with ReactiveHash#to_json
 - fixed bug with field Numeric coersion
 - fixed issue with initializers not loading on client sometimes.
+- fixed issue with user password change
 
 ## 0.9.3
 [0.9.3 Update Blog Post](http://blog.voltframework.com/post/121128931859/0-9-3-stuff-you-asked-for)

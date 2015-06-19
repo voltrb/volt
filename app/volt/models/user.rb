@@ -42,11 +42,13 @@ module Volt
       def hash_password
         password = get('password')
 
-        # Clear the password
-        set('password', nil)
+        if password.present?
+          # Clear the password
+          set('password', nil)
 
-        # Set the hashed_password field instead
-        set('hashed_password', BCrypt::Password.create(password))
+          # Set the hashed_password field instead
+          set('hashed_password', BCrypt::Password.create(password))
+        end
       end
     end
   end
