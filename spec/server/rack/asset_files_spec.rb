@@ -19,7 +19,83 @@ if RUBY_PLATFORM != 'opal'
     it 'should list all JS files' do
       main = Volt::AssetFiles.new('main', @component_paths)
 
-      expect(main.javascript_files(nil)).to eq(['/assets/js/jquery-2.0.3.js', '/assets/js/volt_js_polyfills.js', '/assets/js/volt_watch.js', '/assets/js/bootstrap.js', '/assets/js/test2.js', '/assets/js/test3.js', '/assets/js/test1.js', '/assets/volt/volt/app.js', '/components/main.js'])
+      expect(main.javascript_files(nil)).to eq([
+        '/assets/js/jquery-2.0.3.js',
+        '/assets/js/volt_js_polyfills.js',
+        '/assets/js/volt_watch.js',
+        '/assets/js/bootstrap.js',
+        '/assets/js/test2.js',
+        '/assets/js/test3.js',
+        '/assets/js/test1.js',
+        '/assets/volt/volt/app.js',
+        '/components/main.js'
+      ])
+    end
+
+    describe 'css files' do
+      after(:all) do
+        Volt.configure do |config|
+          config.use_css_manifests = false
+          config.use_less = false
+        end
+      end
+
+      context 'when config.use_less is false' do
+        context 'when config.use_manifest is false' do
+          it 'should list all CSS/SCSS files except manifest files' do
+            main = Volt::AssetFiles.new('main', @component_paths)
+            Volt.configure do |config|
+              config.use_css_manifests = false
+              config.use_less = false
+            end
+
+            expect(main.css_files).to eq([
+              '/assets/css/notices.css',
+              '/assets/css/01-bootstrap.css',
+              '/assets/css/test2.css',
+              '/assets/css/test3.css',
+              '/assets/css/test1.css'
+            ])
+          end
+        end
+
+        context 'when config.use_manifest is true' do
+          it 'should list only the manifest css/scss files' do
+            main = Volt::AssetFiles.new('main', @component_paths)
+            Volt.configure do |config|
+              config.use_css_manifests = true
+              config.use_less = false
+            end
+
+            expect(main.css_files).to eq([
+              '/assets/css/notices.css',
+              '/assets/css/01-bootstrap.css',
+              '/assets/css/manifest.css'
+            ])
+          end
+        end
+      end
+
+      context 'when config.use_less is true' do
+        it 'should list all CSS, SCSS, and LESS files' do
+          main = Volt::AssetFiles.new('main', @component_paths)
+          Volt.configure do |config|
+            config.use_css_manifests = false
+            config.use_less = true
+          end
+
+          expect(main.css_files).to eq([
+            '/assets/css/notices.css',
+            '/assets/css/01-bootstrap.css',
+            '/assets/css/test2.css',
+            '/assets/css/test5.css',
+            '/assets/css/test3.css',
+            '/assets/css/test6.css',
+            '/assets/css/test1.css',
+            '/assets/css/test4.css'
+          ])
+        end
+      end
     end
 
     it 'should raise an exception for a missing component gem' do
