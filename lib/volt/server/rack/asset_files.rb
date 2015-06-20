@@ -103,18 +103,33 @@ module Volt
       @assets.each do |type, path|
         case type
           when :folder
-            # Don't import any css/scss files that start with an underscore, so scss partials
-            # aren't imported by default:
-            #  http://sass-lang.com/guide
-            css_files += Dir["#{path}/**/[^_]*.{css,scss}"].sort.map do |folder|
-              '/assets' + folder[path.size..-1].gsub(/[.]scss$/, '')
+            if Volt.config.use_less
+              extensions = '{css,scss,less}'
+            else
+              extensions = '{css,scss}'
+            end
+            # If using css manifests in this project, load only manifest.css.scss|less from the app. Still
+            # need to load Volt's files and files in gems, though.
+            if Volt.config.use_css_manifests && (path =~ (/(app\/volt\/assets)|(\/gems\/)/)) == nil
+              css_files += Dir["#{path}/**/manifest*#{extensions}"].sort.map do |folder|
+                '/assets' + folder[path.size..-1].gsub(/[.]scss$/, '').gsub(/[.]less$/, '.css')
+              end
+            else
+              # Don't import any css/scss files that start with an underscore, so scss partials
+              # aren't imported by default:
+              #  http://sass-lang.com/guide
+              css_files += Dir["#{path}/**/[^_]*.#{extensions}"].sort.map do |folder|
+                unless folder[path.size..-1] =~ /manifest\.(css|less)(.scss)?/
+                  '/assets' + folder[path.size..-1].gsub(/[.]scss$/, '').gsub(/[.]less$/, '.css')
+                end
+              end
             end
           when :css_file
             css_files << path
         end
       end
 
-      css_files.uniq
+      css_files.uniq.compact
     end
   end
 end
