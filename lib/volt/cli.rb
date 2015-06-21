@@ -5,10 +5,12 @@ require 'thor'
 require 'volt/extra_core/extra_core'
 require 'volt/cli/generate'
 require 'volt/version'
+require 'volt/cli/bundle'
 
 module Volt
   class CLI < Thor
     include Thor::Actions
+    include Volt::Bundle
 
     register(Generate, 'generate', 'generate GENERATOR [args]', 'Run a generator.')
 
@@ -20,9 +22,16 @@ module Volt
       # Grab the current volt version
       directory('project', name, version: Volt::Version::STRING, name: name, domain: name.dasherize.downcase, app_name: name.capitalize)
 
-      say 'Bundling Gems...'
-      `cd #{name} && bundle`
+      # Move into the directory
+      Dir.chdir(name) do
+        # bundle
+        bundle_command('install')
+      end
+
+      say ""
+      say "Your app is now ready in the #{name} directory.", :green
     end
+
 
     desc 'console', 'run the console on the project in the current directory'
 
