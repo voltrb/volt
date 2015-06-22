@@ -30,6 +30,10 @@ module Volt
 
       say ""
       say "Your app is now ready in the #{name} directory.", :green
+      say ""
+      say "To run your app: "
+      say "  cd #{name}"
+      say "  bundle exec volt server"
     end
 
 
