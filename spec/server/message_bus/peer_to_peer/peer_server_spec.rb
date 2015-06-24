@@ -2,7 +2,7 @@ require 'spec_helper'
 
 unless RUBY_PLATFORM == 'opal'
   describe Volt::MessageBus::PeerServer do
-    describe "ip and ports" do
+    describe 'ip and ports' do
       before do
         allow_any_instance_of(Volt::MessageBus::PeerServer).to receive(:run_server)
       end
@@ -12,7 +12,7 @@ unless RUBY_PLATFORM == 'opal'
         expect(Volt.config).to receive(:message_bus).and_return(config)
           .at_least(:once)
 
-        ports = [5000,6000,7000]
+        ports = [5000, 6000, 7000]
 
         expect(config).to receive(:bind_port_ranges).and_return(ports)
           .at_least(:once)
@@ -61,6 +61,5 @@ unless RUBY_PLATFORM == 'opal'
         peer_server = Volt::MessageBus::PeerServer.new(message_bus)
       end.to raise_error(Exception)
     end
-
   end
 end

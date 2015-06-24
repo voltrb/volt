@@ -1,19 +1,18 @@
 require 'spec_helper'
 
+def count_occurences(str, find)
+  count = 0
 
-  def count_occurences(str, find)
-    count = 0
+  loop do
+    index = str.index(find)
 
-    loop do
-      index = str.index(find)
-
-      break unless index
-      count += 1
-      str = str[index+1..-1]
-    end
-
-    count
+    break unless index
+    count += 1
+    str = str[index + 1..-1]
   end
+
+  count
+end
 
 describe Promise do
   it 'should allow you to call methods that will be called on the resolved value and return a new promise' do

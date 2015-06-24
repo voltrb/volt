@@ -11,7 +11,7 @@ describe Volt::ReactiveHash do
   end
 
   it 'should return to_json' do
-    a = Volt::ReactiveHash.new({name: 'bob'})
+    a = Volt::ReactiveHash.new(name: 'bob')
     expect(a.to_json).to eq("{\"name\":\"bob\"}")
   end
 end

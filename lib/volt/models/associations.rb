@@ -35,7 +35,7 @@ module Volt
       # to get the associated model.
       def has_one(method_name)
         if method_name.plural?
-          raise NameError, "has_one takes a singluar association name"
+          fail NameError, 'has_one takes a singluar association name'
         end
 
         define_method(method_name) do

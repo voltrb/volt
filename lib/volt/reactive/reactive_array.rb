@@ -122,7 +122,7 @@ module Volt
 
     alias_method :length, :size
 
-    def delete_at(index, skip_persistor=false)
+    def delete_at(index, skip_persistor = false)
       size = @array.size
       # Handle a negative index
       index = size + index if index < 0

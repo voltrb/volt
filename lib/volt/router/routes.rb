@@ -68,7 +68,7 @@ module Volt
     end
 
     # Add server side routes
-    
+
     def get(path, params)
       create_route(:get, path, params)
     end
@@ -89,12 +89,12 @@ module Volt
       create_route(:delete, path, params)
     end
 
-    #Create rest endpoints
+    # Create rest endpoints
     def rest(path, params)
       endpoints = (params.delete(:only) || [:index, :show, :create, :update, :destroy]).to_a
-      endpoints = endpoints - params.delete(:except).to_a
+      endpoints -= params.delete(:except).to_a
       endpoints.each do |endpoint|
-        self.send(('restful_' + endpoint.to_s).to_sym, path, params)
+        send(('restful_' + endpoint.to_s).to_sym, path, params)
       end
     end
 
@@ -327,7 +327,7 @@ module Volt
       string.index('{{') && string.index('}}')
     end
 
-    #Append an id to a given path
+    # Append an id to a given path
     def path_with_id(base_path)
       base_path + '/{{ id  }}'
     end

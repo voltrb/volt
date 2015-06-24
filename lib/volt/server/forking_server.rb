@@ -77,7 +77,6 @@ module Volt
             boot_error(error)
           end
 
-
           drb_object = DRb.start_service('drbunix:', [self, @dispatcher])
 
           @writer.puts(drb_object.uri)
@@ -98,24 +97,21 @@ module Volt
     # app to show the user the error and handle reloading requests.
     def boot_error(error)
       msg = error.inspect
-      if error.respond_to?(:backtrace)
-        msg << "\n" + error.backtrace.join("\n")
-      end
+      msg << "\n" + error.backtrace.join("\n") if error.respond_to?(:backtrace)
       Volt.logger.error(msg)
 
       # Only require when needed
       require 'cgi'
-      @rack_app = Proc.new do
-        path = File.join(File.dirname(__FILE__), "forking_server/boot_error.html.erb")
+      @rack_app = proc do
+        path = File.join(File.dirname(__FILE__), 'forking_server/boot_error.html.erb')
         html = File.read(path)
         error_page = ERB.new(html, nil, '-').result(binding)
 
-        [500, {"Content-Type" => "text/html"}, error_page]
+        [500, { 'Content-Type' => 'text/html' }, error_page]
       end
 
       @dispatcher = ErrorDispatcher.new
     end
-
 
     def stop_child
       # clear the drb object and kill the child process.
@@ -204,7 +200,6 @@ module Volt
         end
       end
     end
-
 
     def reload(changed_files)
       # only reload the server code if a non-view file was changed

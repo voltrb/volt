@@ -24,7 +24,7 @@ module Volt
         component_node = ComponentNode.new(binding_name, end_node, end_node.root || end_node)
         end_node.insert(-1, component_node)
       else
-        raise "can not insert on HtmlNode"
+        fail 'can not insert on HtmlNode'
       end
     end
 
@@ -41,26 +41,26 @@ module Volt
 
       parts.each do |part|
         case part
-          when /\<\!\-\- \$[0-9]+ \-\-\>/
-            # Open
-            binding_id = part.match(/\<\!\-\- \$([0-9]+) \-\-\>/)[1].to_i
-            binding = bindings[binding_id]
-            new_bindings[@@base_binding_id] = binding if binding
+        when /\<\!\-\- \$[0-9]+ \-\-\>/
+          # Open
+          binding_id = part.match(/\<\!\-\- \$([0-9]+) \-\-\>/)[1].to_i
+          binding = bindings[binding_id]
+          new_bindings[@@base_binding_id] = binding if binding
 
-            new_html << "<!-- $#{@@base_binding_id} -->"
-            id_map[binding_id] = @@base_binding_id
-            @@base_binding_id += 1
-          when /\<\!\-\- \$\/[0-9]+ \-\-\>/
-            # Close
-            binding_id = part.match(/\<\!\-\- \$\/([0-9]+) \-\-\>/)[1].to_i
-            new_html << "<!-- $/#{id_map[binding_id]} -->"
-          else
-            # html string
-            new_html << part
+          new_html << "<!-- $#{@@base_binding_id} -->"
+          id_map[binding_id] = @@base_binding_id
+          @@base_binding_id += 1
+        when /\<\!\-\- \$\/[0-9]+ \-\-\>/
+          # Close
+          binding_id = part.match(/\<\!\-\- \$\/([0-9]+) \-\-\>/)[1].to_i
+          new_html << "<!-- $/#{id_map[binding_id]} -->"
+        else
+          # html string
+          new_html << part
         end
       end
 
-      return new_html.join(''), new_bindings
+      [new_html.join(''), new_bindings]
     end
 
     # Takes in our html and bindings, and rezero's the comment names, and the

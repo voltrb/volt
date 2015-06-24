@@ -44,12 +44,10 @@ module Volt
 
     # log out a message about a failed computation or Promise.
     def getter_fail(error)
-      message = "#{self.class.to_s} Error: #{error.inspect}"
+      message = "#{self.class} Error: #{error.inspect}"
 
       if RUBY_PLATFORM == 'opal'
-        if `#{@getter}`
-          message += "\n" + `#{@getter}.toString()`
-        end
+        message += "\n" + `#{@getter}.toString()` if `#{@getter}`
       else
         if error.respond_to?(:backtrace)
           message += "\n" + error.backtrace.join("\n")

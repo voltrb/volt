@@ -32,9 +32,7 @@ module Volt
           rendered = renderer[:proc].call(to_render)
 
           # Unwrap a promise if we got one back
-          if rendered.is_a?(Promise)
-            rendered = rendered.sync
-          end
+          rendered = rendered.sync if rendered.is_a?(Promise)
 
           return [rendered, content.merge(content_type: renderer[:content_type])]
         end

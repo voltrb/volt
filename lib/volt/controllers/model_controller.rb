@@ -47,12 +47,10 @@ module Volt
         node = `nodes[index]`
 
         # Return if an element
-        if `node.nodeType === 1`
-          return node
-        end
+        return node if `node.nodeType === 1`
       end
 
-      return nil
+      nil
     end
 
     # the u method provides an easy helper to render an unbonud binding.  This
@@ -60,7 +58,7 @@ module Volt
     # bound on any model's from a query, the query will not be reactively
     # listened to.
     def u
-      raise "the 'u' method requires a block" unless block_given?
+      fail "the 'u' method requires a block" unless block_given?
       Volt::Computation.run_without_tracking { yield }
     end
 
@@ -134,7 +132,7 @@ module Volt
       else
         # Initialize was not called, we should warn since this is probably not
         # the intended behavior.
-        Volt.logger.warn("super should be called when creating a custom initialize on class #{inst.class.to_s}")
+        Volt.logger.warn("super should be called when creating a custom initialize on class #{inst.class}")
       end
 
       inst
@@ -159,7 +157,6 @@ module Volt
         # If a model attribute is passed in, we assign it directly
         self.model = attrs.locals[:model] if attrs.respond_to?(:model)
       end
-
     end
 
     def go(url)

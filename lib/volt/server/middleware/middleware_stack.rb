@@ -45,9 +45,7 @@ module Volt
     end
 
     def call(env)
-      unless @builder
-        build
-      end
+      build unless @builder
 
       @builder.call(env)
     end

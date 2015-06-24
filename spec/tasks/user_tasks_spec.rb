@@ -9,7 +9,7 @@ if RUBY_PLATFORM != 'opal'
       double('FakeUsersCollection', where: fake_response)
     end
 
-    let(:fake_store) { double('FakeStore', :_users => fake_users_collection) }
+    let(:fake_store) { double('FakeStore', _users: fake_users_collection) }
 
     let(:login_info) { { 'login' => 'Marty', 'password' => 'McFly' } }
 
@@ -26,8 +26,8 @@ if RUBY_PLATFORM != 'opal'
         let(:user) { false }
 
         it 'raises VoltUserError' do
-          expect { subject.login(login_info) }.
-            to raise_error('User could not be found')
+          expect { subject.login(login_info) }
+            .to raise_error('User could not be found')
         end
       end
 
@@ -36,15 +36,15 @@ if RUBY_PLATFORM != 'opal'
         let(:user) { double('User', id: 1, _hashed_password: password) }
 
         it 'fails on bad password' do
-          expect { subject.login(login_info.merge 'password' => 'Not McFly') }.
-            to raise_error('Password did not match')
+          expect { subject.login(login_info.merge 'password' => 'Not McFly') }
+            .to raise_error('Password did not match')
         end
 
         it 'fails with missing app_secret' do
           allow(Volt.config).to receive(:app_secret).and_return false
 
-          expect { subject.login(login_info) }.
-            to raise_error('app_secret is not configured')
+          expect { subject.login(login_info) }
+            .to raise_error('app_secret is not configured')
         end
 
         it 'generates a signature digest' do

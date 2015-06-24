@@ -8,7 +8,6 @@ module Volt
     class ArrayStore < Store
       include StoreState
 
-
       @@query_pool = QueryListenerPool.new
 
       attr_reader :model, :root_dep

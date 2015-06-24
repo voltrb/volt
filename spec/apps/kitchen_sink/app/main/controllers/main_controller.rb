@@ -13,7 +13,7 @@ module Main
     end
 
     def store_demo
-      puts "STORE DEMO"
+      puts 'STORE DEMO'
     end
 
     def form_ready

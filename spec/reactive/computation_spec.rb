@@ -123,7 +123,6 @@ describe Volt::Computation do
       end
 
       failure = lambda do |error|
-
       end
 
       -> { promise }.watch_and_resolve!(success, failure)
@@ -146,7 +145,7 @@ describe Volt::Computation do
       success = lambda do |val|
         results << val
       end
-      -> { dep.depend ; cur_val }.watch_and_resolve!(success)
+      -> { dep.depend; cur_val }.watch_and_resolve!(success)
 
       expect(results).to eq([])
 
@@ -170,7 +169,7 @@ describe Volt::Computation do
         results << val
       end
 
-      -> { dep.depend ; cur_val }.watch_and_resolve!(success, nil, true)
+      -> { dep.depend; cur_val }.watch_and_resolve!(success, nil, true)
 
       expect(results).to eq([nil])
 
@@ -189,7 +188,7 @@ describe Volt::Computation do
         results << val
       end
 
-      computation = -> { dep.depend ; cur_val }.watch_and_resolve!(success)
+      computation = -> { dep.depend; cur_val }.watch_and_resolve!(success)
 
       expect(results).to eq([])
 
@@ -204,7 +203,7 @@ describe Volt::Computation do
       cur_val = Promise.new
 
       results = []
-      success = lambda {}
+      success = -> {}
       failure = lambda do |error|
         results << error
       end

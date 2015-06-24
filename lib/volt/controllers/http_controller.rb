@@ -30,7 +30,7 @@ module Volt
       @cookies ||= Volt::Model.new(request.cookies, persistor: Volt::Persistors::HttpCookiePersistor)
     end
 
-    def perform(action='index')
+    def perform(action = 'index')
       filtered = run_callbacks(:before_action, action)
       send(action.to_sym) unless filtered
       run_callbacks(:after_action, action) unless filtered
@@ -75,9 +75,7 @@ module Volt
       new_cookies = cookies.persistor.changed_cookies
 
       new_cookies.each_pair do |key, value|
-        if value.is_a?(String)
-          value = {value: value}
-        end
+        value = { value: value } if value.is_a?(String)
         value[:path] = '/'
 
         resp.set_cookie(key.to_s, value)

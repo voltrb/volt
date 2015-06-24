@@ -7,9 +7,7 @@ unless RUBY_PLATFORM == 'opal'
     let(:test_model_class) do
       Class.new(Volt::Model) do
         validations do
-          if _is_ready == true
-            validate :name, length: 5
-          end
+          validate :name, length: 5 if _is_ready == true
         end
       end
     end
@@ -18,9 +16,7 @@ unless RUBY_PLATFORM == 'opal'
       Class.new(Volt::Model) do
         validations do |action|
           # Only validation the name on update
-          if action == :update
-            validate :name, length: 5
-          end
+          validate :name, length: 5 if action == :update
         end
       end
     end
@@ -47,7 +43,6 @@ unless RUBY_PLATFORM == 'opal'
 
       jo.validate!.sync
       expect(jo.errors.size).to eq(1)
-
     end
   end
 end

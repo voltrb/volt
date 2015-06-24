@@ -30,7 +30,6 @@ describe Volt::ContentBinding do
     volt_app = double('volt/app')
     expect(volt_app).to receive(:page).and_return(page)
 
-
     dom = Volt::AttributeTarget.new(0)
 
     Volt::TemplateRenderer.new(volt_app, dom, context, 'main', 'main/main')

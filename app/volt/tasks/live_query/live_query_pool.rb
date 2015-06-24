@@ -18,7 +18,7 @@ class LiveQueryPool < Volt::GenericPool
     super(collection, query)
   end
 
-  def updated_collection(collection, skip_channel, from_message_bus=false)
+  def updated_collection(collection, skip_channel, from_message_bus = false)
     # collection = collection.to_sym
     lookup_all(collection).each do |live_query|
       live_query.run(skip_channel)

@@ -22,9 +22,9 @@ module Volt
         @worker_pool = Concurrent::ImmediateExecutor.new
       else
         @worker_pool = Concurrent::ThreadPoolExecutor.new(
-        min_threads: Volt.config.min_worker_threads,
-        max_threads: Volt.config.max_worker_threads
-      )
+          min_threads: Volt.config.min_worker_threads,
+          max_threads: Volt.config.max_worker_threads
+        )
       end
 
       @worker_timeout = Volt.config.worker_timeout || 60
@@ -47,7 +47,6 @@ module Volt
         end
       end
     end
-
 
     # Check if it is safe to use this method
     def safe_method?(klass, method_name)
@@ -133,7 +132,6 @@ module Volt
         finish.call(error)
         channel.send_message('response', callback_id, nil, error)
       end
-
     end
   end
 end

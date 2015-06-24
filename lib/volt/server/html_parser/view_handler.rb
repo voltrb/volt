@@ -34,21 +34,21 @@ module Volt
 
     def start_tag(tag_name, attributes, unary)
       case tag_name[0]
-        when ':'
-          # Component
-          last.add_component(tag_name, attributes, unary)
+      when ':'
+        # Component
+        last.add_component(tag_name, attributes, unary)
+      else
+        if tag_name == 'textarea'
+          @in_textarea = true
+          last.add_textarea(tag_name, attributes, unary)
         else
-          if tag_name == 'textarea'
-            @in_textarea = true
-            last.add_textarea(tag_name, attributes, unary)
-          else
 
-            # Normal tag
-            attributes = last.process_attributes(tag_name, attributes)
-            attr_str   = last.attribute_string(attributes)
+          # Normal tag
+          attributes = last.process_attributes(tag_name, attributes)
+          attr_str   = last.attribute_string(attributes)
 
-            last << "<#{tag_name}#{attr_str}#{unary ? ' /' : ''}>"
-          end
+          last << "<#{tag_name}#{attr_str}#{unary ? ' /' : ''}>"
+        end
       end
     end
 

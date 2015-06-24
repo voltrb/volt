@@ -31,8 +31,8 @@ describe Volt::Buffer do
       buffer = the_page._test_changed_attributes.buffer
 
       buffer.save!.sync
-      expect(buffer.save_to.attributes.without(:id)).to eq({one: 1, two: 2})
-      expect(buffer.attributes.without(:id)).to eq({one: 1, two: 2})
+      expect(buffer.save_to.attributes.without(:id)).to eq(one: 1, two: 2)
+      expect(buffer.attributes.without(:id)).to eq(one: 1, two: 2)
       expect(buffer.id).to eq(buffer.save_to.id)
     end
 

@@ -15,7 +15,6 @@ describe Volt::Model do
     end
   end
 
-
   let(:test_model_with_promises) do
     Class.new(Volt::Model) do
       attr_accessor :ran_promise
@@ -164,5 +163,4 @@ describe Volt::Model do
     model._name = 'ok' # fails again
     expect(model._name).to eq('Jimmy')
   end
-
 end

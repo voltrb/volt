@@ -17,12 +17,11 @@ module Volt
       root
     end
 
-
     def get(attr_name, expand = false)
       res = if attr_name.singular? && attr_name.to_sym != :id
-        model_for_root.get(attr_name, expand)
-      else
-        super
+              model_for_root.get(attr_name, expand)
+            else
+              super
       end
 
       # puts "GOT: #{res.inspect}"

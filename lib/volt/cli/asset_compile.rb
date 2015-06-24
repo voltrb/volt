@@ -45,7 +45,7 @@ module Volt
       puts 'Write index files'
       write_index
 
-      puts "compiled"
+      puts 'compiled'
     end
 
     def logical_paths_and_full_paths
@@ -54,7 +54,6 @@ module Volt
 
         yield(logical_path, full_path.to_s)
       end
-
     end
 
     def write_sprockets
@@ -62,9 +61,9 @@ module Volt
       logical_paths_and_full_paths do |logical_path, full_path|
         # Only include files that aren't compiled elsewhere, like fonts
         if !logical_path[/[.](y|css|js|html|erb)$/] &&
-          File.extname(logical_path) != '' &&
-          # opal includes some node modules in the standard lib that we don't need to compile in
-          (full_path !~ /\/opal/ && full_path !~ /\/stdlib\// && logical_path !~ /^node_js\//)
+           File.extname(logical_path) != '' &&
+           # opal includes some node modules in the standard lib that we don't need to compile in
+           (full_path !~ /\/opal/ && full_path !~ /\/stdlib\// && logical_path !~ /^node_js\//)
           write_sprocket_file(logical_path)
         end
       end
@@ -85,10 +84,10 @@ module Volt
       begin
         # Only write out the assets
         # if logical_path =~ /\/assets\//
-          content = @opal_files.environment[logical_path].to_s
-          write_file(path, content)
-        # end
-      rescue Sprockets::FileNotFound, SyntaxError => e
+        content = @opal_files.environment[logical_path].to_s
+        write_file(path, content)
+      # end
+    rescue Sprockets::FileNotFound, SyntaxError => e
         # ignore
       end
     end

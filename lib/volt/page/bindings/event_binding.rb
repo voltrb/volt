@@ -34,14 +34,13 @@ module Volt
 
       # Map blur/focus to focusout/focusin
       @event_name = case event_name
-      when 'blur'
-        'focusout'
-      when 'focus'
-        'focusin'
-      else
-        event_name
+                    when 'blur'
+                      'focusout'
+                    when 'focus'
+                      'focusin'
+                    else
+                      event_name
       end
-
 
       handler = proc do |js_event|
         event = JSEvent.new(js_event)
@@ -63,7 +62,6 @@ module Volt
         #     Volt.logger.error(err)
         #   end
         # end
-
       end
       @listener = page.events.add(@event_name, self, handler)
     end

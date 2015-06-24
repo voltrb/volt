@@ -9,12 +9,13 @@ module Volt
         #
         # @param key [Symbol] the name of the attribute to store
         def own_by_user(key = :user_id)
-          relation, pattern = key.to_s, /_id$/
+          relation = key.to_s
+          pattern = /_id$/
           if relation.match(pattern)
             belongs_to key.to_s.gsub(pattern, '')
           else
-            raise "You tried to auto associate a model using #{key}, but #{key} "\
-                  "does not end in `_id`"
+            fail "You tried to auto associate a model using #{key}, but #{key} "\
+                  'does not end in `_id`'
           end          # When the model is created, assign it the user_id (if the user is logged in)
           on(:new) do
             # Only assign the user_id if there isn't already one and the user is logged in.
@@ -171,10 +172,8 @@ module Volt
         end
 
         # Deeply filter any nested models
-        return result.map do |key, value|
-          if value.is_a?(Model)
-            value = value.filtered_attributes
-          end
+        result.map do |key, value|
+          value = value.filtered_attributes if value.is_a?(Model)
 
           [key, value]
         end.to_h

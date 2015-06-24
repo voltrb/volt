@@ -163,7 +163,7 @@ module Volt
 
       fail "no routes match path: #{path}" if new_params == false
 
-      return false if new_params == nil
+      return false if new_params.nil?
 
       query_hash.merge!(new_params)
 

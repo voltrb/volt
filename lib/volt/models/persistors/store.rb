@@ -27,7 +27,7 @@ module Volt
           model = @model.new_array_model([], options)
         else
           options[:persistor] = @model.persistor
-          model= @model.new_model(nil, options)
+          model = @model.new_model(nil, options)
 
           # TODO: Might not need to assign this
           @model.attributes ||= {}

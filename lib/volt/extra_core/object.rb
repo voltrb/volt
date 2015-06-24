@@ -38,6 +38,7 @@ class Object
   end
 
   private
+
   def promisify_and_run_method(method_name, &block)
     promise = Promise.new.resolve(self)
 

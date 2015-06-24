@@ -9,7 +9,6 @@ module Volt
     # This may be changed as new listeners connect, which is fine.
     attr_accessor :user_id
 
-
     def initialize(session, *args)
       @session = session
 
@@ -62,7 +61,6 @@ module Volt
         # TODO: Figure out the cause of the issue and submit a fix upstream.
         EM.next_tick {}
       end
-
     end
 
     def closed
@@ -74,7 +72,7 @@ module Volt
         begin
           @@dispatcher.close_channel(self)
         rescue DRb::DRbConnError => e
-        # ignore drb read of @@dispatcher error if child has closed
+          # ignore drb read of @@dispatcher error if child has closed
         end
       else
         Volt.logger.error("Socket Error: Connection already closed\n#{inspect}")

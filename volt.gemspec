@@ -34,7 +34,6 @@ Gem::Specification.new do |spec|
   # be deprecated (which we need to build a work around for)
   spec.add_dependency 'concurrent-ruby', '= 0.8.0'
 
-
   # For user passwords
   spec.add_dependency 'bcrypt', '~> 3.1.9'
 

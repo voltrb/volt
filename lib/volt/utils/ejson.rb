@@ -14,16 +14,14 @@ module Volt
 
     def self.decode(obj)
       if Array === obj
-        obj.map {|v| decode(v) }
+        obj.map { |v| decode(v) }
       elsif Hash === obj
         if obj.size == 1 && (escape = obj['$escape'])
           return escape.map do |key, value|
             [key, decode(value)]
           end.to_h
         elsif obj.size == 1 && (time = obj['$date'])
-          if time.is_a?(Fixnum)
-            return Time.at(time / 1000.0)
-          end
+          return Time.at(time / 1000.0) if time.is_a?(Fixnum)
         end
 
         obj.map do |key, value|
@@ -36,12 +34,12 @@ module Volt
 
     def self.encode(obj)
       if Array === obj
-        obj.map {|v| encode(v) }
+        obj.map { |v| encode(v) }
       elsif Hash === obj
         obj.map do |key, value|
           if key == '$date'
             key = '$escape'
-            value = {'$date' => encode(value)}
+            value = { '$date' => encode(value) }
           else
             value = encode(value)
           end
@@ -50,7 +48,7 @@ module Volt
         end.to_h
       else
         if obj.is_a?(Time)
-          {'$date' => obj.to_i * 1_000}
+          { '$date' => obj.to_i * 1_000 }
         else
           obj
         end

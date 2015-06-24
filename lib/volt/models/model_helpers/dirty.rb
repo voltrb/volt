@@ -28,11 +28,7 @@ module Volt
 
       # Doing val && val[0] doesn't work in opal
       # https://github.com/opal/opal/issues/664
-      if val
-        val[0]
-      else
-        nil
-      end
+      val[0] if val
     end
 
     # Clear changed attributes

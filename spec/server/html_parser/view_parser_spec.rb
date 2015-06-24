@@ -194,7 +194,7 @@ describe Volt::ViewParser do
     view = Volt::ViewParser.new(html, 'main/main/main/body')
 
     expected = "    <a href=\"{link_name}\">Link</a>\n"
-    expect(view.templates["main/main/main/body/body"]["html"]).to eq expected
+    expect(view.templates['main/main/main/body/body']['html']).to eq expected
   end
 
   it 'should parse components' do

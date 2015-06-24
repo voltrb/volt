@@ -136,7 +136,7 @@ class Promise
   end
 
   def act?
-    @action.has_key?(:success) || @action.has_key?(:always)
+    @action.key?(:success) || @action.key?(:always)
   end
 
   def action
@@ -161,7 +161,7 @@ class Promise
 
   def ^(promise)
     promise << self
-    self    >> promise
+    self >> promise
 
     promise
   end
@@ -180,7 +180,7 @@ class Promise
     elsif resolved?
       promise.resolve(@delayed ? @delayed[0] : value)
     elsif rejected?
-      if !@action.has_key?(:failure) || Promise === (@delayed ? @delayed[0] : @error)
+      if !@action.key?(:failure) || Promise === (@delayed ? @delayed[0] : @error)
         promise.reject(@delayed ? @delayed[0] : error)
       elsif promise.action.include?(:always)
         promise.reject(@delayed ? @delayed[0] : error)
@@ -191,13 +191,9 @@ class Promise
   end
 
   def resolve(value = nil)
-    if realized?
-      raise ArgumentError, 'the promise has already been realized'
-    end
+    fail ArgumentError, 'the promise has already been realized' if realized?
 
-    if Promise === value
-      return (value << @prev) ^ self
-    end
+    return (value << @prev) ^ self if Promise === value
 
     begin
       if block = @action[:success] || @action[:always]
@@ -224,20 +220,16 @@ class Promise
   end
 
   def reject(value = nil)
-    if realized?
-      raise ArgumentError, 'the promise has already been realized'
-    end
+    fail ArgumentError, 'the promise has already been realized' if realized?
 
-    if Promise === value
-      return (value << @prev) ^ self
-    end
+    return (value << @prev) ^ self if Promise === value
 
     begin
       if block = @action[:failure] || @action[:always]
         value = block.call(value)
       end
 
-      if @action.has_key?(:always)
+      if @action.key?(:always)
         resolve!(value)
       else
         reject!(value)
@@ -267,41 +259,33 @@ class Promise
   end
 
   def then(&block)
-    if @next
-      raise ArgumentError, 'a promise has already been chained'
-    end
+    fail ArgumentError, 'a promise has already been chained' if @next
 
     self ^ Promise.new(success: block)
   end
 
-  alias do then
+  alias_method :do, :then
 
   def fail(&block)
-    if @next
-      raise ArgumentError, 'a promise has already been chained'
-    end
+    fail ArgumentError, 'a promise has already been chained' if @next
 
     self ^ Promise.new(failure: block)
   end
 
-  alias rescue fail
-  alias catch fail
+  alias_method :rescue, :fail
+  alias_method :catch, :fail
 
   def always(&block)
-    if @next
-      raise ArgumentError, 'a promise has already been chained'
-    end
+    fail ArgumentError, 'a promise has already been chained' if @next
 
     self ^ Promise.new(always: block)
   end
 
-  alias finally always
-  alias ensure always
+  alias_method :finally, :always
+  alias_method :ensure, :always
 
   def trace(depth = nil, &block)
-    if @next
-      raise ArgumentError, 'a promise has already been chained'
-    end
+    fail ArgumentError, 'a promise has already been chained' if @next
 
     self ^ Trace.new(depth, block)
   end
@@ -309,14 +293,12 @@ class Promise
   def inspect
     result = "#<#{self.class}(#{object_id})"
 
-    if @next
-      result += " >> #{@next.inspect}"
-    end
+    result += " >> #{@next.inspect}" if @next
 
     if realized?
       result += ": #{(@value || @error).inspect}>"
     else
-      result += ">"
+      result += '>'
     end
 
     result
@@ -326,9 +308,7 @@ class Promise
     def self.it(promise)
       current = []
 
-      if promise.act? || promise.prev.nil?
-        current.push(promise.value)
-      end
+      current.push(promise.value) if promise.act? || promise.prev.nil?
 
       if prev = promise.prev
         current.concat(it(prev))
@@ -340,16 +320,14 @@ class Promise
     def initialize(depth, block)
       @depth = depth
 
-      super success: -> {
+      super success: -> do
         trace = Trace.it(self).reverse
         trace.pop
 
-        if depth && depth <= trace.length
-          trace.shift(trace.length - depth)
-        end
+        trace.shift(trace.length - depth) if depth && depth <= trace.length
 
         block.call(*trace)
-      }
+      end
     end
   end
 
@@ -359,61 +337,57 @@ class Promise
 
       @wait = []
 
-      promises.each {|promise|
+      promises.each do|promise|
         wait promise
-      }
+      end
     end
 
     def each(&block)
-      raise ArgumentError, 'no block given' unless block
+      fail ArgumentError, 'no block given' unless block
 
-      self.then {|values|
+      self.then do|values|
         values.each(&block)
-      }
+      end
     end
 
     def collect(&block)
-      raise ArgumentError, 'no block given' unless block
+      fail ArgumentError, 'no block given' unless block
 
-      self.then {|values|
+      self.then do|values|
         When.new(values.map(&block))
-      }
+      end
     end
 
     def inject(*args, &block)
-      self.then {|values|
+      self.then do|values|
         values.reduce(*args, &block)
-      }
+      end
     end
 
-    alias map collect
+    alias_method :map, :collect
 
-    alias reduce inject
+    alias_method :reduce, :inject
 
     def wait(promise)
-      unless Promise === promise
-        promise = Promise.value(promise)
-      end
+      promise = Promise.value(promise) unless Promise === promise
 
-      if promise.act?
-        promise = promise.then
-      end
+      promise = promise.then if promise.act?
 
       @wait << promise
 
-      promise.always {
+      promise.always do
         try if @next
-      }
+      end
 
       self
     end
 
-    alias and wait
+    alias_method :and, :wait
 
     def >>(*)
-      super.tap {
+      super.tap do
         try
-      }
+      end
     end
 
     def try

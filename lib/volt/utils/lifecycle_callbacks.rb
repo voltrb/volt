@@ -56,7 +56,7 @@ module Volt
     # To run the callbacks on a class, call #run_callbacks passing in the
     # callback_name and the action it runs with.  If the callback chain was
     # stopped with #stop_chain, it will return true, otherwise false.
-    def run_callbacks(callback_name, action=nil)
+    def run_callbacks(callback_name, action = nil)
       callbacks = self.class.send(:"#{callback_name}_callbacks")
 
       callbacks ||= []

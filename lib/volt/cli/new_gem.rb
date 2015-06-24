@@ -57,7 +57,7 @@ class NewGem
   end
 
   def copy_options
-    if @options[:coc] or yes?("\nDo you want to include a code of conduct in this gem?\n\n\
+    if @options[:coc] || yes?("\nDo you want to include a code of conduct in this gem?\n\n\
 Codes of conduct can increase contributions to your project by contributors who \
 prefer collaborative, safe spaces. You can read more about the code of conduct at \
 contributor-covenant.org. Having a code of conduct means agreeing to the responsibility \
@@ -67,7 +67,7 @@ how to enforce codes of conduct, see bit.ly/coc-enforcement.\n\ny/(n):")
       copy('newgem/CODE_OF_CONDUCT.md.tt', 'CODE_OF_CONDUCT.md')
     end
 
-    if @options[:mit] or yes?("\nDo you want to license your code permissively under the MIT license?\n\n\
+    if @options[:mit] || yes?("\nDo you want to license your code permissively under the MIT license?\n\n\
 This means that any other developer or company will be legally allowed to use your code \
 for free as long as they admit you created it. You can read more about the MIT license \
 at choosealicense.com/licenses/mit.\n\ny/(n):")

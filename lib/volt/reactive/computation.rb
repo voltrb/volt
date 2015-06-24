@@ -178,7 +178,7 @@ class Proc
   #
   # Example:
   #   -> { }
-  def watch_and_resolve!(success, failure=nil, yield_nil_for_unresolved_promise=false)
+  def watch_and_resolve!(success, failure = nil, yield_nil_for_unresolved_promise = false)
     # Keep results between runs
     result = nil
 
@@ -209,7 +209,6 @@ class Proc
             # Clear result for GC
             result = nil
           end
-
         end
 
         result.then do |final|

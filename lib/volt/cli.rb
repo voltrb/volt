@@ -28,14 +28,13 @@ module Volt
         bundle_command('install')
       end
 
-      say ""
+      say ''
       say "Your app is now ready in the #{name} directory.", :green
-      say ""
-      say "To run your app: "
+      say ''
+      say 'To run your app: '
       say "  cd #{name}"
-      say "  bundle exec volt server"
+      say '  bundle exec volt server'
     end
-
 
     desc 'console', 'run the console on the project in the current directory'
 

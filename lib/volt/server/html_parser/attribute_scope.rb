@@ -106,15 +106,15 @@ module Volt
 
     def add_multiple_attribute(tag_name, id, attribute_name, parts, content)
       case attribute_name
-        when 'checked', 'value'
-          if parts.size > 1
-            if tag_name == 'textarea'
-              fail "The content of text area's can not be bound to multiple bindings."
-            else
-              # Multiple values can not be passed to value or checked attributes.
-              fail "Multiple bindings can not be passed to a #{attribute_name} binding: #{parts.inspect}"
-            end
+      when 'checked', 'value'
+        if parts.size > 1
+          if tag_name == 'textarea'
+            fail "The content of text area's can not be bound to multiple bindings."
+          else
+            # Multiple values can not be passed to value or checked attributes.
+            fail "Multiple bindings can not be passed to a #{attribute_name} binding: #{parts.inspect}"
           end
+        end
       end
 
       string_template_renderer_path = add_string_template_renderer(content)

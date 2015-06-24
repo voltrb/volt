@@ -21,9 +21,9 @@ module Volt
       # Add the lib directory to the load path
       Opal.append_path(Volt.root + '/app')
 
-      Gem.loaded_specs.values.select {|gem| gem.name =~ /^(volt|ejson_ext)/ }
-      .each do |gem|
-        ['app', 'lib'].each do |folder|
+      Gem.loaded_specs.values.select { |gem| gem.name =~ /^(volt|ejson_ext)/ }
+        .each do |gem|
+        %w(app lib).each do |folder|
           path = gem.full_gem_path + "/#{folder}"
 
           Opal.append_path(path) if Dir.exist?(path)

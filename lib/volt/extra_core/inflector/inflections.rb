@@ -183,13 +183,13 @@ module Volt
       #   clear :plurals
       def clear(scope = :all)
         case scope
-          when :all
-            @plurals = []
-            @singulars = []
-            @uncountables = []
-            @humans = []
-          else
-            instance_variable_set "@#{scope}", []
+        when :all
+          @plurals = []
+          @singulars = []
+          @uncountables = []
+          @humans = []
+        else
+          instance_variable_set "@#{scope}", []
         end
       end
     end

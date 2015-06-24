@@ -14,6 +14,4 @@ module Volt
       base.send :extend, ClassMethods
     end
   end
-
-
 end

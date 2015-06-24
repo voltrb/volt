@@ -9,7 +9,6 @@ end
 describe 'field helpers' do
   let(:model) { ExampleModelWithField.new }
   it 'should allow a user to setup a field that can be written to and read' do
-
     expect(model.name).to eq(nil)
     model.name = 'jimmy'
     expect(model.name).to eq('jimmy')

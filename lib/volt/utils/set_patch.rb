@@ -6,8 +6,6 @@ class Set
     if include?(o)
       @hash.delete(o)
       true
-    else
-      nil
     end
   end
 

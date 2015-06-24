@@ -118,7 +118,7 @@ module Volt
     end
 
     def _id
-      raise "Accessing  _id has been deprecated in favor of id"
+      fail 'Accessing  _id has been deprecated in favor of id'
     end
 
     # Return true if the model hasn't been saved yet
@@ -314,7 +314,7 @@ module Volt
         # str += ":#{object_id}"
 
         # First, select all of the non-ArrayModel values
-        attrs = attributes.reject {|key, val| val.is_a?(ArrayModel) }.to_h
+        attrs = attributes.reject { |key, val| val.is_a?(ArrayModel) }.to_h
 
         # Show the :id first, then sort the rest of the attributes
         id = attrs.delete(:id)
@@ -354,6 +354,7 @@ module Volt
     end
 
     private
+
     def run_initial_setup(initial_setup)
       # Save the changes
       if initial_setup
@@ -374,7 +375,6 @@ module Volt
         return run_changed
       end
     end
-
 
     # Volt provides a few access methods to get more data about the model,
     # we want to prevent these from being assigned or accessed through
@@ -411,9 +411,7 @@ module Volt
     end
 
     def self.inherited(subclass)
-      if defined?(RootModels)
-        RootModels.add_model_class(subclass)
-      end
+      RootModels.add_model_class(subclass) if defined?(RootModels)
     end
 
   end

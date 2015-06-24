@@ -25,7 +25,6 @@ module Volt
         @router = Routes.new
       end
 
-
       def setup_preboot_middleware
         @middleware = MiddlewareStack.new
         DefaultMiddlewareStack.preboot_setup(self, @middleware)
@@ -49,7 +48,7 @@ module Volt
       # This config needs to run earlier than others
       def run_config
         path = "#{Volt.root}/config/app.rb"
-        require(path) if File.exists?(path)
+        require(path) if File.exist?(path)
       end
 
       # Load in all .rb files in the initializers folders and the config/app.rb
@@ -71,7 +70,6 @@ module Volt
           require(initializer)
         end
       end
-
 
       def reset_query_pool!
         if RUBY_PLATFORM != 'opal'
@@ -100,7 +98,7 @@ module Volt
               message_bus_class = MessageBus.const_get(bus_name.camelize)
             rescue NameError => e
               raise "message bus name #{bus_name} was not found, be sure its "
-                    + "gem is included in the gemfile."
+              + 'gem is included in the gemfile.'
             end
 
             @message_bus = message_bus_class.new(self)

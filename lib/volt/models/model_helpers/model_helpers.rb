@@ -31,20 +31,16 @@ module Volt
       id.join
     end
 
-
     # Return the attributes that are only for this model and any hash sub models
     # but not any sub-associations.
     def self_attributes
       # Don't store any sub-models, those will do their own saving.
-      attributes.reject { |k, v| v.is_a?(ArrayModel) }.map do |k,v|
-        if v.is_a?(Model)
-          v = v.self_attributes
-        end
+      attributes.reject { |k, v| v.is_a?(ArrayModel) }.map do |k, v|
+        v = v.self_attributes if v.is_a?(Model)
 
-        [k,v]
+        [k, v]
       end.to_h
     end
-
 
     # Takes the persistor if there is one and
     def setup_persistor(persistor)
@@ -68,9 +64,6 @@ module Volt
     def root
       persistor.try(:root_model)
     end
-
-
-
 
     module ClassMethods
       # Gets the class for a model at the specified path.

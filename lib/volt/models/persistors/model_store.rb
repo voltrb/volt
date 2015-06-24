@@ -126,7 +126,7 @@ module Volt
 
           if model
             data.each_pair do |key, value|
-              model.set(key, value)# if key != :id
+              model.set(key, value) # if key != :id
             end
           end
         end

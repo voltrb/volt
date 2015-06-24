@@ -149,5 +149,4 @@ describe Volt::ViewBinding do
 
     expect(@view_lookup.path_for_template('not/a/real/item/')).to eq([nil, nil])
   end
-    
 end

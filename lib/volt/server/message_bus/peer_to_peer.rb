@@ -94,7 +94,7 @@ module Volt
 
         # Do the initial registration, and wait until its done before connecting
         # to peers.
-        @server_tracker.register()
+        @server_tracker.register
       end
 
       def publish(channel, message)
@@ -114,7 +114,7 @@ module Volt
       def peers
         instances = @page.store._active_volt_instances
 
-        instances.where(server_id: {'$ne' => @server_id}).all.sync
+        instances.where(server_id: { '$ne' => @server_id }).all.sync
       end
 
       def connect_to_peers
@@ -199,7 +199,6 @@ module Volt
 
         false
       end
-
     end
   end
 end

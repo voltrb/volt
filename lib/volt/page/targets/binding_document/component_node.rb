@@ -40,21 +40,21 @@ module Volt
 
       parts.each do |part|
         case part
-          when /\<\!\-\- \$[0-9]+ \-\-\>/
-            # Open
-            binding_id = part.match(/\<\!\-\- \$([0-9]+) \-\-\>/)[1].to_i
+        when /\<\!\-\- \$[0-9]+ \-\-\>/
+          # Open
+          binding_id = part.match(/\<\!\-\- \$([0-9]+) \-\-\>/)[1].to_i
 
-            sub_node = ComponentNode.new(binding_id, current_node, @root || self)
-            current_node << sub_node
-            current_node = sub_node
-          when /\<\!\-\- \$\/[0-9]+ \-\-\>/
-            # Close
-            # binding_id = part.match(/\<\!\-\- \$\/([0-9]+) \-\-\>/)[1].to_i
+          sub_node = ComponentNode.new(binding_id, current_node, @root || self)
+          current_node << sub_node
+          current_node = sub_node
+        when /\<\!\-\- \$\/[0-9]+ \-\-\>/
+          # Close
+          # binding_id = part.match(/\<\!\-\- \$\/([0-9]+) \-\-\>/)[1].to_i
 
-            current_node = current_node.parent
-          else
-            # html string
-            current_node << HtmlNode.new(part)
+          current_node = current_node.parent
+        else
+          # html string
+          current_node << HtmlNode.new(part)
         end
       end
 

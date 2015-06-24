@@ -19,7 +19,7 @@ module Volt
     def self.client_set_timeout(interval)
       if Volt.in_browser?
         `setTimeout(function() {`
-          yield
+        yield
         `}, interval)`
       else
         yield

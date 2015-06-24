@@ -33,7 +33,7 @@ module Volt
       # context of the block will be the current model.
       def validations(*run_in_actions, &block)
         unless block_given?
-          raise 'validations must take a block, use `validate` to setup a validation on a class directly.'
+          fail 'validations must take a block, use `validate` to setup a validation on a class directly.'
         end
 
         # Add a validation block to run during each validation
@@ -83,9 +83,7 @@ module Volt
 
       # Look at each validation
       validations = self.class.validations_to_run
-      if validations
-        fields_to_mark += validations.keys
-      end
+      fields_to_mark += validations.keys if validations
 
       # Also include any current fields
       fields_to_mark += attributes.keys

@@ -22,7 +22,7 @@ module Volt
           begin
             require 'rbnacl/libsodium'
           rescue LoadError => e
-          # Ignore, incase they have libsodium installed locally
+            # Ignore, incase they have libsodium installed locally
           end
 
           begin
@@ -60,12 +60,10 @@ module Volt
       end
 
       def receive_message(io)
-        begin
-          decrypt(Marshal.load(io))
-        rescue EOFError => e
-          # We get EOFError when the connection closes, return nil
-          nil
-        end
+        decrypt(Marshal.load(io))
+      rescue EOFError => e
+        # We get EOFError when the connection closes, return nil
+        nil
       end
     end
   end

@@ -73,14 +73,14 @@ describe Volt::Eventable do
   end
 
   it 'Shows object ID and events when inspected' do
-    tested = TestEventable.new.on("test") { nil }
+    tested = TestEventable.new.on('test') { nil }
     inspected = tested.inspect
     expect(inspected).to include(tested.object_id.to_s)
     expect(inspected).to include(tested.events.first.to_s)
   end
 
   it 'calls event_removed on the class included on removal of event' do
-    listener = test_eventable.on("test") { nil }
+    listener = test_eventable.on('test') { nil }
     listener.remove
     expect(test_eventable.events_removed).to include(test: [true, true])
   end

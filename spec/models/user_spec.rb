@@ -64,7 +64,6 @@ describe Volt::User do
         bob.save!.sync
 
         Volt.as_user(bob) do
-
           expect(bob.password).to eq(nil)
 
           bob_buf = bob.buffer
@@ -80,8 +79,6 @@ describe Volt::User do
         end
       end
     end
-
-
 
     describe 'when it is not a Volt server' do
       before do

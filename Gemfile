@@ -10,7 +10,6 @@ gem 'volt-mongo'
 gem 'rbnacl', require: false
 gem 'rbnacl-libsodium', require: false
 
-
 group :development do
   # For testing the kitchen sink app
   # Twitter bootstrap
@@ -59,5 +58,4 @@ platform :mri do
   # TODO: Move out of MRI block once jruby 9k is outs
   gem 'sauce', '~> 3.5.3', require: false
   gem 'sauce-connect', '~> 3.5.0', require: false
-
 end

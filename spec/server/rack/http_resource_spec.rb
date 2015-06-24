@@ -62,8 +62,7 @@ if RUBY_PLATFORM != 'opal'
       request = Volt::HttpRequest.new(env)
       response = http_resource.call(env)
       expect(response[0]).to eq(404)
-      #expect(response.body).to eq(['show with id 99 and another_param called'])
+      # expect(response.body).to eq(['show with id 99 and another_param called'])
     end
-
   end
 end

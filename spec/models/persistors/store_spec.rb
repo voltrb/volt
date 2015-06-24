@@ -39,7 +39,7 @@ describe Volt::Persistors::Store do
   unless RUBY_PLATFORM == 'opal'
     before do
       model = store._nesters.create(name: 'One').sync
-      model._subone = {name: 'Two'}
+      model._subone = { name: 'Two' }
     end
 
     it 'should reload a model with nested hash models' do

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Volt::EJSON, '.parse' do
   subject { Volt::EJSON }
-  let(:epoch) { 135820576553 }
+  let(:epoch) { 135_820_576_553 }
   let(:ruby_epoch) { epoch / 1000.0 }
 
   context 'safe escaping' do
@@ -22,8 +22,8 @@ describe Volt::EJSON, '.parse' do
   context 'parsing EJSON fields' do
     context 'date' do
       it 'is not parsed when given a bad value' do
-        expect(subject.parse '{"a": {"$date" : "something"}}').
-          to eq('a' => { '$date' => 'something' })
+        expect(subject.parse '{"a": {"$date" : "something"}}')
+          .to eq('a' => { '$date' => 'something' })
       end
 
       it 'parses proper $date EJSON fields' do
@@ -52,8 +52,8 @@ describe Volt::EJSON, '.parse' do
         end
 
         expect(subject.parse ejson).to eq(
-          "when" => Time.at(ruby_epoch),
-          "then" => Time.at(ruby_epoch)
+          'when' => Time.at(ruby_epoch),
+          'then' => Time.at(ruby_epoch)
         )
       end
     end

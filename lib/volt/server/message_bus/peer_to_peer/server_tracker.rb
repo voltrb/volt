@@ -40,7 +40,7 @@ module Volt
           if item
             item.assign_attributes(ips: ips, time: time, port: @port)
           else
-            instances << {server_id: @server_id, ips: ips, port: @port, time: time}
+            instances << { server_id: @server_id, ips: ips, port: @port, time: time }
           end
         end
       end

@@ -430,15 +430,15 @@ describe Volt::Model do
 
     # Remove id's nested
     items = all_items.map do |hash|
-      hash.without(:id).map do |k,v|
+      hash.without(:id).map do |k, v|
         v = v.without(:id) if v.is_a?(Hash)
-        [k,v]
+        [k, v]
       end.to_h
     end
     expect(items).to eq(a)
   end
 
-  describe "first or create" do
+  describe 'first or create' do
     it 'should create an item if one does not exist in the collection' do
       page = Volt::Model.new
 
@@ -588,9 +588,9 @@ describe Volt::Model do
 
   describe 'destroy' do
     it 'fails if attempting to destroy while parentless' do
-      model = Volt::Model.new(test: "yeah")
+      model = Volt::Model.new(test: 'yeah')
       expect { model.destroy }.to raise_error(RuntimeError,
-        'Model does not have a parent and cannot be deleted.')
+                                              'Model does not have a parent and cannot be deleted.')
     end
   end
 

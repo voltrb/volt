@@ -19,7 +19,6 @@ describe 'user accounts', type: :feature, sauce: true do
     expect(page).to have_content('Test Account 9550')
   end
 
-
   it 'should fail to create an account without a valid email and password' do
     visit '/'
 
@@ -40,10 +39,10 @@ describe 'user accounts', type: :feature, sauce: true do
     expect(page).to have_content('must be at least 8 characters')
   end
 
-  describe "with a user" do
+  describe 'with a user' do
     before do
-        # Add the user
-        store._users! << { email: 'test@test.com', password: 'awes0mesEcRet', name: 'Test Account 9550' }
+      # Add the user
+      store._users! << { email: 'test@test.com', password: 'awes0mesEcRet', name: 'Test Account 9550' }
     end
 
     it 'should login and logout' do
@@ -89,5 +88,4 @@ describe 'user accounts', type: :feature, sauce: true do
       expect(page).to have_content('Password did not match')
     end
   end
-
 end

@@ -105,7 +105,6 @@ unless RUBY_PLATFORM == 'opal'
 
         conn1.disconnect
         conn2.disconnect
-
       end
     end
   end

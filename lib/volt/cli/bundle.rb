@@ -17,7 +17,7 @@ module Volt
 
       require 'bundler'
       Bundler.with_clean_env do
-        full_command = %Q["#{Gem.ruby}" "#{_bundle_command}" #{command}]
+        full_command = %("#{Gem.ruby}" "#{_bundle_command}" #{command})
         if options[:quiet]
           system(full_command, out: File::NULL)
         else

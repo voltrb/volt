@@ -30,12 +30,12 @@ module Volt
 
     def received_message(name, promise_id, *args)
       case name
-        when 'added', 'removed', 'updated', 'changed'
-          notify_query(name, *args)
-        when 'response'
-          response(promise_id, *args)
-        when 'reload'
-          reload
+      when 'added', 'removed', 'updated', 'changed'
+        notify_query(name, *args)
+      when 'response'
+        response(promise_id, *args)
+      when 'reload'
+        reload
       end
     end
 

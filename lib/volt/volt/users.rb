@@ -98,7 +98,7 @@ module Volt
     end
 
     def fetch_current_user
-      Volt.logger.warn("Deprication Warning: fetch current user have been depricated, Volt.current_user returns a promise now.")
+      Volt.logger.warn('Deprication Warning: fetch current user have been depricated, Volt.current_user returns a promise now.')
       current_user
     end
 
@@ -135,8 +135,8 @@ module Volt
       user_id_signature
     end
 
-
     private
+
     unless RUBY_PLATFORM == 'opal'
       def salty_user_id(user_id)
         "#{Volt.config.app_secret}::#{user_id}"

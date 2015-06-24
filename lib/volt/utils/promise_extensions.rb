@@ -3,7 +3,6 @@ require 'volt/utils/promise'
 
 # A temp patch for promises until https://github.com/opal/opal/pull/725 is released.
 class Promise
-
   # We made a choice not to support comparitors and << and >> on method_missing
   # on Promises.  This makes it easier to understand what promise proxying does
   # and how it works.  It also prevents confusing situations where you try to
@@ -27,7 +26,7 @@ class Promise
 
   # Allow .each to be called directly on promises
   def each(&block)
-    raise ArgumentError, 'no block given' unless block
+    fail ArgumentError, 'no block given' unless block
 
     self.then do |val|
       val.each(&block)
@@ -38,9 +37,7 @@ class Promise
   def inspect
     result = "#<#{self.class}(#{object_id})"
 
-    if @next
-      result += " >> #{@next.inspect}"
-    end
+    result += " >> #{@next.inspect}" if @next
 
     if realized?
       value = value_or_error
@@ -55,7 +52,7 @@ class Promise
 
       result += ": #{value.inspect}>"
     else
-      result += ">"
+      result += '>'
     end
 
     result
@@ -69,9 +66,7 @@ class Promise
   # swallow ExpectationNotMetError's.
   if defined?(RSpec::Expectations::ExpectationNotMetError)
     def exception!(error)
-      if error.is_a?(RSpec::Expectations::ExpectationNotMetError)
-        raise error
-      end
+      fail error if error.is_a?(RSpec::Expectations::ExpectationNotMetError)
       @exception = true
 
       reject!(error)
@@ -80,15 +75,13 @@ class Promise
 
   # Forward to resolved value
   def to_json(*args, &block)
-    self.then {|v| v.to_json(*args, &block) }
+    self.then { |v| v.to_json(*args, &block) }
   end
-
-
 
   # Waits for the promise to resolve (assuming it is blocking on
   # the server) and returns the result.
   def sync
-    raise ".sync can only be used on the client" if Volt.client?
+    fail '.sync can only be used on the client' if Volt.client?
 
     result = nil
     error = nil

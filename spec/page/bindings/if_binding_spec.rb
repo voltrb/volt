@@ -21,7 +21,7 @@ describe Volt::IfBinding do
       ]
     ]
 
-    binding = ->(volt_app, target, context, id) do
+    binding = lambda do |volt_app, target, context, id|
       Volt::IfBinding.new(volt_app, target, context, 0, branches)
     end
 

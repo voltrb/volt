@@ -10,7 +10,6 @@
 class BaseRootModel < Volt::Model
 end
 
-
 ROOT_MODEL_NAMES = [:Store, :Page, :Params, :Cookies, :LocalStore, :Flash]
 
 ROOT_MODEL_NAMES.each do |base_name|
@@ -23,7 +22,7 @@ module Volt
     self.model_classes = []
 
     def self.add_model_class(klass)
-      self.model_classes << klass
+      model_classes << klass
 
       method_name = klass.to_s.underscore.pluralize
 

@@ -7,8 +7,6 @@ require 'volt/server/rack/opal_files'
 require 'volt/server/rack/index_files'
 require 'volt/server/rack/http_resource'
 
-
-
 module Volt
   class DefaultMiddlewareStack
     # Setup on the middleware we can setup before booting components
@@ -24,13 +22,11 @@ module Volt
       rack_app.use Rack::ConditionalGet
       rack_app.use Rack::ETag
 
-      rack_app.use Rack::Session::Cookie, {
-        :key => 'rack.session',
-        # :domain => 'localhost.com',
-        :path => '/',
-        :expire_after => 2592000,
-        :secret => Volt.config.app_secret
-      }
+      rack_app.use Rack::Session::Cookie,         key: 'rack.session',
+                                                  # :domain => 'localhost.com',
+                                                  path: '/',
+                                                  expire_after: 2_592_000,
+                                                  secret: Volt.config.app_secret
 
       rack_app.use QuietCommonLogger
       rack_app.use Rack::ShowExceptions
@@ -55,14 +51,14 @@ module Volt
       rack_app.use HttpResource, volt_app, volt_app.router
 
       rack_app.use Rack::Static,
-                    urls: ['/'],
-                    root: 'config/base',
-                    index: '',
-                    header_rules: [
-                      [:all, { 'Cache-Control' => 'public, max-age=86400' }]
-                    ]
+                   urls: ['/'],
+                   root: 'config/base',
+                   index: '',
+                   header_rules: [
+                     [:all, { 'Cache-Control' => 'public, max-age=86400' }]
+                   ]
 
-      rack_app.run lambda { |env| [404, { 'Content-Type' => 'text/html; charset=utf-8' }, ['404 - page not found']] }
+      rack_app.run ->(env) { [404, { 'Content-Type' => 'text/html; charset=utf-8' }, ['404 - page not found']] }
     end
   end
 end

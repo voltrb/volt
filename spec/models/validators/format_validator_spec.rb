@@ -5,7 +5,7 @@ require 'models/validators/shared_examples_for_validators'
 # Feel free to append stub methods to this class as needed for testing.
 class SpecValidator < Volt::FormatValidator
   def default_options
-    "No hash here, no sir!"
+    'No hash here, no sir!'
   end
 end
 
@@ -49,7 +49,7 @@ describe Volt::FormatValidator do
 
   context 'when default_options is not a Hash' do
     it 'returns the options hash instead of default_options' do
-      user = Volt::Model.new(email: "rick@nolematad.io")
+      user = Volt::Model.new(email: 'rick@nolematad.io')
       validator = SpecValidator.new(user, 'email')
       options = { with: /.+@.+/, message: 'must include an @ symbol' }
       results = validator.apply(options).errors

@@ -20,7 +20,7 @@ describe Volt::TypeValidator do
       describe 'when count is a string' do
         let(:count) { 'Cats' }
         it do
-          expect(subject).to eq({count: ['must be of type Numeric']})
+          expect(subject).to eq(count: ['must be of type Numeric'])
         end
       end
     end

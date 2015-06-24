@@ -14,7 +14,7 @@ module Volt
       # The server id for the connected server
       attr_reader :peer_server_id, :socket
 
-      def initialize(socket, ip, port, message_bus, server=false)
+      def initialize(socket, ip, port, message_bus, server = false)
         @message_bus = message_bus
         @ip = ip
         @port = port
@@ -26,7 +26,6 @@ module Volt
 
         # The encoder handles things like formatting and encryption
         @message_encoder = MessageEncoder.new
-
 
         failed = false
         begin
@@ -102,7 +101,6 @@ module Volt
         end
       end
 
-
       def listen
         loop do
           begin
@@ -129,7 +127,6 @@ module Volt
         end
       end
 
-
       # Because servers can have many ips, we try the various ip's until we are
       # able to connect to one.
       # @param [Array] an array of ip strings
@@ -144,7 +141,7 @@ module Volt
           end
         end
 
-        return false
+        false
       end
 
       private

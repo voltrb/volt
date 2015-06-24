@@ -29,8 +29,8 @@ class Generate < Thor
                        lazy_default: [ENV['BUNDLER_EDITOR'], ENV['VISUAL'], ENV['EDITOR']].find { |e| !e.nil? && !e.empty? },
                        required: false, banner: '/path/to/your/editor',
                        desc: 'Open generated gemspec in the specified editor (defaults to $EDITOR or $BUNDLER_EDITOR)'
-  method_option :coc, :type => :boolean, :desc => "Generate a code of conduct file. Set a default with `bundle config gem.coc true`."
-  method_option :mit, :type => :boolean, :desc => "Generate an MIT license file"
+  method_option :coc, type: :boolean, desc: 'Generate a code of conduct file. Set a default with `bundle config gem.coc true`.'
+  method_option :mit, type: :boolean, desc: 'Generate an MIT license file'
 
   def gem(name)
     require 'volt/cli/new_gem'

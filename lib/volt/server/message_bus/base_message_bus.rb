@@ -34,18 +34,18 @@ module Volt
     class BaseMessageBus
       # MessagesBus's should take an instance of a Volt::App
       def initialize(volt_app)
-        raise "Not implemented"
+        fail 'Not implemented'
       end
 
       # Subscribe should return an object that you can call .remove on to stop
       # the subscription.
       def subscribe(channel_name, &block)
-        raise "Not implemented"
+        fail 'Not implemented'
       end
 
       # publish should push out to all subscribed within the volt cluster.
       def publish(channel_name, message)
-        raise "Not implemented"
+        fail 'Not implemented'
       end
     end
   end

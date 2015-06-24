@@ -6,6 +6,5 @@ unless RUBY_PLATFORM == 'opal'
       # Stub socket stuff
       allow_any_instance_of(Volt::MessageBus::PeerToPeer).to receive(:connect_to_peers).and_return(nil)
     end
-
   end
 end

@@ -11,10 +11,8 @@ module FieldHelpers
       end
 
       if klass
-      # Add type validation, execpt for String, since anything can be a string.
-        unless klass == String
-          validate name, type: klass
-        end
+        # Add type validation, execpt for String, since anything can be a string.
+        validate name, type: klass unless klass == String
       end
 
       define_method(name) do
@@ -30,9 +28,7 @@ module FieldHelpers
           elsif klass == Numeric
             begin
               orig = val
-              unless val.is_a?(Numeric)
-                val = Float(val)
-              end
+              val = Float(val) unless val.is_a?(Numeric)
 
               if RUBY_PLATFORM == 'opal'
                 # Opal has a bug in 0.7.2 that gives us back NaN without an

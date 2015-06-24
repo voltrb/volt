@@ -36,9 +36,7 @@ class Pry
 
       result = current_binding.eval(code, Pry.eval_path, Pry.current_line)
 
-      if result.is_a?(Promise)
-        result = result.sync
-      end
+      result = result.sync if result.is_a?(Promise)
 
       set_last_result(result, code)
     ensure

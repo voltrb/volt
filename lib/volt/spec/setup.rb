@@ -29,9 +29,7 @@ module Volt
         RSpec.configuration.filter_run_excluding type: :feature
       end
 
-
-
-      cleanup_db = -> do
+      cleanup_db = lambda do
         volt_app.database.drop_database
 
         # Clear cached for a reset
@@ -79,7 +77,7 @@ module Volt
           end
 
           # Cleanup after integration tests also.
-          before(:example, {type: :feature}) do
+          before(:example, type: :feature) do
             @__store_accessed = true
           end
         end

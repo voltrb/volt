@@ -28,45 +28,45 @@ module Volt
         args         = content[index..-1].strip
 
         case first_symbol
-          when 'if'
-            add_if(args)
-          when 'unless'
-            add_if("!(#{args})")
-          when 'elsif'
-            add_else(args)
-          when 'else'
-            if args.blank?
-              add_else(nil)
-            else
-              fail "else does not take a conditional, #{content} was provided."
-            end
-          when 'view'
-            add_template(args)
-          when 'template'
-            Volt.logger.warn('Deprecation warning: The template binding has been renamed to view.  Please update any views accordingly.')
-            add_template(args)
-          when 'yield'
-            add_yield(args)
+        when 'if'
+          add_if(args)
+        when 'unless'
+          add_if("!(#{args})")
+        when 'elsif'
+          add_else(args)
+        when 'else'
+          if args.blank?
+            add_else(nil)
           else
-            if content =~ /.each\s+do\s+\|/
-              add_each(content, false)
-            elsif content =~ /.each_with_index\s+do\s+\|/
-              add_each(content, true)
-            else
-              add_content_binding(content)
-            end
+            fail "else does not take a conditional, #{content} was provided."
+          end
+        when 'view'
+          add_template(args)
+        when 'template'
+          Volt.logger.warn('Deprecation warning: The template binding has been renamed to view.  Please update any views accordingly.')
+          add_template(args)
+        when 'yield'
+          add_yield(args)
+        else
+          if content =~ /.each\s+do\s+\|/
+            add_each(content, false)
+          elsif content =~ /.each_with_index\s+do\s+\|/
+            add_each(content, true)
+          else
+            add_content_binding(content)
+          end
         end
       else
         case content
-          when 'end'
-            # Close the binding
-            close_scope
-          when 'else'
-            add_else(nil)
-          when 'yield'
-            add_yield
-          else
-            add_content_binding(content)
+        when 'end'
+          # Close the binding
+          close_scope
+        when 'else'
+          add_else(nil)
+        when 'yield'
+          add_yield
+        else
+          add_content_binding(content)
         end
       end
     end

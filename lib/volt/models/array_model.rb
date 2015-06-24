@@ -6,7 +6,7 @@ require 'volt/models/state_helpers'
 require 'volt/data_stores/data_store'
 
 module Volt
-  class RecordNotFoundException < Exception ; end
+  class RecordNotFoundException < Exception; end
 
   class ArrayModel < ReactiveArray
     include ModelWrapper
@@ -31,7 +31,7 @@ module Volt
           persistor.try(:root_dep).try(:depend)
 
           if persistor.respond_to?(:run_once_loaded) &&
-              !Volt.in_mode?(:no_model_promises)
+             !Volt.in_mode?(:no_model_promises)
             persistor.run_once_loaded(block) do
               send(old_method_name, *args)
             end
@@ -94,9 +94,8 @@ module Volt
         model = wrap_values([model]).first
       end
 
-
       if model.is_a?(Model)
-        if !model.can_create?
+        unless model.can_create?
           fail "permissions did not allow create for #{model.inspect}"
         end
 
@@ -112,8 +111,7 @@ module Volt
 
           # Mark the model as loaded
           model.change_state_to(:loaded_state, :loaded)
-
-       end.fail do |err|
+        end.fail do |err|
           # remove from the collection because it failed to save on the server
           # we don't need to call delete on the server.
           index = @array.index(model)
@@ -149,7 +147,7 @@ module Volt
     end
 
     # Create does append with a default empty model
-    def create(model={})
+    def create(model = {})
       append(model)
     end
 
@@ -203,9 +201,7 @@ module Volt
       new_array = []
       @array.size.times do |index|
         value = @array[index]
-        if yield(value)
-          new_array << value
-        end
+        new_array << value if yield(value)
       end
 
       new_array
@@ -281,7 +277,6 @@ module Volt
       end
     end
 
-
     def inspect
       Computation.run_without_tracking do
         # Track on size
@@ -312,7 +307,7 @@ module Volt
         if val
           val
         else
-          raise RecordNotFoundException.new
+          fail RecordNotFoundException.new
         end
       end
     end

@@ -25,9 +25,7 @@ require 'volt/benchmark/benchmark'
 require 'volt/page/tasks'
 require 'volt/page/page'
 
-unless RUBY_PLATFORM == 'opal'
-  require 'volt/volt/server_setup/app'
-end
+require 'volt/volt/server_setup/app' unless RUBY_PLATFORM == 'opal'
 
 module Volt
   class App
@@ -41,9 +39,9 @@ module Volt
                 :middleware
     attr_accessor :sprockets
 
-    def initialize(app_path=nil)
+    def initialize(app_path = nil)
       if Volt.server? && !app_path
-        raise "Volt::App.new requires an app path to boot"
+        fail 'Volt::App.new requires an app path to boot'
       end
 
       @app_path = app_path
@@ -86,7 +84,6 @@ module Volt
       end
     end
 
-
     # Setup a Page instance.
     def setup_page
       # Run the app config to load all users config files
@@ -102,6 +99,6 @@ if Volt.client?
   $volt_app = Volt::App.new
 
   `$(document).ready(function() {`
-    $volt_app.page.start
+  $volt_app.page.start
   `});`
 end

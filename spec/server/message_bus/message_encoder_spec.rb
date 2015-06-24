@@ -7,7 +7,7 @@ unless RUBY_PLATFORM == 'opal'
       allow_any_instance_of(Volt::MessageBus).to receive(:connect_to_peers).and_return(nil)
     end
 
-    describe "encryption" do
+    describe 'encryption' do
       before do
         @msg_bus_config = double('volt/config')
 
@@ -44,6 +44,5 @@ unless RUBY_PLATFORM == 'opal'
 
       expect(decrypted_message).to eq(message)
     end
-
   end
 end

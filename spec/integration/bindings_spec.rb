@@ -214,7 +214,6 @@ describe 'bindings test', type: :feature, sauce: true do
     end
   end
 
-
   describe 'if/unless binding' do
     it 'should show corret text' do
       visit '/'

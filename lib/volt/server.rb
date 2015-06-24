@@ -19,7 +19,6 @@ require 'volt/utils/read_write_lock'
 require 'volt/server/forking_server'
 require 'volt/server/websocket/rack_server_adaptor'
 
-
 module Volt
   class Server
     attr_reader :listener, :app_path
