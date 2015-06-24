@@ -88,7 +88,7 @@ class Promise
   # Waits for the promise to resolve (assuming it is blocking on
   # the server) and returns the result.
   def sync
-    raise ".sync can only be used on the client" if Volt.client?
+    raise ".sync can only be used on the server" if Volt.client?
 
     result = nil
     error = nil
