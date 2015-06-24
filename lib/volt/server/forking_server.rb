@@ -67,6 +67,8 @@ module Volt
           # Running as child
           @reader.close
 
+          watch_for_parent_exit
+
           begin
             volt_app = @server.boot_volt
             @rack_app = volt_app.middleware
@@ -81,8 +83,6 @@ module Volt
           drb_object = DRb.start_service('drbunix:', [self, @dispatcher])
 
           @writer.puts(drb_object.uri)
-
-          watch_for_parent_exit
 
           begin
             DRb.thread.join
