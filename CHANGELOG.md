@@ -6,12 +6,16 @@
 - ```store``` can now be called from inside of a model
 - before_save was added to models.
 - added ```cookies``` model for HttpController
+- added support for serializing Time objects
+- Model's now have a saved_state and saved? method.
+
 
 ### Changed
 - fixed bug with ReactiveHash#to_json
 - fixed bug with field Numeric coersion
 - fixed issue with initializers not loading on client sometimes.
 - fixed issue with user password change
+- fix issue storing Time in a hash
 
 ## 0.9.3
 [0.9.3 Update Blog Post](http://blog.voltframework.com/post/121128931859/0-9-3-stuff-you-asked-for)
