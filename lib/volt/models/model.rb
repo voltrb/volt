@@ -306,7 +306,7 @@ module Volt
       options         = options.dup
       options[:query] = []
 
-      ArrayModel.new(attributes, options)
+      Volt::ArrayModel.class_at_path(options[:path]).new(attributes, options)
     end
 
     def inspect
@@ -415,6 +415,10 @@ module Volt
       if defined?(RootModels)
         RootModels.add_model_class(subclass)
       end
+    end
+
+    def self.process_class_name(name)
+      name.singularize
     end
 
   end

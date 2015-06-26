@@ -6,6 +6,9 @@ end
 class Item < Volt::Model
 end
 
+class Items < Volt::ArrayModel
+end
+
 class TestAssignsMethod < Volt::Model
   def name=(val)
     self._name = val
@@ -602,5 +605,12 @@ describe Volt::Model do
       array_model = Volt::ArrayModel.new([model])
       expect(array_model.to_json).to eq(array_model.to_a.to_json)
     end
+  end
+
+  it 'creates sub-arrays with correct classes' do
+    class Items < Volt::ArrayModel; end
+    model = Volt::Model.new
+    model._items! << {}
+    expect(model._items).to be_instance_of Items
   end
 end

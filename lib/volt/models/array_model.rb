@@ -256,7 +256,7 @@ module Volt
     end
 
     def new_array_model(*args)
-      ArrayModel.new(*args)
+      Volt::ArrayModel.class_at_path(options[:path]).new(*args)
     end
 
     # Convert the model to an array all of the way down
@@ -319,6 +319,10 @@ module Volt
 
     # We need to setup the proxy methods below where they are defined.
     proxy_with_load :[], :size, :last, :reverse, :all, :to_a
+
+    def self.process_class_name(name)
+      name.pluralize
+    end
 
   end
 end

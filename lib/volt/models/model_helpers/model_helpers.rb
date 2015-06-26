@@ -77,26 +77,28 @@ module Volt
       def class_at_path(path)
         if path
           begin
-            # remove the _ and then singularize
+            # remove the _ and then singularize/pluralize
             if path.last == :[]
               index = -2
             else
               index = -1
             end
 
-            klass_name = path[index].singularize.camelize
+            # process_class_name is defined by Model/ArrayModel as
+            # singularize/pluralize
+            klass_name = process_class_name(klass_name = path[index]).camelize
 
             # Lookup the class
             klass = Object.const_get(klass_name)
 
             # Use it if it is a model
-            klass = Model unless klass < Model
+            klass = self unless klass < self
           rescue NameError => e
             # Ignore exception, just means the model isn't defined
-            klass = Model
+            klass = self
           end
         else
-          klass = Model
+          klass = self
         end
 
         klass
