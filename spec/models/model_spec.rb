@@ -608,9 +608,8 @@ describe Volt::Model do
   end
 
   it 'creates sub-arrays with correct classes' do
-    class Items < Volt::ArrayModel; end
     model = Volt::Model.new
-    model._items! << {}
+    model._items << {}
     expect(model._items).to be_instance_of Items
   end
 end
