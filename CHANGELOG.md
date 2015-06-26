@@ -16,6 +16,7 @@
 - fixed issue with initializers not loading on client sometimes.
 - fixed issue with user password change
 - fix issue storing Time in a hash
+- fixed issue with local_store not persisting in some cases
 
 ## 0.9.3
 [0.9.3 Update Blog Post](http://blog.voltframework.com/post/121128931859/0-9-3-stuff-you-asked-for)

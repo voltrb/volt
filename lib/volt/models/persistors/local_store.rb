@@ -12,6 +12,7 @@ module Volt
       end
 
       def loaded(initial_state = nil)
+        super
         # When the main model is first loaded, we pull in the data from the
         # store if it exists
         if @model.path == []
@@ -31,6 +32,8 @@ module Volt
       # Callled when an item is changed (or removed)
       def changed(attribute_name)
         root_model.persistor.save_all
+
+        true
       end
 
       # Called on the root
