@@ -35,9 +35,12 @@ module Volt
     end
 
     def process_message(message)
-      # self.class.message_all(message)
       # Messages are json and wrapped in an array
-      message = EJSON.parse(message).first
+      begin
+        message = EJSON.parse(message).first
+      rescue JSON::ParserError => e
+        Volt.logger.error("Unable to process task request message: #{message.inspect}")
+      end
 
       begin
         @@dispatcher.dispatch(self, message)

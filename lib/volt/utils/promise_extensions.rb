@@ -103,7 +103,10 @@ class Promise
       err_str = "Exception in Promise at .sync: #{error.inspect}"
       err_str += error.backtrace.join("\n") if error.respond_to?(:backtrace)
       Volt.logger.error(err_str)
-      fail error
+
+      # The fail method in Promise is already defined, to re-raise the error,
+      # we send fail
+      Object.send(:fail, error)
     else
       return result
     end
