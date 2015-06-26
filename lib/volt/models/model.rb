@@ -38,6 +38,7 @@ module Volt
     include StateManager
     include StateHelpers
     include Validations
+    # Buffer needs to go after StateHelpers so it can call saved_state as super
     include Buffer
     include FieldHelpers
     include UserValidatorHelpers

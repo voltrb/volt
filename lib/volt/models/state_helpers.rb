@@ -7,5 +7,13 @@ module Volt
     def loaded?
       loaded_state == :loaded
     end
+
+    def saved_state
+      state_for(:saved_state)
+    end
+
+    def saved?
+      saved_state == :saved
+    end
   end
 end

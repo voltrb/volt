@@ -103,14 +103,21 @@ module Volt
         delete self.saveTimer;
         `
 
+        @model.change_state_to(:saved_state, :saving)
+
         StoreTasks.save(collection, @model.path, self_attributes).then do
           save_promises = @save_promises
           @save_promises = nil
           save_promises.each { |promise|  promise.resolve(nil) }
+
+          @model.change_state_to(:saved_state, :saved)
         end.fail do |errors|
           save_promises = @save_promises
           @save_promises = nil
           save_promises.each { |promise|  promise.reject(errors) }
+
+          # Mark that we failed to save
+          @model.change_state_to(:saved_state, :save_failed)
         end
       end
 

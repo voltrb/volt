@@ -1,3 +1,5 @@
+require 'volt/reactive/reactive_accessors'
+
 module Volt
   module Buffer
     # Save saves the contents of a buffer to the save_to location.  If the buffer is new, it will create a new
@@ -14,7 +16,8 @@ module Volt
         result = nil
 
         if errors.size == 0
-          save_to = options[:save_to]
+          # cache save_to in a local
+          save_to = self.save_to
           if save_to
             if save_to.is_a?(ArrayModel)
               # Add to the collection
@@ -33,7 +36,7 @@ module Volt
                 new_model.change_state_to(:loaded_state, :loaded)
 
                 # Set the buffer's id to track the main model's id
-                options[:save_to] = new_model
+                self.save_to = new_model
               end
 
               # Copy attributes back from save_to model
@@ -76,11 +79,7 @@ module Volt
     end
 
     def buffer?
-      options[:buffer]
-    end
-
-    def save_to
-      options[:save_to]
+      options[:buffer] || false
     end
 
     # Returns a buffered version of the model
@@ -99,6 +98,42 @@ module Volt
       end
 
       model
+    end
+
+    def self.included(base)
+      base.include ReactiveAccessors
+      base.reactive_accessor :__save_to
+    end
+
+    def save_to
+      val = __save_to
+
+      unless val
+        # Lazy load the save_to
+        self.save_to = options[:save_to]
+        return __save_to
+      end
+
+      val
+    end
+
+    def save_to=(val)
+      self.__save_to = val
+    end
+
+    def saved_state
+      if buffer?
+        # cache save_to in local
+        lsave_to = self.save_to
+
+        lsave_to.try(:saved_state) || :not_saved
+      else
+        super
+      end
+    end
+
+    def saved?
+      saved_state == :saved
     end
   end
 end
