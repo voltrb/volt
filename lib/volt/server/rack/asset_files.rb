@@ -1,3 +1,5 @@
+require 'uri'
+
 # Used to get a list of the assets and other included components
 # from the dependencies.rb files.
 module Volt
@@ -7,7 +9,8 @@ module Volt
       @assets              = []
       @included_components = {}
       @components          = []
-
+      @disable_auto_import = []
+      
       # Include each of the default included components
       Volt.config.default_components.each do |def_comp_name|
         component(def_comp_name)
@@ -16,7 +19,11 @@ module Volt
       component(component_name)
     end
 
-    def load_dependencies(path)
+    def disable_auto_import
+      @disable_auto_import.push(*@current_component).uniq
+    end
+    
+    def load_dependencies(path, component_name)
       if path
         dependencies_file = File.join(path, 'config/dependencies.rb')
       else
@@ -26,6 +33,7 @@ module Volt
       if File.exist?(dependencies_file)
         # Run the dependencies file in this asset files context
         code = File.read(dependencies_file)
+        @current_component = component_name
         instance_eval(code, dependencies_file, 0)
       end
     end
@@ -44,10 +52,10 @@ module Volt
 
         component_path.each do |path|
           # Load the dependencies
-          load_dependencies(path)
+          load_dependencies(path, name)
 
           # Add any assets
-          add_assets(path)
+          add_assets(path) unless @disable_auto_import.include?(name)
           @components << [path, name]
         end
       end
@@ -57,14 +65,26 @@ module Volt
       @included_components.keys
     end
 
-    def javascript_file(url)
-      @assets << [:javascript_file, url]
+    def javascript_file(locator)
+      @assets << [:javascript_file, prepare_locator(locator, ['js'])]
     end
 
-    def css_file(url)
-      @assets << [:css_file, url]
+    def css_file(locator)
+      @assets << [:css_file, prepare_locator(locator, ['css','scss'])]
     end
 
+    def prepare_locator(locator, valid_extensions)
+      unless url_or_path?(locator)
+        locator = File.join('/assets', @current_component, '/assets', valid_extensions.first, "#{locator}")
+        locator += '.css' unless locator =~ /^.*\.(#{valid_extensions.join('|')})$/
+      end
+      locator
+    end
+    
+    def url_or_path?(url)
+      (url =~ URI::regexp || url =~ /^\/(\/)?.*/) ? true : false
+    end
+    
     def component_paths
       @components
     end
