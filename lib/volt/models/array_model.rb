@@ -1,8 +1,8 @@
 require 'volt/reactive/reactive_array'
 require 'volt/models/model_wrapper'
-require 'volt/models/model_helpers/model_helpers'
+require 'volt/models/helpers/base'
 require 'volt/models/state_manager'
-require 'volt/models/state_helpers'
+require 'volt/models/helpers/array_model'
 require 'volt/data_stores/data_store'
 
 module Volt
@@ -10,9 +10,9 @@ module Volt
 
   class ArrayModel < ReactiveArray
     include ModelWrapper
-    include ModelHelpers
+    include Models::Helpers::Base
     include StateManager
-    include StateHelpers
+    include Models::Helpers::ArrayModel
 
     attr_reader :parent, :path, :persistor, :options, :array
 
@@ -113,7 +113,7 @@ module Volt
           # Mark the model as loaded
           model.change_state_to(:loaded_state, :loaded)
 
-       end.fail do |err|
+        end.fail do |err|
           # remove from the collection because it failed to save on the server
           # we don't need to call delete on the server.
           index = @array.index(model)
@@ -134,18 +134,23 @@ module Volt
         end
       end
 
-      promise.then do
+      promise = promise.then do
         # resolve the model
         model
       end
+
+      # unwrap the promise if the persistor is synchronus.
+      # This will return the value or raise the exception.
+      promise = promise.unwrap unless @persistor.async?
+
+      # return
+      promise
     end
 
     # Works like << except it always returns a promise
     def append(model)
       # Wrap results in a promise
-      Promise.new.resolve(nil).then do
-        send(:<<, model)
-      end
+      send(:<<, model)
     end
 
     # Create does append with a default empty model

@@ -13,7 +13,10 @@ module Volt
               window.paramsUpdateTimer = setTimeout(this.$run_update.bind(this), 0);
             }
           `
+
         end
+
+        true
       end
 
       def run_update

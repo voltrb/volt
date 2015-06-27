@@ -55,4 +55,26 @@ describe Promise do
       a.something
     end.not_to raise_error
   end
+
+  describe "unwrap" do
+    it 'should raise an exception if calling unwrap on an unrealized promise' do
+      a = Promise.new
+      expect do
+        a.unwrap
+      end.to raise_error(Promise::UnrealizedPromiseException, '#unwrap called on a promise that has yet to be realized.')
+    end
+
+    it 'should return the value for a resolved promise' do
+      a = Promise.value(5)
+
+      expect(a.unwrap).to eq(5)
+    end
+
+    it 'should raise an error from a rejected promise' do
+      a = Promise.error(Exception.new('broke it'))
+      expect do
+        a.unwrap
+      end.to raise_error(Exception, 'broke it')
+    end
+  end
 end

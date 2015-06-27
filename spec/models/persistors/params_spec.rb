@@ -8,7 +8,7 @@ describe Volt::Persistors::Params do
     #
     # expect(a._test!._cool!.persistor.class).to eq(Volt::Persistors::Params)
 
-    a._items! << { name: 'Test' }
+    a._items << { name: 'Test' }
     #
     # expect(a._items.persistor.class).to eq(Volt::Persistors::Params)
     # expect(a._items[0].persistor.class).to eq(Volt::Persistors::Params)

@@ -76,6 +76,8 @@ module Volt
           # Temp, expire in 1 year, going to expand this api
           write_cookie(attribute_name, value.to_s, expires: Time.now + (356 * 24 * 60 * 60), path: '/')
         end
+
+        true
       end
 
       def removed(attribute_name)

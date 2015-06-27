@@ -1,18 +1,18 @@
 require 'volt/models/model_wrapper'
 require 'volt/models/array_model'
-require 'volt/models/model_helpers/model_helpers'
+require 'volt/models/helpers/base'
 require 'volt/models/model_hash_behaviour'
 require 'volt/models/validations/validations'
 require 'volt/utils/modes'
 require 'volt/models/state_manager'
-require 'volt/models/state_helpers'
+require 'volt/models/helpers/model'
 require 'volt/models/buffer'
 require 'volt/models/field_helpers'
 require 'volt/reactive/reactive_hash'
 require 'volt/models/validators/user_validation'
-require 'volt/models/model_helpers/dirty'
-require 'volt/models/model_helpers/listener_tracker'
-require 'volt/models/model_helpers/model_change_helpers'
+require 'volt/models/helpers/dirty'
+require 'volt/models/helpers/listener_tracker'
+require 'volt/models/helpers/change_helpers'
 require 'volt/models/permissions'
 require 'volt/models/associations'
 require 'volt/reactive/class_eventable'
@@ -33,23 +33,23 @@ module Volt
   class Model
     include LifecycleCallbacks
     include ModelWrapper
-    include ModelHelpers
+    include Models::Helpers::Base
     include ModelHashBehaviour
     include StateManager
-    include StateHelpers
+    include Models::Helpers::Model
     include Validations
     # Buffer needs to go after StateHelpers so it can call saved_state as super
     include Buffer
     include FieldHelpers
     include UserValidatorHelpers
-    include Dirty
+    include Models::Helpers::Dirty
     include ClassEventable
     include Modes
-    include ListenerTracker
+    include Models::Helpers::ListenerTracker
     include Permissions
     include Associations
     include ReactiveAccessors
-    include ModelChangeHelpers
+    include Models::Helpers::ChangeHelpers
 
     attr_reader :attributes, :parent, :path, :persistor, :options
 
@@ -337,7 +337,7 @@ module Volt
         result = parent.delete(self)
 
         # Wrap result in a promise if it isn't one
-        return result.then
+        return result#.then
       else
         fail 'Model does not have a parent and cannot be deleted.'
       end

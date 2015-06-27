@@ -309,6 +309,10 @@ module Volt
           @ids.delete(model.id)
         end
       end
+
+      def async?
+        true
+      end
     end
   end
 end

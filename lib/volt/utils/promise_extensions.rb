@@ -3,7 +3,7 @@ require 'volt/utils/promise'
 
 # A temp patch for promises until https://github.com/opal/opal/pull/725 is released.
 class Promise
-
+  class UnrealizedPromiseException < RuntimeError ; end
   # We made a choice not to support comparitors and << and >> on method_missing
   # on Promises.  This makes it easier to understand what promise proxying does
   # and how it works.  It also prevents confusing situations where you try to
@@ -83,10 +83,23 @@ class Promise
     self.then {|v| v.to_json(*args, &block) }
   end
 
+  # unwrap lets you return a value or raise an exceptoin on a realized promise.
+  # An exception will be raised if the promise is not realized yet.
+  def unwrap
+    if realized?
+      if resolved?
+        value
+      else
+        Object.send(:fail, error)
+      end
+    else
+      raise UnrealizedPromiseException, "#unwrap called on a promise that has yet to be realized."
+    end
+  end
 
-
-  # Waits for the promise to resolve (assuming it is blocking on
-  # the server) and returns the result.
+  # Waits for the promise to be realized (resolved or rejected), then returns
+  # the resolved value or raises the rejection error.  .sync only works on
+  # the server (not in opal), and will raise a warning if on the client.
   def sync
     raise ".sync can only be used on the server" if Volt.client?
 

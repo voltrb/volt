@@ -10,6 +10,10 @@ module Volt
         @model.change_state_to(:loaded_state, initial_state || :loaded)
       end
 
+      # Method that is called when data on the model changes.
+      # @returns [true|Promise] - should return a Promise or true.  On async
+      #    persistors, the promise from set and save! will wait on the
+      #    Promise.
       def changed(attribute_name)
       end
 
@@ -33,6 +37,12 @@ module Volt
 
       # Specify if this collection should auto-generate id's
       def auto_generate_id
+        false
+      end
+
+      # return true if this persistor is asynchronus and needs to return
+      # Promises.
+      def async?
         false
       end
 

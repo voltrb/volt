@@ -20,6 +20,7 @@ describe Volt::Persistors::Store do
     persistor_instance = double('volt/persistor instance')
     expect(persistor_instance).to receive(:loaded)
     expect(persistor).to receive(:new).and_return(persistor_instance)
+    expect(persistor_instance).to receive(:async?).and_return(false)
 
     @model = Volt::ArrayModel.new([1, 2, 3], persistor: persistor)
 
