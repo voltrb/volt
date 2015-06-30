@@ -23,7 +23,7 @@ module Volt
             end
           end
 
-          permissions(:create, :update) do
+          permissions(:update) do
             # Don't allow the key to be changed
             deny(key)
           end

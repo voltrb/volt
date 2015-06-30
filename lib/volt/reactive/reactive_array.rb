@@ -166,7 +166,11 @@ module Volt
     end
 
     # alias :__old_append :<<
-    def <<(value)
+    def <<(*args)
+      append(*args)
+    end
+
+    def append(value)
       result = (@array << value)
 
       trigger_for_index!(@array.size - 1)

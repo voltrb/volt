@@ -87,76 +87,21 @@ module Volt
 
     # Make sure it gets wrapped
     def <<(model)
-      if model.is_a?(Model)
-        # Set the new path and the persistor.
-        model.options = @options.merge(path: @options[:path] + [:[]])
-      else
-        model = wrap_values([model]).first
-      end
-
-
-      if model.is_a?(Model)
-        if !model.can_create?
-          fail "permissions did not allow create for #{model.inspect}"
-        end
-
-        # Add it to the array and trigger any watches or on events.
-        super(model)
-
-        @persistor.added(model, @array.size - 1)
-
-        # Validate and save
-        promise = model.run_changed.then do
-          # Mark the model as not new
-          model.instance_variable_set('@new', false)
-
-          # Mark the model as loaded
-          model.change_state_to(:loaded_state, :loaded)
-
-        end.fail do |err|
-          # remove from the collection because it failed to save on the server
-          # we don't need to call delete on the server.
-          index = @array.index(model)
-          delete_at(index, true)
-
-          # remove from the id list
-          @persistor.try(:remove_tracking_id, model)
-
-          # re-raise, err might not be an Error object, so we use a rejected promise to re-raise
-          Promise.new.reject(err)
-        end
-      else
-        promise = nil.then do
-          # Add it to the array and trigger any watches or on events.
-          super(model)
-
-          @persistor.added(model, @array.size - 1)
-        end
-      end
-
-      promise = promise.then do
-        # resolve the model
-        model
-      end
-
-      # unwrap the promise if the persistor is synchronus.
-      # This will return the value or raise the exception.
-      promise = promise.unwrap unless @persistor.async?
-
-      # return
-      promise
+      create_new_model(model, :<<)
     end
 
+    # Alias append for use inside of child append
+    alias_method :reactive_array_append, :append
     # Works like << except it always returns a promise
     def append(model)
-      # Wrap results in a promise
-      send(:<<, model)
+      create_new_model(model, :append)
     end
 
     # Create does append with a default empty model
     def create(model={})
-      append(model)
+      create_new_model(model, :create)
     end
+
 
     def delete(val)
       # Check to make sure the models are allowed to be deleted
@@ -309,6 +254,76 @@ module Volt
     def self.process_class_name(name)
       name.pluralize
     end
+
+    private
+    # called form <<, append, and create.  If a hash is passed in, it converts
+    # it to a model.  Then it takes the model and inserts it into the ArrayModel
+    # then persists it.
+    def create_new_model(model, from_method)
+      if model.is_a?(Model)
+        if model.buffer?
+          fail "The #{from_method} does not take a buffer.  Call .save! on buffer's to persist them."
+        end
+
+        # Set the new path and the persistor.
+        model.options = @options.merge(path: @options[:path] + [:[]])
+      else
+        model = wrap_values([model]).first
+      end
+
+
+      if model.is_a?(Model)
+        if !model.can_create?
+          fail "permissions did not allow create for #{model.inspect}"
+        end
+
+        # Add it to the array and trigger any watches or on events.
+        reactive_array_append(model)
+
+        @persistor.added(model, @array.size - 1)
+
+        # Validate and save
+        promise = model.run_changed.then do
+          # Mark the model as not new
+          model.instance_variable_set('@new', false)
+
+          # Mark the model as loaded
+          model.change_state_to(:loaded_state, :loaded)
+
+        end.fail do |err|
+          # remove from the collection because it failed to save on the server
+          # we don't need to call delete on the server.
+          index = @array.index(model)
+          delete_at(index, true)
+
+          # remove from the id list
+          @persistor.try(:remove_tracking_id, model)
+
+          # re-raise, err might not be an Error object, so we use a rejected promise to re-raise
+          Promise.new.reject(err)
+        end
+      else
+        promise = nil.then do
+          # Add it to the array and trigger any watches or on events.
+          reactive_array_append(model)
+
+          @persistor.added(model, @array.size - 1)
+        end
+      end
+
+      promise = promise.then do
+        # resolve the model
+        model
+      end
+
+      # unwrap the promise if the persistor is synchronus.
+      # This will return the value or raise the exception.
+      promise = promise.unwrap unless @persistor.async?
+
+      # return
+      promise
+    end
+
 
     # We need to setup the proxy methods below where they are defined.
     proxy_with_load :[], :size, :last, :reverse, :all, :to_a
