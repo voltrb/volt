@@ -224,24 +224,8 @@ module Volt
 
     # returns a promise to fetch the first instance
     def fetch_first(&block)
-      persistor = self.persistor
-
-      if persistor && persistor.is_a?(Persistors::ArrayStore)
-        # On array store, we wait for the result to be loaded in.
-        promise = limit(1).fetch do |res|
-          result = res.first
-
-          result
-        end
-      else
-        # On all other persistors, it should be loaded already
-        promise = Promise.new.resolve(first)
-      end
-
-      # Run any passed in blocks after fetch
-      promise = promise.then(&block) if block
-
-      promise
+      Volt.logger.warn('.fetch_first is deprecated in favor of .first')
+      first
     end
 
     # Make sure it gets wrapped
@@ -322,12 +306,12 @@ module Volt
       end
     end
 
-    # We need to setup the proxy methods below where they are defined.
-    proxy_with_load :[], :size, :last, :reverse, :all, :to_a
-
     def self.process_class_name(name)
       name.pluralize
     end
+
+    # We need to setup the proxy methods below where they are defined.
+    proxy_with_load :[], :size, :last, :reverse, :all, :to_a
 
   end
 end

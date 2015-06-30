@@ -160,27 +160,9 @@ module Volt
     end
 
     def clear
-      old_size = @array.size
-
-      deps        = @array_deps
-      @array_deps = []
-
-      # Trigger remove for each cell
-      old_size.times do |index|
-        trigger_removed!(old_size - index - 1)
-      end
-
-      # Trigger on each cell since we are clearing out the array
-      if deps
-        deps.each do |dep|
-          dep.changed! if dep
-        end
-      end
+      __clear
 
       @persistor.clear if @persistor
-
-      # clear the array
-      @array = []
     end
 
     # alias :__old_append :<<
@@ -235,6 +217,31 @@ module Volt
     end
 
     private
+
+    # used internally, clears out the array, triggers the change events, but
+    # does not call clear on the persistors.  Used when models are updated
+    # externally.
+    def __clear
+      old_size = @array.size
+
+      deps        = @array_deps
+      @array_deps = []
+
+      # Trigger remove for each cell
+      old_size.times do |index|
+        trigger_removed!(old_size - index - 1)
+      end
+
+      # Trigger on each cell since we are clearing out the array
+      if deps
+        deps.each do |dep|
+          dep.changed! if dep
+        end
+      end
+
+      # clear the array
+      @array = []
+    end
 
     # Check to see if the size has changed, trigger a change on size if it has
     def trigger_size_change!
