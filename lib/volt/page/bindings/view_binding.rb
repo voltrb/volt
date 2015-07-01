@@ -201,7 +201,7 @@ module Volt
         controller = new_controller.call
       end
 
-      handler = ControllerHandler.new(controller, action)
+      handler = ControllerHandler.fetch(controller, action)
 
       if generated_new
         # Call the action

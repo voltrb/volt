@@ -2,9 +2,23 @@ module Volt
   class ControllerHandler
     attr_reader :controller, :action
 
+    # Checks to see if a controller has a handler, and if not creates one.
+    def self.fetch(controller, action)
+      inst = controller.instance_variable_get('@__handler')
+
+      unless inst
+        inst = new(controller, action)
+        controller.instance_variable_set('@__handler', inst)
+      end
+
+      inst
+    end
+
     def initialize(controller, action)
       @controller = controller
       @action = action.to_sym if action
+
+      @called_methods = {}
     end
 
     def call_action(stage_prefix = nil, stage_suffix = nil)
@@ -21,6 +35,12 @@ module Volt
       else
         method_name = @action
       end
+
+      # Don't call if its already been called
+      return if @called_methods[method_name]
+
+      # Track that this method got called
+      @called_methods[method_name] = true
 
       # If no stage, then we are calling the main action method,
       # so we should call the before/after actions
