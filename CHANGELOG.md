@@ -1,14 +1,21 @@
 # Change Log
 
 ## 0.9.4.pre1
+### Lingo Change
+the base collections will now be called "Repositories" or "Repo's" for short.  This will only matter directly for internal volt code, but for the data provider api, this will help.
+
 ### Added
 - ```root``` can now be called from a model to get the root model on the collection.  (So if the model is on store, it will return ```store```)
 - ```store``` can now be called from inside of a model
+- all repos (```store```, ```page```, ```cookies```, ```params```, etc...) now can be accessed outside of controllers and tasks with ```Volt.current_app.{repository}```  (```Volt.current_app.store``` for example)
 - before_save was added to models.
 - added ```cookies``` model for HttpController
 - added support for serializing Time objects
 - Model's now have a saved_state and saved? method.
+- Volt.current_app now has ```store``` and ```page``` collections accessable from it, and is the preferred way to access those collections outside of controllers and tasks.
 
+### Removed
+- The $page global was removed.  Use ```Volt.current_app``` to get access to repos.
 
 ### Changed
 - fixed bug with ReactiveHash#to_json

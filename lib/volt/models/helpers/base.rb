@@ -61,8 +61,7 @@ module Volt
         end
 
         def store
-          # TODO: Move away from $page
-          $page.store
+          Volt.current_app.store
         end
 
         # returns the root model for the collection the model is currently on.  So

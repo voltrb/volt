@@ -13,7 +13,7 @@ module Volt
       def setup_paths
         # Load component paths
         @component_paths = ComponentPaths.new(@app_path)
-        @component_paths.require_in_components(@page || $page)
+        @component_paths.require_in_components(self)
       end
 
       def load_app_code
@@ -24,7 +24,6 @@ module Volt
       def setup_router
         @router = Routes.new
       end
-
 
       def setup_preboot_middleware
         @middleware = MiddlewareStack.new

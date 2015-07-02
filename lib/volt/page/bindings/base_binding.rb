@@ -21,8 +21,8 @@ module Volt
       @@binding_number ||= 10_000
     end
 
-    def page
-      @volt_app.page
+    def browser
+      @volt_app.browser
     end
 
     def dom_section

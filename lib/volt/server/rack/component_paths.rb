@@ -55,7 +55,7 @@ module Volt
     end
 
     # Makes each components classes available on the load path, require classes.
-    def require_in_components(page)
+    def require_in_components(volt_app)
       if RUBY_PLATFORM == 'opal'
       else
         app_folders do |app_folder|
@@ -69,11 +69,11 @@ module Volt
         end
 
         # Delay the loading of views
-        page.template_loader = -> { load_views_and_routes(page) }
+        volt_app.templates.template_loader = -> { load_views_and_routes(volt_app) }
       end
     end
 
-    def load_views_and_routes(page)
+    def load_views_and_routes(volt_app)
       component_names = []
       app_folders do |app_folder|
         Dir["#{app_folder}/*"].map { |cp| cp[/[^\/]+$/] }.each do |component_name|
@@ -85,7 +85,7 @@ module Volt
       # TODO: Nested components listed twice are are loaded multiple times
       component_names.uniq.each do |component_name|
         code = Volt::ComponentCode.new(component_name, self, false).code
-        # Evaluate returned code, the ```page``` variable is set for access.
+        # Evaluate returned code, the ```volt_app``` variable is set for access.
         eval(code)
       end
     end

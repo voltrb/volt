@@ -85,7 +85,7 @@ module Volt
     def current_user
       user_id = current_user_id
       if user_id
-        $page.store._users.where(id: user_id).first
+        Volt.current_app.store._users.where(id: user_id).first
       else
         Promise.new.resolve(nil)
       end
@@ -106,7 +106,7 @@ module Volt
     def login(username, password)
       UserTasks.login(login: username, password: password).then do |result|
         # Assign the user_id cookie for the user
-        $page.cookies._user_id = result
+        Volt.current_app.cookies._user_id = result
 
         # Pass nil back
         nil
@@ -114,14 +114,14 @@ module Volt
     end
 
     def logout
-      $page.cookies.delete(:user_id)
+      Volt.current_app.cookies.delete(:user_id)
     end
 
     # Fetches the user_id+signature from the correct spot depending on client
     # or server, does not verify it.
     def user_id_signature
       if Volt.client?
-        user_id_signature = $page.cookies._user_id
+        user_id_signature = Volt.current_app.cookies._user_id
       else
         # Check meta for the user id and validate it
         meta_data = Thread.current['meta']

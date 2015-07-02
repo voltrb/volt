@@ -24,11 +24,9 @@ describe Volt::ContentBinding do
       }
     }
 
-    page = double('volt/page')
-    expect(page).to receive(:templates).and_return(templates)
-
     volt_app = double('volt/app')
-    expect(volt_app).to receive(:page).and_return(page)
+    expect(volt_app).to receive(:templates).and_return(templates)
+
 
 
     dom = Volt::AttributeTarget.new(0)

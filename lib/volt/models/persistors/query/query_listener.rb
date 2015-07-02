@@ -49,7 +49,7 @@ module Volt
         # If we get back that the user signature is wrong, log the user out.
         if err.to_s.start_with?('user id or hash is incorrectly signed')
           # Delete the invalid cookie
-          $page.cookies.delete(:user_id)
+          Volt.current_app.cookies.delete(:user_id)
         end
 
         fail err

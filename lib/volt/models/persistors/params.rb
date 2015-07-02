@@ -20,7 +20,7 @@ module Volt
       end
 
       def run_update
-        $page.url.update! if Volt.client?
+        Volt.current_app.url.update! if Volt.client?
       end
     end
   end

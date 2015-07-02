@@ -144,7 +144,6 @@ module Volt
 
     def initialize(volt_app, *args)
       @volt_app = volt_app
-      @page = volt_app.page
 
       # Track that the initialize was called
       @__init_called = true
@@ -175,38 +174,6 @@ module Volt
       Timers.next_tick do
         self.url.parse(url)
       end
-    end
-
-    def page
-      @page.page
-    end
-
-    def flash
-      @page.flash
-    end
-
-    def params
-      @page.params
-    end
-
-    def local_store
-      @page.local_store
-    end
-
-    def cookies
-      @page.cookies
-    end
-
-    def url
-      @page.url
-    end
-
-    def channel
-      @page.channel
-    end
-
-    def tasks
-      @page.tasks
     end
 
     def controller

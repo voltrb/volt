@@ -5,10 +5,10 @@ module Volt
     # Takes in the path of the current view file.  This allows for relative paths
     # to be run.
     #
-    # @param [Page] the page object
+    # @param [Hash] the templates object from a Volt::App
     # @param [String] the path of the current view
-    def initialize(page, binding_in_path)
-      @page = page
+    def initialize(templates, binding_in_path)
+      @templates = templates
       path_parts       = binding_in_path.split('/')
       @collection_name = path_parts[0]
       @controller_name = path_parts[1]
@@ -17,7 +17,7 @@ module Volt
 
     # Returns true if there is a template at the path
     def check_for_template?(path)
-      @page.templates[path]
+      @templates[path]
     end
 
     # Takes in a lookup path and returns the full path for the matching
@@ -44,6 +44,8 @@ module Volt
     def path_for_template(lookup_path, force_section = nil)
       parts      = lookup_path.split('/')
       parts_size = parts.size
+
+      return nil, nil if parts_size == 0
 
       default_parts     = %w(main main index body)
 

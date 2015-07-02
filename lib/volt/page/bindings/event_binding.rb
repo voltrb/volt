@@ -65,12 +65,12 @@ module Volt
         # end
 
       end
-      @listener = page.events.add(@event_name, self, handler)
+      @listener = browser.events.add(@event_name, self, handler)
     end
 
     # Remove the event binding
     def remove
-      page.events.remove(@event_name, self)
+      browser.events.remove(@event_name, self)
     end
   end
 end

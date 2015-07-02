@@ -8,8 +8,8 @@ module Volt
   module MessageBus
     class ServerTracker
       UPDATE_INTERVAL = 10
-      def initialize(page, server_id, port)
-        @page = page
+      def initialize(volt_app, server_id, port)
+        @volt_app = volt_app
         @server_id = server_id
         @port = port
 
@@ -33,7 +33,7 @@ module Volt
 
       # Register this server as active with the database
       def register
-        instances = @page.store._active_volt_instances
+        instances = @volt_app.store._active_volt_instances
         instances.where(server_id: @server_id).first.then do |item|
           ips = local_ips.join(',')
           time = Time.now.to_i

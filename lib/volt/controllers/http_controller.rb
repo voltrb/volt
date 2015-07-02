@@ -43,7 +43,7 @@ module Volt
     attr_reader :response_headers, :request
 
     def store
-      @volt_app.page.store
+      @volt_app.store
     end
 
     def head(status, additional_headers = {})

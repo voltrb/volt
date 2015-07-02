@@ -23,22 +23,27 @@ require 'volt/models/url'
 require 'volt/page/url_tracker'
 require 'volt/benchmark/benchmark'
 require 'volt/page/tasks'
-require 'volt/page/page'
+require 'volt/volt/repos'
+require 'volt/volt/templates'
 
-unless RUBY_PLATFORM == 'opal'
+if RUBY_PLATFORM == 'opal'
+  require 'volt/volt/client_setup/browser'
+else
   require 'volt/volt/server_setup/app'
 end
 
 module Volt
   class App
+    include Volt::Repos
+
     if RUBY_PLATFORM != 'opal'
       # Include server app setup
       include Volt::ServerSetup::App
     end
 
-    attr_reader :component_paths, :router, :page, :live_query_pool,
+    attr_reader :component_paths, :router, :live_query_pool,
                 :channel_live_queries, :app_path, :database, :message_bus,
-                :middleware
+                :middleware, :browser
     attr_accessor :sprockets
 
     def initialize(app_path=nil)
@@ -52,7 +57,9 @@ module Volt
       # Setup root path
       Volt.root = app_path
 
-      setup_page
+      if RUBY_PLATFORM == 'opal'
+        setup_browser
+      end
 
       if RUBY_PLATFORM != 'opal'
         # We need to run the root config first so we can setup the Rack::Session
@@ -86,14 +93,39 @@ module Volt
       end
     end
 
+    def templates
+      @templates ||= Templates.new
+    end
+
+    # Called on the client side to add routes
+    def add_routes(&block)
+      @router ||= Routes.new
+      @router.define(&block)
+      url.router = @router
+    end
+
+    # Callled on the client to add store compiled templates
+    def add_template(*args)
+      templates.add_template(*args)
+    end
+
+    def tasks
+      @tasks ||= Tasks.new(self)
+    end
+
+    def channel
+      @channel ||= begin
+        if Volt.client?
+          Channel.new
+        else
+          ChannelStub.new
+        end
+      end
+    end
 
     # Setup a Page instance.
-    def setup_page
-      # Run the app config to load all users config files
-      @page = Page.new(self)
-
-      # Setup a global for now
-      $page = @page unless defined?($page)
+    def setup_browser
+      @browser = Browser.new(self)
     end
   end
 end
@@ -102,6 +134,6 @@ if Volt.client?
   $volt_app = Volt::App.new
 
   `$(document).ready(function() {`
-    $volt_app.page.start
+    $volt_app.browser.start
   `});`
 end

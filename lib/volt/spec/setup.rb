@@ -35,7 +35,7 @@ module Volt
         volt_app.database.drop_database
 
         # Clear cached for a reset
-        volt_app.page.instance_variable_set('@store', nil)
+        volt_app.instance_variable_set('@store', nil)
         volt_app.reset_query_pool!
       end
 
@@ -56,15 +56,14 @@ module Volt
         let(:the_page) { Model.new }
         let(:store) do
           @__store_accessed = true
-          $page ||= volt_app.page
-          $page.store
+          volt_app.store
         end
         let(:volt_app) { volt_app }
-        let(:params) { volt_app.page.params }
+        let(:params) { volt_app.params }
 
         after do
           # Clear params if used
-          url = volt_app.page.url
+          url = volt_app.url
           if url.instance_variable_get('@params')
             url.instance_variable_set('@params', nil)
           end

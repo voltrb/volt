@@ -9,14 +9,12 @@ module Volt
   class ViewLookupException < Exception; end
   class PathStringRenderer
     attr_reader :html
-    def initialize(volt_app, path, attrs = nil, page = nil, render_from_path = nil)
+    def initialize(volt_app, path, attrs = nil, render_from_path = nil)
       # where to do the path lookup from
       render_from_path ||= 'main/main/main/body'
 
-      page ||= volt_app.page
-
       # Make path into a full path
-      @view_lookup = Volt::ViewLookupForPath.new(page, render_from_path)
+      @view_lookup = Volt::ViewLookupForPath.new(volt_app.templates, render_from_path)
       full_path, controller_path = @view_lookup.path_for_template(path, nil)
 
       if full_path.nil?

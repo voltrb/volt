@@ -14,7 +14,7 @@ if RUBY_PLATFORM != 'opal'
     let(:login_info) { { 'login' => 'Marty', 'password' => 'McFly' } }
 
     before do
-      allow($page).to receive(:store).and_return fake_store
+      allow(volt_app).to receive(:store).and_return fake_store
       allow(User).to receive(:login_field).and_return 'user'
       allow(user_promise).to receive(:then).and_yield(user)
     end

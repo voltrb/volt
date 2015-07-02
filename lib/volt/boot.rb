@@ -11,8 +11,6 @@ require 'volt/server/rack/component_paths'
 
 if RUBY_PLATFORM == 'opal'
   require 'volt'
-else
-  require 'volt/page/page'
 end
 require 'volt/volt/app'
 

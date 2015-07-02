@@ -4,12 +4,12 @@ module Volt
   # The tasks class provides an interface to call tasks on
   # the backend server.  This class is setup as page.task (as a singleton)
   class Tasks
-    def initialize(page)
-      @page       = page
+    def initialize(volt_app)
+      @volt_app       = volt_app
       @promise_id = 0
       @promises   = {}
 
-      page.channel.on('message') do |*args|
+      volt_app.channel.on('message') do |*args|
         received_message(*args)
       end
     end
@@ -23,7 +23,7 @@ module Volt
       @promises[promise_id] = promise
 
       # TODO: Timeout on these callbacks
-      @page.channel.send_message([promise_id, class_name, method_name, meta_data, *args])
+      @volt_app.channel.send_message([promise_id, class_name, method_name, meta_data, *args])
 
       promise
     end
@@ -65,13 +65,13 @@ module Volt
 
     def reload
       # Stash the current page value
-      value = EJSON.stringify($page.page.to_h)
+      value = EJSON.stringify(Volt.current_app.page.to_h)
 
       # If this browser supports session storage, store the page, so it will
       # be in the same state when we reload.
       `sessionStorage.setItem('___page', value);` if `sessionStorage`
 
-      $page.page._reloading = true
+      Volt.current_app.page._reloading = true
       `window.location.reload(false);`
     end
   end

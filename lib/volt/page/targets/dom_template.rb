@@ -9,8 +9,8 @@ module Volt
   class DomTemplate
     include CommentSearchers
 
-    def initialize(page, template_name)
-      template = page.templates[template_name]
+    def initialize(volt_app, template_name)
+      template = volt_app.templates[template_name]
 
       if template
         html      = template['html']

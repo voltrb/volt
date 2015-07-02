@@ -16,7 +16,7 @@ module Volt
       @content_template_path = content_template_path
 
       # Setup the view lookup helper
-      @view_lookup = Volt::ViewLookupForPath.new(page, binding_in_path)
+      @view_lookup = Volt::ViewLookupForPath.new(volt_app.templates, binding_in_path)
 
       @current_template = nil
 
@@ -105,9 +105,9 @@ module Volt
       @controller = @current_controller_handler.controller if full_path
 
       render_template(full_path || path)
-    rescue => e
-      Volt.logger.error("Error during render of template at #{path}: #{e.inspect}")
-      Volt.logger.error(e.backtrace)
+    # rescue => e
+    #   Volt.logger.error("Error during render of template at #{path}: #{e.inspect}")
+    #   Volt.logger.error(e.backtrace)
     end
 
     def stop_waiting_for_load
@@ -216,8 +216,8 @@ module Volt
     end
 
     # The context for templates can be either a controller, or the original context.
-    def render_template(full_path, path)
-      @current_template = TemplateRenderer.new(@volt_app, @target, @controller, @binding_name, full_path, path)
+    def render_template(full_path)
+      @current_template = TemplateRenderer.new(@volt_app, @target, @controller, @binding_name, full_path)
 
       call_ready
     end

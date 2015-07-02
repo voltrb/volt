@@ -40,11 +40,8 @@ describe Volt::IfBinding do
       }
     }
 
-    page = double('volt/page')
-    expect(page).to receive(:templates).and_return(templates).at_least(1).times
-
     volt_app = double('volt/app')
-    expect(volt_app).to receive(:page).and_return(page).at_least(1).times
+    expect(volt_app).to receive(:templates).and_return(templates).at_least(1).times
 
     Volt::TemplateRenderer.new(volt_app, dom, context, 'main', 'main/main')
 

@@ -3,8 +3,8 @@ module Volt
   # a param changes, or updating the url model/params when
   # the browser url changes.
   class UrlTracker
-    def initialize(page)
-      @page = page
+    def initialize(volt_app)
+      @volt_app = volt_app
 
       if Volt.client?
         that = self
@@ -21,8 +21,8 @@ module Volt
     end
 
     def url_updated(first_call = false)
-      @page.url.parse(`document.location.href`)
-      @page.url.update! unless first_call
+      @volt_app.url.parse(`document.location.href`)
+      @volt_app.url.update! unless first_call
     end
   end
 end

@@ -55,9 +55,11 @@ module Volt
       # Use subscribe instead of on provided in Eventable
       alias_method :subscribe, :on
 
-      attr_reader :server_id, :page
+      attr_reader :server_id
 
       def initialize(volt_app)
+        @volt_app = volt_app
+
         if Volt::DataStore.fetch.connected?
           # Generate a guid
           @server_id = SecureRandom.uuid
@@ -65,8 +67,6 @@ module Volt
           @peer_connections = {}
           # The server id's for each peer we're connected to
           @peer_server_ids = {}
-
-          @page = volt_app.page
 
           setup_peer_server
           start_tracker
@@ -90,7 +90,7 @@ module Volt
       # database every minute.  If the timestamp is more than 2 minutes old,
       # an instance is marked as "dead" and removed.
       def start_tracker
-        @server_tracker = ServerTracker.new(page, @server_id, @peer_server.port)
+        @server_tracker = ServerTracker.new(@volt_app, @server_id, @peer_server.port)
 
         # Do the initial registration, and wait until its done before connecting
         # to peers.
@@ -112,7 +112,7 @@ module Volt
 
       # Return an array of peer records.
       def peers
-        instances = @page.store._active_volt_instances
+        instances = @volt_app.store._active_volt_instances
 
         instances.where(server_id: {'$ne' => @server_id}).all.sync
       end
@@ -183,7 +183,7 @@ module Volt
       def still_alive?(peer_server_id)
         # Unable to write to the socket, retry until the instance is no
         # longer marking its self as active in the database
-        peer_table = @page.store._active_volt_instances
+        peer_table = @volt_app.store._active_volt_instances
         peer = peer_table.where(server_id: peer_server_id).first.sync
         if peer
           # Found the peer, retry if it has reported in in the last 2

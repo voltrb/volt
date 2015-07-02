@@ -52,11 +52,11 @@ module Volt
   class Console
     module Helpers
       def store
-        @volt_app.page.store
+        @volt_app.store
       end
 
       def page
-        @volt_app.page.page
+        @volt_app.page
       end
     end
 

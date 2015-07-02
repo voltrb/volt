@@ -21,14 +21,14 @@ module Volt
       fail 'set_template is not implemented'
     end
 
-    def set_content_to_template(page, template_name)
+    def set_content_to_template(volt_app, template_name)
       if self.is_a?(DomSection)
         # DomTemplates are an optimization when working with the DOM (as opposed to other targets)
-        dom_template = (@@template_cache[template_name] ||= DomTemplate.new(page, template_name))
+        dom_template = (@@template_cache[template_name] ||= DomTemplate.new(volt_app, template_name))
 
         set_template(dom_template)
       else
-        template = page.templates[template_name]
+        template = volt_app.templates[template_name]
 
         if template
           html     = template['html']

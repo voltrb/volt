@@ -10,10 +10,10 @@ module Volt
         # things like who's logged in.
         meta_data = {}
 
-        user_id = $page.cookies._user_id
+        user_id = Volt.current_app.cookies._user_id
         meta_data['user_id'] = user_id unless user_id.nil?
 
-        $page.tasks.call(self.name, name, meta_data, *args, &block)
+        Volt.current_app.tasks.call(self.name, name, meta_data, *args, &block)
       end
     else
       include CollectionHelpers
@@ -22,7 +22,6 @@ module Volt
 
       def initialize(volt_app, channel = nil, dispatcher = nil)
         @volt_app   = volt_app
-        @page       = volt_app.page
         @channel    = channel
         @dispatcher = dispatcher
       end

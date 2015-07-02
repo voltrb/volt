@@ -63,11 +63,11 @@ module Volt
       code
     end
 
-    def page_reference
+    def app_reference
       if @client
-        '$page'
+        'Volt.current_app'
       else
-        'page'
+        'volt_app'
       end
     end
 
@@ -111,7 +111,7 @@ module Volt
 
             binding_code = "{#{binding_code.join(', ')}}"
 
-            code << "#{page_reference}.add_template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})\n"
+            code << "#{app_reference}.add_template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})\n"
             # template_calls << "template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})"
           end
         end
@@ -172,7 +172,7 @@ module Volt
       routes_path = "#{@component_path}/config/routes.rb"
 
       if File.exist?(routes_path)
-        code << "#{page_reference}.add_routes do\n"
+        code << "#{app_reference}.add_routes do\n"
         code << "\n" + File.read(routes_path) + "\n"
         code << "end\n\n"
       end
