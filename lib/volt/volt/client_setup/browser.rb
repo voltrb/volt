@@ -94,6 +94,7 @@ module Volt
     def load_stored_page
       if Volt.client?
         if `sessionStorage`
+          page = Volt.current_app.page
           page_obj_str = nil
 
           `page_obj_str = sessionStorage.getItem('___page');`
