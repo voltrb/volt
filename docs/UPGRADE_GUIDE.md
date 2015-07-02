@@ -17,6 +17,8 @@ validate login_field, unique: true, length: 8
 validate :email, email: true
 ```
 
+If you are using $page, it has been removed and you can now access any collection (which we're now calling repo's) via ```Volt.current_app.store``` or ```.page```, ```.params```, etc...
+
 # 0.9.2 to 0.9.3
 
 Upgrading from 0.9.2 should be fairly simple, just implement the following:
