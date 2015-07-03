@@ -5,7 +5,6 @@ require 'opal'
 require 'rack'
 require 'sass'
 require 'volt/utils/tilt_patch'
-require 'sprockets-sass'
 
 require 'volt'
 require 'volt/tasks/dispatcher'

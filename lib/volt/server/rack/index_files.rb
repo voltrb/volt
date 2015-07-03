@@ -53,6 +53,11 @@ module Volt
       AssetFiles.new('main', @component_paths).javascript_files(@opal_files)
     end
 
+    # Return the code for script tags and opal code
+    def script_tags
+
+    end
+
     def css_files
       AssetFiles.new('main', @component_paths).css_files
     end

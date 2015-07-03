@@ -34,11 +34,11 @@ module Volt
       # Opal::Processor.arity_check_enabled = !Volt.env.production?
       # Opal::Processor.dynamic_require_severity = :raise
 
-      server = Opal::Server.new(prefix: '/')
+      @server = Opal::Server.new(prefix: '/assets')
 
       @component_paths                   = component_paths
       # @environment                       = Opal::Environment.new
-      @environment                       = server.sprockets
+      @environment                       = @server.sprockets
 
       # Since the scope changes in builder blocks, we need to capture
       # environment in closure
@@ -59,15 +59,15 @@ module Volt
         Csso.install(environment)
       end
 
-      server.append_path(app_path)
+      @server.append_path(app_path)
 
       volt_gem_lib_path = File.expand_path(File.join(File.dirname(__FILE__), '../../..'))
-      server.append_path(volt_gem_lib_path)
+      @server.append_path(volt_gem_lib_path)
 
-      add_asset_folders(server)
+      add_asset_folders(@server)
 
       builder.map '/assets' do
-        run server
+        run @server
       end
 
       # map server.source_maps.prefix do

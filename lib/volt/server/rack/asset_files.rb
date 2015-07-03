@@ -10,7 +10,7 @@ module Volt
       @included_components = {}
       @components          = []
       @disable_auto_import = []
-      
+
       # Include each of the default included components
       Volt.config.default_components.each do |def_comp_name|
         component(def_comp_name)
@@ -22,7 +22,7 @@ module Volt
     def disable_auto_import
       @disable_auto_import.push(*@current_component).uniq
     end
-    
+
     def load_dependencies(path, component_name)
       if path
         dependencies_file = File.join(path, 'config/dependencies.rb')
@@ -80,11 +80,11 @@ module Volt
       end
       locator
     end
-    
+
     def url_or_path?(url)
       (url =~ URI::regexp || url =~ /^\/(\/)?.*/) ? true : false
     end
-    
+
     def component_paths
       @components
     end
@@ -95,27 +95,44 @@ module Volt
     end
 
     def javascript_files(opal_files)
+
+      @opal_tag_generator ||= Opal::Server::Index.new(nil, opal_files.environment)
+
+      puts "OPAL FILES: #{@assets.inspect}"
       javascript_files = []
       @assets.each do |type, path|
         case type
           when :folder
+            # for a folder, we search for all .js files and return a tag for them
             javascript_files += Dir["#{path}/**/*.js"].sort.map { |folder| '/assets' + folder[path.size..-1] }
           when :javascript_file
+            # javascript_file is a cdn path to a JS file
             javascript_files << path
         end
       end
 
-      opal_js_files = []
-      if Volt.source_maps?
-        opal_js_files += opal_files.environment['volt/volt/app'].to_a.map { |v| '/assets/' + v.logical_path + '?body=1' }
-      else
-        opal_js_files << '/assets/volt/volt/app.js'
-      end
-      opal_js_files << '/components/main.js'
+      javascript_files = javascript_files.uniq
 
-      javascript_files += opal_js_files
+      # opal_js_files = []
+      # if Volt.source_maps?
+      #   opal_js_files += opal_files.environment['volt/volt/app'].to_a.map { |v| '/assets/' + v.logical_path + '?body=1' }
+      # else
+      #   opal_js_files << '/assets/volt/volt/app.js'
+      # end
+      # opal_js_files << '/components/main.js'
 
-      javascript_files.uniq
+      # javascript_files += opal_js_files
+
+      scripts = javascript_files.map {|url| "<script src=\"#{url}\"></script>" }
+
+
+      scripts += @opal_tag_generator.javascript_include_tag('volt/volt/app')
+
+      scripts.join("\n")
+    end
+
+    def script_tags
+      ''
     end
 
     def css_files
