@@ -322,9 +322,8 @@ module Volt
       promise
     end
 
-
     # We need to setup the proxy methods below where they are defined.
-    proxy_with_load :[], :size, :last, :reverse, :all, :to_a
+    proxy_with_load :[], :size, :last, :reverse, :all, :to_a, :empty?
 
   end
 end

@@ -24,11 +24,11 @@ unless RUBY_PLATFORM == 'opal'
       end
 
       it 'should on server' do
-        Volt::MessageBus::PeerConnection.new(@socket, nil, nil, @bus, true)
+        Volt::MessageBus::PeerConnection.new(@socket, nil, nil, @bus, true).announce
       end
 
       it 'should pass the server_id back and forth to client' do
-        Volt::MessageBus::PeerConnection.new(@socket, nil, nil, @bus)
+        Volt::MessageBus::PeerConnection.new(@socket, nil, nil, @bus).announce
       end
     end
 
@@ -89,7 +89,7 @@ unless RUBY_PLATFORM == 'opal'
 
         conn2 = nil
         threads << Thread.new do
-          conn2 = Volt::MessageBus::PeerConnection.new(@client, nil, nil, bus2)
+          conn2 = Volt::MessageBus::PeerConnection.new(@client, nil, nil, bus2, false, bus2.server_id)
         end
 
         threads.each(&:join)
@@ -103,8 +103,8 @@ unless RUBY_PLATFORM == 'opal'
 
         expect(responses2).to eq(['test message'])
 
-        conn1.disconnect
-        conn2.disconnect
+        conn1.disconnect!
+        conn2.disconnect!
 
       end
     end

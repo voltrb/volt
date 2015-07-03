@@ -47,6 +47,11 @@ module Volt
       def publish(channel_name, message)
         raise "Not implemented"
       end
+
+      # waits for all messages to be flushed and closes connections
+      def disconnect!
+        raise "Not implemented"
+      end
     end
   end
 end
