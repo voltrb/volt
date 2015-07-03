@@ -71,9 +71,9 @@ module Volt
           setup_peer_server
           start_tracker
 
-          Thread.new do
-            sleep 1
+          @peer_connection_threads = []
 
+          @connect_thread = Thread.new do
             connect_to_peers
           end
         else
@@ -121,20 +121,18 @@ module Volt
         peers.each do |peer|
           # Start connecting to all at the same time.  Since most will connect or
           # timeout, this is the desired behaviour.
-          Thread.new do
-            # sometimes we get nil peers for some reason
-            if peer
-              peer_connection = PeerConnection.connect_to(self, peer._ips, peer._port)
-
-              if peer_connection
-                add_peer_connection(peer_connection)
-              else
-                # remove if not alive anymore.
-                still_alive?(peer._server_id)
-              end
-            end
+          # sometimes we get nil peers for some reason
+          if peer
+            peer_connection = PeerConnection.new(nil, peer._ips, peer._port, self, false, peer._server_id)
+            add_peer_connection(peer_connection)
           end
         end
+      end
+
+      # Blocks until all peers have connected or timed out.
+      def disconnect!
+        # Wait for disconnect on each
+        @peer_connections.keys.each(&:disconnect!)
       end
 
       def add_peer_connection(peer_connection)
@@ -167,7 +165,7 @@ module Volt
 
             if peer_server_ids[peer_id]
               # Peer is already connected somewhere else, remove connection
-              peer.disconnect
+              peer.disconnect!
 
               # remove the connection
               @peer_connections.delete(peer)
