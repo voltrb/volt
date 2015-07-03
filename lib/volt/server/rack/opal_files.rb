@@ -10,7 +10,7 @@ ENV['EXECJS_RUNTIME'] = 'Node'
 # Sets up the maps for the opal assets, and source maps if enabled.
 module Volt
   class OpalFiles
-    attr_reader :environment
+    attr_reader :environment, :server
 
     def initialize(builder, app_path, component_paths)
       Opal::Processor.source_map_enabled = Volt.source_maps?
@@ -34,7 +34,8 @@ module Volt
       # Opal::Processor.arity_check_enabled = !Volt.env.production?
       # Opal::Processor.dynamic_require_severity = :raise
 
-      @server = Opal::Server.new(prefix: '/assets')
+      @server = Opal::Server.new(prefix: '/assets', debug: false)
+      @server.use_index = false
 
       @component_paths                   = component_paths
       # @environment                       = Opal::Environment.new
@@ -66,9 +67,30 @@ module Volt
 
       add_asset_folders(@server)
 
+      env = @enviroment
       builder.map '/assets' do
-        run @server
+        run environment
       end
+
+      @environment.logger.level ||= Logger::DEBUG
+      source_map_enabled = false#@server.source_map_enabled
+      if source_map_enabled
+        maps_prefix = Opal::Server::SOURCE_MAPS_PREFIX_PATH
+        maps_app = Opal::SourceMapServer.new(@environment, maps_prefix)
+        ::Opal::Sprockets::SourceMapHeaderPatch.inject!(maps_prefix)
+      end
+
+      if source_map_enabled
+          builder.map(maps_prefix) do
+            require 'rack/conditionalget'
+            require 'rack/etag'
+            use Rack::ConditionalGet
+            use Rack::ETag
+            run maps_app
+          end
+        end
+
+
 
       # map server.source_maps.prefix do
       #   run server.source_maps

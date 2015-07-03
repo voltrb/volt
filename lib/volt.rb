@@ -5,6 +5,7 @@ require 'volt/reactive/dependency'
 require 'volt/utils/modes'
 require 'volt/utils/volt_user_error'
 require 'volt/utils/boolean_patch'
+require 'volt/utils/string_patch'
 require 'volt/utils/set_patch'
 require 'volt/utils/time_patch'
 

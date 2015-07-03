@@ -96,7 +96,7 @@ module Volt
 
     def javascript_files(opal_files)
 
-      @opal_tag_generator ||= Opal::Server::Index.new(nil, opal_files.environment)
+      @opal_tag_generator ||= Opal::Server::Index.new(nil, opal_files.server)
 
       puts "OPAL FILES: #{@assets.inspect}"
       javascript_files = []
@@ -119,14 +119,18 @@ module Volt
       # else
       #   opal_js_files << '/assets/volt/volt/app.js'
       # end
-      # opal_js_files << '/components/main.js'
 
       # javascript_files += opal_js_files
 
       scripts = javascript_files.map {|url| "<script src=\"#{url}\"></script>" }
 
 
-      scripts += @opal_tag_generator.javascript_include_tag('volt/volt/app')
+      tag = @opal_tag_generator.javascript_include_tag('volt/volt/app')
+
+      puts "TAG: #{tag}"
+      scripts << tag
+
+      scripts << "<script src=\"/components/main.js\"></script>"
 
       scripts.join("\n")
     end
