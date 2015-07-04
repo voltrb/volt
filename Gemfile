@@ -11,7 +11,7 @@ gem 'rbnacl', require: false
 gem 'rbnacl-libsodium', require: false
 
 # temp until 0.8.0 of opal
-gem 'opal-rspec', github: 'opal/opal-rspec'
+# gem 'opal-rspec', github: 'opal/opal-rspec'
 
 group :development do
   # For testing the kitchen sink app

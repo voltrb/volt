@@ -98,7 +98,6 @@ module Volt
 
       @opal_tag_generator ||= Opal::Server::Index.new(nil, opal_files.server)
 
-      puts "OPAL FILES: #{@assets.inspect}"
       javascript_files = []
       @assets.each do |type, path|
         case type

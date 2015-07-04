@@ -23,10 +23,6 @@ module Volt
     # Parse takes in a url and extracts each sections.
     # It also assigns and changes to the params.
     def parse(url)
-
-      puts "SOME---------: #{'something'.split('?', 2).inspect}"
-      return
-
       if url[0] == '#'
         # url only updates fragment
         self.fragment = url[1..-1]
@@ -54,9 +50,7 @@ module Volt
 
         path           = matcher[3]
         path, fragment = path.split('#', 2)
-        puts "SP: #{path.inspect}"
         path, query    = path.split('?', 2)
-        puts "QUERY: #{path.inspect} -- #{query.inspect}"
 
         self.path     = path
         self.fragment = fragment
@@ -113,7 +107,6 @@ module Volt
     def update!
       if Volt.in_browser?
         new_url = url_for(params.to_h)
-        puts "NEW URL: #{new_url.inspect} - #{params.attributes.inspect}"
 
         # Push the new url if pushState is supported
         # TODO: add fragment fallback
