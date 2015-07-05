@@ -1,6 +1,6 @@
 # Change Log
 
-## 0.9.4.pre1
+## 0.9.4
 ### Lingo Change
 the base collections will now be called "Repositories" or "Repo's" for short.  This will only matter directly for internal volt code, but for the data provider api, this will help.
 
