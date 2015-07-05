@@ -1,5 +1,5 @@
 module Volt
   module Version
-    STRING = '0.9.4.pre5'
+    STRING = '0.9.4'
   end
 end
