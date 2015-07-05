@@ -34,7 +34,7 @@ module Volt
       # Opal::Processor.arity_check_enabled = !Volt.env.production?
       # Opal::Processor.dynamic_require_severity = :raise
 
-      @server = Opal::Server.new(prefix: '/assets', debug: false)
+      @server = Opal::Server.new(prefix: '/assets', debug: Volt.source_maps?)
       @server.use_index = false
 
       @component_paths                   = component_paths
@@ -73,7 +73,7 @@ module Volt
       end
 
       @environment.logger.level ||= Logger::DEBUG
-      source_map_enabled = false#@server.source_map_enabled
+      source_map_enabled = Volt.source_maps?
       if source_map_enabled
         maps_prefix = Opal::Server::SOURCE_MAPS_PREFIX_PATH
         maps_app = Opal::SourceMapServer.new(@environment, maps_prefix)

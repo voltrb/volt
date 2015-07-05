@@ -112,21 +112,11 @@ module Volt
 
       javascript_files = javascript_files.uniq
 
-      # opal_js_files = []
-      # if Volt.source_maps?
-      #   opal_js_files += opal_files.environment['volt/volt/app'].to_a.map { |v| '/assets/' + v.logical_path + '?body=1' }
-      # else
-      #   opal_js_files << '/assets/volt/volt/app.js'
-      # end
-
-      # javascript_files += opal_js_files
-
       scripts = javascript_files.map {|url| "<script src=\"#{url}\"></script>" }
 
 
       tag = @opal_tag_generator.javascript_include_tag('volt/volt/app')
 
-      puts "TAG: #{tag}"
       scripts << tag
 
       scripts << "<script src=\"/components/main.js\"></script>"
