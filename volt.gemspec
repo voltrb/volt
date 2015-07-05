@@ -24,7 +24,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rack', '~> 1.5.0'
   spec.add_dependency 'sprockets-sass', '~> 1.0.0'
   spec.add_dependency 'sass', '~> 3.2.5'
-  spec.add_dependency 'listen', '~> 2.8.0'
+  spec.add_dependency 'listen', '~> 3.0.1'
   spec.add_dependency 'configurations', '~> 2.0.0.pre'
   spec.add_dependency 'opal', '~> 0.7.2'
   spec.add_dependency 'bundler', '>= 1.5'
@@ -50,7 +50,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'thin', '~> 1.6.3'
   spec.add_development_dependency 'coveralls', '~> 0.8.1'
 
-  spec.add_development_dependency 'guard', '2.6.0' # bug in current guard
+  spec.add_development_dependency 'guard', '2.12.7' # bug in current guard
   spec.add_development_dependency 'guard-rspec', '~> 4.3.0'
   spec.add_development_dependency 'rake', '~> 10.0.4'
 
