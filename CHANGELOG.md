@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.9.5
+### Added
+- You can now disable auto-import of JS/CSS with ```disable_auto_import``` in a dependencies.rb file
+
 ## 0.9.4
 ### Lingo Change
 the base collections will now be called "Repositories" or "Repo's" for short.  This will only matter directly for internal volt code, but for the data provider api, this will help.
