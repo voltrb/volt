@@ -1,6 +1,6 @@
 # Change Log
 
-## 0.9.4.pre1
+## 0.9.4
 ### Lingo Change
 the base collections will now be called "Repositories" or "Repo's" for short.  This will only matter directly for internal volt code, but for the data provider api, this will help.
 
@@ -25,6 +25,7 @@ the base collections will now be called "Repositories" or "Repo's" for short.  T
 - fix issue storing Time in a hash
 - fixed issue with local_store not persisting in some cases
 - runners now block until messages have propigated to the message bus and updates have been pushed.
+- upgraded some dependency gems to fix a conflict
 
 ## 0.9.3
 [0.9.3 Update Blog Post](http://blog.voltframework.com/post/121128931859/0-9-3-stuff-you-asked-for)

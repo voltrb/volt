@@ -42,6 +42,9 @@ module Volt
               # Copy attributes back from save_to model
               @attributes = new_model.attributes
 
+              # Remove tracked changes
+              clear_tracked_changes!
+
               new_model
             end.fail do |errors|
               if errors.is_a?(Hash)

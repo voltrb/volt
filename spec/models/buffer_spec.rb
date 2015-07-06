@@ -26,6 +26,18 @@ describe Volt::Buffer do
     expect(result.class).to eq(Promise)
   end
 
+  it 'should clear the buffer\'s changed attributes after a save' do
+    buffer = the_page._items.buffer
+
+    buffer._name = 'Jimithy'
+
+    expect(buffer.changed_attributes).to eq({name: [nil]})
+
+    buffer.save!
+
+    expect(buffer.changed_attributes).to eq({})
+  end
+
   if RUBY_PLATFORM != 'opal'
     it 'should copy attributes back from the save_to model incase it changes them during save' do
       buffer = the_page._test_changed_attributes.buffer

@@ -18,12 +18,14 @@ module Volt
           end          # When the model is created, assign it the user_id (if the user is logged in)
           on(:new) do
             # Only assign the user_id if there isn't already one and the user is logged in.
-            if _user_id.nil? && !(user_id = Volt.current_user_id).nil?
-              send(:"_#{key}=", user_id)
+            if get(:user_id).nil? && !(user_id = Volt.current_user_id).nil?
+              set(key, user_id)
+              puts "ASSIGN UID to #{inspect} -- #{changed_attributes.inspect}"
             end
           end
 
           permissions(:update) do
+            puts "UPDATE: #{buffer?.inspect} - #{changed_attributes.inspect} -- #{inspect}"
             # Don't allow the key to be changed
             deny(key)
           end
@@ -243,6 +245,7 @@ module Volt
       end
 
       def add_error_if_changed(errors, field_name)
+        puts "ATTR CH: #{changed_attributes.inspect} - #{attributes.inspect}"
         if changed?(field_name)
           (errors[field_name] ||= []) << 'can not be changed'
         end
