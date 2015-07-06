@@ -1,6 +1,8 @@
 require 'volt/page/bindings/base_binding'
 
 module Volt
+  class InvalidObjectForEachBinding < Exception ; end
+
   class EachBinding < BaseBinding
     def initialize(volt_app, target, context, binding_name, getter, variable_name, index_name, template_name)
       super(volt_app, target, context, binding_name)
@@ -57,6 +59,11 @@ module Volt
 
         Volt.run_in_mode(:no_model_promises) do
           templates_size = @templates.size
+
+          unless values.respond_to?(:size)
+            fail InvalidObjectForEachBinding, "Each binding's require an object that responds to size and [] methods.  The binding received: #{values.inspect}"
+          end
+
           values_size    = values.size
         end
 
