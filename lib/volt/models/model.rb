@@ -119,7 +119,7 @@ module Volt
     end
 
     def _id
-      raise "Accessing  _id has been deprecated in favor of id"
+      get(:id)
     end
 
     # Return true if the model hasn't been saved yet
