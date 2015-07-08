@@ -1,3 +1,5 @@
+require 'volt/utils/ejson'
+
 class Object
   # Setup a default pretty_inspect
   # alias_method :pretty_inspect, :inspect
@@ -13,7 +15,7 @@ class Object
   # TODO: Need a real implementation of this
   def deep_clone
     if RUBY_PLATFORM == 'opal'
-      JSON.parse(to_json)
+      Volt::EJSON.parse(Volt::EJSON.stringify(self))
     else
       Marshal.load(Marshal.dump(self))
     end

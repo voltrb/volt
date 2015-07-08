@@ -6,8 +6,12 @@ module FieldHelpers
     # field lets you declare your fields instead of using the underscore syntax.
     # An optional class restriction can be passed in.
     def field(name, klass = nil)
-      if klass && ![String, Numeric].include?(klass)
-        fail FieldHelpers::InvalidFieldClass, 'valid field types is currently limited to String or Numeric'
+      valid_klasses = [String, Numeric, Time, TrueClass, FalseClass]
+
+      if klass && !valid_klasses.include?(klass)
+        klass_names = valid_klasses.map(&:to_s).join(', ')
+        msg = "valid field types is currently limited to #{klass_names}"
+        fail FieldHelpers::InvalidFieldClass, msg
       end
 
       if klass
