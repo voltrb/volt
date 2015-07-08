@@ -9,7 +9,7 @@ module FieldHelpers
       valid_klasses = [String, Numeric, Time, TrueClass, FalseClass]
 
       if klass && !valid_klasses.include?(klass)
-        klass_names = valid_classes.map(&:to_s).join(', ')
+        klass_names = valid_klasses.map(&:to_s).join(', ')
         msg = "valid field types is currently limited to #{klass_names}"
         fail FieldHelpers::InvalidFieldClass, msg
       end

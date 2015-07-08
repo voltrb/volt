@@ -243,7 +243,6 @@ module Volt
       end
 
       def add_error_if_changed(errors, field_name)
-        puts "ATTR CH: #{changed_attributes.inspect} - #{attributes.inspect}"
         if changed?(field_name)
           (errors[field_name] ||= []) << 'can not be changed'
         end
