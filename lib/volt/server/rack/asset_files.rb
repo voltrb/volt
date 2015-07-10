@@ -114,12 +114,17 @@ module Volt
 
       scripts = javascript_files.map {|url| "<script src=\"#{url}\"></script>" }
 
+      # Include volt itself.  Unless we are running with MAPS=all, just include
+      # the main file without sourcemaps.
+      volt_path = 'volt/volt/app'
+      if ENV['MAPS'] == 'all'
+        scripts << @opal_tag_generator.javascript_include_tag(volt_path)
+      else
+        scripts << "<script src=\"/assets/#{volt_path}.js\"></script>"
+        scripts << "<script>#{Opal::Processor.load_asset_code($volt_app.sprockets, volt_path)}</script>"
+      end
 
-      tag = @opal_tag_generator.javascript_include_tag('volt/volt/app')
-
-      scripts << tag
-
-      scripts << "<script src=\"/components/main.js\"></script>"
+      scripts << @opal_tag_generator.javascript_include_tag('components/main')
 
       scripts.join("\n")
     end

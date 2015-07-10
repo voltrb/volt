@@ -138,9 +138,10 @@ module Volt
       explicit_controllers = Dir["#{controllers_path}*_controller.rb"].sort
 
       controllers = (implicit_controllers + explicit_controllers).uniq
+
       controllers.each do |path|
         if File.exists?(path)
-          code << File.read(path) + "\n\n"
+          code << "require '#{localize_path(path)}'\n"
         else
           # parts = path.scan(/([^\/]+)\/controllers\/([^\/]+)_controller[.]rb$/)
           # component, controller = parts[0]
@@ -159,9 +160,12 @@ module Volt
       models_path = "#{@component_path}/models/"
 
       Dir["#{models_path}*.rb"].sort.each do |model_path|
-        code << File.read(model_path) + "\n\n"
+        # code << File.read(model_path) + "\n\n"
 
-        model_name = model_path.match(/([^\/]+)[.]rb$/)[1]
+        # model_name = model_path.match(/([^\/]+)[.]rb$/)[1]
+        if File.exists?(model_path)
+          code << "require '#{localize_path(model_path)}'\n"
+        end
       end
 
       code
@@ -200,16 +204,26 @@ module Volt
     end
 
     def generate_initializers_code
+      # Include the root initializers
+      paths = Dir["#{Volt.root}/config/initializers/*.rb"]
+      paths += Dir["#{Volt.root}/config/initializers/client/*.rb"]
+
       paths = Dir["#{@component_path}/config/initializers/*.rb"]
       paths += Dir["#{@component_path}/config/initializers/client/*.rb"]
 
-      cpath_size = @component_path.size
-      paths.map! {|path| @component_name + path[cpath_size..-1]}
-
-      code = "\n" + paths.map { |path| "require '#{path}'" }.join("\n")
+      code = "\n" + paths.map { |path| "require '#{localize_path(path)}'" }.join("\n")
 
       code
     end
+
+    private
+
+  # Takes a full path and returns the localized version so opal supprots it
+    def localize_path(path)
+      cpath_size = @component_path.size
+      return @component_name + path[cpath_size..-1]
+    end
+
 
   end
 end

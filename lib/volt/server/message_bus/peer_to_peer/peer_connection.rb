@@ -96,7 +96,7 @@ module Volt
         # @worker_thread.kill
 
         # Wait for the worker to publish all messages
-        @worker_thread.join if Thread.current != @worker_thread
+        @worker_thread.join if Thread.current != @worker_thread && @worker_thread
 
         @message_bus.remove_peer_connection(self)
       end

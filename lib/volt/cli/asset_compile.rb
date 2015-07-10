@@ -18,6 +18,7 @@ module Volt
       require 'volt'
       require 'volt/volt/core'
       require 'volt/boot'
+      require 'volt/server'
 
       @root_path ||= Dir.pwd
       Volt.root  = @root_path
@@ -26,7 +27,6 @@ module Volt
 
       require 'volt/server/rack/component_paths'
       require 'volt/server/rack/component_code'
-      require 'volt/server/component_handler'
 
       @app_path = File.expand_path(File.join(@root_path, 'app'))
 
@@ -34,7 +34,6 @@ module Volt
       @app               = Rack::Builder.new
       @opal_files        = OpalFiles.new(@app, @app_path, @component_paths)
       @index_files       = IndexFiles.new(@app, volt_app, @component_paths, @opal_files)
-      @component_handler = ComponentHandler.new(@component_paths)
 
       puts 'Compile Opal for components'
       write_component_js
@@ -49,10 +48,13 @@ module Volt
     end
 
     def logical_paths_and_full_paths
-      @opal_files.environment.each_file do |full_path|
-        logical_path = @opal_files.environment.send(:logical_path_for_filename, full_path, []).to_s
+      env = @opal_files.environment
+      env.each_file do |full_path|
+        # logical_path = env[full_path].logical_path
+        # logical_path = @opal_files.environment.send(:logical_path_for_filename, full_path, []).to_s
+        # puts "FULL PATH: #{full_path.inspect} -- #{logical_path}"
 
-        yield(logical_path, full_path.to_s)
+        # yield(logical_path, full_path.to_s)
       end
 
     end
@@ -94,10 +96,7 @@ module Volt
     end
 
     def write_component_js
-      javascript_code = @component_handler.compile_for_component('main', true)
-
-      path = File.join(Volt.root, '/public/components/main.js')
-      write_file(path, javascript_code)
+      write_sprocket_file('components/main.js')
     end
 
     def write_index

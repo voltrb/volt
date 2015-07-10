@@ -39,11 +39,6 @@ module Volt
     # Setup the middleware that we need to wait for components to boot before we
     # can set them up.
     def self.postboot_setup(volt_app, rack_app)
-      component_paths = volt_app.component_paths
-      rack_app.map '/components' do
-        run ComponentHandler.new(component_paths)
-      end
-
       # Serve the opal files
       opal_files = OpalFiles.new(rack_app, volt_app.app_path, volt_app.component_paths)
       volt_app.sprockets = opal_files.environment

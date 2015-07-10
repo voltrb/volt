@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'configurations', '~> 2.0.0.pre'
   spec.add_dependency 'opal', '~> 0.8.0.rc2'
   spec.add_dependency 'bundler', '>= 1.5'
-  spec.add_dependency 'faye-websocket', '~> 0.9.2'
+  spec.add_dependency 'faye-websocket', '~> 0.10.0'
 
   # Locking down concurrent-ruby because one currently used feature is going to
   # be deprecated (which we need to build a work around for)

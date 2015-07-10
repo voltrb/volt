@@ -32,6 +32,10 @@ module Volt
             raise e
           end
 
+          if Volt.config.app_secret.blank?
+            raise "No app_secret has been specified in Volt.config"
+          end
+
           # use the first 32 chars of the app secret for the encryption key.
           key = Base64.decode64(Volt.config.app_secret)[0..31]
 
