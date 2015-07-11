@@ -112,7 +112,7 @@ module Volt
     end
 
     def inspect
-      "<#{self.class} #{@pool.inspect}>"
+      "<#{self.class}:#{object_id} #{@pool.inspect}>"
     end
 
     def print
