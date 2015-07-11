@@ -155,8 +155,11 @@ module Volt
       end
 
       if @grouped_controller && @current_controller_handler
-        # Remove a reference for the controller in the group.
-        @grouped_controller.remove(@current_controller_handler.controller.class)
+        # We remove the controller after all of the current rendering is done.
+        Timers.next_tick do
+          # Remove a reference for the controller in the group.
+          @grouped_controller.remove(@current_controller_handler.controller.class)
+        end
       end
 
       @controller = nil
