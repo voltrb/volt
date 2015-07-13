@@ -69,26 +69,25 @@ module Volt
 
         full_path, controller_path = @view_lookup.path_for_template(path, section)
 
-        unless full_path
+        if full_path
+          @starting_controller_handler, generated_new, chain_stopped = create_controller_handler(full_path, controller_path)
+
+          # Check if chain was stopped when the action ran
+          if chain_stopped
+            # An action stopped the chain.  When this happens, we stop running here.
+            remove_starting_controller
+          else
+            # None of the actions stopped the chain
+            # Wait until the controller is loaded before we actually render.
+            @waiting_for_load = -> { @starting_controller_handler.controller.loaded? }.watch_until!(true) do
+              render_next_template(full_path, path)
+            end
+
+            queue_clear_grouped_controller
+          end
+        else
           # if we don't have a full path, then we have a missing template
           render_next_template(full_path, path)
-          return
-        end
-
-        @starting_controller_handler, generated_new, chain_stopped = create_controller_handler(full_path, controller_path)
-
-        # Check if chain was stopped when the action ran
-        if chain_stopped
-          # An action stopped the chain.  When this happens, we stop running here.
-          remove_starting_controller
-        else
-          # None of the actions stopped the chain
-          # Wait until the controller is loaded before we actually render.
-          @waiting_for_load = -> { @starting_controller_handler.controller.loaded? }.watch_until!(true) do
-            render_next_template(full_path, path)
-          end
-
-          queue_clear_grouped_controller
         end
       end
     end
