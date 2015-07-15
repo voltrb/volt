@@ -38,9 +38,11 @@ describe Volt::Associations do
         store.people << @person
         @location = AddressBelongToOption.new(someone: @person)
 
-        puts "PERSON: #{@person.inspect}"
-        puts @location.someone.inspect
-        expect(@location.someone.id).to eq(@person.id)
+        store.address_belong_to_options << @location
+
+        @location.someone.then do |someone|
+          expect(someone.id).to eq(@person.id)
+        end
       end
 
       it 'should associate via has_many' do
