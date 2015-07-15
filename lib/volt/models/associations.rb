@@ -16,7 +16,6 @@ module Volt
             lookup_key = get(local_key)
 
             # Return a promise for the belongs_to
-            puts "QUERY: #{collection.pluralize}.where(#{foreign_key} => #{lookup_key})"
             root.get(collection.pluralize).where(foreign_key => lookup_key).first
           end
         end

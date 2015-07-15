@@ -45,6 +45,8 @@ describe Volt::Associations do
         end
       end
 
+      it 'should raise an exception if you try to use an association on a model that isn\'t associated with a repository'
+
       it 'should associate via has_many' do
         store._people!.first do |person|
 
