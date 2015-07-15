@@ -22,9 +22,9 @@ module FieldHelpers
 
   FIELD_CASTS = {
     String     => :to_s.to_proc,
+    Fixnum     => lambda {|val| NUMERIC_CAST[:Integer, val] },
     Numeric    => lambda {|val| NUMERIC_CAST[:Float, val] },
     Float      => lambda {|val| NUMERIC_CAST[:Float, val] },
-    Fixnum     => lambda {|val| NUMERIC_CAST[:Integer, val] },
     Time       => nil,
     TrueClass  => nil,
     FalseClass => nil
