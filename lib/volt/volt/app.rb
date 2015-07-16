@@ -44,7 +44,7 @@ module Volt
     attr_reader :component_paths, :router, :live_query_pool,
                 :channel_live_queries, :app_path, :database, :message_bus,
                 :middleware, :browser
-    attr_accessor :sprockets
+    attr_accessor :sprockets, :opal_files
 
     def initialize(app_path=nil)
       if Volt.server? && !app_path

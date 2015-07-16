@@ -6,13 +6,8 @@
   <%# language difference. This file handles auto-loading all JS/Opal and CSS.  %>
   <head>
     <meta charset="UTF-8" />
-    <% javascript_files.each do |javascript_file| %>
-      <script src="<%= javascript_file %>"></script>
-    <% end %>
-
-    <% css_files.each do |css_file| %>
-      <link href="<%= css_file %>" media="all" rel="stylesheet" type="text/css" />
-    <% end %>
+    <%= javascript_tags %>
+    <%= css_tags %>
   </head>
   <body>
 

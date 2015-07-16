@@ -1,7 +1,6 @@
 # This file Monkeypatches sprockets to provide custom file loading (from volt
 # instead disk) for component root files.  These files then require in all parts
 # or include generated ruby for templates, routes, and tasks.
-
 module Volt
   class StatStub
     def directory?

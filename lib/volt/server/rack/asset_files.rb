@@ -94,9 +94,17 @@ module Volt
       @assets << [:folder, asset_folder] if File.directory?(asset_folder)
     end
 
-    def javascript_files(opal_files)
+    def javascript_files(*args)
+      fail "Deprecation: #javascript_files is deprecated in config/base/index.html, opal 0.8 required a new format.  For an updated config/base/index.html file, see https://gist.github.com/ryanstout/0858cf7dfc32c514f790"
+    end
 
-      @opal_tag_generator ||= Opal::Server::Index.new(nil, opal_files.server)
+    def css_files(*args)
+      fail "Deprecation: #css_files is deprecated in config/base/index.html, opal 0.8 required a new format.  For an updated config/base/index.html file, see https://gist.github.com/ryanstout/0858cf7dfc32c514f790"
+    end
+
+    # Returns script tags that should be included
+    def javascript_tags(volt_app)
+      @opal_tag_generator ||= Opal::Server::Index.new(nil, volt_app.opal_files.server)
 
       javascript_files = []
       @assets.each do |type, path|
@@ -121,7 +129,7 @@ module Volt
         scripts << @opal_tag_generator.javascript_include_tag(volt_path)
       else
         scripts << "<script src=\"/assets/#{volt_path}.js\"></script>"
-        scripts << "<script>#{Opal::Processor.load_asset_code($volt_app.sprockets, volt_path)}</script>"
+        scripts << "<script>#{Opal::Processor.load_asset_code(volt_app.sprockets, volt_path)}</script>"
       end
 
       scripts << @opal_tag_generator.javascript_include_tag('components/main')
@@ -129,11 +137,15 @@ module Volt
       scripts.join("\n")
     end
 
-    def script_tags
-      ''
+    # Returns the link tags for the css
+    def css_tags
+      css.map do |url|
+        "<link href=\"#{url}\" media=\"all\" rel=\"stylesheet\" type=\"text/css\" />"
+      end.join("\n")
     end
 
-    def css_files
+    # Returns an array of all css files that should be included.
+    def css
       css_files = []
       @assets.each do |type, path|
         case type
@@ -150,6 +162,25 @@ module Volt
       end
 
       css_files.uniq
+    end
+
+    # #javascript is only used on the server
+    unless RUBY_PLATFORM == 'opal'
+      # Parses the javascript tags to reutrn the following:
+      # [[:url, '/somefile.js'], [:body, 'var inlinejs = true;']]
+      def javascript(volt_app)
+        javascript_tags(volt_app)
+        .scan(/[<]script([^>]*)[>](.*?)[<]\/script[^>]*[>]/)
+        .map do |attrs, body|
+          src = attrs.match(/[\s|$]src\s*[=]\s*["']([^"']+?)["']/)
+
+          if src
+            [:src, src[1]]
+          else
+            [:body, body]
+          end
+        end
+      end
     end
   end
 end

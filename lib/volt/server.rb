@@ -11,7 +11,6 @@ require 'volt/tasks/dispatcher'
 require 'volt/tasks/task'
 require 'volt/server/rack/component_code'
 require 'volt/server/template_handlers/sprockets_component_handler'
-require 'volt/server/rack/component_paths'
 
 require 'volt/server/websocket/websocket_handler'
 require 'volt/utils/read_write_lock'

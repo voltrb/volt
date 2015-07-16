@@ -48,18 +48,21 @@ module Volt
       ERB.new(html, nil, '-').result(binding)
     end
 
-    def javascript_files
+    def javascript_files(*args)
+      fail "Deprecation: #javascript_files is deprecated in config/base/index.html, opal 0.8 required a new format."
+    end
+
+    def css_files(*args)
+      fail "Deprecation: #css_files is deprecated in config/base/index.html, opal 0.8 required a new format."
+    end
+
+    def javascript_tags
       # TODO: Cache somehow, this is being loaded every time
-      AssetFiles.new('main', @component_paths).javascript_files(@opal_files)
+      AssetFiles.new('main', @component_paths).javascript_tags(@volt_app)
     end
 
-    # Return the code for script tags and opal code
-    def script_tags
-
-    end
-
-    def css_files
-      AssetFiles.new('main', @component_paths).css_files
+    def css_tags
+      AssetFiles.new('main', @component_paths).css_tags
     end
   end
 end

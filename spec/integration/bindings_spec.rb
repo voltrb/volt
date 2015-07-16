@@ -3,6 +3,7 @@ require 'spec_helper'
 describe 'bindings test', type: :feature, sauce: true do
   it 'should load the page' do
     visit '/'
+    sleep 10
 
     expect(page).to have_content('Kitchen Sink')
   end

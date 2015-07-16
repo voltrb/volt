@@ -17,8 +17,12 @@ module Volt
       # Convert to float if it is a string for a float
       # The nil check and the nan? check are only require for opal 0.6
       unless @value.nil?
-        @value = Kernel.Float(@value) rescue nil
-        @value = nil if RUBY_PLATFORM == 'opal' && @value.nan?
+        begin
+          @value = Kernel.Float(@value)
+        rescue ArgumentError => e
+          @value = nil
+        end
+        # @value = nil if RUBY_PLATFORM == 'opal' && @value.nan?
       end
 
       check_errors

@@ -13,7 +13,7 @@ gem 'rbnacl-libsodium', require: false
 # temp until 0.8.0 of opal
 # gem 'opal-rspec', github: 'opal/opal-rspec'
 
-group :development do
+group :development, :test do
   # For testing the kitchen sink app
   # Twitter bootstrap
   gem 'volt-bootstrap'
