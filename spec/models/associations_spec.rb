@@ -9,6 +9,10 @@ class ::Address < Volt::Model
   has_one :zip_info
 end
 
+class ::AddressBelongToOption < Volt::Model
+  belongs_to :someone, collection: :person, foreign_key: :id, local_key: :some_weird_id
+end
+
 class ::ZipInfo < Volt::Model
   belongs_to :address
 end
@@ -28,6 +32,20 @@ describe Volt::Associations do
 
         expect(address.person.sync.id).to eq(@person.id)
       end
+
+      it 'should support collection and foreign_key on belongs_to' do
+        @person = Person.new(name: 'Jimmy')
+        store.people << @person
+        @location = AddressBelongToOption.new(someone: @person)
+
+        store.address_belong_to_options << @location
+
+        @location.someone.then do |someone|
+          expect(someone.id).to eq(@person.id)
+        end
+      end
+
+      it 'should raise an exception if you try to use an association on a model that isn\'t associated with a repository'
 
       it 'should associate via has_many' do
         store._people!.first do |person|

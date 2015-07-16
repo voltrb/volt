@@ -1,19 +1,22 @@
 module Volt
   module Associations
     module ClassMethods
-      def belongs_to(method_name, key_name = nil)
-        key_name ||= "#{method_name}_id"
+      def belongs_to(method_name, options = {})
+        collection  ||= options.fetch(:collection, method_name)
+        foreign_key ||= options.fetch(:foreign_key, :id)
+        local_key   ||= options.fetch(:local_key, "#{method_name}_id")
+
         # Add a field for the association_id
-        field(key_name)
+        field(local_key)
 
         # getter
         define_method(method_name) do
           association_with_root_model('belongs_to') do |root|
             # Lookup the associated model id
-            lookup_key = get(key_name)
+            lookup_key = get(local_key)
 
             # Return a promise for the belongs_to
-            root.get(method_name.pluralize).where(id: lookup_key).first
+            root.get(collection.pluralize).where(foreign_key => lookup_key).first
           end
         end
 
@@ -21,7 +24,7 @@ module Volt
           id = obj.is_a?(Fixnum) ? obj : obj.id
 
           # Assign the current model's something_id to the object's id
-          set("#{method_name}_id", id)
+          set(local_key, id)
         end
       end
 

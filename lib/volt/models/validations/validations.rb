@@ -127,7 +127,11 @@ module Volt
     def validate!
       errors.clear
 
-      run_validations.then do
+      # Run the before_validate callbacks
+      run_callbacks(:before_validate).then do
+        # Run the actual validations
+        run_validations
+      end.then do
         # See if any server errors are in place and merge them in if they are
         errors.merge!(server_errors.to_h) if Volt.client?
       end.then do
