@@ -40,7 +40,12 @@ module Volt
     end
 
     def source_maps?
-      !!ENV['MAPS']
+      if !ENV['MAPS']
+        # If no MAPS is specified, enable it in dev
+        Volt.env.development?
+      else
+        ENV['MAPS'] != 'false'
+      end
     end
 
     def env
