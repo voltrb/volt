@@ -28,9 +28,14 @@ module Volt
         end
       end
 
-      def has_many(method_name, remote_key_name = nil)
+      def has_many(method_name, options = {})
+        collection  ||= options.fetch(:collection, method_name).pluralize
+        foreign_key ||= options.fetch(:foreign_key, :id)
+        local_key   ||= options.fetch(:local_key, "#{method_name}_id")
+
         define_method(method_name) do
-          get(method_name.pluralize, true)
+          lookup_key = get(local_key)
+          root.get(collection).where(foreign_key => lookup_key)
         end
       end
 

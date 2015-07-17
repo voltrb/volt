@@ -30,6 +30,19 @@ module Volt
       @worker_timeout = Volt.config.worker_timeout || 60
     end
 
+    # Mark the last time of the component modification for caching in sprockets
+    def component_modified(time)
+      self.class.instance_variable_set(:@last_modified_time, time)
+    end
+
+    def self.component_last_modified_time
+      unless @last_modified_time
+        component_modified
+      end
+
+      @last_modified_time
+    end
+
     # Dispatch takes an incoming Task from the client and runs it on the
     # server, returning the result to the client.
     # Tasks returning a promise will wait to return.

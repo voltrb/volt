@@ -20,8 +20,9 @@ module Volt
     end
 
     def mtime
-      # return a random mtime so it always reloads
-      rand(2_000_000_000)
+      mtime = Volt::Dispatcher.component_last_modified_time.to_s
+      puts "MTIME: #{mtime}"
+      mtime
     end
   end
 end
@@ -45,6 +46,8 @@ module Sprockets
         stats[path] = Volt::StatStub.new
 
         # Working with a component path
+        puts "COMPILE: #{component_name}"
+
         data = Volt::ComponentCode.new(component_name, $volt_app.component_paths, true).code
       else
         data = env.read_file(input[:filename], input[:content_type])
@@ -92,16 +95,13 @@ module Sprockets
     #
     # Returns true path exists and is a directory.
     def directory?(path)
-      # if path == '/Users/ryanstout/Sites/volt/volt/app/components/main'
-      #   return true
-      # end
-
+      # puts "DIR: #{path}"
       if stat = self.stat(path)
         stat.directory?
       # else
-      elsif path =~ /^#{Volt.root}\/app\/components\/[^\/]+$/
-        # Matches a component
-        return true
+      # elsif path =~ /^#{Volt.root}\/app\/components\/[^\/]+$/
+      #   # Matches a component
+      #   return false
       else
         false
       end
@@ -123,6 +123,30 @@ module Sprockets
         return stat.digest
       else
         raise TypeError, "stat was not a directory or file: #{stat.ftype}"
+      end
+    end
+  end
+end
+
+module Sprockets
+  class Base
+    def file_digest(path)
+      if stat = self.stat(path)
+        # Caveat: Digests are cached by the path's current mtime. Its possible
+        # for a files contents to have changed and its mtime to have been
+        # negligently reset thus appearing as if the file hasn't changed on
+        # disk. Also, the mtime is only read to the nearest second. Its
+        # also possible the file was updated more than once in a given second.
+        cache.fetch("file_digest:#{path}:#{stat.mtime.to_i}") do
+          self.stat_digest(path, stat)
+        end
+      elsif path =~ /^#{Volt.root}\/app\/components\/[^\/]+$/
+        # Return a random mtime
+        # puts "LMT: #{Volt::Dispatcher.last_modified_time.inspect}"
+        mtime = Volt::Dispatcher.component_last_modified_time.to_s
+
+        puts "STUB: #{mtime}"
+        "stub-digest-#{mtime}"
       end
     end
   end

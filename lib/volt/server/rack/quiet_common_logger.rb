@@ -20,7 +20,9 @@ class QuietCommonLogger < Rack::CommonLogger
 
     body = BodyProxy.new(body) do
       # Don't log on ignored extensions
-      if !@@ignore_extensions.include?(ext) && !@logged
+      if !@@ignore_extensions.include?(ext) &&
+         !path.start_with?('/__OPAL_SOURCE_MAPS__/') &&
+         !@logged
         log(env, status, header, began_at)
       end
     end

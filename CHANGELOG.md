@@ -3,6 +3,8 @@
 ## 0.9.5
 ### Added
 - You can now disable auto-import of JS/CSS with ```disable_auto_import``` in a dependencies.rb file
+- Opal was upgraded to 0.8, which brings sourcemaps back (yah!)
+- Page load performance was improved, and more of sprockets was used for component loading.
 
 ## 0.9.4
 ### Lingo Change

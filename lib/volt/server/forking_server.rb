@@ -31,6 +31,9 @@ module Volt
 
       @server = server
 
+      # Set the mod time on boot
+      update_mod_time
+
       start_child
     end
 
@@ -216,6 +219,14 @@ module Volt
 
       Volt.logger.log_with_color(msg, :light_blue)
 
+
+      # Figure out if any views or routes were changed:
+      # TODO: we might want to only check for /views/ under the CWD
+      if changed_files.any? {|path| path =~ /\/routes.rb$/ || path =~ /\/views\// }
+        update_mod_time
+        sync_mod_time
+      end
+
       begin
         SocketConnectionHandler.send_message_all(nil, 'reload')
       rescue => e
@@ -224,14 +235,29 @@ module Volt
       end
 
       if server_code_changed
+        puts "RESTART CHILD"
         @child_lock.with_write_lock do
           stop_child
           start_child
+          sync_mod_time
         end
       end
     end
 
+    def update_mod_time
+      @last_mod_time = Time.now.to_i.to_s
+    end
+
+    def sync_mod_time
+      disp = SocketConnectionHandler.dispatcher
+
+      unless disp.is_a?(ErrorDispatcher)
+        disp.component_modified(@last_mod_time)
+      end
+    end
+
     def start_change_listener
+      sync_mod_time
       # Setup the listeners for file changes
       @listener = Listen.to("#{@server.app_path}/") do |modified, added, removed|
         Thread.new do
