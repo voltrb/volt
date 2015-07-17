@@ -41,7 +41,7 @@ Rick Carlino has been putting together some great volt tutorial videos also.
 - [Build a Realtime Chat App with Volt](http://datamelon.io/blog/2015/building-a-chat-app-in-volt.html)
 - [Understanding Volt Views](http://datamelon.io/blog/2015/understanding-views-in-volt-with-a-card-game.html)
 
-@anhbizcad maintains a [playlist of Volt related videos](https://www.youtube.com/watch?v=McxtO8ybxy8&list=PLmQFeDKFCPXatHb-zEXwfeMH01DPiZjP7).
+@ahnbizcad maintains a [playlist of Volt related videos](https://www.youtube.com/watch?v=McxtO8ybxy8&list=PLmQFeDKFCPXatHb-zEXwfeMH01DPiZjP7).
 
 # Getting Help
 
