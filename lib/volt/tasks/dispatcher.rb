@@ -31,13 +31,17 @@ module Volt
     end
 
     # Mark the last time of the component modification for caching in sprockets
+    def self.component_modified(time)
+      @last_modified_time = time
+    end
+
     def component_modified(time)
-      self.class.instance_variable_set(:@last_modified_time, time)
+      self.class.component_modified(time)
     end
 
     def self.component_last_modified_time
       unless @last_modified_time
-        component_modified
+        component_modified(Time.now.to_i.to_s)
       end
 
       @last_modified_time

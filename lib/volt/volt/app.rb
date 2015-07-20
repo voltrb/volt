@@ -30,6 +30,7 @@ if RUBY_PLATFORM == 'opal'
   require 'volt/volt/client_setup/browser'
 else
   require 'volt/volt/server_setup/app'
+  require 'volt/server/template_handlers/view_processor'
 end
 
 module Volt
@@ -90,6 +91,8 @@ module Volt
         setup_postboot_middleware
 
         start_message_bus
+
+        Volt::ViewProcessor.setup
       end
     end
 

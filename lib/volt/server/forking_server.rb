@@ -221,8 +221,8 @@ module Volt
 
 
       # Figure out if any views or routes were changed:
-      # TODO: we might want to only check for /views/ under the CWD
-      if changed_files.any? {|path| path =~ /\/routes.rb$/ || path =~ /\/views\// }
+      # TODO: Might want to only check for /config/ under the CWD
+      if changed_files.any? {|path| path =~ /\/config\// }
         update_mod_time
         sync_mod_time
       end
@@ -235,7 +235,6 @@ module Volt
       end
 
       if server_code_changed
-        puts "RESTART CHILD"
         @child_lock.with_write_lock do
           stop_child
           start_child

@@ -1,5 +1,7 @@
 require 'volt/server/html_parser/view_parser'
 require 'volt/tasks/task'
+require 'volt/server/template_handlers/preprocessors'
+
 
 # Initialize with the path to a component and returns all the front-end
 # setup code (for controllers, models, views, and routes)
@@ -11,39 +13,7 @@ module Volt
   end
 
   class ComponentTemplates
-
-    module Handlers #:nodoc:
-      # Setup default handler on extend
-      def self.extended(base)
-        base.register_template_handler :html, BasicHandler.new
-        base.register_template_handler :email, BasicHandler.new
-      end
-
-      @@template_handlers = {}
-
-      def self.extensions
-        @@template_handlers.keys
-      end
-
-      # Register an object that knows how to handle template files with the given
-      # extensions. This can be used to implement new template types.
-      # The handler must respond to +:call+, which will be passed the template
-      # and should return the rendered template as a String.
-      def register_template_handler(extension, handler)
-        @@template_handlers[extension.to_sym] = handler
-      end
-
-      def registered_template_handler(extension)
-        extension && @@template_handlers[extension.to_sym]
-      end
-
-      def handler_for_extension(extension)
-        registered_template_handler(extension)
-      end
-    end
-
-    extend ComponentTemplates::Handlers
-
+    extend ComponentTemplates::Preprocessors
 
     # client is if we are generating for the client or backend
     def initialize(component_path, component_name, client = true)
@@ -75,52 +45,39 @@ module Volt
       code = ''
       views_path = "#{@component_path}/views/"
 
-      exts = Handlers.extensions
+      exts = Preprocessors.extensions
 
       # Load all templates in the folder
       Dir["#{views_path}*/*.{#{exts.join(',')}}"].sort.each do |view_path|
-        path_parts = view_path.scan(/([^\/]+)\/([^\/]+)\/[^\/]+\/([^\/]+)[.](html|email)$/)
-        component_name, controller_name, view, _ = path_parts[0]
+        if @client
+          require_path = view_path.split('/')[-4..-1].join('/').gsub(/[.][^.]*$/, '')
 
-        # file extension
-        format = File.extname(view_path).downcase.delete('.').to_sym
+          # On the client side, we can just require the file and let sprockets
+          # handle things.
+          code << "\nrequire '#{require_path}'\n"
+        else
+          # On the sever side, we eval the compiled code
+          path_parts = view_path.scan(/([^\/]+)\/([^\/]+)\/[^\/]+\/([^\/]+)[.](html|email)$/)
+          component_name, controller_name, view, _ = path_parts[0]
 
-        # Get the path for the template, supports templates in folders
-        template_path = view_path[views_path.size..-1].gsub(/[.](#{exts.join('|')})$/, '')
-        template_path = "#{@component_name}/#{template_path}"
+          # file extension
+          format = File.extname(view_path).downcase.delete('.').to_sym
 
-        file_contents = File.read(view_path)
+          # Get the path for the template, supports templates in folders
+          template_path = view_path[views_path.size..-1].gsub(/[.](#{exts.join('|')})$/, '')
+          template_path = "#{@component_name}/#{template_path}"
 
-        # template_calls = []
+          html = File.read(view_path)
 
-        # Process template if we have a handler for this file type
-        if handler = ComponentTemplates.handler_for_extension(format)
-          file_contents = handler.call(file_contents)
+          if handler = ComponentTemplates.handler_for_extension(format)
+            html = handler.call(html)
 
-          all_templates = ViewParser.new(file_contents, template_path)
-
-          binding_initializers = []
-          all_templates.templates.each_pair do |name, template|
-            binding_code = []
-
-            if template['bindings']
-              template['bindings'].each_pair do |key, value|
-                binding_code << "#{key.inspect} => [#{value.join(', ')}]"
-              end
-            end
-
-            binding_code = "{#{binding_code.join(', ')}}"
-
-            code << "#{app_reference}.add_template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})\n"
-            # template_calls << "template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})"
+            code << ViewParser.new(html, template_path).code(app_reference)
           end
         end
-
-        # puts "module #{component_name.camelize}\n  class #{controller_name.camelize}\n    class VoltTemplates < VoltTemplates\n      #{template_calls.join("\n")}\n    end\n  end\nend"
       end
 
       code
-
     end
 
     def generate_controller_code
@@ -141,7 +98,7 @@ module Volt
 
       controllers.each do |path|
         if File.exists?(path)
-          code << "require '#{localize_path(path)}'\n"
+          code << "\nrequire '#{localize_path(path)}'\n"
         else
           # parts = path.scan(/([^\/]+)\/controllers\/([^\/]+)_controller[.]rb$/)
           # component, controller = parts[0]

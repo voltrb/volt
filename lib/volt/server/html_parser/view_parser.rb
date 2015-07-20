@@ -42,5 +42,25 @@ module Volt
 
       templates
     end
+
+    # Generate code for the view that can be evaled.
+    def code(app_reference)
+      code = ''
+      templates.each_pair do |name, template|
+        binding_code = []
+
+        if template['bindings']
+          template['bindings'].each_pair do |key, value|
+            binding_code << "#{key.inspect} => [#{value.join(', ')}]"
+          end
+        end
+
+        binding_code = "{#{binding_code.join(', ')}}"
+
+        code << "#{app_reference}.add_template(#{name.inspect}, #{template['html'].inspect}, #{binding_code})\n"
+      end
+
+      code
+    end
   end
 end

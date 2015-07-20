@@ -1,3 +1,5 @@
+require 'volt/server/template_handlers/view_processor'
+
 # This file Monkeypatches sprockets to provide custom file loading (from volt
 # instead disk) for component root files.  These files then require in all parts
 # or include generated ruby for templates, routes, and tasks.
@@ -19,10 +21,9 @@ module Volt
       "stub-digest-#{mtime}"
     end
 
+    # Get the mtime from the forking server
     def mtime
-      mtime = Volt::Dispatcher.component_last_modified_time.to_s
-      puts "MTIME: #{mtime}"
-      mtime
+      Volt::Dispatcher.component_last_modified_time.to_s
     end
   end
 end
@@ -46,8 +47,6 @@ module Sprockets
         stats[path] = Volt::StatStub.new
 
         # Working with a component path
-        puts "COMPILE: #{component_name}"
-
         data = Volt::ComponentCode.new(component_name, $volt_app.component_paths, true).code
       else
         data = env.read_file(input[:filename], input[:content_type])
@@ -75,33 +74,11 @@ module Sprockets
     #
     # Returns true path exists and is a file.
     def file?(path)
-      # if path =~  /\/components\/[^.]+[.]rb$/
-      #   return true
-      # end
-
       if stat = self.stat(path)
         stat.file?
       elsif path =~ /^#{Volt.root}\/app\/components\/[^\/]+[.]rb$/
         # Matches a component
         return true
-      else
-        false
-      end
-    end
-
-    # Public: Like `File.directory?`.
-    #
-    # path - String file path.
-    #
-    # Returns true path exists and is a directory.
-    def directory?(path)
-      # puts "DIR: #{path}"
-      if stat = self.stat(path)
-        stat.directory?
-      # else
-      # elsif path =~ /^#{Volt.root}\/app\/components\/[^\/]+$/
-      #   # Matches a component
-      #   return false
       else
         false
       end
@@ -145,7 +122,7 @@ module Sprockets
         # puts "LMT: #{Volt::Dispatcher.last_modified_time.inspect}"
         mtime = Volt::Dispatcher.component_last_modified_time.to_s
 
-        puts "STUB: #{mtime}"
+        # puts "STUB: #{mtime}"
         "stub-digest-#{mtime}"
       end
     end
