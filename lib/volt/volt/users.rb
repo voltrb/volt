@@ -93,12 +93,12 @@ module Volt
 
     # Put in a deprecation placeholder
     def user
-      Volt.logger.warn('deprication: Volt.user has been renamed to Volt.current_user (to be more clear about what it returns).  Volt.user will be deprecated in the future.')
+      Volt.logger.warn('Deprecation: Volt.user has been renamed to Volt.current_user (to be more clear about what it returns).  Volt.user will be deprecated in the future.')
       current_user
     end
 
     def fetch_current_user
-      Volt.logger.warn("Deprication Warning: fetch current user have been depricated, Volt.current_user returns a promise now.")
+      Volt.logger.warn("Deprecation Warning: fetch current user have been deprecated, Volt.current_user returns a promise now.")
       current_user
     end
 
