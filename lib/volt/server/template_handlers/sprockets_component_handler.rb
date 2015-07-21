@@ -1,4 +1,5 @@
 require 'volt/server/template_handlers/view_processor'
+require 'sprockets'
 
 # This file Monkeypatches sprockets to provide custom file loading (from volt
 # instead disk) for component root files.  These files then require in all parts
@@ -47,7 +48,8 @@ module Sprockets
         stats[path] = Volt::StatStub.new
 
         # Working with a component path
-        data = Volt::ComponentCode.new(component_name, $volt_app.component_paths, true).code
+        volt_app = Thread.current['volt_app'] || $volt_app
+        data = Volt::ComponentCode.new(component_name, volt_app.component_paths, true).code
       else
         data = env.read_file(input[:filename], input[:content_type])
       end

@@ -30,6 +30,7 @@ describe Volt::Associations do
       it 'should associate via belongs_to' do
         address = store.addresses.first.sync
 
+        expect(address.person_id).to eq(@person.id)
         expect(address.person.sync.id).to eq(@person.id)
       end
 
@@ -83,6 +84,7 @@ describe Volt::Associations do
     it 'should assign the reference_id for has_many' do
       bob = store.people.create.sync
       address = bob.addresses.create({:street => '1234 awesome street'})
+
       expect(bob.addresses[0].sync.person_id).to eq(bob.id)
       expect(bob.id).to_not eq(nil)
     end

@@ -2,7 +2,7 @@ module Volt
   module Associations
     module ClassMethods
       def belongs_to(method_name, options = {})
-        collection  ||= options.fetch(:collection, method_name)
+        collection  ||= options.fetch(:collection, method_name).pluralize
         foreign_key ||= options.fetch(:foreign_key, :id)
         local_key   ||= options.fetch(:local_key, "#{method_name}_id")
 
@@ -16,7 +16,7 @@ module Volt
             lookup_key = get(local_key)
 
             # Return a promise for the belongs_to
-            root.get(collection.pluralize).where(foreign_key => lookup_key).first
+            root.get(collection).where(foreign_key => lookup_key).first
           end
         end
 
@@ -30,12 +30,14 @@ module Volt
 
       def has_many(method_name, options = {})
         collection  ||= options.fetch(:collection, method_name).pluralize
-        foreign_key ||= options.fetch(:foreign_key, :id)
-        local_key   ||= options.fetch(:local_key, "#{method_name}_id")
+
+        # Use the underscored current class name as the something_id.
+        foreign_key ||= options.fetch(:foreign_key, "#{to_s.underscore.singularize}_id")
+        local_key   ||= options.fetch(:local_key, :id)
 
         define_method(method_name) do
           lookup_key = get(local_key)
-          root.get(collection).where(foreign_key => lookup_key)
+          get(collection).where(foreign_key => lookup_key)
         end
       end
 

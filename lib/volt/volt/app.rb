@@ -52,6 +52,9 @@ module Volt
         raise "Volt::App.new requires an app path to boot"
       end
 
+      # Expand to a full path
+      app_path = File.expand_path(app_path)
+
       @app_path = app_path
       $volt_app = self
 
