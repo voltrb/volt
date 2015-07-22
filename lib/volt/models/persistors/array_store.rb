@@ -210,7 +210,7 @@ module Volt
       # Returns a promise that is resolved/rejected when the query is complete.  Any
       # passed block will be passed to the promises then.  Then will be passed the model.
       def fetch(&block)
-        Volt.logger.warn('Deprication warning: in 0.9.3.pre4, all query methods on store now return Promises, so you can juse use .all or .first instead of .first')
+        Volt.logger.warn('Deprication warning: in 0.9.3.pre4, all query methods on store now return Promises, so you can juse use .all or .first instead of .fetch')
         promise = Promise.new
 
         # Run the block after resolve if a block is passed in

@@ -33,6 +33,7 @@ module Volt
           @model.attributes ||= {}
           @model.attributes[method_name] = model
         end
+
         model
       end
 

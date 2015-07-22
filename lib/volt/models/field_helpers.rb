@@ -5,6 +5,7 @@ module FieldHelpers
   NUMERIC_CAST = lambda do |convert_method, val|
     begin
       orig = val
+
       val = send(convert_method, val)
 
       if RUBY_PLATFORM == 'opal'

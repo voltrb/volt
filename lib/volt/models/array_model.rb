@@ -59,8 +59,6 @@ module Volt
 
     def initialize(array = [], options = {})
       @options   = options
-      @parent    = options[:parent]
-      @path      = options[:path] || []
       @persistor = setup_persistor(options[:persistor])
 
       array = wrap_values(array)
@@ -72,6 +70,22 @@ module Volt
       else
         change_state_to(:loaded_state, :loaded, false)
       end
+    end
+
+    def parent=(val)
+      @options[:parent] = val
+    end
+
+    def parent
+      @options[:parent]
+    end
+
+    def path
+      @options[:path] || []
+    end
+
+    def path=(val)
+      @options[:path] = val
     end
 
     def attributes

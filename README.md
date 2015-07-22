@@ -58,7 +58,3 @@ VoltFramework is currently a labor of love mainly built by a small group of core
 [![Pledgie](https://pledgie.com/campaigns/26731.png?skin_name=chrome)](https://pledgie.com/campaigns/26731)
 
 Bitcoins can also be sent to 1AYiL3MiSVe2QFyexzozUvFFH7uGCJgJMZ
-
-
-Timings:
-- view:

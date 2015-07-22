@@ -37,7 +37,16 @@ module Volt
 
         define_method(method_name) do
           lookup_key = get(local_key)
-          get(collection).where(foreign_key => lookup_key)
+          array_model = root.get(collection).where(foreign_key => lookup_key)
+
+          # Since we are coming off of the root collection, we need to setup
+          # the right parent and path.
+          new_path = array_model.options[:path]
+          # Assign path and parent
+          array_model.path = self.path + new_path
+          array_model.parent = self
+
+          array_model
         end
       end
 
