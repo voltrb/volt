@@ -55,8 +55,8 @@ module Volt
 
       if Volt.config.compress_css
         # Use csso for css compression by default.
-        require 'volt/utils/csso_patch'
         require 'csso'
+        require 'volt/utils/csso_patch'
         Csso.install(environment)
       end
 

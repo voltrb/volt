@@ -19,6 +19,20 @@ module Csso
     def compress css, structural_optimization=true
       @csso.call("do_compression", css, !structural_optimization)
     end
-
   end
+
+
+  # https://github.com/Vasfed/csso-rails/pull/23/files
+  def self.install(sprockets)
+    if sprockets.respond_to? :register_compressor
+      compressor = Compressor.new
+      sprockets.register_compressor('text/css', :csso, proc { |context, css|
+        compressor.compress(css)
+      })
+      sprockets.css_compressor = :csso
+    else
+      Sprockets::Compressors.register_css_compressor(:csso, 'Csso::Compressor', :default => true)
+    end
+  end
+
 end
