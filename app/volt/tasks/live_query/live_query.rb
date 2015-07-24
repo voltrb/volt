@@ -37,7 +37,7 @@ class LiveQuery
     notify! do |channel|
       filtered_data = nil
       Volt.as_user(channel.user_id) do
-        filtered_data = model.filtered_attributes
+        filtered_data = model.filtered_attributes.sync
       end
 
       channel.send_message('added', nil, @collection, @query, index, filtered_data)
@@ -57,7 +57,7 @@ class LiveQuery
     notify!(skip_channel) do |channel|
       filtered_data = nil
       Volt.as_user(channel.user_id) do
-        filtered_data = model.filtered_attributes
+        filtered_data = model.filtered_attributes.sync
       end
       # puts "Changed: #{id}, #{data} to #{channel.inspect}"
       channel.send_message('changed', nil, @collection, @query, id, filtered_data)

@@ -110,6 +110,10 @@ class Promise
     end
 
     if error
+      if error.is_a?(RSpec::Expectations::ExpectationNotMetError)
+        # re-raise
+        raise error
+      end
       err_str = "Exception in Promise at .sync: #{error.inspect}"
       err_str += error.backtrace.join("\n") if error.respond_to?(:backtrace)
       Volt.logger.error(err_str)

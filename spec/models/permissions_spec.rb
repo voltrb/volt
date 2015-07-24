@@ -46,6 +46,17 @@ class ::TestUpdateReadCheck < Volt::Model
   end
 end
 
+class ::TestPromisePermission < Volt::Model
+  attr_reader :called_deny
+  permissions(:create) do
+    $test_promise = Promise.new
+    $test_promise.then do
+      @called_deny = true
+      deny
+    end
+  end
+end
+
 describe 'model permissions' do
   let(:user_todo) { TestUserTodo.new }
 
@@ -161,6 +172,20 @@ describe 'model permissions' do
       model.destroy
 
       expect(model.read_check).to eq(nil)
+    end
+
+    it 'should allow permission blocks to return a promise' do
+      promise = store._test_promise_permissions.create({})
+
+      expect(promise.resolved?).to eq(false)
+      expect(promise.rejected?).to eq(false)
+      $test_promise.resolve(nil)
+
+      expect(promise.resolved?).to eq(false)
+      expect(promise.rejected?).to eq(true)
+      # puts "#{promise.error.inspect}"
+      # puts promise.error.backtrace.join("\n")
+      expect(promise.error.to_s).to match(/permissions did not allow create for/)
     end
   end
 end

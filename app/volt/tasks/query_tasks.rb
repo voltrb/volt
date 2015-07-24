@@ -26,7 +26,7 @@ class QueryTasks < Volt::Task
     if initial_data
       # Only send the filtered attributes for this user
       initial_data.map! do |data|
-        [data[0], live_query.model_for_filter(data[1]).filtered_attributes]
+        [data[0], live_query.model_for_filter(data[1]).filtered_attributes.sync]
       end
     end
 

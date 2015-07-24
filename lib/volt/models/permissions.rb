@@ -123,24 +123,26 @@ module Volt
       # Checks if any denies are in place for an action (read or delete)
       def action_allowed?(action_name)
         # TODO: this does some unnecessary work
-        compute_allow_and_deny(action_name)
+        compute_allow_and_deny(action_name).then do
 
-        deny = @__deny_fields == true || (@__deny_fields && @__deny_fields.size > 0)
+          deny = @__deny_fields == true || (@__deny_fields && @__deny_fields.size > 0)
 
-        clear_allow_and_deny
+          clear_allow_and_deny
 
-        !deny
+          !deny
+        end
       end
 
       # Return the list of allowed fields
       def allow_and_deny_fields(action_name)
-        compute_allow_and_deny(action_name)
+        compute_allow_and_deny(action_name).then do
 
-        result = [@__allow_fields, @__deny_fields]
+          result = [@__allow_fields, @__deny_fields]
 
-        clear_allow_and_deny
+          clear_allow_and_deny
 
-        result
+          result
+        end
       end
 
       # Filter fields returns the attributes with any denied or not allowed fields
@@ -149,70 +151,80 @@ module Volt
       # Run with Volt.as_user(...) to change the user
       def filtered_attributes
         # Run the read permission check
-        allow, deny = allow_and_deny_fields(:read)
+        allow_and_deny_fields(:read).then do |allow, deny|
 
-        result = nil
+          result = nil
 
-        if allow && allow != true && allow.size > 0
-          # always keep id
-          allow << :id
+          if allow && allow != true && allow.size > 0
+            # always keep id
+            allow << :id
 
-          # Only keep fields in the allow list
-          result = @attributes.select { |key| allow.include?(key) }
-        elsif deny == true
-          # Only keep id
-          # TODO: Should this be a full reject?
-          result = @attributes.reject { |key| key != :id }
-        elsif deny && deny.size > 0
-          # Reject any in the deny list
-          result = @attributes.reject { |key| deny.include?(key) }
-        else
-          result = @attributes
-        end
-
-        # Deeply filter any nested models
-        return result.map do |key, value|
-          if value.is_a?(Model)
-            value = value.filtered_attributes
+            # Only keep fields in the allow list
+            result = @attributes.select { |key| allow.include?(key) }
+          elsif deny == true
+            # Only keep id
+            # TODO: Should this be a full reject?
+            result = @attributes.reject { |key| key != :id }
+          elsif deny && deny.size > 0
+            # Reject any in the deny list
+            result = @attributes.reject { |key| deny.include?(key) }
+          else
+            result = @attributes
           end
 
-          [key, value]
-        end.to_h
+          # Deeply filter any nested models
+          result.then do |res|
+            keys = []
+            values = []
+            res.each do |key, value|
+              if value.is_a?(Model)
+                value = value.filtered_attributes
+              end
+              keys << key
+              values << value
+            end
+
+            Promise.when(*values).then do |values|
+              keys.zip(values).to_h
+            end
+          end
+        end
       end
 
       private
 
       def run_permissions(action_name = nil)
-        compute_allow_and_deny(action_name)
+        compute_allow_and_deny(action_name).then do
 
-        errors = {}
+          errors = {}
 
-        if @__allow_fields == true
-          # Allow all fields
-        elsif @__allow_fields && @__allow_fields.size > 0
-          # Deny all not specified in the allow list
-          changed_attributes.keys.each do |field_name|
-            unless @__allow_fields.include?(field_name)
-              add_error_if_changed(errors, field_name)
+          if @__allow_fields == true
+            # Allow all fields
+          elsif @__allow_fields && @__allow_fields.size > 0
+            # Deny all not specified in the allow list
+            changed_attributes.keys.each do |field_name|
+              unless @__allow_fields.include?(field_name)
+                add_error_if_changed(errors, field_name)
+              end
             end
           end
-        end
 
-        if @__deny_fields == true
-          # Don't allow any field changes
-          changed_attributes.keys.each do |field_name|
-            add_error_if_changed(errors, field_name)
+          if @__deny_fields == true
+            # Don't allow any field changes
+            changed_attributes.keys.each do |field_name|
+              add_error_if_changed(errors, field_name)
+            end
+          elsif @__deny_fields
+            # Allow all except the denied
+            @__deny_fields.each do |field_name|
+              add_error_if_changed(errors, field_name) if changed?(field_name)
+            end
           end
-        elsif @__deny_fields
-          # Allow all except the denied
-          @__deny_fields.each do |field_name|
-            add_error_if_changed(errors, field_name) if changed?(field_name)
-          end
+
+          clear_allow_and_deny
+
+          errors
         end
-
-        clear_allow_and_deny
-
-        errors
       end
 
       def clear_allow_and_deny
@@ -235,10 +247,13 @@ module Volt
         # Run each of the permission blocks for this action
         permissions = self.class.__permissions__
         if permissions && (blocks = permissions[action_name])
-          blocks.each do |block|
+          results = blocks.map do |block|
             # Call the block, pass the action name
             instance_exec(action_name, &block)
           end
+
+          # Wait for any promises returned
+          Promise.when(*results)
         end
       end
 

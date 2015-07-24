@@ -148,11 +148,17 @@ module Volt
 
     def delete(val)
       # Check to make sure the models are allowed to be deleted
-      if !val.is_a?(Model) || val.can_delete?
-        result = super
-        Promise.new.resolve(result)
+      if !val.is_a?(Model)
+        # Not a model, return as a Promise
+        super(val).then
       else
-        Promise.new.reject("permissions did not allow delete for #{val.inspect}.")
+        val.can_delete?.then do |can_delete|
+          if can_delete
+            super(val)
+          else
+           Promise.new.reject("permissions did not allow delete for #{val.inspect}.")
+          end
+        end
       end
     end
 
@@ -314,34 +320,39 @@ module Volt
 
 
       if model.is_a?(Model)
-        if !model.can_create?
-          fail "permissions did not allow create for #{model.inspect}"
-        end
+        promise = model.can_create?.then do |can_create|
+          unless can_create
+            fail "permissions did not allow create for #{model.inspect}"
+          end
+        end.then do
 
-        # Add it to the array and trigger any watches or on events.
-        reactive_array_append(model)
+          # Add it to the array and trigger any watches or on events.
+          reactive_array_append(model)
 
-        @persistor.added(model, @array.size - 1)
+          @persistor.added(model, @array.size - 1)
+        end.then do
+          nil.then do
+            # Validate and save
+            model.run_changed
+          end.then do
+            # Mark the model as not new
+            model.instance_variable_set('@new', false)
 
-        # Validate and save
-        promise = model.run_changed.then do
-          # Mark the model as not new
-          model.instance_variable_set('@new', false)
+            # Mark the model as loaded
+            model.change_state_to(:loaded_state, :loaded)
 
-          # Mark the model as loaded
-          model.change_state_to(:loaded_state, :loaded)
+          end.fail do |err|
+            # remove from the collection because it failed to save on the server
+            # we don't need to call delete on the server.
+            index = @array.index(model)
+            delete_at(index, true)
 
-        end.fail do |err|
-          # remove from the collection because it failed to save on the server
-          # we don't need to call delete on the server.
-          index = @array.index(model)
-          delete_at(index, true)
+            # remove from the id list
+            @persistor.try(:remove_tracking_id, model)
 
-          # remove from the id list
-          @persistor.try(:remove_tracking_id, model)
-
-          # re-raise, err might not be an Error object, so we use a rejected promise to re-raise
-          Promise.new.reject(err)
+            # re-raise, err might not be an Error object, so we use a rejected promise to re-raise
+            Promise.new.reject(err)
+          end
         end
       else
         promise = nil.then do

@@ -25,7 +25,6 @@ module Volt
         super
       end
 
-      # puts "GOT: #{res.inspect}"
       res
     end
 
