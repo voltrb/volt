@@ -22,21 +22,50 @@ module Volt
     # of immediately returning).  To accomplish this, we call the
     # #run_once_loaded method on the persistor.
     def self.proxy_with_load(*method_names)
+      imethods = instance_methods(false)
       method_names.each do |method_name|
-        old_method_name = :"__old_#{method_name}"
-        alias_method(old_method_name, method_name)
+        # Sometimes we want to alias a method_missing method, so we use super
+        # instead to call it, if its not defined locally.
+        if imethods.include?(method_name)
+          imethod = true
+          old_method_name = :"__old_#{method_name}"
+          alias_method(old_method_name, method_name)
+        else
+          imethod = false
+        end
 
         define_method(method_name) do |*args, &block|
+          if imethod
+            call_orig = proc do |*args|
+              send(old_method_name, *args)
+            end
+          else
+            call_orig = proc do |*args|
+              super(*args)
+            end
+          end
+
           # track on the root dep
           persistor.try(:root_dep).try(:depend)
 
           if persistor.respond_to?(:run_once_loaded) &&
               !Volt.in_mode?(:no_model_promises)
-            persistor.run_once_loaded(block) do
-              send(old_method_name, *args)
+            promise = persistor.run_once_loaded.then do
+              # We are already loaded and the result is going to be wrapped
+              Volt.run_in_mode(:no_model_promises) do
+                call_orig.call(*args)
+              end
             end
+
+            if block
+              promise = promise.then do |val|
+                block.call(val)
+              end
+            end
+
+            promise
           else
-            send(old_method_name, *args)
+            call_orig.call(*args)
           end
         end
       end
@@ -337,7 +366,7 @@ module Volt
     end
 
     # We need to setup the proxy methods below where they are defined.
-    proxy_with_load :[], :size, :last, :reverse, :all, :to_a, :empty?
+    proxy_with_load :[], :size, :last, :reverse, :all, :to_a, :empty?, :present?, :blank?
 
   end
 end

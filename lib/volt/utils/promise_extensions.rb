@@ -1,6 +1,3 @@
-# Require the original promise library first.
-require 'volt/utils/promise'
-
 # A temp patch for promises until https://github.com/opal/opal/pull/725 is released.
 class Promise
   class UnrealizedPromiseException < RuntimeError ; end
