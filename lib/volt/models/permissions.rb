@@ -106,18 +106,12 @@ module Volt
         !owner_id.nil? && owner_id == Volt.current_user_id
       end
 
-      # Returns boolean if the model can be deleted
-      def can_delete?
-        action_allowed?(:delete)
-      end
-
-      # Checks the read permissions
-      def can_read?
-        action_allowed?(:read)
-      end
-
-      def can_create?
-        action_allowed?(:create)
+      [:create, :update, :read, :delete].each do |action|
+        # Each can_action? (can_delete? for example) returns a promise that
+        # resolves to true or false if the user
+        define_method(:"can_#{action}?") do
+          action_allowed?(action)
+        end
       end
 
       # Checks if any denies are in place for an action (read or delete)
