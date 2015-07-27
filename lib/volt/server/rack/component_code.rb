@@ -17,7 +17,7 @@ module Volt
       # Start with config code
       code = @client ? generate_config_code : ''
 
-      asset_files = AssetFiles.new(@component_name, @component_paths)
+      asset_files = AssetFiles.from_cache(@component_name, @component_paths)
       asset_files.component_paths.each do |component_path, component_name|
         code << ComponentTemplates.new(component_path, component_name, @client).code
         code << "\n\n"

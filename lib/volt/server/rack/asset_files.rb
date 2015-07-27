@@ -4,6 +4,16 @@ require 'uri'
 # from the dependencies.rb files.
 module Volt
   class AssetFiles
+    def self.from_cache(component_name, component_paths)
+      # @cache ||= {}
+
+      # @cache[component_name] ||= begin
+        # not cached, create
+
+        self.new(component_name, component_paths)
+      # end
+    end
+
     def initialize(component_name, component_paths)
       @component_paths     = component_paths
       @assets              = []
@@ -59,6 +69,14 @@ module Volt
           @components << [path, name]
         end
       end
+    end
+
+    # Called when you want to add a gem to the opal load path so it can be
+    # required on the client side.
+    def opal_gem(gem_name)
+      puts "USE GEM: #{gem_name}"
+      Opal.use_gem(gem_name)
+      # require(gem_name)
     end
 
     def components

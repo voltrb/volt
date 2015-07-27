@@ -5,6 +5,8 @@
 - You can now disable auto-import of JS/CSS with ```disable_auto_import``` in a dependencies.rb file
 - Opal was upgraded to 0.8, which brings sourcemaps back (yah!)
 - Page load performance was improved, and more of sprockets was used for component loading.
+- You can now return promises in permissions blocks.  Also, can_read?, can_create?, and .can_delete?
+- Anything in /public is now served via Rack::Static in the default middleware stack.  (So you can put user uploaded images in there)
 
 ## 0.9.4
 ### Lingo Change

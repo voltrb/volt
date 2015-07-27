@@ -58,11 +58,11 @@ module Volt
 
     def javascript_tags
       # TODO: Cache somehow, this is being loaded every time
-      AssetFiles.new('main', @component_paths).javascript_tags(@volt_app)
+      AssetFiles.from_cache('main', @component_paths).javascript_tags(@volt_app)
     end
 
     def css_tags
-      AssetFiles.new('main', @component_paths).css_tags
+      AssetFiles.from_cache('main', @component_paths).css_tags
     end
   end
 end
