@@ -50,10 +50,11 @@ module Volt
 
       rack_app.use HttpResource, volt_app, volt_app.router
 
+      # serve assets from public
       rack_app.use Rack::Static,
                     urls: ['/'],
-                    root: 'config/base',
-                    index: '',
+                    root: 'public',
+                    index: 'index.html',
                     header_rules: [
                       [:all, { 'Cache-Control' => 'public, max-age=86400' }]
                     ]
