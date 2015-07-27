@@ -405,6 +405,16 @@ describe Volt::Model do
     expect(array[0]._name).to eq('Two')
   end
 
+  it 'should flatten' do
+    array = Volt::ArrayModel.new([])
+
+    array << Volt::ArrayModel.new([Volt::ArrayModel.new([1,2]), Volt::ArrayModel.new([3])])
+    array << Volt::ArrayModel.new([Volt::ArrayModel.new([4,5]), Volt::ArrayModel.new([6])])
+    
+    expect(array.flatten.size).to eq(6)
+    expect(array.to_a.flatten.size).to eq(6)
+  end
+
   it 'should compare true' do
     a = Volt::Model.new(_name: 'Cool')
     expect(a == a).to eq(true)
