@@ -199,6 +199,10 @@ module Volt
       super(*args)
     end
 
+    def flatten(*args)
+      wrap_values(to_a.flatten(*args))
+    end
+
     def new_model(*args)
       Volt::Model.class_at_path(options[:path]).new(*args)
     end
