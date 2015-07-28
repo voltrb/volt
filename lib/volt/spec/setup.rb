@@ -29,8 +29,6 @@ module Volt
         RSpec.configuration.filter_run_excluding type: :feature
       end
 
-
-
       cleanup_db = -> do
         volt_app.database.drop_database
 

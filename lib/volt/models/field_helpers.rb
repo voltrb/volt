@@ -43,6 +43,10 @@ module FieldHelpers
         fail FieldHelpers::InvalidFieldClass, msg
       end
 
+      self.fields_data ||= {}
+      self.fields_data[name] = klass
+
+
       if klass
         # Add type validation, execpt for String, since anything can be a string.
         unless klass == String
@@ -69,6 +73,7 @@ module FieldHelpers
   end
 
   def self.included(base)
+    base.class_attribute :fields_data
     base.send :extend, ClassMethods
   end
 end

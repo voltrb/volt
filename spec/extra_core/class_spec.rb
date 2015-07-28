@@ -3,6 +3,7 @@ require 'volt/extra_core/array'
 
 class TestClassAttributes
   class_attribute :some_data
+  class_attribute :attr2
 end
 
 class TestSubClassAttributes < TestClassAttributes
@@ -29,5 +30,15 @@ describe 'extra_core class addons' do
     expect(TestClassAttributes.some_data).to eq(5)
     expect(TestSubClassAttributes.some_data).to eq(10)
     expect(TestSubClassAttributes2.some_data).to eq(15)
+  end
+
+  it 'should let you change a class attribute on the child without affecting the parent' do
+    TestClassAttributes.attr2 = 1
+    expect(TestSubClassAttributes.attr2).to eq(1)
+
+    TestSubClassAttributes.attr2 = 2
+    expect(TestClassAttributes.attr2).to eq(1)
+    expect(TestSubClassAttributes.attr2).to eq(2)
+    expect(TestSubClassAttributes2.attr2).to eq(1)
   end
 end
