@@ -77,7 +77,7 @@ module Volt
             connect_to_peers
           end
         else
-          Volt.logger.error('Unable to connect to the database.  Volt will still run, but the message bus requires a database connection to setup connections between nodes, so the message bus has been disabled.  This means updates will not be propagated between instances (server, console, runners, etc...)')
+          Volt.logger.error('Unable to connect to the database.  Currently Volt requires running mongodb for a few things to work.  Volt will still run, but the message bus requires a database connection to setup connections between nodes, so the message bus has been disabled.  Also, the store collection can not be used without a database.  This means updates will not be propagated between instances (server, console, runners, etc...)')
         end
       end
 

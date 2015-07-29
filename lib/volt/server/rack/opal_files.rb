@@ -72,6 +72,9 @@ module Volt
         run environment
       end
 
+      # Remove dup paths
+      Opal.paths.uniq!
+
       @environment.logger.level ||= Logger::DEBUG
       source_map_enabled = Volt.source_maps?
       if source_map_enabled

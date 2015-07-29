@@ -74,8 +74,8 @@ module Volt
     # Called when you want to add a gem to the opal load path so it can be
     # required on the client side.
     def opal_gem(gem_name)
-      puts "USE GEM: #{gem_name}"
       Opal.use_gem(gem_name)
+      Opal.paths.uniq!
       # require(gem_name)
     end
 
