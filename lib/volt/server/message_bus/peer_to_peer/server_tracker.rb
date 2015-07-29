@@ -33,7 +33,7 @@ module Volt
 
       # Register this server as active with the database
       def register
-        instances = @volt_app.store._active_volt_instances
+        instances = @volt_app.store.active_volt_instances
         instances.where(server_id: @server_id).first.then do |item|
           ips = local_ips.join(',')
           time = Time.now.to_i

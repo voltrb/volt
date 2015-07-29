@@ -36,7 +36,7 @@ module FieldHelpers
   module ClassMethods
     # field lets you declare your fields instead of using the underscore syntax.
     # An optional class restriction can be passed in.
-    def field(name, klass = nil, auto_cast = true)
+    def field(name, klass = nil, options = {})
       if klass && !VALID_FIELD_CLASSES.include?(klass)
         klass_names = VALID_FIELD_CLASSES.map(&:to_s).join(', ')
         msg = "valid field types is currently limited to #{klass_names}"
@@ -44,8 +44,7 @@ module FieldHelpers
       end
 
       self.fields_data ||= {}
-      self.fields_data[name] = klass
-
+      self.fields_data[name] = [klass, options]
 
       if klass
         # Add type validation, execpt for String, since anything can be a string.

@@ -21,4 +21,10 @@ describe Volt::ArrayModel do
     Volt::Computation.flush!
     expect(count).to eq(2)
   end
+
+  it 'should return the index of a model' do
+    array_model = Volt::ArrayModel.new([1,2,3])
+
+    expect(array_model.index(2)).to eq(1)
+  end
 end

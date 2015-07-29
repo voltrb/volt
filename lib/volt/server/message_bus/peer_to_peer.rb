@@ -181,7 +181,7 @@ module Volt
       def still_alive?(peer_server_id)
         # Unable to write to the socket, retry until the instance is no
         # longer marking its self as active in the database
-        peer_table = @volt_app.store._active_volt_instances
+        peer_table = @volt_app.store.active_volt_instances
         peer = peer_table.where(server_id: peer_server_id).first.sync
         if peer
           # Found the peer, retry if it has reported in in the last 2
