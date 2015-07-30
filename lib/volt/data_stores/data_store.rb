@@ -1,23 +1,28 @@
 require 'volt/data_stores/base_adaptor_server'
+require 'thread'
 
 module Volt
   class DataStore
+    @@data_store_mutex = Mutex.new
+
     def self.fetch
-      # Cache the driver
-      return @adaptor if @adaptor
+      @@data_store_mutex.synchronize do
+        # Cache the driver
+        return @adaptor if @adaptor
 
-      database_name = Volt.config.db_driver
-      adaptor_name = database_name.camelize + 'AdaptorServer'
+        database_name = Volt.config.db_driver
+        adaptor_name = database_name.camelize + 'AdaptorServer'
 
-      root = Volt::DataStore
-      if root.const_defined?(adaptor_name)
-        adaptor_name = root.const_get(adaptor_name)
-        @adaptor = adaptor_name.new
-      else
-        raise "#{database_name} is not a supported database, you might be missing a volt-#{database_name} gem"
+        root = Volt::DataStore
+        if root.const_defined?(adaptor_name)
+          adaptor_name = root.const_get(adaptor_name)
+          @adaptor = adaptor_name.new
+        else
+          raise "#{database_name} is not a supported database, you might be missing a volt-#{database_name} gem"
+        end
+
+        @adaptor
       end
-
-      @adaptor
     end
 
     def self.adaptor_client

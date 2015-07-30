@@ -114,7 +114,12 @@ module Volt
       def peers
         instances = @volt_app.store._active_volt_instances
 
-        instances.where(server_id: {'$ne' => @server_id}).all.sync
+        if Volt.config.db_driver == 'postgres'
+          query = Sequel.~(server_id: @server_id)
+        else
+          query = {server_id: {'$ne' => @server_id}}
+        end
+        instances.where(query).all.sync
       end
 
       def connect_to_peers

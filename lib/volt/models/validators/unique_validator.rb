@@ -8,7 +8,11 @@ module Volt
           query = {}
           # Check to see if any other documents have this value.
           query[field_name.to_s] = value
-          query['id'] = { '$ne' => model.id }
+          if Volt.config.public.db_driver == 'postgres'
+            query = Sequel.&(query, Sequel.~(id: model.id))
+          else
+            query['id'] = { '$ne' => model.id }
+          end
 
           # Check if the value is taken
           # TODO: need a way to handle scope for unique

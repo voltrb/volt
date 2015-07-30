@@ -319,7 +319,7 @@ module Volt
 
         # Show the :id first, then sort the rest of the attributes
         id = attrs.delete(:id)
-        id = id[0..3] + '..' + id[-4..-1] if id
+        id = id[0..3] + '..' + id[-4..-1] if id && id.size > 5
 
         attrs = attrs.sort
         attrs.insert(0, [:id, id]) if id

@@ -2,7 +2,15 @@ require 'bcrypt' unless RUBY_PLATFORM == 'opal'
 
 module Volt
   class User < Model
-    field :password
+    field :hashed_password
+
+    def password=(val)
+      set(:password, val)
+    end
+
+    def password
+      get(:password)
+    end
 
     # returns login field name depending on config settings
     def self.login_field
@@ -44,10 +52,11 @@ module Volt
 
         if password.present?
           # Clear the password
-          set('password', nil)
+          # set('password', nil)
 
           # Set the hashed_password field instead
           set('hashed_password', BCrypt::Password.create(password))
+          delete('password')
         end
       end
     end

@@ -1,5 +1,6 @@
-# The query tracker runs queries and then tracks the changes
-# that take place.
+# The query tracker runs queries on the server and then sends update diffs
+# as the queries change to the QueryListeners running either on the server
+# or client.
 class QueryTracker
   attr_accessor :results
 
