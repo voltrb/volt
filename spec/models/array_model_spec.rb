@@ -37,4 +37,9 @@ describe Volt::ArrayModel do
     expect(array.flatten.size).to eq(6)
     expect(array.to_a.flatten.size).to eq(6)
   end
+
+  it "should return nil for last on empty array" do
+    array = Volt::ArrayModel.new([])
+    expect( array.last ).to be nil
+  end
 end
