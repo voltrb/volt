@@ -12,6 +12,7 @@ module Volt
 
       @collection = collection
       @query      = query
+      @data       = []
 
       @listening = false
     end
@@ -23,6 +24,9 @@ module Volt
       QueryTasks.add_listener(@collection, @query).then do |ret|
         results, errors = ret
 
+        # Store the data
+        @data = results
+
         # When the initial data comes back, add it into the stores.
         @stores.dup.each do |store|
           # Clear if there are existing items
@@ -30,7 +34,7 @@ module Volt
             store.model.clear if store.model.size > 0
           end
 
-          results.each do |index, data|
+          results.each_with_index do |data, index|
             store.add(index, data)
           end
 
@@ -92,6 +96,10 @@ module Volt
           QueryTasks.remove_listener(@collection, @query)
         end
       end
+    end
+
+    def updated(diff)
+      puts "UPDATED: #{diff.inspect}"
     end
 
     def added(index, data)

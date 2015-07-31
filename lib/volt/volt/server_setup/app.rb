@@ -10,6 +10,8 @@ end
 module Volt
   module ServerSetup
     module App
+      attr_reader :live_query_pool, :query_subscription_pool,
+                  :channel_query_subscriptions
       def setup_paths
         # Load component paths
         @component_paths = ComponentPaths.new(@app_path)
@@ -76,11 +78,19 @@ module Volt
         if RUBY_PLATFORM != 'opal'
           # The load path isn't setup at the top of app.rb, so we wait to require
           require 'volt/tasks/live_query/live_query_pool'
+          require 'volt/tasks/live_query/query_subscription_pool'
+
 
           # Setup LiveQueryPool for the app
+          @query_subscription_pool.each(:remove) if @query_subscription_pool
           @database = Volt::DataStore.fetch
           @live_query_pool = LiveQueryPool.new(@database, self)
-          @channel_live_queries = {}
+          @query_subscription_pool = QuerySubscriptionPool.new(self)
+
+          # The channel_query_subscriptions, keeps a list of query subscriptions
+          # for each channel.  We store this here instead of on the channel
+          # because in ForkingServer, channel is a DrbObject instance.
+          @channel_query_subscriptions = {}
         end
       end
 

@@ -24,7 +24,7 @@ module Volt
               promise = save_to.create(attributes)
             else
               # We have a saved model
-              promise = save_to.assign_attributes(attributes)
+              promise = save_to.assign_attributes(attributes, false, true)
             end
 
             result = promise.then do |new_model|

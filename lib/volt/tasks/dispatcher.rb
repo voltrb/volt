@@ -7,6 +7,8 @@ require 'timeout'
 module Volt
   # The task dispatcher is responsible for taking incoming messages
   # from the socket channel and dispatching them to the proper handler.
+  #
+  # On the forking server, this runs in the child.
   class Dispatcher
     # When we pass the dispatcher over DRb, don't send a copy, just proxy.
     include DRb::DRbUndumped

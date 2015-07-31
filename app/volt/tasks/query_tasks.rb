@@ -1,71 +1,61 @@
+# QueryTasks is responsible for passing back the data from a query.  It will
+# be run both from the client side and server side.  From the client it passed
+# data with websockets.  From the server it uses the stub channel to pass data
+# directly.
+
 class QueryTasks < Volt::Task
   def add_listener(collection, query)
-    live_query = @volt_app.live_query_pool.lookup(collection, query)
-    track_channel_in_live_query(live_query)
-
     if @channel
       # For requests from the client (with @channel), we track the channel
       # so we can send the results back.  Server side requests don't stay live,
       # they simply return to :dirty once the query is issued.
       @channel.user_id = Volt.current_user_id
-
-      # live_query.add_channel(@channel)
     end
-    live_query.add_channel(@channel)
+
+    query_subscription = subscription(collection, query)
 
     errors = {}
 
     begin
       # Get the initial data
-      initial_data = live_query.initial_data
+      initial_data = query_subscription.initial_data
     rescue => exception
       # Capture and pass up any exceptions
       error = { error: exception.message }
-    end
-
-    if initial_data
-      # Only send the filtered attributes for this user
-      initial_data.map! do |data|
-        [data[0], live_query.model_for_filter(data[1]).filtered_attributes.sync]
-      end
     end
 
     [initial_data, error]
   end
 
   def initial_data
-    data = live_query.initial_data
-    data[:id] = data[:id].to_s
-
-    data
+    live_query.initial_data(@channel)
   end
 
   # Remove a listening channel, the LiveQuery will automatically remove
   # itsself from the pool when there are no channels.
   def remove_listener(collection, query)
-    live_query = @volt_app.live_query_pool.lookup(collection, query)
-    live_query.remove_channel(@channel)
+    # TODO: Need LiveQueryPool to be counting, and we need to remove it
+    query_sub = subscription(collection, query)
+    query_sub.remove
   end
 
-  # Removes a channel from all associated live queries
+  # Remove all QuerySubscriptions for a channel
   def close!
-    live_queries = @volt_app.channel_live_queries[@channel]
+    query_subscriptions = @volt_app.channel_query_subscriptions[@channel]
 
-    if live_queries
-      live_queries.each do |live_query|
-        live_query.remove_channel(@channel)
-      end
+    if query_subscriptions
+      query_subscriptions.keys.reverse.each(&:remove)
     end
-
-    @volt_app.channel_live_queries.delete(@channel)
   end
 
   private
 
-  # Tracks that this channel will be notified from the live query.
-  def track_channel_in_live_query(live_query)
-    channel_live_queries = @volt_app.channel_live_queries
-    channel_live_queries[@channel] ||= []
-    channel_live_queries[@channel] << live_query
+  def subscription(collection, query)
+    # Lookup or create the live query
+    live_query = @volt_app.live_query_pool.lookup(collection, query)
+
+    # Find or create a QuerySubscription for this channel
+    live_query.query_subscription_for_channel(@channel)
   end
+
 end

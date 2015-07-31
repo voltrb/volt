@@ -47,9 +47,11 @@ module Volt
       previous_id = Thread.current['with_user_id']
       Thread.current['with_user_id'] = user_id
 
-      yield
+      result = yield
 
       Thread.current['with_user_id'] = previous_id
+
+      result
     end
 
     unless RUBY_PLATFORM == 'opal'

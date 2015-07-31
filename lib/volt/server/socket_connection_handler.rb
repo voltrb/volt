@@ -1,6 +1,12 @@
 require 'volt/utils/ejson'
 require File.join(File.dirname(__FILE__), '../../../app/volt/tasks/query_tasks')
 
+# SocketConnectionHandler is often referred to as "channel" when on the server
+# side.
+#
+# NOTE: On the forking server, the "channel" is actually a DRb reference back
+# to the main process.  So we should try to put as few objects as possible
+# in here.
 module Volt
   class SocketConnectionHandler
     # Create one instance of the dispatcher
@@ -13,8 +19,9 @@ module Volt
     def initialize(session, *args)
       @session = session
 
-      @@channels ||= []
-      @@channels << self
+      # Keep a list of all channels
+      @@all_channels ||= []
+      @@all_channels << self
     end
 
     def self.dispatcher=(val)
@@ -27,8 +34,8 @@ module Volt
 
     # Sends a message to all, optionally skipping a users channel
     def self.send_message_all(skip_channel = nil, *args)
-      return unless defined?(@@channels)
-      @@channels.each do |channel|
+      return unless defined?(@@all_channels)
+      @@all_channels.each do |channel|
         next if skip_channel && channel == skip_channel
         channel.send_message(*args)
       end
@@ -54,6 +61,7 @@ module Volt
       end
     end
 
+
     def send_message(*args)
       str = EJSON.stringify([*args])
 
@@ -72,7 +80,7 @@ module Volt
       unless @closed
         @closed = true
         # Remove ourself from the available channels
-        @@channels.delete(self)
+        @@all_channels.delete(self)
 
         begin
           @@dispatcher.close_channel(self)

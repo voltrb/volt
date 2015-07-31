@@ -47,6 +47,7 @@ class StoreTasks < Volt::Task
     promise.then do |model|
       Thread.current['in_channel'] = @channel
       save_promise = model.save!.then do |result|
+
         next nil
       end.fail do |err|
         # An error object, convert to hash

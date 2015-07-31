@@ -42,9 +42,7 @@ module Volt
       include Volt::ServerSetup::App
     end
 
-    attr_reader :component_paths, :router, :live_query_pool,
-                :channel_live_queries, :app_path, :database, :message_bus,
-                :middleware, :browser
+    attr_reader :component_paths, :router, :app_path, :database, :message_bus, :middleware, :browser
     attr_accessor :sprockets, :opal_files
 
     def initialize(app_path=nil)

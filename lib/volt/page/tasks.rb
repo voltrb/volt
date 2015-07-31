@@ -30,8 +30,8 @@ module Volt
 
     def received_message(name, promise_id, *args)
       case name
-        when 'added', 'removed', 'updated', 'changed'
-          notify_query(name, *args)
+        when 'updated'
+          notify_updated(*args)
         when 'response'
           response(promise_id, *args)
         when 'reload'
@@ -58,9 +58,9 @@ module Volt
 
     # Called when the backend sends a notification to change the results of
     # a query.
-    def notify_query(method_name, collection, query, *args)
+    def notify_updated(collection, query, *args)
       query_obj = Persistors::ArrayStore.query_pool.lookup(collection, query)
-      query_obj.send(method_name, *args)
+      query_obj.updated(*args)
     end
 
     def reload
