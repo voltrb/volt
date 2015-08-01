@@ -323,7 +323,7 @@ module Volt
         end
 
         # Set the new path and the persistor.
-        model.options = @options.merge(path: @options[:path] + [:[]])
+        model.options = @options.merge(parent: self, path: @options[:path] + [:[]])
       else
         model = wrap_values([model]).first
       end

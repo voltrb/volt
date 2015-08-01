@@ -50,4 +50,17 @@ describe Volt::ArrayModel do
       end
     end
   end
+  context "appending a model" do
+    it "sets the parent to self" do
+      item = Volt::Model.new
+      array = Volt::ArrayModel.new([], { path: [:items],  parent: double("StoreRoot") })
+      array << item
+      expect(item.parent).to eq(array)
+
+      sub = Volt::Model.new
+      item._sub_items << sub
+      expect(sub.parent).to eq(item._sub_items)
+    end
+  end
+
 end
