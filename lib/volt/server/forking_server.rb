@@ -257,8 +257,14 @@ module Volt
 
     def start_change_listener
       sync_mod_time
+
+      options = {}
+      if ENV['POLL_FS']
+        options[:force_polling] = true
+      end
+
       # Setup the listeners for file changes
-      @listener = Listen.to("#{@server.app_path}/") do |modified, added, removed|
+      @listener = Listen.to("#{@server.app_path}/", options) do |modified, added, removed|
         Thread.new do
           # Run the reload in a new thread
           reload(modified + added + removed)
