@@ -37,14 +37,17 @@ module FieldHelpers
     # field lets you declare your fields instead of using the underscore syntax.
     # An optional class restriction can be passed in.
     def field(name, klass = nil, options = {})
+      name = name.to_sym
       if klass && !VALID_FIELD_CLASSES.include?(klass)
         klass_names = VALID_FIELD_CLASSES.map(&:to_s).join(', ')
         msg = "valid field types is currently limited to #{klass_names}"
         fail FieldHelpers::InvalidFieldClass, msg
       end
 
-      self.fields_data ||= {}
-      self.fields_data[name] = [klass, options]
+      # defined in associations.rb
+      check_name_in_use(name)
+
+      self.fields[name] = [klass, options]
 
       if klass
         # Add type validation, execpt for String, since anything can be a string.
@@ -72,7 +75,8 @@ module FieldHelpers
   end
 
   def self.included(base)
-    base.class_attribute :fields_data
+    base.class_attribute :fields
+    base.fields = {}
     base.send :extend, ClassMethods
   end
 end

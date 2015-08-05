@@ -37,4 +37,12 @@ describe Volt::ArrayModel do
     expect(array.flatten.size).to eq(6)
     expect(array.to_a.flatten.size).to eq(6)
   end
+
+  it 'should not equal another array model with the same content' do
+    a = Volt::ArrayModel.new([])
+    b = Volt::ArrayModel.new([])
+
+    expect(a == b).to eq(false)
+    expect(a == a).to eq(true)
+  end
 end

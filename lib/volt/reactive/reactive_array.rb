@@ -24,10 +24,6 @@ module Volt
       @array.send(method_name, *args, &block)
     end
 
-    def ==(*args)
-      @array.==(*args)
-    end
-
     # At the moment, each just passes through.
     def each(&block)
       @array.each(&block)

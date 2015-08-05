@@ -53,7 +53,9 @@ else
           db_name:   (ENV['DB_NAME'] || (app_name + '_' + Volt.env.to_s)).gsub('.', '_'),
           db_host:   ENV['DB_HOST'] || 'localhost',
           db_port:   (ENV['DB_PORT'] || 27_017).to_i,
-          db_driver: ENV['DB_DRIVER'] || 'mongo',
+          db_driver: ENV['DB_DRIVER'] || 'postgres',
+          ## TEMP
+          db_uri: "postgres://ryanstout:@localhost:5432/#{(ENV['DB_NAME'] || (app_name + '_' + Volt.env.to_s)).gsub('.', '_')}",
 
           # a list of components which should be included in all components
           default_components: ['volt'],

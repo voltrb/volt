@@ -4,6 +4,7 @@ require 'volt/extra_core/array'
 class TestClassAttributes
   class_attribute :some_data
   class_attribute :attr2
+  class_attribute :dup_test
 end
 
 class TestSubClassAttributes < TestClassAttributes
@@ -40,5 +41,14 @@ describe 'extra_core class addons' do
     expect(TestClassAttributes.attr2).to eq(1)
     expect(TestSubClassAttributes.attr2).to eq(2)
     expect(TestSubClassAttributes2.attr2).to eq(1)
+  end
+
+  it 'should dup the class_attribute when you read it from a child class' do
+    TestClassAttributes.dup_test = {one: 1}
+
+    TestSubClassAttributes.dup_test[:two] = 2
+
+    expect(TestClassAttributes.dup_test).to eq({one: 1})
+    expect(TestSubClassAttributes.dup_test).to eq({one: 1, two: 2})
   end
 end

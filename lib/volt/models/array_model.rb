@@ -322,13 +322,15 @@ module Volt
         model = wrap_values([model]).first
       end
 
-
       if model.is_a?(Model)
         promise = model.can_create?.then do |can_create|
           unless can_create
             fail "permissions did not allow create for #{model.inspect}"
           end
         end.then do
+          if (assoc = options[:associate])
+            parent.associate(assoc, model)
+          end
 
           # Add it to the array and trigger any watches or on events.
           reactive_array_append(model)
@@ -339,6 +341,7 @@ module Volt
             # Validate and save
             model.run_changed
           end.then do
+
             # Mark the model as not new
             model.instance_variable_set('@new', false)
 
@@ -346,6 +349,7 @@ module Volt
             model.change_state_to(:loaded_state, :loaded)
 
           end.fail do |err|
+            puts "ERR: #{err.inspect}"
             # remove from the collection because it failed to save on the server
             # we don't need to call delete on the server.
             index = @array.index(model)

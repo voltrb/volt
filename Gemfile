@@ -3,7 +3,8 @@ source 'http://rubygems.org'
 gemspec
 
 # volt-mongo gem for testing
-gem 'volt-mongo'
+# gem 'volt-mongo'
+gem 'volt-postgres', path: '/Users/ryanstout/Sites/volt/apps/volt-postgres'
 
 # Use rbnacl for message bus encrpytion
 # (optional, if you don't need encryption, disable in app.rb and remove)

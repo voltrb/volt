@@ -30,6 +30,7 @@ describe Volt::Associations do
       it 'should associate via belongs_to' do
         address = store.addresses.first.sync
 
+        # binding.pry
         expect(address.person_id).to eq(@person.id)
         expect(address.person.sync.id).to eq(@person.id)
       end
@@ -90,5 +91,51 @@ describe Volt::Associations do
       expect(bob.addresses[0].sync.person_id).to eq(bob.id)
       expect(bob.id).to_not eq(nil)
     end
+
+    it 'should raise an exception when defining an association with an already used name' do
+      expect do
+        Class.new(Volt::Model) do
+          has_many :ones
+          has_many :ones
+        end
+      end.to raise_error(/An association is already defined for `ones`/)
+    end
+
+    it 'should track association data' do
+      expect(AddressBelongToOption.associations[:someone]).to eq(
+        {
+          :type=>:belongs_to,
+          :collection=>:people,
+          :foreign_key=>:id,
+          :local_key=>:some_weird_id,
+          :to_many=>false
+        }
+      )
+
+      expect(Person.associations[:addresses]).to eq(
+        {
+          :type=>:has_many,
+          :to_many=>true,
+          :collection=>:addresses,
+          :foreign_key=>:person_id,
+          :local_key=>:id
+        })
+
+      expect(Address.associations[:zip_info]).to eq({
+        :type=>:has_one,
+        :to_many=>false,
+        :collection=>:zip_infos,
+        :foreign_key=>:address_id,
+        :local_key=>:id
+      })
+    end
+
+    # it 'should let you assign belongs_to' do
+    #   bob = ::Person.new
+
+    #   address = ::Address.new
+
+    #   expect(address.person).to eq(nil)
+    # end
   end
 end

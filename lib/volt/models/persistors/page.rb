@@ -8,7 +8,7 @@ module Volt
       end
 
       def where(query)
-        @model.select do |model|
+        result = @model.select do |model|
           # Filter through each part of the query and make sure it matches.
           query.each_pair do |key, value|
             next false unless model.get(key) == value
@@ -16,6 +16,9 @@ module Volt
 
           true
         end
+
+        options = @model.options.merge(parent: @model, path: @model.path)
+        @model.new_array_model(result, options)
       end
     end
   end

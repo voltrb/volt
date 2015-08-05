@@ -1,3 +1,5 @@
+require 'volt/reactive/eventable'
+
 # When you get the root of a collection (.store, .page, etc...), it gives you
 # back a unique class depending on the collection.  This allows you to add
 # things to the root easily.
@@ -19,6 +21,8 @@ end
 
 module Volt
   class RootModels
+    extend Eventable
+
     class_attribute :model_classes
     self.model_classes = []
 
@@ -31,6 +35,8 @@ module Volt
       BaseRootModel.send(:define_method, method_name) do
         get(method_name)
       end
+
+      trigger!('model_created', klass)
     end
   end
 end

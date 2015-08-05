@@ -5,4 +5,9 @@ class Hash
       keys.include?(key)
     end
   end
+
+  # multifetch - returns an array of values for the arg keys
+  def mfetch(*args)
+    args.map {|k| self[k] }
+  end
 end

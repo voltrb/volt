@@ -288,6 +288,7 @@ module Volt
         opts = @options.merge(parent: self, path: path + [method_name])
 
         if method_name.plural?
+          opts[:associate] = self.class.collection_name
           return new_array_model([], opts)
         else
           return new_model({}, opts)
@@ -352,6 +353,11 @@ module Volt
 
     def to_json
       to_h.to_json
+    end
+
+    # return the collection name for this model class
+    def self.collection_name
+      name.underscore.pluralize.to_sym
     end
 
     private

@@ -77,12 +77,12 @@ module Volt
       def reset_query_pool!
         if RUBY_PLATFORM != 'opal'
           # The load path isn't setup at the top of app.rb, so we wait to require
-          require 'volt/tasks/live_query/live_query_pool'
-          require 'volt/tasks/live_query/query_subscription_pool'
+          require 'volt/queries/live_query_pool'
+          require 'volt/queries/query_subscription_pool'
 
 
           # Setup LiveQueryPool for the app
-          @query_subscription_pool.each(:remove) if @query_subscription_pool
+          @query_subscription_pool.clear if @query_subscription_pool
           @database = Volt::DataStore.fetch
           @live_query_pool = LiveQueryPool.new(@database, self)
           @query_subscription_pool = QuerySubscriptionPool.new(self)

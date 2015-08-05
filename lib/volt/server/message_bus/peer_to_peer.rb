@@ -191,7 +191,7 @@ module Volt
         if peer
           # Found the peer, retry if it has reported in in the last 2
           # minutes.
-          if peer._time > (Time.now.to_i - DEAD_TIME)
+          if peer._time.to_i > (Time.now.to_i - DEAD_TIME)
             # Peer reported in less than 2 minutes ago
             return true
           else

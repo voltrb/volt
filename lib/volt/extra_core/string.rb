@@ -16,7 +16,9 @@ class String
   # Returns the underscore version of a string.  If it is already underscore, it should
   # return the same string.
   def underscore
-    gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z])/, '\1_\2').downcase
+    gsub('::', '/')
+    .gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z])/, '\1_\2')
+    .downcase
   end
 
   def dasherize
