@@ -33,7 +33,9 @@ module Volt
       }
 
       rack_app.use QuietCommonLogger
-      rack_app.use Rack::ShowExceptions
+      if Volt.env.development? || Volt.env.test?
+        rack_app.use Rack::ShowExceptions
+      end
     end
 
     # Setup the middleware that we need to wait for components to boot before we
