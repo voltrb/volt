@@ -14,10 +14,12 @@ module Volt
 
         that = self
 
+        document_handler = proc do |*args|
+          handle(event, *args)
+        end
+
         `
-        $('body').on(event, function(e) {
-          that.$handle(event, e, e.target || e.originalEvent.target);
-        });
+        $('body').on(event, #{document_handler});
       `
 
       end
@@ -26,8 +28,8 @@ module Volt
       @events[event][binding.binding_name][binding.object_id] = handler
     end
 
-    def handle(event_name, event, target)
-      element = `$(#{target})`
+    def handle(event_name, event, *args)
+      element = `$(event.target || event.originalEvent.target)`
 
       loop do
         # Lookup the handler, make sure to not assume the group
@@ -43,7 +45,7 @@ module Volt
         if handlers
           handlers.values.each do |handler|
             # Call each handler for this object
-            handler.call(event)
+            handler.call(event, *args)
           end
         end
 

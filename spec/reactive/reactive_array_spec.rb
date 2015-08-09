@@ -38,6 +38,52 @@ describe Volt::ReactiveArray do
       expect(values).to eq([nil, 4])
     end
 
+    describe ".last" do
+      let(:array) { Volt::ReactiveArray.new([1,2,3]) }
+
+      it 'should trigger changed on .last when appending or inserting' do
+        values = []
+        -> { values << array.last }.watch!
+
+        expect(values).to eq([3])
+
+        array << 4
+        Volt::Computation.flush!
+        expect(values).to eq([3,4])
+
+        array.insert(1,2)
+        Volt::Computation.flush!
+        expect(values).to eq([3,4,4])
+      end
+
+      it 'should trigger changed on .last when the last value is changed' do
+        values = []
+        -> { values << array.last }.watch!
+        expect(values).to eq([3])
+
+        array[2] = 5
+        Volt::Computation.flush!
+        expect(values).to eq([3,5])
+      end
+
+      it 'should not trigger changed on .last when a value other than last changes' do
+        values = []
+        -> { values << array.last }.watch!
+        expect(values).to eq([3])
+
+        array[1] = 20
+        expect(values).to eq([3])
+      end
+
+      it 'should not raise an error on a negative lookup on an empty array' do
+        array = Volt::ArrayModel.new([])
+
+        expect do
+          array[-1]
+        end.not_to raise_error
+      end
+    end
+
     it 'should trigger changes for each cell after index after insert' do
       a = Volt::ReactiveArray.new([1, 2, 3])
 

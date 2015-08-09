@@ -89,10 +89,27 @@ module Volt
       end
     end
 
+    def last
+      self[-1]
+    end
+
     # TODO: Handle a range
     def [](index)
       # Handle a negative index, depend on size
-      index = @array.size + index if index < 0
+      if index < 0
+        # Depend on size by calling .size, since we are looking up reverse
+        # indexes
+
+        # cache size lookup
+        size = self.size
+
+        index = size + index
+
+        # In this case, we're looking back past 0 (going backwards), so we get
+        # nil.  Since we're depending on @size_dep (because we called .size),
+        # it will invalidate when the size changes.
+        return nil if index < 0
+      end
 
       # Get or create the dependency
       dep   = (@array_deps[index] ||= Dependency.new)

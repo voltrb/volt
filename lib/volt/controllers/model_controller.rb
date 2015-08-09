@@ -76,6 +76,24 @@ module Volt
       end
     end
 
+    def trigger(event, *args)
+      # Trigger on the current controller if an e- was setup on the component.
+      component_event = attrs.send(:"e_#{event}")
+
+      if component_event
+        # Add a nil arg for the event, trim to arity
+        args2 = (args + [nil])[0...component_event.arity]
+        component_event.call(*args2)
+      end
+
+      args.unshift(self)
+      # Trigger via jquery, so it bubbles up through the DOM
+      `$(#{first_element}).trigger(#{event}, #{args});`
+
+      # return nil, so we return a ruby object
+      nil
+    end
+
     def self.model(val)
       self.default_model = val
     end

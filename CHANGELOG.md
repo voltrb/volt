@@ -7,6 +7,8 @@
 - Page load performance was improved, and more of sprockets was used for component loading.
 - You can now return promises in permissions blocks.  Also, can_read?, can_create?, and .can_delete?
 - Anything in /public is now served via Rack::Static in the default middleware stack.  (So you can put user uploaded images in there)
+- You can now use _ or - in volt tag names and attributes.  (We're moving to using dash ( - ) as the standard in html)
+- You can now trigger events on controllers rendered as tags.  The events will bubble up through the DOM and can be caught by any e- bindings.  See the docs for more information.
 
 ## 0.9.4
 ### Lingo Change
@@ -34,6 +36,7 @@ the base collections will now be called "Repositories" or "Repo's" for short.  T
 - fixed issue with local_store not persisting in some cases
 - runners now block until messages have propigated to the message bus and updates have been pushed.
 - upgraded some dependency gems to fix a conflict
+- fixed bug with .last on ReactiveArray (#259)
 
 ## 0.9.3
 [0.9.3 Update Blog Post](http://blog.voltframework.com/post/121128931859/0-9-3-stuff-you-asked-for)

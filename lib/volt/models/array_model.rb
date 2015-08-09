@@ -306,6 +306,11 @@ module Volt
       name.pluralize
     end
 
+    alias_method :reactive_count, :count
+    def count(&block)
+      all.reactive_count(&block)
+    end
+
     private
     # called form <<, append, and create.  If a hash is passed in, it converts
     # it to a model.  Then it takes the model and inserts it into the ArrayModel

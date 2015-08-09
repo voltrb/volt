@@ -5,6 +5,9 @@ module Volt
   class JSEvent
     attr_reader :js_event
 
+    # The Volt controller that dispatched the event.
+    attr_accessor :controller
+
     def initialize(js_event)
       @js_event = js_event
     end
@@ -43,29 +46,50 @@ module Volt
       end
 
 
-      handler = proc do |js_event|
+      handler = proc do |js_event, *args|
         event = JSEvent.new(js_event)
         event.prevent_default! if event_name == 'submit'
 
-        # Call the proc the user setup for the event in context,
-        # pass in the wrapper for the JS event
-        result = @context.instance_exec(event, &call_proc)
+        # When the event is triggered via ```trigger(..)``` in a controller,
+        # it will pass its self as the first argument.  We set that to
+        # ```controller``` on the event, so it can be easily accessed.
+        if args[0].is_a?(Volt::ModelController)
+          args = args.dup
+          event.controller = args.shift
+        end
 
-        # The following doesn't work due to the promise already chained issue.
-        # # Ignore native objects.
-        # result = nil unless BasicObject === result
+        args << event
 
-        # # if the result is a promise, log an exception if it failed and wasn't
-        # # handled
-        # if result.is_a?(Promise) && !result.next
-        #   result.fail do |err|
-        #     Volt.logger.error("EventBinding Error: promise returned from event binding #{@event_name} was rejected")
-        #     Volt.logger.error(err)
-        #   end
-        # end
-
+        self.class.call_handler_proc(@context, call_proc, event, args)
       end
+
       @listener = browser.events.add(@event_name, self, handler)
+    end
+
+    def self.call_handler_proc(context, call_proc, event, args)
+      # When the EventBinding is compiled, it converts a passed in string to
+      # get a Method:
+      #
+      # Example:
+      #   <a e-awesome="some_method">...</a>
+      #
+      # The call_proc will be passed in as:  Proc.new { method(:some_method) }
+      #
+      # So first we call the call_proc, then that returns a method (or proc),
+      # which we call passing in the arguments based on the arity.
+      #
+      # If the e- binding has arguments passed to it, we just use those.
+      result = context.instance_exec(event, &call_proc)
+      # Trim args to match arity
+
+      # The proc returned a
+      if result.is_a?(Method)
+        args = args[0...result.arity]
+
+        result.call(*args)
+      end
+
+      result
     end
 
     # Remove the event binding
