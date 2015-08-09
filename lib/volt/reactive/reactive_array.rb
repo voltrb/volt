@@ -106,6 +106,9 @@ module Volt
         index = size + index
       end
 
+      # index may still be too small, @array would deal with that, but the dep assign doesn't
+      return nil if index < 0
+
       # Get or create the dependency
       dep   = (@array_deps[index] ||= Dependency.new)
 
