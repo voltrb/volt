@@ -13,6 +13,9 @@ client '/html_safe', action: 'html_safe'
 client '/missing', action: 'missing'
 client '/require_test', action: 'require_test'
 
+# Events
+client '/events', component: 'main', controller: 'events', action: 'index'
+
 # Signup/login routes
 client '/signup', component: 'user_templates', controller: 'signup'
 client '/login', component: 'user_templates', controller: 'login'

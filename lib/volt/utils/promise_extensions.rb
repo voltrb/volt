@@ -64,7 +64,7 @@ class Promise
 
   # When testing with rspec, add in a custom exception! method that doesn't
   # swallow ExpectationNotMetError's.
-  if defined?(RSpec::Expectations::ExpectationNotMetError)
+  if defined?(RSpec) && defined?(RSpec::Expectations::ExpectationNotMetError)
     def exception!(error)
       if error.is_a?(RSpec::Expectations::ExpectationNotMetError)
         raise error

@@ -28,6 +28,7 @@ describe Volt::ArrayModel do
     expect(array_model.index(2)).to eq(1)
   end
 
+
   it 'should flatten' do
     array = Volt::ArrayModel.new([])
 

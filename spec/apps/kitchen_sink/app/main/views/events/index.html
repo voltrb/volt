@@ -1,0 +1,30 @@
+<:Title>
+  Events
+
+<:Body>
+  <h1>Events</h1>
+
+  <div e-some_event="some_event">
+    <:some-event-button />
+  </div>
+
+
+  <:other-event-button e-other-event="other_event" />
+
+
+  {{ if ran_some_event }}
+    ran some_event
+  {{ end }}
+
+  {{ if ran_other_event }}
+    ran other_event
+  {{ end }}
+
+
+
+
+<:SomeEventButton>
+  <button e-click="trig_some_event">Run Some Event</button>
+
+<:OtherEventButton>
+  <button e-click="trig_other_event">Run Other Event</button>

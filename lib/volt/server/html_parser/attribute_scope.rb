@@ -1,6 +1,30 @@
 module Volt
   # Included into ViewScope to provide processing for attributes
   module AttributeScope
+    module ClassMethods
+      def methodize_string(str)
+        # Convert the string passed in to the binding so it returns a ruby Method
+        # instance
+        parts = str.split('.')
+
+        end_call = parts.last
+
+        # If no method(args) is passed, we assume they want to convert the method
+        # to a Method, to be called with *args (from any trigger's), then event.
+        if end_call !~ /[a-z0-9!?]+\(/
+          parts[-1] = "method(:#{end_call})"
+
+          str = parts.join('.')
+        end
+
+        str
+      end
+    end
+
+    def self.included(base)
+      base.send :extend, ClassMethods
+    end
+
     # Take the attributes and create any bindings
     def process_attributes(tag_name, attributes)
       new_attributes = attributes.dup
@@ -28,6 +52,8 @@ module Volt
 
       # Remove the e- attribute
       attributes.delete(name)
+
+      value = self.class.methodize_string(value)
 
       save_binding(id, "lambda { |__p, __t, __c, __id| Volt::EventBinding.new(__p, __t, __c, __id, #{event.inspect}, Proc.new {|event| #{value} })}")
     end
