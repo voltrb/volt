@@ -103,7 +103,16 @@ module Volt
       if index < 0
         # Depend on size by calling .size, since we are looking up reverse
         # indexes
+
+        # cache size lookup
+        size = self.size
+
         index = size + index
+
+        # In this case, we're looking back past 0 (going backwards), so we get
+        # nil.  Since we're depending on @size_dep (because we called .size),
+        # it will invalidate when the size changes.
+        return nil if index < 0
       end
 
       # Get or create the dependency

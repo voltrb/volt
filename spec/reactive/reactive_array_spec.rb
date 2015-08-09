@@ -74,6 +74,14 @@ describe Volt::ReactiveArray do
         array[1] = 20
         expect(values).to eq([3])
       end
+
+      it 'should not raise an error on a negative lookup on an empty array' do
+        array = Volt::ArrayModel.new([])
+
+        expect do
+          array[-1]
+        end.not_to raise_error
+      end
     end
 
     it 'should trigger changes for each cell after index after insert' do
