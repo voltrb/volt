@@ -172,7 +172,9 @@ module Volt
             # aren't imported by default:
             #  http://sass-lang.com/guide
             css_files += Dir["#{path}/**/[^_]*.{css,scss}"].sort.map do |folder|
-              '/assets' + folder[path.size..-1].gsub(/[.]scss$/, '')
+              css_path = '/assets' + folder[path.size..-1].gsub(/[.]scss$/, '')
+              css_path += '.css' unless css_path =~ /[.]css$/
+              css_path
             end
           when :css_file
             css_files << path
