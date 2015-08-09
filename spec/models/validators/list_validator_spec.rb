@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe Volt::ListValidator do
-  subject { Volt::ListValidator.validate(*params) }
-  let(:params) { [model, field_name, options] }
+  subject { Volt::ListValidator.validate(*use_params) }
+  let(:use_params) { [model, field_name, options] }
 
   let(:model) { Volt::Model.new name: name }
   let(:field_name) { :name }
