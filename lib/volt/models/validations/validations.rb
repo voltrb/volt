@@ -42,12 +42,15 @@ module Volt
 
           if run_in_actions.size == 0 || run_in_actions.include?(action)
             @instance_validations = {}
+            @instance_custom_validations = []
 
             instance_exec(action, &block)
 
             result = run_validations(@instance_validations)
+            result.merge!(run_custom_validations(@instance_custom_validations))
 
             @instance_validations = nil
+            @instance_custom_validations = nil
 
             result
           end
@@ -55,9 +58,17 @@ module Volt
       end
     end
 
-    def validate(field_name = nil, options = nil)
-      @instance_validations[field_name] ||= {}
-      @instance_validations[field_name].merge!(options)
+    def validate(field_name = nil, options = nil, &block)
+      if block
+        if field_name || options
+          fail 'validate should be passed a field name and options or a block, not both.'
+        end
+        @instance_custom_validations << block
+      else
+        @instance_validations[field_name] ||= {}
+        @instance_validations[field_name].merge!(options)
+      end
+      #puts "ivs in instance vlaidate: #{@instance_validations}"
     end
 
     def self.included(base)
@@ -200,10 +211,12 @@ module Volt
       promise
     end
 
-    def run_custom_validations
+    def run_custom_validations(custom_validations = nil)
+      # Default to running the class level custom validations
+      custom_validations ||= self.class.custom_validations
+
       promise = Promise.new.resolve(nil)
-      # Call all of the custom validations
-      custom_validations = self.class.custom_validations
+
       if custom_validations
         custom_validations.each do |custom_validation|
           # Add to the promise chain

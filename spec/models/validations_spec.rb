@@ -165,7 +165,7 @@ describe Volt::Model do
     expect(model._name).to eq('Jimmy')
   end
 
-  describe 'custom validations', focus: true do
+  describe 'custom validations' do
     let(:model) { test_model_with_custom_validation.new }
     let(:test_model_with_custom_validation) do
       Class.new(Volt::Model) do
