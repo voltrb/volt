@@ -1,4 +1,5 @@
 require 'uri'
+require 'volt/server'
 
 # Used to get a list of the assets and other included components
 # from the dependencies.rb files.
@@ -187,10 +188,10 @@ module Volt
     # #javascript is only used on the server
     unless RUBY_PLATFORM == 'opal'
       # Parses the javascript tags to reutrn the following:
-      # [[:url, '/somefile.js'], [:body, 'var inlinejs = true;']]
+      # [[:src, '/somefile.js'], [:body, 'var inlinejs = true;']]
       def javascript(volt_app)
         javascript_tags(volt_app)
-        .scan(/[<]script([^>]*)[>](.*?)[<]\/script[^>]*[>]/)
+        .scan(/[<]script([^>]*)[>](.*?)[<]\/script[^>]*[>]/m)
         .map do |attrs, body|
           src = attrs.match(/[\s|$]src\s*[=]\s*["']([^"']+?)["']/)
 

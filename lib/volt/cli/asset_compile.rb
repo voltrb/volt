@@ -23,28 +23,67 @@ module Volt
       @root_path ||= Dir.pwd
       Volt.root  = @root_path
 
-      volt_app = Volt.boot(@root_path)
+      @volt_app = Volt.boot(@root_path)
 
       require 'volt/server/rack/component_paths'
       require 'volt/server/rack/component_code'
 
       @app_path = File.expand_path(File.join(@root_path, 'app'))
 
-      @component_paths   = ComponentPaths.new(@root_path)
-      @app               = Rack::Builder.new
-      @opal_files        = OpalFiles.new(@app, @app_path, @component_paths)
-      @index_files       = IndexFiles.new(@app, volt_app, @component_paths, @opal_files)
+      # @component_paths   = ComponentPaths.new(@root_path)
+      # @app               = Rack::Builder.new
+      # @opal_files        = OpalFiles.new(@app, @app_path, @component_paths)
+      # @index_files       = IndexFiles.new(@app, @volt_app, @component_paths, @opal_files)
 
-      puts 'Compile Opal for components'
-      write_component_js
-      puts 'Copy assets'
-      write_sprockets
-      puts 'Compile JS/CSS'
-      write_js_and_css
-      puts 'Write index files'
-      write_index
+      # puts 'Compile Opal for components'
+      # write_component_js
+      # puts 'Copy assets'
+      # write_sprockets
+      # puts 'Compile JS/CSS'
+      # # write_js_and_css
+      # puts 'Write index files'
+      # write_index
 
+      write_files_and_manifest
+      compile_manifests
       puts "compiled"
+    end
+
+    def write_files_and_manifest
+
+      asset_files = AssetFiles.from_cache('main', @volt_app.component_paths)
+      # Write a temp css file
+      js = asset_files.javascript(@volt_app)
+      css = asset_files.css
+
+      # Extract src's and body's
+      js_srcs, js_bodys = js.group_by {|v| v[0] }.values
+        .map {|v| v.map {|p| p[1] } }
+
+      File.open(Volt.root + '/app/main/app.js', 'wb') do |file|
+        js_srcs.each do |src|
+          url = src.gsub(/^\/assets\//, '')
+          file.write("//= require '#{url}'\n")
+        end
+
+        js_bodys.each do |body|
+          file.write("#{body}\n")
+        end
+      end
+
+      File.open(Volt.root + '/app/main/app.scss', 'wb') do |file|
+        css.each do |link|
+          url = link.gsub(/^\/assets\//, '')
+          file.write("//= require '#{url}'\n")
+        end
+      end
+    end
+
+    def compile_manifests
+      manifest = Sprockets::Manifest.new(@volt_app.opal_files.environment, './public/assets/manifest.json')
+
+      manifest.compile('main/app.js')
+      manifest.compile('main/app.css')
     end
 
     def logical_paths_and_full_paths
@@ -56,7 +95,6 @@ module Volt
 
         # yield(logical_path, full_path.to_s)
       end
-
     end
 
     def write_sprockets
