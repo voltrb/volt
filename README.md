@@ -35,11 +35,18 @@ There is also a [work in progress tutorial](https://github.com/rhgraysonii/volt_
 
 # More Videos
 
-Rick Carlino has been putting together some great volt tutorial videos also.
+Rick Carlino has been putting together some [great volt tutorial videos](http://datamelon.io/blog) also.
 
-- [Volt Tasks](http://datamelon.io/blog/2015/creating-volt-task-objects.html)
-- [Build a Realtime Chat App with Volt](http://datamelon.io/blog/2015/building-a-chat-app-in-volt.html)
-- [Understanding Volt Views](http://datamelon.io/blog/2015/understanding-views-in-volt-with-a-card-game.html)
+ - [Volt Tasks](http://datamelon.io/blog/2015/creating-volt-task-objects.html)
+ - [Volt Views](http://datamelon.io/blog/2015/understanding-views-in-volt-with-a-card-game.html)
+ - [Volt Permissions](http://datamelon.io/blog/2015/twitter-clone-demonstrates-volt-permissions.html)
+ - [Volt Runners](http://datamelon.io/blog/2015/automation-of-everything-with-volt-runners.html)
+ - [Volt Components](http://datamelon.io/blog/2015/staying-productive-with-the-volt-component-ecosystem.html)
+ - [REST APIs in Volt](http://datamelon.io/blog/2015/building-rest-apis-with-volt.html)
+ - [Javascript Library Interop](http://datamelon.io/blog/2015/using-js-libraries-with-opal.html)
+ - [Credit Card Payments with Volt](http://datamelon.io/blog/2015/payment-form-using-volt-and-stripe.html)
+ - [Build a Realtime Chat App](http://datamelon.io/blog/2015/building-a-chat-app-in-volt.html)
+ - [6 Key Concepts for New Volt Learners](http://datamelon.io/blog/2015/6-concepts-for-volt-beginners.html)
 
 @ahnbizcad maintains a [playlist of Volt related videos](https://www.youtube.com/watch?v=McxtO8ybxy8&list=PLmQFeDKFCPXatHb-zEXwfeMH01DPiZjP7).
 
