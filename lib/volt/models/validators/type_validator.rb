@@ -11,7 +11,12 @@ module Volt
         if args.is_a?(Hash) && args[:message]
           message = args[:message]
         else
-          message = "must be of type #{type_restriction.to_s}"
+          message = case type_restriction
+          when Fixnum, Float
+            "must be a number"
+          else
+            "must be of type #{type_restriction.to_s}"
+          end
         end
 
         errors[field_name] = [message]
