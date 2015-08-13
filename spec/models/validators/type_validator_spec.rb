@@ -20,7 +20,7 @@ describe Volt::TypeValidator do
       describe 'when count is a string' do
         let(:count) { 'Cats' }
         it do
-          expect(subject).to eq({count: ['must be of type Numeric']})
+          expect(subject).to eq({count: ['must be a number']})
         end
       end
     end
@@ -41,6 +41,52 @@ describe Volt::TypeValidator do
           expect(subject).to eq(count: ['must be a number'])
         end
       end
+
+      # Fails on opal because no True/False class
+      # describe 'when passing in multiple types' do
+      #   let(:options) do
+      #     { types: [TrueClass, FalseClass] }
+      #   end
+      #   let(:count) { 'a string' }
+
+      #   it do
+      #     expect(subject).to eq({count: ['must be true or false']})
+      #   end
+      # end
+
+      describe 'when passing in Volt::Boolean' do
+        let(:options) do
+          { type: Volt::Boolean }
+        end
+        let(:count) { 'a string' }
+
+        it do
+          expect(subject).to eq({count: ['must be true or false']})
+        end
+      end
+
+      describe 'when passing in multiple types' do
+        let(:options) do
+          { types: [String, Float] }
+        end
+        let(:count) { 1..1 }
+
+        it do
+          expect(subject).to eq({count: ['must be a String or a number']})
+        end
+      end
+
+      describe 'when passing in multiple types with nil' do
+        let(:options) do
+          { types: [String, Float, NilClass] }
+        end
+        let(:count) { 1..1 }
+
+        it do
+          expect(subject).to eq({count: ['must be a String or a number']})
+        end
+      end
+
     end
   end
 end
