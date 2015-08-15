@@ -8,7 +8,7 @@ module Volt
     # @param - is an array of symbols (or array of arrays of symbols) that
     #          represent the associations:
     #          Example: [:comments, [:comments, :user]]
-    def initialize(start_data, associations)
+    def initialize(start_data, associations=[])
       @old_data = start_data
       @old_ids = start_data.map {|v| v[:id] }
       @old_data_hash = hash_data(start_data)
@@ -28,7 +28,6 @@ module Volt
 
       @diff = []
 
-      puts "N: #{@new_ids.inspect} O: #{@old_ids.inspect}"
       detect_removed
       detect_added_and_moved
       detect_changed
@@ -77,9 +76,10 @@ module Volt
           old_ids.delete(id)
           @diff << ['m', id, index]
         else
+          # Check for inserts
           # TODO: Faster lookup
           data = @new_data_hash[id]
-          @diff << ['a', index, data]
+          @diff << ['i', index, data]
         end
       end
     end

@@ -607,9 +607,31 @@ describe Volt::Model do
     end
   end
 
-  it 'creates sub-arrays with correct classes' do
-    model = Volt::Model.new
-    model._items << {}
-    expect(model._items).to be_instance_of Items
+  describe "Wrapping" do
+    it 'creates sub-arrays with correct classes' do
+      model = Volt::Model.new
+      model._items << {}
+      expect(model._items).to be_instance_of Items
+    end
+
+    it 'creates sub-hashes when using nested hashes' do
+      model = Volt::Model.new({name: 'Bob', stuff: {arm: true, leg: true}})
+
+      expect(model._name).to eq('Bob')
+      expect(model._stuff._arm).to eq(true)
+    end
+
+    it 'should wrap subcollections on new' do
+      model = Volt::Model.new(name: 'Bob', items: [{name: 'Item 1'}, {name: 'Item 2'}])
+
+      expect(model._items[1]._name).to eq('Item 2')
+    end
+
+    it 'should new off of a collection' do
+      item = the_page._items.new({name: 'Bob'})
+      expect(item._name).to eq('Bob')
+      expect(item.class).to eq(Item)
+    end
   end
+
 end

@@ -60,6 +60,7 @@ module Volt
     # a query.
     def notify_updated(collection, query, *args)
       query_obj = Persistors::ArrayStore.query_pool.lookup(collection, query)
+      puts "GOT QO: #{query_obj.inspect}"
       query_obj.updated(*args)
     end
 

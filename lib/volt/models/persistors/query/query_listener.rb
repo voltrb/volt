@@ -100,9 +100,24 @@ module Volt
 
     def updated(diff)
       puts "UPDATED: #{diff.inspect}"
+      diff.each do |op|
+        operation, id_or_index, data = op
+
+        case op
+        when 'i'
+          # insert
+          inserted(id_or_index, data)
+        when 'r'
+          # remove
+          removed([id_or_index])
+        when 'm'
+          # move
+
+        end
+      end
     end
 
-    def added(index, data)
+    def inserted(index, data)
       @stores.each do |store|
         store.add(index, data)
       end

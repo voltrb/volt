@@ -9,6 +9,8 @@ require 'volt/queries/query_association_splitter'
 
 module Volt
   class QueryRunner
+    attr_reader :associations
+
     def initialize(data_store, collection, query)
       @data_store = data_store
 

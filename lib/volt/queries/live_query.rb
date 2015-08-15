@@ -1,5 +1,8 @@
 # Tracks a channel and a query on a collection.  Alerts
 # the listener when the data in the query changes.
+#
+# has_many QuerySubscriptions
+
 require 'volt/queries/query_diff'
 require 'volt/queries/query_runner'
 
@@ -14,6 +17,8 @@ module Volt
       @query = query
 
       @query_runner = QueryRunner.new(data_store, collection, query)
+      # Grab the associations from the query runner
+      @associations = @query_runner.associations
 
       @query_subscriptions = {}
       @data_store = data_store
@@ -59,7 +64,8 @@ module Volt
     def update(skip_channel=nil)
       new_data = run
 
-      diff = QueryDiff.new(@last_data, new_data)
+      # Diff the new data
+      diff = QueryDiff.new(@last_data, @associations).run(new_data)
 
       notify_updated(skip_channel, diff)
 

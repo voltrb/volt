@@ -9,6 +9,17 @@ require 'volt/models/validators/unique_validator'
 require 'volt/models/validators/type_validator'
 
 module Volt
+
+  # Raised when the model fails a validation.  Call #errors to get the errors
+  # object.
+  class InvalidModel < Exception
+    attr_accessor :errors
+
+    def initialize(errors)
+      @errors = errors
+    end
+  end
+
   # Include in any class to get validation logic
   module Validations
     module ClassMethods
@@ -137,8 +148,10 @@ module Volt
       end.then do
         run_custom_validations
       end.then do
-        # Return the errors object
-        errors
+        if errors.size > 0
+          # Return the errors object
+          fail InvalidModel.new(errors)
+        end
       end
     end
 

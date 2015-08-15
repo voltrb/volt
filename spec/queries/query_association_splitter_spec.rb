@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Volt::QueryAssociationSplitter do
   it 'should split a query and return the associations' do
-    query = ['where', {name: 'Bob'}]
+    query = [:where, {name: 'Bob'}]
     includes = ['includes', [:posts, [:posts, :comments], :links]]
     new_query, associations = Volt::QueryAssociationSplitter.split([query, includes])
 

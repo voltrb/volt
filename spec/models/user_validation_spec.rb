@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-class TestUserTodo < Volt::Model
+class TestUserTodo2 < Volt::Model
   own_by_user
 
   permissions(:update) do
@@ -15,12 +15,12 @@ describe Volt::UserValidatorHelpers do
     end
 
     it 'should assign user_id when owning by a user' do
-      todo = TestUserTodo.new
+      todo = TestUserTodo2.new
       expect(todo._user_id).to eq(294)
     end
 
     it 'should not allow the user_id to be changed' do
-      todo = TestUserTodo.new
+      todo = TestUserTodo2.new
       expect(todo._user_id).to eq(294)
 
       todo._user_id = 500
