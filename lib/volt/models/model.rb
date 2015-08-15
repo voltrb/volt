@@ -360,6 +360,22 @@ module Volt
       name.underscore.pluralize.to_sym
     end
 
+    # Update tries to update the model and returns
+    def update(attrs)
+      old_attrs = @attributes.dup
+      Model.no_change_tracking do
+        assign_all_attributes(attrs, false)
+
+        validate!.then do |errs|
+          if errs && errs.present?
+            # Revert wholesale
+            @attributes = old_attrs
+            Promise.new.resolve(errs)
+          end
+        end
+      end
+    end
+
     private
     def run_initial_setup(initial_setup)
       # Save the changes

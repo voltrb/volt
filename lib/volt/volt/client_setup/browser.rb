@@ -39,6 +39,17 @@ module Volt
     end
 
     def link_clicked(url = '', event = nil)
+      target = nil
+      `target = $(event.target).attr('target');`
+      `if (!target) {`
+        `target = #{nil};`
+      `}`
+
+      if target.present? && target != '_self'
+        # Don't handle if they are opening in a new window
+        return true
+      end
+
       # Skip when href == ''
       return false if url.blank?
 

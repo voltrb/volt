@@ -26,7 +26,7 @@ module Volt
         str << "#{field} #{error}"
       end
 
-      str.join
+      str.join(', ')
     end
   end
 end

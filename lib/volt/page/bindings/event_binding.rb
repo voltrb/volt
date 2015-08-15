@@ -83,7 +83,7 @@ module Volt
       # Trim args to match arity
 
       # The proc returned a
-      if result.is_a?(Method)
+      if result && result.is_a?(Method)
         args = args[0...result.arity]
 
         result.call(*args)
