@@ -37,6 +37,7 @@ There is also a [work in progress tutorial](https://github.com/rhgraysonii/volt_
 
 Rick Carlino has been putting together some [great volt tutorial videos](http://datamelon.io/blog) also.
 
+ - [Volt URL Routing](http://datamelon.io/blog/2015/routes-and-multi-view-apps.html)
  - [Volt Tasks](http://datamelon.io/blog/2015/creating-volt-task-objects.html)
  - [Volt Views](http://datamelon.io/blog/2015/understanding-views-in-volt-with-a-card-game.html)
  - [Volt Permissions](http://datamelon.io/blog/2015/twitter-clone-demonstrates-volt-permissions.html)
