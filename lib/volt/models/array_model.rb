@@ -170,25 +170,6 @@ module Volt
       end
     end
 
-    def first!
-      result = first
-      if result.is_a?(Promise)
-        result.then do |val|
-          if val == nil
-            raise NotFoundException
-          end
-
-          val
-        end
-      else
-        if result == nil
-          raise NotFoundException
-        end
-
-        result
-      end
-    end
-
     # Same as first, except it returns a promise (even on page collection), and
     # it fails with a RecordNotFoundException if no result is found.
     def first!
