@@ -58,8 +58,11 @@ module Volt
       end
     end
 
+    # Called on the model inside of a validations block.  Allows the user to
+    # control if validations should be run.
     def validate(field_name = nil, options = nil, &block)
       if block
+        # Setup a custom validation inside of the current validations block.
         if field_name || options
           fail 'validate should be passed a field name and options or a block, not both.'
         end
@@ -68,7 +71,6 @@ module Volt
         @instance_validations[field_name] ||= {}
         @instance_validations[field_name].merge!(options)
       end
-      #puts "ivs in instance vlaidate: #{@instance_validations}"
     end
 
     def self.included(base)
