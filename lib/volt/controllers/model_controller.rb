@@ -27,16 +27,19 @@ module Volt
 
     # Container returns the node that is parent to all nodes in the section.
     def container
+      check_section!('container')
       section.container_node
     end
 
     def dom_nodes
+      check_section!('dom_nodes')
       section.range
     end
 
     # Walks the dom_nodes range until it finds an element.  Typically this will
     # be the container element without the whitespace text nodes.
     def first_element
+      check_section!('first_element')
       range = dom_nodes
       nodes = `range.startContainer.childNodes`
 
@@ -248,5 +251,13 @@ module Volt
         super
       end
     end
+
+    private
+    def check_section!(method_name)
+      unless section
+        raise "##{method_name} can't be called before the {action}_ready method is called"
+      end
+    end
+
   end
 end
