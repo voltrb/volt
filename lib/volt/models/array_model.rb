@@ -241,6 +241,7 @@ module Volt
     def new_model(*args)
       Volt::Model.class_at_path(options[:path]).new(*args)
     end
+    alias_method :new, :new_model
 
     def new_array_model(*args)
       Volt::ArrayModel.class_at_path(options[:path]).new(*args)

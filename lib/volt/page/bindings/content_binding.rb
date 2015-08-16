@@ -50,7 +50,7 @@ module Volt
       # https://github.com/opal/opal/issues/798
       str.gsub(HTML_ESCAPE_REGEXP) do |char|
         HTML_ESCAPE[char]
-      end
+      end.gsub('  ', " \u00A0").gsub("\n ", "\n\u00A0")
     end
 
     def remove

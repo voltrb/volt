@@ -24,17 +24,20 @@ class LiveQuery
 
   def notify_removed(ids, skip_channel)
     # puts "Removed: #{ids.inspect}"
-    notify! do |channel|
+    notify!(skip_channel) do |channel|
       channel.send_message('removed', nil, @collection, @query, ids)
     end
   end
 
   def notify_added(index, data, skip_channel)
-    # puts "Added: #{index} - #{data.inspect}"
     # Make model for testing permissions against
-    model = model_for_filter(data)
+    model = nil
 
-    notify! do |channel|
+    notify!(skip_channel) do |channel|
+      # Only load the model for filtering if we are sending to a channel
+      # (skip if we are the only one listening)
+      model ||= model_for_filter(data)
+
       filtered_data = nil
       Volt.as_user(channel.user_id) do
         filtered_data = model.filtered_attributes.sync
@@ -46,15 +49,20 @@ class LiveQuery
 
   def notify_moved(id, new_position, skip_channel)
     # puts "Moved: #{id}, #{new_position}"
-    notify! do |channel|
+    notify!(skip_channel) do |channel|
       channel.send_message('moved', nil, @collection, @query, id, new_position)
     end
   end
 
   def notify_changed(id, data, skip_channel)
-    model = model_for_filter(data)
+    # puts "NOTIFY CHANGED"
+    model = nil
 
     notify!(skip_channel) do |channel|
+      # Only load the model for filtering if we are sending to a channel
+      # (skip if we are the only one listening)
+      model ||= model_for_filter(data)
+
       filtered_data = nil
       Volt.as_user(channel.user_id) do
         filtered_data = model.filtered_attributes.sync
