@@ -229,7 +229,14 @@ module Volt
     # Raw marks a string as html safe, so bindings can be rendered as html.
     # With great power comes great responsibility.
     def raw(str)
-      str = str.to_s unless str.is_a?(String)
+      # Promises need to have .to_s called using .then, since .to_s is a promise
+      # method, so it won't be passed down to the value.
+      if str.is_a?(Promise)
+        str = str.then(&:to_s)
+      else
+        str = str.to_s unless str.is_a?(String)
+      end
+
       str.html_safe
     end
 
