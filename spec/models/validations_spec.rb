@@ -165,4 +165,35 @@ describe Volt::Model do
     expect(model._name).to eq('Jimmy')
   end
 
+  describe 'custom validations' do
+    let(:model) { test_model_with_custom_validation.new }
+    let(:test_model_with_custom_validation) do
+      Class.new(Volt::Model) do
+        validations do
+          validate :something, presence: true
+          validate do
+            if _name.present?
+              {}
+            else
+              {name: ['must be present']}
+            end
+          end
+        end
+      end
+    end
+
+    it 'should return errors for all failed validations' do
+      model.validate!
+      expect(model.errors).to eq(
+        name: ['must be present'],
+        something: ['must be specified']
+      )
+    end
+
+    it 'should not return errors for all passing custom validations' do
+      model._name = 'something'
+      model.validate!
+      expect(model.errors).to eq({something: ["must be specified"]})
+    end
+  end
 end

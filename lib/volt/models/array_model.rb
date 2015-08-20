@@ -241,6 +241,7 @@ module Volt
     def new_model(*args)
       Volt::Model.class_at_path(options[:path]).new(*args)
     end
+    alias_method :new, :new_model
 
     def new_array_model(*args)
       Volt::ArrayModel.class_at_path(options[:path]).new(*args)
@@ -386,7 +387,7 @@ module Volt
     end
 
     # We need to setup the proxy methods below where they are defined.
-    proxy_with_load :[], :size, :last, :reverse, :all, :to_a, :empty?, :present?, :blank?
+    proxy_with_load :[], :size, :length, :last, :reverse, :all, :to_a, :empty?, :present?, :blank?
 
   end
 end

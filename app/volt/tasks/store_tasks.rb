@@ -9,33 +9,18 @@ class StoreTasks < Volt::Task
     model_name = collection.singularize.camelize
 
     # Fetch the model
-    collection = store.send(:"_#{path[-2]}")
+    collection = store.get(path[-2])
 
     # See if the model has already been made
-    collection.where(id: data[:id]).first.then do |model|
-      # Otherwise assign to the collection
-      model ||= collection
+    model_promise = collection.where(id: data[:id]).first
 
-      # Create a buffer
-      buffer = model.buffer
-
-      # Assign the changed data to the buffer
-      buffer.assign_attributes(data, false, true)
-
-      buffer
-    end
+    return collection, model_promise
   end
 
   def save(collection, path, data)
     data = data.symbolize_keys
-    promise = nil
 
-    # Don't check the permissions when we load the model, since we want all fields
-    Volt.skip_permissions do
-      Volt::Model.no_validate do
-        promise = load_model(collection, path, data)
-      end
-    end
+    collection, model_promise = load_model(collection, path, data)
 
     # On the backend, the promise is resolved before its returned, so we can
     # return from within it.
@@ -44,9 +29,16 @@ class StoreTasks < Volt::Task
     # who sent the update.
     #
     # return another promise
-    promise.then do |model|
+    model_promise.then do |model|
       Thread.current['in_channel'] = @channel
-      save_promise = model.save!.then do |result|
+
+      result = if model
+        model.update(data)
+      else
+        collection.create(data)
+      end
+
+      save_promise = result.then do |result|
         next nil
       end.fail do |err|
         # An error object, convert to hash

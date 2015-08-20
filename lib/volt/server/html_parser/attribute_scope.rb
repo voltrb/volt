@@ -7,11 +7,11 @@ module Volt
         # instance
         parts = str.split('.')
 
-        end_call = parts.last
+        end_call = parts.last.strip
 
         # If no method(args) is passed, we assume they want to convert the method
         # to a Method, to be called with *args (from any trigger's), then event.
-        if end_call !~ /[a-z0-9!?]+\(/
+        if str !~ /[\[\]\$\@\=]/ && end_call =~ /[_a-z0-9!?]+$/
           parts[-1] = "method(:#{end_call})"
 
           str = parts.join('.')

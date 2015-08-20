@@ -22,34 +22,45 @@ module FieldHelpers
   end
 
   FIELD_CASTS = {
-    String     => :to_s.to_proc,
-    Fixnum     => lambda {|val| NUMERIC_CAST[:Integer, val] },
-    Numeric    => lambda {|val| NUMERIC_CAST[:Float, val] },
-    Float      => lambda {|val| NUMERIC_CAST[:Float, val] },
-    Time       => nil,
-    TrueClass  => nil,
-    FalseClass => nil
+    String        => :to_s.to_proc,
+    Fixnum        => lambda {|val| NUMERIC_CAST[:Integer, val] },
+    Numeric       => lambda {|val| NUMERIC_CAST[:Float, val] },
+    Float         => lambda {|val| NUMERIC_CAST[:Float, val] },
+    Time          => nil,
+    TrueClass     => nil,
+    FalseClass    => nil,
+    NilClass      => nil,
+    Volt::Boolean => nil
   }
-  VALID_FIELD_CLASSES = FIELD_CASTS.keys
 
 
   module ClassMethods
     # field lets you declare your fields instead of using the underscore syntax.
     # An optional class restriction can be passed in.
-    def field(name, klass = nil, options = {})
-      if klass && !VALID_FIELD_CLASSES.include?(klass)
-        klass_names = VALID_FIELD_CLASSES.map(&:to_s).join(', ')
-        msg = "valid field types is currently limited to #{klass_names}"
-        fail FieldHelpers::InvalidFieldClass, msg
+    def field(name, klasses = nil, options = {})
+      if klasses
+        klasses = [klasses].flatten
+
+        unless klasses.any? {|kl| FIELD_CASTS.key?(kl) }
+          klass_names = FIELD_CASTS.keys.map(&:to_s).join(', ')
+          msg = "valid field types is currently limited to #{klass_names}, you passed: #{klasses.inspect}"
+          fail FieldHelpers::InvalidFieldClass, msg
+        end
+
+        # Add NilClass as an allowed type unless allow_nil: false was passed.
+        unless options[:allow_nil] == false
+          klasses << NilClass
+        end
       end
 
       self.fields_data ||= {}
-      self.fields_data[name] = [klass, options]
+      self.fields_data[name] = [klasses, options]
 
-      if klass
-        # Add type validation, execpt for String, since anything can be a string.
-        unless klass == String
-          validate name, type: klass
+      if klasses
+        # Add type validation, execpt for String, since anything can be cast to
+        # a string.
+        unless klasses.include?(String)
+          validate name, type: klasses
         end
       end
 
@@ -59,10 +70,14 @@ module FieldHelpers
 
       define_method(:"#{name}=") do |val|
         # Check if the value assigned matches the class restriction
-        if klass
+        if klasses
           # Cast to the right type
-          if (func = FIELD_CASTS[klass])
-            val = func[val]
+          klasses.each do |kl|
+            if (func = FIELD_CASTS[kl])
+              # Cast on the first available caster
+              val = func[val]
+              break
+            end
           end
         end
 

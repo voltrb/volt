@@ -26,7 +26,7 @@ describe 'field helpers' do
 
   it 'should raise an error when an invalid cast type is provided' do
     expect do
-      ExampleModelWithField2.field :awesome, Array
+      ExampleModelWithField2.field :awesome, Range
     end.to raise_error(FieldHelpers::InvalidFieldClass)
   end
 
@@ -47,6 +47,6 @@ describe 'field helpers' do
   end
 
   it 'should track the fields on the model class' do
-    expect(ExampleModelWithField.fields_data).to eq({:name=>[nil, {}], :value=>[Numeric, {}]})
+    expect(ExampleModelWithField.fields_data).to eq({:name=>[nil, {}], :value=>[[Numeric, NilClass], {}]})
   end
 end

@@ -243,6 +243,15 @@ describe 'bindings test', type: :feature, sauce: true do
     end
   end
 
+  describe 'raw' do
+    it 'should print the raw version, and work with promises' do
+      visit '/bindings'
+
+      expect(page).to have_content("some \ncode")
+      expect(page).to have_content("some \nother code")
+    end
+  end
+
   # NOTE: For some reason this spec fails randomly (capybara issue I think)
   # describe "events" do
   #   it 'should handle focus and blur' do
