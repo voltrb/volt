@@ -9,7 +9,10 @@
 - Anything in /public is now served via Rack::Static in the default middleware stack.  (So you can put user uploaded images in there)
 - You can now use _ or - in volt tag names and attributes.  (We're moving to using dash ( - ) as the standard in html)
 - You can now trigger events on controllers rendered as tags.  The events will bubble up through the DOM and can be caught by any e- bindings.  See the docs for more information.
+
+### Changed
 - fix issue with ```raw``` and promises (#275)
+- fix issue with .length on store (#269)
 
 ## 0.9.4
 ### Lingo Change
