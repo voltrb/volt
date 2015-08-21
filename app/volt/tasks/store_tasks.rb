@@ -19,8 +19,14 @@ class StoreTasks < Volt::Task
 
   def save(collection, path, data)
     data = data.symbolize_keys
+    collection = nil
+    model_promise = nil
 
-    collection, model_promise = load_model(collection, path, data)
+    Volt.skip_permissions do
+      Volt::Model.no_validate do
+        collection, model_promise = load_model(collection, path, data)
+      end
+    end
 
     # On the backend, the promise is resolved before its returned, so we can
     # return from within it.
