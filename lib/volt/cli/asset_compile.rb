@@ -45,14 +45,14 @@ module Volt
       # write_sprockets
       # puts 'Compile JS/CSS'
       # # write_js_and_css
-      puts 'Write index files'
-      write_index
 
       puts "A"
       write_files_and_manifest
       puts "B"
       compile_manifests
       puts "C"
+      puts 'Write index files'
+      write_index
       puts "compiled"
     end
 
@@ -149,19 +149,25 @@ module Volt
     end
 
     def javascript_tags
-      # mtime = File.mtime(Volt.root + '/public/assets/')
-      # "<script src=\"/assets/main/app.js?v=#{mtime}\"" />"
+      "<script src=\"/assets/#{@manifest['assets']['main/app.js']}\" />"
+    end
+
+    def css_tags
+      "<link href=\"/assets/#{@manifest['assets']['main/app.css']}\" media=\"all\" rel=\"stylesheet\" type=\"text/css\" />"
     end
 
     def write_index
       output_path = "#{@root_path}/public/index.html"
+      require 'json'
+
+      @manifest = JSON.parse(File.read(@root_path + '/public/assets/manifest.json'))
 
       index_path = File.expand_path(File.join(Volt.root, 'config/base/index.html'))
       html       = File.read(index_path)
 
-      ERB.new(html, nil, '-').result(binding)
+      output_html = ERB.new(html, nil, '-').result(binding)
 
-      write_file(path, @index_files.html)
+      write_file(output_path, output_html)
     end
 
     def write_file(path, data)
