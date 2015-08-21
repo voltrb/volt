@@ -1,5 +1,4 @@
 require 'uri'
-require 'volt/server'
 
 # Used to get a list of the assets and other included components
 # from the dependencies.rb files.

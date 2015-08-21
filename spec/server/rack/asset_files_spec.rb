@@ -21,7 +21,7 @@ if RUBY_PLATFORM != 'opal'
       context "when the component's dependencies.rb does not contain .disable_auto_import" do
         it 'should list all JS files' do
           main = Volt::AssetFiles.new('main', @component_paths)
-          expect(main.javascript(volt_app)).to eq([
+          expect(main.javascript(volt_app).reject{|v| v[0] != :src }).to eq([
             [:src, '/assets/js/jquery-2.0.3.js'],
             [:src, '/assets/js/volt_js_polyfills.js'],
             [:src, '/assets/js/volt_watch.js'],
@@ -38,7 +38,7 @@ if RUBY_PLATFORM != 'opal'
       context "when the component's dependencies.rb contains .disable_auto_import" do
         it 'should list only the files included via the css_file helpers' do
           disabled_auto = Volt::AssetFiles.new('disable_auto', @component_paths)
-          expect(disabled_auto.javascript(volt_app)).to eq([
+          expect(disabled_auto.javascript(volt_app).reject{|v| v[0] != :src }).to eq([
             [:src, '/assets/js/jquery-2.0.3.js'],
             [:src, '/assets/js/volt_js_polyfills.js'],
             [:src, '/assets/js/volt_watch.js'],

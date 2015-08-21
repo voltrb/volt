@@ -6,13 +6,8 @@
 
   <:yield-component>This is my {{ content_string }}</:yield-component>
 
-<:Yield-test>
+<:YieldTest>
   <h1>Yield Section</h1>
 
   <p>{{ yield }}</p>
   <p>{{ yield }}</p>
-
-
-  {{ if Volt.current_user }}
-    Email: {{ Volt.current_user._email }}
-  {{ end }}
