@@ -94,34 +94,19 @@ module Volt
       end
 
       if source_map_enabled
-          builder.map(maps_prefix) do
-            require 'rack/conditionalget'
-            require 'rack/etag'
-            use Rack::ConditionalGet
-            use Rack::ETag
-            run maps_app
-          end
+        builder.map(maps_prefix) do
+          require 'rack/conditionalget'
+          require 'rack/etag'
+          use Rack::ConditionalGet
+          use Rack::ETag
+          run maps_app
         end
-
-
-
-      # map server.source_maps.prefix do
-      #   run server.source_maps
-      # end
-
-      # if Volt.source_maps?
-      #   source_maps = SourceMapServer.new(environment)
-      #
-      #   builder.map(source_maps.prefix) do
-      #     run source_maps
-      #   end
-      # end
+      end
     end
 
     def add_image_compression
       if defined?(ImageOptim)
         env = @environment
-        puts "REGISTER IMAGE OPTIM"
         image_optim = ImageOptim.new({:pngout => false, :svgo => false})
 
         processor = proc do |_context, data|

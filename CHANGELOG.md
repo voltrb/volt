@@ -11,6 +11,7 @@
 - You can now trigger events on controllers rendered as tags.  The events will bubble up through the DOM and can be caught by any e- bindings.  See the docs for more information.
 - Rewrote the precompile pipeline.
     - Added image compression by default. (using image_optim)
+- All volt CLI tasks now can run from inside of any directory in the volt app (or the root)
 
 ### Changed
 - fix issue with ```raw``` and promises (#275)

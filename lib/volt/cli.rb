@@ -131,5 +131,27 @@ end
 # Add in more features
 require 'volt/cli/asset_compile'
 
+unless Gem.win_platform?
+  # Change CWD to the root of the volt project
+  pwd = Dir.pwd
+  changed = false
+  loop do
+    if File.exists?(pwd + '/Gemfile')
+      Dir.chdir(pwd) if changed
+      break
+    else
+      changed = true
+
+      # Move up a directory and try again
+      pwd = pwd.gsub(/\/[^\/]+$/, '')
+
+      if pwd == ''
+        puts "You are not currently in a volt project directory"
+        exit 1
+      end
+    end
+  end
+end
+
 puts "Volt #{Volt::Version::STRING}"
 Volt::CLI.start(ARGV)
