@@ -24,7 +24,7 @@ class LiveQuery
 
   def notify_removed(ids, skip_channel)
     # puts "Removed: #{ids.inspect}"
-    notify!(skip_channel) do |channel|
+    notify! do |channel|
       channel.send_message('removed', nil, @collection, @query, ids)
     end
   end
@@ -33,7 +33,7 @@ class LiveQuery
     # Make model for testing permissions against
     model = nil
 
-    notify!(skip_channel) do |channel|
+    notify! do |channel|
       # Only load the model for filtering if we are sending to a channel
       # (skip if we are the only one listening)
       model ||= model_for_filter(data)
@@ -49,7 +49,7 @@ class LiveQuery
 
   def notify_moved(id, new_position, skip_channel)
     # puts "Moved: #{id}, #{new_position}"
-    notify!(skip_channel) do |channel|
+    notify! do |channel|
       channel.send_message('moved', nil, @collection, @query, id, new_position)
     end
   end

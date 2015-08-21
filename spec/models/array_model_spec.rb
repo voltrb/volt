@@ -38,4 +38,16 @@ describe Volt::ArrayModel do
     expect(array.flatten.size).to eq(6)
     expect(array.to_a.flatten.size).to eq(6)
   end
+
+  unless RUBY_PLATFORM == 'opal'
+    it 'should return a promise for store on .length, .size, and .count' do
+      store._items << {name: 'One'}
+
+      [:size, :count, :length].each do |method_name|
+        val = store._items.send(method_name)
+        expect(val.class).to eq(Promise)
+        expect(val.sync).to eq(1)
+      end
+    end
+  end
 end
