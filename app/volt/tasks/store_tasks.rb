@@ -19,7 +19,6 @@ class StoreTasks < Volt::Task
 
   def save(collection, path, data)
     data = data.symbolize_keys
-    collection = nil
     model_promise = nil
 
     Volt.skip_permissions do
