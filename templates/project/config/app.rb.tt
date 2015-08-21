@@ -63,10 +63,11 @@ Volt.configure do |config|
   #####################
   # Compression Options
   #####################
-  # Disable or enable css/js compression.  Default is to only run in production.
+  # Disable or enable css/js/image compression.  Default is to only run in production.
   # if Volt.env.production?
   #   config.compress_javascript = true
   #   config.compress_css        = true
+  #   config.compress_images     = true
   # end
 
   ################

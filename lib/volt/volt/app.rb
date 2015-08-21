@@ -99,8 +99,6 @@ module Volt
         setup_postboot_middleware
 
         start_message_bus
-
-        Volt::ViewProcessor.setup
       end
     end
 

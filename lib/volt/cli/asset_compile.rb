@@ -12,6 +12,7 @@ module Volt
       puts 'compiling project...'
       require 'fileutils'
       ENV['SERVER'] = 'true'
+      ENV['MAPS'] = 'false'
 
       require 'opal'
       require 'rack'
@@ -25,6 +26,9 @@ module Volt
 
       @volt_app = Volt.boot(@root_path)
 
+      ENV['NO_FORKING'] = 'true'
+
+
       require 'volt/server/rack/component_paths'
       require 'volt/server/rack/component_code'
 
@@ -33,7 +37,7 @@ module Volt
       # @component_paths   = ComponentPaths.new(@root_path)
       # @app               = Rack::Builder.new
       # @opal_files        = OpalFiles.new(@app, @app_path, @component_paths)
-      # @index_files       = IndexFiles.new(@app, @volt_app, @component_paths, @opal_files)
+      # @index_files       = IndexFiles.new(@app, @volt_app, @volt_app.component_paths, @volt_app.opal_files)
 
       # puts 'Compile Opal for components'
       # write_component_js
@@ -41,16 +45,18 @@ module Volt
       # write_sprockets
       # puts 'Compile JS/CSS'
       # # write_js_and_css
-      # puts 'Write index files'
-      # write_index
+      puts 'Write index files'
+      write_index
 
+      puts "A"
       write_files_and_manifest
+      puts "B"
       compile_manifests
+      puts "C"
       puts "compiled"
     end
 
     def write_files_and_manifest
-
       asset_files = AssetFiles.from_cache('main', @volt_app.component_paths)
       # Write a temp css file
       js = asset_files.javascript(@volt_app)
@@ -80,10 +86,15 @@ module Volt
     end
 
     def compile_manifests
-      manifest = Sprockets::Manifest.new(@volt_app.opal_files.environment, './public/assets/manifest.json')
+      manifest = Sprockets::Manifest.new(@volt_app.sprockets, './public/assets/manifest.json')
 
+      # Compile the files (and linked assets)
       manifest.compile('main/app.js')
       manifest.compile('main/app.css')
+
+      # Remove the temp files
+      FileUtils.rm(Volt.root + '/app/main/app.js')
+      FileUtils.rm(Volt.root + '/app/main/app.scss')
     end
 
     def logical_paths_and_full_paths

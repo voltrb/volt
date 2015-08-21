@@ -50,3 +50,11 @@ platform :mri, :mingw do
   gem 'thin', '~> 1.6.0'
   gem 'bson_ext', '~> 1.9.0'
 end
+
+group :production do
+  # Image compression gem for precompiling assets
+  gem 'image_optim'
+
+  # Provides precompiled binaries for image compression
+  gem 'image_optim_pack'
+end

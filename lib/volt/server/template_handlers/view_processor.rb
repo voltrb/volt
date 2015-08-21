@@ -67,8 +67,7 @@ module Volt
       Opal.compile(code)
     end
 
-    def self.setup
-      sprockets = $volt_app.sprockets
+    def self.setup(sprockets=$volt_app.sprockets)
       sprockets.register_mime_type 'application/vtemplate', extensions: ['.html', '.email']
       sprockets.register_transformer 'application/vtemplate', 'application/javascript', Volt::ViewProcessor.new(true)
     end
