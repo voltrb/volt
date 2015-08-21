@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe Volt::ListValidator do
-  subject { Volt::ListValidator.validate(*use_params) }
+describe Volt::InclusionValidator do
+  subject { Volt::InclusionValidator.validate(*use_params) }
   let(:use_params) { [model, field_name, options] }
 
   let(:model) { Volt::Model.new name: name }
@@ -27,7 +27,7 @@ describe Volt::ListValidator do
 
     describe 'when options is a Hash' do
       let(:options) do
-        { list: %w(John Susie Mary), message: 'Choose one from the list.' }
+        { in: %w(John Susie Mary), message: 'Choose one from the list.' }
       end
 
       describe 'when name is "John"' do
@@ -49,7 +49,7 @@ describe Volt::ListValidator do
       it 'raises an exception' do
         expect { subject }.to raise_error(
           RuntimeError,
-          'The arguments to list validator must be an array or a hash'
+          'The arguments to inclusion validator must be an array or a hash'
         )
       end
     end
