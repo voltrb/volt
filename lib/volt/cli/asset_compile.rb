@@ -148,8 +148,18 @@ module Volt
       write_sprocket_file('components/main.js')
     end
 
+    def javascript_tags
+      # mtime = File.mtime(Volt.root + '/public/assets/')
+      # "<script src=\"/assets/main/app.js?v=#{mtime}\"" />"
+    end
+
     def write_index
-      path = "#{@root_path}/public/index.html"
+      output_path = "#{@root_path}/public/index.html"
+
+      index_path = File.expand_path(File.join(Volt.root, 'config/base/index.html'))
+      html       = File.read(index_path)
+
+      ERB.new(html, nil, '-').result(binding)
 
       write_file(path, @index_files.html)
     end

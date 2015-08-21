@@ -33,6 +33,8 @@ module Volt
 
     def add_linking_in_asset_path
       @env.context_class.class_eval do
+        # We "freedom-patch" sprockets-helpers asset_path method to
+        # automatically link assets.
         def asset_path(source, options = {})
           uri = URI.parse(source)
           return source if uri.absolute?
@@ -52,6 +54,7 @@ module Volt
           end
 
           # Link all assets out of the box
+          # Added by volt
           link_asset(uri)
 
           path = find_asset_path(uri, source, options)
@@ -66,28 +69,3 @@ module Volt
     end
   end
 end
-
-
-
-# module Sprockets
-#   module Helpers
-#     # `AssetPath` generates a full path for an asset
-#     # that exists in Sprockets environment.
-#     class AssetPath < BasePath
-#       def initialize(uri, asset, options = {})
-#         puts "AP: #{uri.inspect} - #{asset.inspect} - #{options.inspect}"
-#         @uri = uri
-#         @asset = asset
-#         @options = {
-#           :body => false,
-#           :digest => Helpers.digest,
-#           :prefix => Helpers.prefix
-#         }.merge options
-
-#         @options[:digest] = Helpers.digest
-
-#         @uri.path = @options[:digest] ? asset.digest_path : asset.logical_path
-#       end
-#     end
-#   end
-# end
