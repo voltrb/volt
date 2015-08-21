@@ -50,6 +50,7 @@ module Volt
     method_option :bind, type: :string, aliases: '-b', banner: 'the ip the server should bind to'
 
     def server
+      move_to_root
       if ENV['PROFILE_BOOT']
         begin
           require 'ruby-prof'
@@ -102,6 +103,7 @@ module Volt
     method_option :file_path, type: :string
     def runner(file_path)
       ENV['SERVER'] = 'true'
+      move_to_root
       require 'volt/cli/runner'
 
       Volt::CLI::Runner.run_file(file_path)
@@ -111,6 +113,7 @@ module Volt
 
     def drop_collection(collection)
       ENV['SERVER'] = 'true'
+      move_to_root
       require 'volt/boot'
 
       Volt.boot(Dir.pwd)
@@ -122,6 +125,30 @@ module Volt
       say("Collection #{collection} dropped", :green) if drop == true
     end
 
+    def move_to_root
+      unless Gem.win_platform?
+        # Change CWD to the root of the volt project
+        pwd = Dir.pwd
+        changed = false
+        loop do
+          if File.exists?(pwd + '/Gemfile')
+            Dir.chdir(pwd) if changed
+            break
+          else
+            changed = true
+
+            # Move up a directory and try again
+            pwd = pwd.gsub(/\/[^\/]+$/, '')
+
+            if pwd == ''
+              puts "You are not currently in a volt project directory"
+              exit 1
+            end
+          end
+        end
+      end
+    end
+
     def self.source_root
       File.expand_path(File.join(File.dirname(__FILE__), '../../templates'))
     end
@@ -130,28 +157,6 @@ end
 
 # Add in more features
 require 'volt/cli/asset_compile'
-
-unless Gem.win_platform?
-  # Change CWD to the root of the volt project
-  pwd = Dir.pwd
-  changed = false
-  loop do
-    if File.exists?(pwd + '/Gemfile')
-      Dir.chdir(pwd) if changed
-      break
-    else
-      changed = true
-
-      # Move up a directory and try again
-      pwd = pwd.gsub(/\/[^\/]+$/, '')
-
-      if pwd == ''
-        puts "You are not currently in a volt project directory"
-        exit 1
-      end
-    end
-  end
-end
 
 puts "Volt #{Volt::Version::STRING}"
 Volt::CLI.start(ARGV)

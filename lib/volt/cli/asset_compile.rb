@@ -3,6 +3,7 @@ module Volt
     desc 'precompile', 'precompile all application assets'
 
     def precompile
+      move_to_root
       compile
     end
 
