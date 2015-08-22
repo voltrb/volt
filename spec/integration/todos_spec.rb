@@ -19,4 +19,19 @@ describe 'todos app', type: :feature, sauce: true do
     page.driver.browser.navigate.refresh
     expect(page).to_not have_content('Todo 1')
   end
+
+  it 'should update a todo check state and persist' do
+    visit '/todos'
+
+    fill_in 'newtodo', :with => 'Todo 1'
+    find('#newtodo').native.send_keys(:return)
+
+    expect(page).to have_content('Todo 1')
+
+    find("input[type='checkbox']").click
+
+    page.evaluate_script('document.location.reload()')
+
+    expect(find("input[type='checkbox']").checked?).to eq(true)
+  end
 end

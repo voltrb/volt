@@ -13,19 +13,19 @@ module Volt
     end
 
     def key_code
-      `this.js_event.keyCode`
+      `self.js_event.keyCode`
     end
 
     def stop!
-      `this.js_event.stopPropagation();`
+      `self.js_event.stopPropagation();`
     end
 
     def prevent_default!
-      `this.js_event.preventDefault();`
+      `self.js_event.preventDefault();`
     end
 
     def target
-      `this.js_event.toElement`
+      `self.js_event.toElement || self.js_event.target`
     end
   end
 

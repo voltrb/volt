@@ -365,6 +365,9 @@ module Volt
             # Revert wholesale
             @attributes = old_attrs
             Promise.new.resolve(errs)
+          else
+            # Persist
+            persist_changes(nil)
           end
         end
       end
