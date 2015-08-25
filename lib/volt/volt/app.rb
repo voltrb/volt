@@ -91,7 +91,7 @@ module Volt
         # Load up the main component dependencies.  This is needed to load in
         # any opal_gem calls in dependencies.rb
         # TODO: Needs to support all components
-        AssetFiles.from_cache('main', component_paths)
+        AssetFiles.from_cache(app_url, 'main', component_paths)
 
         reset_query_pool!
 

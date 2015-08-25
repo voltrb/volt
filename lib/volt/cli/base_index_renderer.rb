@@ -3,7 +3,8 @@
 
 module Volt
   class BaseIndexRenderer
-    def initialize(manifest)
+    def initialize(volt_app, manifest)
+      @volt_app = volt_app
       @manifest = manifest
     end
 
@@ -16,11 +17,11 @@ module Volt
 
     # When writing the index, we render the
     def javascript_tags
-      "<script async src=\"/assets/#{@manifest['assets']['main/app.js']}\"></script>"
+      "<script async src=\"#{@volt_app.app_url}/#{@manifest['assets']['main/app.js']}\"></script>"
     end
 
     def css_tags
-      "<link href=\"/assets/#{@manifest['assets']['main/app.css']}\" media=\"all\" rel=\"stylesheet\" type=\"text/css\" />"
+      "<link href=\"#{@volt_app.app_url}/#{@manifest['assets']['main/app.css']}\" media=\"all\" rel=\"stylesheet\" type=\"text/css\" />"
     end
   end
 end

@@ -41,7 +41,7 @@ module Volt
     end
 
     def write_files_and_manifest
-      asset_files = AssetFiles.from_cache('main', @volt_app.component_paths)
+      asset_files = AssetFiles.from_cache(@volt_app.app_url, 'main', @volt_app.component_paths)
       # Write a temp css file
       js = asset_files.javascript(@volt_app)
       css = asset_files.css
@@ -101,7 +101,7 @@ module Volt
       require 'json'
 
       @manifest = JSON.parse(File.read(@root_path + '/public/assets/manifest.json'))
-      output_html = BaseIndexRenderer.new(@manifest).html
+      output_html = BaseIndexRenderer.new(@volt_app, @manifest).html
 
       write_file(output_path, output_html)
     end

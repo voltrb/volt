@@ -12,7 +12,7 @@ module Volt
   class OpalFiles
     attr_reader :environment, :server
 
-    def initialize(builder, app_path, component_paths)
+    def initialize(builder, app_url, app_path, component_paths)
       Opal::Processor.source_map_enabled = Volt.source_maps?
       Opal::Processor.const_missing_enabled = true
 
@@ -34,7 +34,7 @@ module Volt
       # Opal::Processor.arity_check_enabled = !Volt.env.production?
       # Opal::Processor.dynamic_require_severity = :raise
 
-      @server = Opal::Server.new(prefix: '/assets', debug: Volt.source_maps?)
+      @server = Opal::Server.new(prefix: app_url, debug: Volt.source_maps?)
       @server.use_index = false
 
       @component_paths                   = component_paths
@@ -78,7 +78,7 @@ module Volt
       # environment in closure
       environment                        = @environment
 
-      builder.map '/assets' do
+      builder.map(app_url) do
         run environment
       end
 

@@ -4,8 +4,8 @@ require 'volt/router/routes'
 # Serves the main pages
 module Volt
   class IndexFiles
-    def initialize(app, volt_app, component_paths, opal_files)
-      @app             = app
+    def initialize(rack_app, volt_app, component_paths, opal_files)
+      @rack_app        = rack_app
       @volt_app        = volt_app
       @component_paths = component_paths
       @opal_files      = opal_files
@@ -37,7 +37,7 @@ module Volt
       if route_match?(env['PATH_INFO'])
         [200, { 'Content-Type' => 'text/html; charset=utf-8' }, [html]]
       else
-        @app.call env
+        @rack_app.call env
       end
     end
 
@@ -58,11 +58,11 @@ module Volt
 
     def javascript_tags
       # TODO: Cache somehow, this is being loaded every time
-      AssetFiles.from_cache('main', @component_paths).javascript_tags(@volt_app)
+      AssetFiles.from_cache(@volt_app.app_url, 'main', @component_paths).javascript_tags(@volt_app)
     end
 
     def css_tags
-      AssetFiles.from_cache('main', @component_paths).css_tags
+      AssetFiles.from_cache(@volt_app.app_url, 'main', @component_paths).css_tags
     end
   end
 end

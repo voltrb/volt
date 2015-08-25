@@ -84,7 +84,7 @@ module Volt
       # Load in all views and routes
       # TODO: Nested components listed twice are are loaded multiple times
       component_names.uniq.each do |component_name|
-        code = Volt::ComponentCode.new(component_name, self, false).code
+        code = Volt::ComponentCode.new(volt_app, component_name, self, false).code
         # Evaluate returned code, the ```volt_app``` variable is set for access.
         eval(code)
       end
