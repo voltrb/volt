@@ -25,6 +25,12 @@ class NewGem
 
     copy_files
     copy_options
+
+    # Create a sample project inside of the specs folder
+    pwd = Dir.pwd
+    Dir.cwd(pwd + '/spec') do
+      @thor.invoke(:new, 'demo')
+    end
   end
 
   # Check with the rubygems api to see if this gem name is available.
