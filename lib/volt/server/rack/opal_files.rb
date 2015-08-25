@@ -121,9 +121,10 @@ module Volt
     end
 
     def add_asset_folders(environment)
-      @component_paths.asset_folders do |asset_folder|
-        environment.append_path(asset_folder)
-      end
+      # @component_paths.asset_folders do |asset_folder|
+      #   puts "ADD ASSET FOLDER: #{asset_folder.inspect}"
+      #   environment.append_path(asset_folder)
+      # end
     end
   end
 end

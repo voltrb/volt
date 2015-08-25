@@ -129,7 +129,10 @@ module Volt
         case type
           when :folder
             # for a folder, we search for all .js files and return a tag for them
-            javascript_files += Dir["#{path}/**/*.js"].sort.map { |folder| '/assets' + folder[path.size..-1] }
+            javascript_files += Dir["#{path}/**/*.js"].sort.map do |folder|
+              # Grab the component folder/assets/js/file.js
+              '/assets/' + folder.split('/')[-4..-1].join('/')
+            end
           when :javascript_file
             # javascript_file is a cdn path to a JS file
             javascript_files << path
@@ -172,7 +175,8 @@ module Volt
             # aren't imported by default:
             #  http://sass-lang.com/guide
             css_files += Dir["#{path}/**/[^_]*.{css,scss}"].sort.map do |folder|
-              css_path = '/assets' + folder[path.size..-1].gsub(/[.]scss$/, '')
+              last4 = folder.split('/')[-4..-1].join('/').gsub(/[.]scss$/, '')
+              css_path = '/assets/' + last4
               css_path += '.css' unless css_path =~ /[.]css$/
               css_path
             end

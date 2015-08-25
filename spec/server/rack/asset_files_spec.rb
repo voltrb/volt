@@ -22,15 +22,15 @@ if RUBY_PLATFORM != 'opal'
         it 'should list all JS files' do
           main = Volt::AssetFiles.new('main', @component_paths)
           expect(main.javascript(volt_app).reject{|v| v[0] != :src }).to eq([
-            [:src, '/assets/js/jquery-2.0.3.js'],
-            [:src, '/assets/js/volt_js_polyfills.js'],
-            [:src, '/assets/js/volt_watch.js'],
-            [:src, '/assets/js/bootstrap.js'],
-            [:src, '/assets/js/test2.js'],
-            [:src, '/assets/js/test3.js'],
-            [:src, '/assets/js/test1.js'],
-            [:src, '/assets/volt/volt/app.js'],
-            [:src, '/assets/components/main.js']
+            [:src, "/assets/volt/assets/js/jquery-2.0.3.js"],
+            [:src, "/assets/volt/assets/js/volt_js_polyfills.js"],
+            [:src, "/assets/volt/assets/js/volt_watch.js"],
+            [:src, "/assets/bootstrap/assets/js/bootstrap.js"],
+            [:src, "/assets/shared/assets/js/test2.js"],
+            [:src, "/assets/slideshow/assets/js/test3.js"],
+            [:src, "/assets/main/assets/js/test1.js"],
+            [:src, "/assets/volt/volt/app.js"],
+            [:src, "/assets/components/main.js"]
           ])
         end
       end
@@ -39,12 +39,12 @@ if RUBY_PLATFORM != 'opal'
         it 'should list only the files included via the css_file helpers' do
           disabled_auto = Volt::AssetFiles.new('disable_auto', @component_paths)
           expect(disabled_auto.javascript(volt_app).reject{|v| v[0] != :src }).to eq([
-            [:src, '/assets/js/jquery-2.0.3.js'],
-            [:src, '/assets/js/volt_js_polyfills.js'],
-            [:src, '/assets/js/volt_watch.js'],
-            [:src, '/assets/disable_auto/assets/js/test1.js'],
-            [:src, '/assets/volt/volt/app.js'],
-            [:src, '/assets/components/main.js']
+            [:src, "/assets/volt/assets/js/jquery-2.0.3.js"],
+            [:src, "/assets/volt/assets/js/volt_js_polyfills.js"],
+            [:src, "/assets/volt/assets/js/volt_watch.js"],
+            [:src, "/assets/disable_auto/assets/js/test1.js"],
+            [:src, "/assets/volt/volt/app.js"],
+            [:src, "/assets/components/main.js"]
           ])
         end
       end
@@ -57,9 +57,9 @@ if RUBY_PLATFORM != 'opal'
           main = Volt::AssetFiles.new('main', @component_paths)
 
           expect(main.css).to eq([
-            '/assets/css/notices.css',
-            '/assets/css/01-bootstrap.css',
-            '/assets/css/test3.css'
+            "/assets/volt/assets/css/notices.css",
+            "/assets/bootstrap/assets/css/01-bootstrap.css",
+            "/assets/main/assets/css/test3.css"
           ])
         end
       end
@@ -69,8 +69,8 @@ if RUBY_PLATFORM != 'opal'
           disabled_auto = Volt::AssetFiles.new('disable_auto', @component_paths)
 
           expect(disabled_auto.css).to eq([
-            '/assets/css/notices.css',
-            '/assets/disable_auto/assets/css/test1.css'
+            "/assets/volt/assets/css/notices.css",
+            "/assets/disable_auto/assets/css/test1.css"
           ])
         end
       end

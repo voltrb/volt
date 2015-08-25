@@ -38,22 +38,14 @@ describe Volt::LengthValidator do
       describe 'when name is "John"' do
         let(:name) { 'John' }
         it do
-          if RUBY_PLATFORM == 'opal'
-            expect(subject).to eq(name: ["must be at least {\"length\"=>5, \"maximum\"=>10} characters"])
-          else
-            expect(subject).to eq(name: ['must be at least {:length=>5, :maximum=>10} characters'])
-          end
+          expect(subject).to eq(name: ["must be at least 5 characters"])
         end
       end
 
       describe 'when name is "Zach Galifianakis"' do
         let(:name) { 'Zach Galifianakis' }
         it do
-          if RUBY_PLATFORM == 'opal'
-            expect(subject).to eq(name: ["must be less than {\"length\"=>5, \"maximum\"=>10} characters"])
-          else
-            expect(subject).to eq(name: ['must be less than {:length=>5, :maximum=>10} characters'])
-          end
+          expect(subject).to eq(name: ['must be less than 10 characters'])
         end
       end
     end

@@ -36,8 +36,26 @@ module Volt
         # We "freedom-patch" sprockets-helpers asset_path method to
         # automatically link assets.
         def asset_path(source, options = {})
+          relative_path = source =~ /^[.][.]\//
+          if relative_path
+            component_root = logical_path.gsub(/\/[^\/]+$/, '')
+            path = File.join(component_root, source)
+            source = Volt::SprocketsHelpersSetup.expand(path)
+          end
+
+          if relative_path
+            link_path = source
+          else
+            link_path = source.gsub(/^\/assets\//, '')
+          end
+
+          # Return for absolute urls (one's off site)
           uri = URI.parse(source)
           return source if uri.absolute?
+
+          # Link all assets out of the box
+          # Added by volt
+          link_asset(link_path)
 
           options[:prefix] = Sprockets::Helpers.prefix unless options[:prefix]
 
@@ -53,11 +71,8 @@ module Volt
             uri.path << ".#{options[:ext]}"
           end
 
-          # Link all assets out of the box
-          # Added by volt
-          link_asset(uri)
-
           path = find_asset_path(uri, source, options)
+
           if options[:expand] && path.respond_to?(:to_a)
             path.to_a
           else
@@ -66,6 +81,24 @@ module Volt
         end
       end
 
+    end
+
+    private
+
+    def self.expand(path)
+      parts = path.split('/')
+
+      output = []
+
+      parts.each do |part|
+        if part == '..'
+          output.pop
+        else
+          output << part
+        end
+      end
+
+      output.join('/')
     end
   end
 end

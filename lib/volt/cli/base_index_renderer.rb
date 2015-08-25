@@ -16,7 +16,7 @@ module Volt
 
     # When writing the index, we render the
     def javascript_tags
-      "<script src=\"/assets/#{@manifest['assets']['main/app.js']}\"></script>"
+      "<script async src=\"/assets/#{@manifest['assets']['main/app.js']}\"></script>"
     end
 
     def css_tags
