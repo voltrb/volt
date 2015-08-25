@@ -45,7 +45,7 @@ Gem::Specification.new do |spec|
 
   # There is a big performance issue with selenium-webdriver on v2.45.0
   spec.add_development_dependency 'selenium-webdriver', '~> 2.46.2'
-  spec.add_development_dependency 'chromedriver2-helper', '~> 0.0.8'
+  spec.add_development_dependency 'chromedriver-helper', '~> 1.0.0'
   spec.add_development_dependency 'poltergeist', '~> 1.5.0'
   spec.add_development_dependency 'thin', '~> 1.6.3'
   spec.add_development_dependency 'coveralls', '~> 0.8.1'
