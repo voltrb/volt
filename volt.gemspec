@@ -41,10 +41,10 @@ Gem::Specification.new do |spec|
   # For testing
   spec.add_development_dependency 'rspec', '~> 3.2.0'
   spec.add_development_dependency 'opal-rspec', '~> 0.4.3'
-  spec.add_development_dependency 'capybara', '~> 2.4.2'
+  spec.add_development_dependency 'capybara', '~> 2.4.4'
 
   # There is a big performance issue with selenium-webdriver on v2.45.0
-  spec.add_development_dependency 'selenium-webdriver', '~> 2.46.2'
+  spec.add_development_dependency 'selenium-webdriver', '~> 2.47.1'
   spec.add_development_dependency 'chromedriver-helper', '~> 1.0.0'
   spec.add_development_dependency 'poltergeist', '~> 1.5.0'
   spec.add_development_dependency 'thin', '~> 1.6.3'
