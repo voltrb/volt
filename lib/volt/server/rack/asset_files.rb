@@ -88,7 +88,7 @@ module Volt
     end
 
     def css_file(locator)
-      @assets << [:css_file, prepare_locator(locator, ['css','scss'])]
+      @assets << [:css_file, prepare_locator(locator, ['css','scss','sass'])]
     end
 
     def prepare_locator(locator, valid_extensions)
@@ -171,8 +171,8 @@ module Volt
             # Don't import any css/scss files that start with an underscore, so scss partials
             # aren't imported by default:
             #  http://sass-lang.com/guide
-            css_files += Dir["#{path}/**/[^_]*.{css,scss}"].sort.map do |folder|
-              css_path = '/assets' + folder[path.size..-1].gsub(/[.]scss$/, '')
+            css_files += Dir["#{path}/**/[^_]*.{css,scss,sass}"].sort.map do |folder|
+              css_path = '/assets' + folder[path.size..-1].gsub(/[.](scss|sass)$/, '')
               css_path += '.css' unless css_path =~ /[.]css$/
               css_path
             end
