@@ -2,8 +2,9 @@ require 'sprockets-helpers'
 
 module Volt
   class SprocketsHelpersSetup
-    def initialize(env)
-      @env = env
+    def initialize(volt_app)
+      @volt_app = volt_app
+      @env = volt_app.sprockets
 
       setup_path_helpers
       add_linking_in_asset_path
@@ -15,7 +16,7 @@ module Volt
       # Configure Sprockets::Helpers (if necessary)
       Sprockets::Helpers.configure do |config|
         config.environment = @env
-        config.prefix      = '/assets'
+        config.prefix      = @volt_app.app_url
         config.public_path = 'public'
         config.debug       = false#!Volt.env.production?
 
@@ -46,7 +47,7 @@ module Volt
           if relative_path
             link_path = source
           else
-            link_path = source.gsub(/^\/assets\//, '')
+            link_path = source.gsub(/^#{@volt_app.app_path}\//, '')
           end
 
           # Return for absolute urls (one's off site)

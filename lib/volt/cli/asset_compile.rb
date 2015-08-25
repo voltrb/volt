@@ -16,6 +16,11 @@ module Volt
       ENV['MAPS'] = 'false'
       ENV['NO_FORKING'] = 'true'
 
+      if !ENV['VOLT_ENV'] && !ENV['RACK_ENV']
+        # Set the default env for compile
+        ENV['VOLT_ENV'] = 'production'
+      end
+
       require 'opal'
       require 'rack'
       require 'volt'
@@ -41,7 +46,7 @@ module Volt
     end
 
     def write_files_and_manifest
-      asset_files = AssetFiles.from_cache('main', @volt_app.component_paths)
+      asset_files = AssetFiles.from_cache(@volt_app.app_url, 'main', @volt_app.component_paths)
       # Write a temp css file
       js = asset_files.javascript(@volt_app)
       css = asset_files.css
@@ -51,7 +56,7 @@ module Volt
         js.each do |type, src_or_body|
           if type == :src
             src = src_or_body
-            url = src.gsub(/^\/assets\//, '')
+            url = src.gsub(/^#{@volt_app.app_url}\//, '')
             file.write("//= require '#{url}'\n")
           else
             body = src_or_body
@@ -73,14 +78,14 @@ module Volt
 
       File.open(Volt.root + '/app/main/app.scss', 'wb') do |file|
         css.each do |link|
-          url = link.gsub(/^\/assets\//, '')
+          url = link.gsub(/^#{@volt_app.app_url}\//, '')
           file.write("//= require '#{url}'\n")
         end
       end
     end
 
     def compile_manifests
-      manifest = Sprockets::Manifest.new(@volt_app.sprockets, './public/assets/manifest.json')
+      manifest = Sprockets::Manifest.new(@volt_app.sprockets, "./public#{@volt_app.app_url}/manifest.json")
 
       # Compile the files (and linked assets)
       manifest.compile('main/app.js')
@@ -90,8 +95,8 @@ module Volt
       @tmp_files.each {|path| FileUtils.rm(path) }
 
       # Remove the temp files
-      FileUtils.rm(Volt.root + '/app/main/app.js')
-      FileUtils.rm(Volt.root + '/app/main/app.scss')
+      FileUtils.rm(Volt.root + "#{@volt_app.app_url}/main/app.js")
+      FileUtils.rm(Volt.root + "#{@volt_app.app_url}/main/app.scss")
     end
 
     def write_index
@@ -100,8 +105,8 @@ module Volt
       output_path = "#{@root_path}/public/index.html"
       require 'json'
 
-      @manifest = JSON.parse(File.read(@root_path + '/public/assets/manifest.json'))
-      output_html = BaseIndexRenderer.new(@manifest).html
+      @manifest = JSON.parse(File.read(@root_path + "/public#{@volt_app.app_url}/manifest.json"))
+      output_html = BaseIndexRenderer.new(@volt_app, @manifest).html
 
       write_file(output_path, output_html)
     end

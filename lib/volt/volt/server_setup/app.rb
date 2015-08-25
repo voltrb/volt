@@ -10,6 +10,11 @@ end
 module Volt
   module ServerSetup
     module App
+      # The root url is where the volt app is mounted
+      attr_reader :root_url
+      # The app url is where the app folder (and sprockets) is mounted
+      attr_reader :app_url
+
       def setup_paths
         # Load component paths
         @component_paths = ComponentPaths.new(@app_path)
@@ -19,6 +24,9 @@ module Volt
       def load_app_code
         setup_router
         require_http_controllers
+
+        @root_url = '/'
+        @app_url = '/app'
       end
 
       def setup_router

@@ -4,17 +4,18 @@ require 'uri'
 # from the dependencies.rb files.
 module Volt
   class AssetFiles
-    def self.from_cache(component_name, component_paths)
+    def self.from_cache(app_url, component_name, component_paths)
       # @cache ||= {}
 
       # @cache[component_name] ||= begin
         # not cached, create
 
-        self.new(component_name, component_paths)
+        self.new(app_url, component_name, component_paths)
       # end
     end
 
-    def initialize(component_name, component_paths)
+    def initialize(app_url, component_name, component_paths)
+      @app_url = app_url
       @component_paths     = component_paths
       @assets              = []
       @included_components = {}
@@ -93,7 +94,7 @@ module Volt
 
     def prepare_locator(locator, valid_extensions)
       unless url_or_path?(locator)
-        locator = File.join('/assets', @current_component, '/assets', valid_extensions.first, "#{locator}")
+        locator = File.join(@app_url, @current_component, '/assets', valid_extensions.first, "#{locator}")
         locator += '.css' unless locator =~ /^.*\.(#{valid_extensions.join('|')})$/
       end
       locator
@@ -131,7 +132,7 @@ module Volt
             # for a folder, we search for all .js files and return a tag for them
             javascript_files += Dir["#{path}/**/*.js"].sort.map do |folder|
               # Grab the component folder/assets/js/file.js
-              '/assets/' + folder.split('/')[-4..-1].join('/')
+              @app_url + '/' + folder.split('/')[-4..-1].join('/')
             end
           when :javascript_file
             # javascript_file is a cdn path to a JS file
@@ -149,7 +150,7 @@ module Volt
       if ENV['MAPS'] == 'all'
         scripts << @opal_tag_generator.javascript_include_tag(volt_path)
       else
-        scripts << "<script src=\"/assets/#{volt_path}.js\"></script>"
+        scripts << "<script src=\"#{volt_app.app_url}/#{volt_path}.js\"></script>"
         scripts << "<script>#{Opal::Processor.load_asset_code(volt_app.sprockets, volt_path)}</script>"
       end
 
@@ -176,7 +177,7 @@ module Volt
             #  http://sass-lang.com/guide
             css_files += Dir["#{path}/**/[^_]*.{css,scss}"].sort.map do |folder|
               last4 = folder.split('/')[-4..-1].join('/').gsub(/[.]scss$/, '')
-              css_path = '/assets/' + last4
+              css_path = @app_url + '/' + last4
               css_path += '.css' unless css_path =~ /[.]css$/
               css_path
             end

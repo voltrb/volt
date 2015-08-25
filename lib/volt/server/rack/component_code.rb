@@ -6,7 +6,8 @@ require 'volt/server/rack/asset_files'
 # method that returns all of the ruby setup code for the component.
 module Volt
   class ComponentCode
-    def initialize(component_name, component_paths, client = true)
+    def initialize(volt_app, component_name, component_paths, client = true)
+      @volt_app        = volt_app
       @component_name  = component_name
       @component_paths = component_paths
       @client          = client
@@ -17,7 +18,7 @@ module Volt
       # Start with config code
       code = @client ? generate_config_code : ''
 
-      asset_files = AssetFiles.from_cache(@component_name, @component_paths)
+      asset_files = AssetFiles.from_cache(@volt_app.app_url, @component_name, @component_paths)
       asset_files.component_paths.each do |component_path, component_name|
         code << ComponentTemplates.new(component_path, component_name, @client).code
         code << "\n\n"

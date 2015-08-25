@@ -1,6 +1,9 @@
 # Change Log
 
 ## 0.9.5
+### Breaking Changes
+- previously, we mounted the asset folders in components at /assets, and we also mounted the /app folder (and any gem's app folders') at /assets.  This allowed you to usually access what you wanted at /assets, but resulted in conflicts.  To ensure better component isolation, we now only mount the ```app``` folders.  To make things clear, instead of sprockets being mounted at /assets, it is now mounted at /app.  So the url for something in /app/main/assets/css/something.css can be accessed at (you guessed it) /app/main/assets/css/something.css
+
 ### Added
 - You can now disable auto-import of JS/CSS with ```disable_auto_import``` in a dependencies.rb file
 - Opal was upgraded to 0.8, which brings sourcemaps back (yah!)
@@ -12,6 +15,7 @@
 - Rewrote the precompile pipeline.
     - Added image compression by default. (using image_optim)
 - All volt CLI tasks now can run from inside of any directory in the volt app (or the root)
+- Asset precompilation has been reworked to use Sprockets::Manifest.  The results are written to /public, and an index.html file is created.  The entire app loading up until the websocket connect can be served statically (via nginx for example)  All js and css is written to a single file.
 
 ### Changed
 - fix issue with ```raw``` and promises (#275)
