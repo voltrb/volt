@@ -19,9 +19,9 @@ module Volt
       end
 
       if !value || value.size < min
-        errors[field_name] = [message || "must be at least #{args} characters"]
+        errors[field_name] = [message || "must be at least #{min} characters"]
       elsif max && value.size > max
-        errors[field_name] = [message || "must be less than #{args} characters"]
+        errors[field_name] = [message || "must be less than #{max} characters"]
       end
 
       errors
