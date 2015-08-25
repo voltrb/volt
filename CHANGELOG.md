@@ -16,6 +16,7 @@
     - Added image compression by default. (using image_optim)
 - All volt CLI tasks now can run from inside of any directory in the volt app (or the root)
 - Asset precompilation has been reworked to use Sprockets::Manifest.  The results are written to /public, and an index.html file is created.  The entire app loading up until the websocket connect can be served statically (via nginx for example)  All js and css is written to a single file.
+- The ```generate gem``` generator has been improved to setup a dummy app and integration specs out of the box.
 
 ### Changed
 - fix issue with ```raw``` and promises (#275)

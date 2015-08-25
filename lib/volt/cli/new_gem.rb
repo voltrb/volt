@@ -28,8 +28,22 @@ class NewGem
 
     # Create a sample project inside of the specs folder
     Dir.chdir(@target + '/spec') do
-      @thor.invoke(:new, 'demo')
+      @thor.say 'Generating dummy project for integration specs', :green
+      cli = Volt::CLI.new
+      cli.shell.mute do
+        cli.new_project('dummy', true)
+      end
+
+      # Remove gemfile
+      FileUtils.rm('dummy/Gemfile')
+
+      # Remove spec directory inside of dummy app
+      FileUtils.rm_rf('dummy/spec')
     end
+
+    puts "Initializing git repo in #{@target}"
+    Dir.chdir(@target) { `git init`; `git add .` }
+
   end
 
   # Check with the rubygems api to see if this gem name is available.
@@ -83,9 +97,8 @@ at choosealicense.com/licenses/mit.\n\ny/(n):")
     copy('newgem/bin/newgem.tt', "bin/#{@name}") if @options[:bin]
     copy('newgem/rspec.tt', '.rspec')
     copy('newgem/spec/spec_helper.rb.tt', 'spec/spec_helper.rb')
-    copy('newgem/spec/newgem_spec.rb.tt', "spec/#{@namespaced_path}_spec.rb")
-    puts "Initializing git repo in #{@target}"
-    Dir.chdir(@target) { `git init`; `git add .` }
+    copy('newgem/spec/newgem_spec.rb.tt', "spec/sample_spec.rb")
+    copy('newgem/spec/integration/sample_integration_spec.rb', "spec/integration/sample_integration_spec.rb")
 
     if @options[:edit]
       run("#{@options['edit']} \"#{gemspec_dest}\"")  # Open gemspec in editor
@@ -120,7 +133,7 @@ at choosealicense.com/licenses/mit.\n\ny/(n):")
 
   def volt_version_base
     require 'volt/version'
-    Volt::Version::STRING.split('.').tap { |v| v[v.size - 1] = 0 }.join('.')
+    Volt::Version::STRING
   end
 
   def get_constant_name

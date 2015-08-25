@@ -1,6 +1,10 @@
 # Volt sets up rspec and capybara for testing.
 require 'volt/spec/setup'
-Volt.spec_setup
+
+# When testing Volt component gems, we boot up a dummy app first to run the
+# test in, so we have access to Volt itself.
+dummy_app_path = File.join(File.dirname(__FILE__), 'dummy')
+Volt.spec_setup(dummy_app_path)
 
 RSpec.configure do |config|
   config.run_all_when_everything_filtered = true

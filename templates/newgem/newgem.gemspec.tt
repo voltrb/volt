@@ -19,8 +19,23 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_development_dependency "volt", "~> <%= config[:volt_version_base] %>"
-  spec.add_development_dependency 'rspec', '~> 3.2.0'
   spec.add_development_dependency "rake"
+
+  # Testing gems
+  spec.add_development_dependency 'rspec', '~> 3.2.0'
+  spec.add_development_dependency 'opal-rspec', '~> 0.4.2'
+  spec.add_development_dependency 'capybara', '~> 2.4.2'
+  spec.add_development_dependency 'selenium-webdriver', '~> 2.43.0'
+  spec.add_development_dependency 'chromedriver2-helper', '~> 0.0.8'
+  spec.add_development_dependency 'poltergeist', '~> 1.5.0'
+
+  # Gems to run the dummy app
+  spec.add_development_dependency 'volt-mongo', '0.1.1'
+  spec.add_development_dependency 'volt-bootstrap', '~> 0.1.0'
+  spec.add_development_dependency 'volt-bootstrap_jumbotron_theme', '~> 0.1.0'
+  spec.add_development_dependency 'volt-user_templates', '~> 0.4.0'
+  spec.add_development_dependency 'thin', '~> 1.6.0'
+
 <% if config[:test] -%>
   spec.add_development_dependency "<%=config[:test]%>"
 <% end -%>
