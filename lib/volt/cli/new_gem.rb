@@ -27,8 +27,7 @@ class NewGem
     copy_options
 
     # Create a sample project inside of the specs folder
-    pwd = Dir.pwd
-    Dir.cwd(pwd + '/spec') do
+    Dir.chdir(@target + '/spec') do
       @thor.invoke(:new, 'demo')
     end
   end
