@@ -33,10 +33,11 @@ module Volt
     end
 
     def add_linking_in_asset_path
+      app_path = @volt_app.app_path
       @env.context_class.class_eval do
         # We "freedom-patch" sprockets-helpers asset_path method to
         # automatically link assets.
-        def asset_path(source, options = {})
+        define_method(:asset_path) do |source, options = {}|
           relative_path = source =~ /^[.][.]\//
           if relative_path
             component_root = logical_path.gsub(/\/[^\/]+$/, '')
@@ -47,7 +48,7 @@ module Volt
           if relative_path
             link_path = source
           else
-            link_path = source.gsub(/^#{@volt_app.app_path}\//, '')
+            link_path = source.gsub(/^#{app_path}\//, '')
           end
 
           # Return for absolute urls (one's off site)

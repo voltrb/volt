@@ -54,13 +54,20 @@ module Volt
       @components
     end
 
+    # Setup load path for components
+    def setup_load_paths
+      unless RUBY_PLATFORM == 'opal'
+        app_folders do |app_folder|
+          $LOAD_PATH.unshift(app_folder)
+        end
+      end
+    end
+
     # Makes each components classes available on the load path, require classes.
     def require_in_components(volt_app)
       if RUBY_PLATFORM == 'opal'
       else
         app_folders do |app_folder|
-          $LOAD_PATH.unshift(app_folder)
-
           # Sort so we get consistent load order across platforms
           Dir["#{app_folder}/*/{controllers,models,tasks}/*.rb"].each do |ruby_file|
             path = ruby_file.gsub(/^#{app_folder}\//, '')[0..-4]

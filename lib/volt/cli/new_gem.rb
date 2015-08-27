@@ -31,7 +31,7 @@ class NewGem
       @thor.say 'Generating dummy project for integration specs', :green
       cli = Volt::CLI.new
       cli.shell.mute do
-        cli.new_project('dummy', true)
+        cli.new_project('dummy', true, true)
       end
 
       # Remove gemfile

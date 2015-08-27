@@ -143,12 +143,16 @@ module Volt
 
       # Run the promise and pass the return value/error back to the client
       promise.then do |result|
-        channel.send_message('response', callback_id, result, nil)
+        reply = EJSON.stringify(['response', callback_id, result, nil])
+        channel.send_string_message(reply)
 
         finish.call
       end.fail do |error|
         finish.call(error)
-        channel.send_message('response', callback_id, nil, error)
+        # Convert the error into a string so it can be serialized.
+        error_str = "#{error.class.to_s}: #{error.to_s}"
+
+        channel.send_message('response', callback_id, nil, error_str)
       end
 
     end

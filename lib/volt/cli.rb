@@ -120,11 +120,17 @@ module Volt
     no_tasks do
       # The logic for creating a new project.  We want to be able to invoke this
       # inside of a method so we can run it with Dir.chdir
-      def new_project(name, skip_gemfile = false)
+      def new_project(name, skip_gemfile = false, disable_encryption = false)
         require 'securerandom'
 
         # Grab the current volt version
-        directory('project', name, version: Volt::Version::STRING, name: name, domain: name.dasherize.downcase, app_name: name.capitalize)
+        directory('project', name, {
+          version: Volt::Version::STRING,
+          name: name,
+          domain: name.dasherize.downcase,
+          app_name: name.capitalize,
+          disable_encryption: disable_encryption
+        })
 
         unless skip_gemfile
           # Move into the directory

@@ -18,6 +18,10 @@ module Volt
       def setup_paths
         # Load component paths
         @component_paths = ComponentPaths.new(@app_path)
+        @component_paths.setup_load_paths
+      end
+
+      def require_components
         @component_paths.require_in_components(self)
       end
 

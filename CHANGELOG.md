@@ -8,7 +8,7 @@
 - You can now disable auto-import of JS/CSS with ```disable_auto_import``` in a dependencies.rb file
 - Opal was upgraded to 0.8, which brings sourcemaps back (yah!)
 - Page load performance was improved, and more of sprockets was used for component loading.
-- You can now return promises in permissions blocks.  Also, can_read?, can_create?, and .can_delete?
+- You can now return promises in permissions blocks.  Also, can_read?, can_create?, and .can_delete? now return promises.
 - Anything in /public is now served via Rack::Static in the default middleware stack.  (So you can put user uploaded images in there)
 - You can now use _ or - in volt tag names and attributes.  (We're moving to using dash ( - ) as the standard in html)
 - You can now trigger events on controllers rendered as tags.  The events will bubble up through the DOM and can be caught by any e- bindings.  See the docs for more information.
@@ -21,6 +21,10 @@
 ### Changed
 - fix issue with ```raw``` and promises (#275)
 - fix issue with .length on store (#269)
+- The {root}/config/initializers directory is now only for server side code.
+- Redid the initializer load order so all initializers run before any controllers/models/views are loaded.
+- Added error message for when an unserializable object is returned from a Task
+- Fixed issue with disable_encryption option
 
 ## 0.9.4
 ### Lingo Change

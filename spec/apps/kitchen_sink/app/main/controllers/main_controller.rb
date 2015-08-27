@@ -5,7 +5,7 @@ module Main
   class MainController < Volt::ModelController
     model :page
 
-    reactive_accessor :blur_count, :focus_count
+    reactive_accessor :blur_count, :focus_count, :image_loaded
 
     def index
       a = {}

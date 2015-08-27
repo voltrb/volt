@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'sass', '~> 3.4.15'
   spec.add_dependency 'listen', '~> 3.0.1'
   spec.add_dependency 'configurations', '~> 2.0.0.pre'
-  spec.add_dependency 'opal', '~> 0.8.0'
+  spec.add_dependency 'opal', ['>= 0.8.0', '< 0.9']
   spec.add_dependency 'bundler', '>= 1.5'
   spec.add_dependency 'faye-websocket', '~> 0.10.0'
   spec.add_dependency 'sprockets-helpers', '~> 1.2.1'

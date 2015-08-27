@@ -22,12 +22,22 @@ module Volt
       @client         = client
     end
 
-    def code
-      code = generate_routes_code + generate_view_code
+    def initializer_code
+      if @client
+        generate_initializers_code
+      else
+        ''
+      end
+    end
+
+    def component_code
+      code = ''
+
+      code << generate_routes_code + generate_view_code
       if @client
         # On the backend, we just need the views
         code << generate_controller_code + generate_model_code +
-                generate_tasks_code + generate_initializers_code
+                generate_tasks_code
       end
 
       code
@@ -161,16 +171,12 @@ module Volt
     end
 
     def generate_initializers_code
-      # Include the root initializers
-      paths = Dir["#{Volt.root}/config/initializers/*.rb"]
-      paths += Dir["#{Volt.root}/config/initializers/client/*.rb"]
-
       paths = Dir["#{@component_path}/config/initializers/*.rb"]
       paths += Dir["#{@component_path}/config/initializers/client/*.rb"]
 
       code = "\n" + paths.map { |path| "require '#{localize_path(path)}'" }.join("\n")
 
-      code
+      code + "\n\n"
     end
 
     private

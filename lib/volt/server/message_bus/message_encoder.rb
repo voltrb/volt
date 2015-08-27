@@ -13,7 +13,7 @@ module Volt
         end
 
         # Message bus is encrypted by default
-        disable = Volt.config.message_bus.try(:disable_encryption)
+        disable = (msg_bus = Volt.config.message_bus) && msg_bus.disable_encryption
         @encrypted = !windows && (disable != true)
 
         if @encrypted

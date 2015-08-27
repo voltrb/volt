@@ -16,9 +16,8 @@ require 'volt/models/root_models/root_models'
 if RUBY_PLATFORM == 'opal'
   require 'promise'
 else
-  # Opal doesn't expose its promise library directly
   require 'opal'
-
+  # Opal doesn't expose its promise library directly
   gem_dir = File.join(Opal.gem_dir, '..')
   require(gem_dir + '/stdlib/promise')
 end

@@ -29,7 +29,9 @@ if RUBY_PLATFORM != 'opal'
     it 'should only allow method calls on Task or above in the inheritance chain' do
       channel = double('channel')
 
-      expect(channel).to receive(:send_message).with('response', 0, 'yes it works', nil)
+      # Tasks handle their own conversion to EJSON
+      msg = Volt::EJSON.stringify(['response', 0, 'yes it works', nil])
+      expect(channel).to receive(:send_string_message).with(msg)
 
       dispatcher.dispatch(channel, [0, 'TestTask', :allowed_method, {}, ' it', ' works'])
     end
@@ -37,7 +39,7 @@ if RUBY_PLATFORM != 'opal'
     it 'should not allow eval' do
       channel = double('channel')
 
-      expect(channel).to receive(:send_message).with('response', 0, nil, RuntimeError.new('unsafe method: eval'))
+      expect(channel).to receive(:send_message).with('response', 0, nil, "RuntimeError: unsafe method: eval")
 
       dispatcher.dispatch(channel, [0, 'TestTask', :eval, '5 + 10'])
     end
@@ -45,7 +47,7 @@ if RUBY_PLATFORM != 'opal'
     it 'should not allow instance_eval' do
       channel = double('channel')
 
-      expect(channel).to receive(:send_message).with('response', 0, nil, RuntimeError.new('unsafe method: instance_eval'))
+      expect(channel).to receive(:send_message).with('response', 0, nil, 'RuntimeError: unsafe method: instance_eval')
 
       dispatcher.dispatch(channel, [0, 'TestTask', :instance_eval, '5 + 10'])
     end
@@ -53,7 +55,7 @@ if RUBY_PLATFORM != 'opal'
     it 'should not allow #methods' do
       channel = double('channel')
 
-      expect(channel).to receive(:send_message).with('response', 0, nil, RuntimeError.new('unsafe method: methods'))
+      expect(channel).to receive(:send_message).with('response', 0, nil, 'RuntimeError: unsafe method: methods')
 
       dispatcher.dispatch(channel, [0, 'TestTask', :methods])
     end

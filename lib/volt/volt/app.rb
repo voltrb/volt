@@ -80,6 +80,8 @@ module Volt
         # Require in app and initializers
         run_app_and_initializers unless RUBY_PLATFORM == 'opal'
 
+        require_components
+
         # abort_on_exception is a useful debugging tool, and in my opinion something
         # you probbaly want on.  That said you can disable it if you need.
         unless RUBY_PLATFORM == 'opal'
