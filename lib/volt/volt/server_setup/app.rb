@@ -61,10 +61,10 @@ module Volt
         files += Dir[Volt.root + '/config/initializers/server/*.rb']
 
         # Get initializers for each component
-        component_paths.app_folders do |app_folder|
-          files += Dir["#{app_folder}/*/config/initializers/*.rb"]
-          files += Dir["#{app_folder}/*/config/initializers/server/*.rb"]
-        end
+        #component_paths.app_folders do |app_folder|
+        #  files += Dir["#{app_folder}/*/config/initializers/*.rb"]
+        #  files += Dir["#{app_folder}/*/config/initializers/server/*.rb"]
+        #end
 
         files.each do |initializer|
           require(initializer)

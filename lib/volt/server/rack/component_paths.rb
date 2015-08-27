@@ -58,8 +58,21 @@ module Volt
     def require_in_components(volt_app)
       if RUBY_PLATFORM == 'opal'
       else
+
+        # Load component initializers incase they extend Volt functionality
         app_folders do |app_folder|
           $LOAD_PATH.unshift(app_folder)
+          
+           initializers = []
+           initializers += Dir["#{app_folder}/*/config/initializers/*.rb"]
+           initializers += Dir["#{app_folder}/*/config/initializers/server/*.rb"]
+
+           initializers.each do |initializer|
+             require(initializer)
+           end
+        end
+
+        app_folders do |app_folder|
 
           # Sort so we get consistent load order across platforms
           Dir["#{app_folder}/*/{controllers,models,tasks}/*.rb"].each do |ruby_file|
