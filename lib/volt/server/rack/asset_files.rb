@@ -130,9 +130,11 @@ module Volt
         case type
           when :folder
             # for a folder, we search for all .js files and return a tag for them
+            base_path = base(path)
             javascript_files += Dir["#{path}/**/*.js"].sort.map do |folder|
               # Grab the component folder/assets/js/file.js
-              @app_url + '/' + folder.split('/')[-4..-1].join('/')
+              local_path = folder[path.size..-1]
+              @app_url + '/' + base_path + local_path
             end
           when :javascript_file
             # javascript_file is a cdn path to a JS file
@@ -175,9 +177,10 @@ module Volt
             # Don't import any css/scss files that start with an underscore, so scss partials
             # aren't imported by default:
             #  http://sass-lang.com/guide
-            css_files += Dir["#{path}/**/[^_]*.{css,scss}"].sort.map do |folder|
-              last4 = folder.split('/')[-4..-1].join('/').gsub(/[.]scss$/, '')
-              css_path = @app_url + '/' + last4
+            base_path = base(path)
+            css_files += Dir["#{path}/**/[^_]*.{css,scss,sass}"].sort.map do |folder|
+              local_path = folder[path.size..-1].gsub(/[.](scss|sass)$/, '')
+              css_path = @app_url + '/' + base_path + local_path
               css_path += '.css' unless css_path =~ /[.]css$/
               css_path
             end
@@ -207,5 +210,12 @@ module Volt
         end
       end
     end
+
+    private
+    def base(path)
+      path.split('/')[-2..-1].join('/')
+    end
+
+
   end
 end

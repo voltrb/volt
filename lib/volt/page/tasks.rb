@@ -48,8 +48,9 @@ module Volt
         if error
           # TODO: full error handling
           Volt.logger.error('Task Response:')
-          Volt.logger.error(error.inspect)
-          promise.reject(RuntimeError.new(error))
+          Volt.logger.error(error)
+
+          promise.reject(error)
         else
           promise.resolve(result)
         end
