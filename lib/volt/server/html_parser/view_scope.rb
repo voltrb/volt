@@ -52,6 +52,8 @@ module Volt
               add_each(content, false)
             elsif content =~ /.each_with_index\s+do\s+\|/
               add_each(content, true)
+            elsif content[0] == '#'
+              # A comment binding, just ignore it.
             else
               add_content_binding(content)
             end
