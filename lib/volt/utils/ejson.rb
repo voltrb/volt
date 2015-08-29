@@ -4,7 +4,7 @@ module Volt
   class EJSON
     class NonEjsonType < Exception ; end
 
-    OTHER_VALID_CLASSES = [String, TrueClass, FalseClass, Numeric, NilClass]
+    OTHER_VALID_CLASSES = [String, Symbol, TrueClass, FalseClass, Numeric, NilClass]
 
     def self.stringify(obj)
       encode(obj).to_json
