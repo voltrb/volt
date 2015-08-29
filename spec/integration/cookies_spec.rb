@@ -42,4 +42,6 @@ describe 'cookies collection', type: :feature, sauce: true do
 
     expect(page).to_not have_content('two: two')
   end
+
+  it 'should set a cookie from a task'
 end

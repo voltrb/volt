@@ -30,7 +30,7 @@ if RUBY_PLATFORM != 'opal'
       channel = double('channel')
 
       # Tasks handle their own conversion to EJSON
-      msg = Volt::EJSON.stringify(['response', 0, 'yes it works', nil])
+      msg = Volt::EJSON.stringify(['response', 0, 'yes it works', nil, nil])
       expect(channel).to receive(:send_string_message).with(msg)
 
       dispatcher.dispatch(channel, [0, 'TestTask', :allowed_method, {}, ' it', ' works'])
@@ -39,7 +39,7 @@ if RUBY_PLATFORM != 'opal'
     it 'should not allow eval' do
       channel = double('channel')
 
-      expect(channel).to receive(:send_message).with('response', 0, nil, "RuntimeError: unsafe method: eval")
+      expect(channel).to receive(:send_message).with('response', 0, nil, "RuntimeError: unsafe method: eval", nil)
 
       dispatcher.dispatch(channel, [0, 'TestTask', :eval, '5 + 10'])
     end
@@ -47,7 +47,7 @@ if RUBY_PLATFORM != 'opal'
     it 'should not allow instance_eval' do
       channel = double('channel')
 
-      expect(channel).to receive(:send_message).with('response', 0, nil, 'RuntimeError: unsafe method: instance_eval')
+      expect(channel).to receive(:send_message).with('response', 0, nil, 'RuntimeError: unsafe method: instance_eval', nil)
 
       dispatcher.dispatch(channel, [0, 'TestTask', :instance_eval, '5 + 10'])
     end
@@ -55,7 +55,7 @@ if RUBY_PLATFORM != 'opal'
     it 'should not allow #methods' do
       channel = double('channel')
 
-      expect(channel).to receive(:send_message).with('response', 0, nil, 'RuntimeError: unsafe method: methods')
+      expect(channel).to receive(:send_message).with('response', 0, nil, 'RuntimeError: unsafe method: methods', nil)
 
       dispatcher.dispatch(channel, [0, 'TestTask', :methods])
     end

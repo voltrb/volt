@@ -41,6 +41,17 @@ module Volt
         self.__timeout = value
       end
 
+      def cookies
+        @cookies ||= Model.new
+      end
+
+      # Get the cookies that got set
+      def fetch_cookies
+        if @cookies
+          @cookies.to_h.reject {|k,v| k == :id }
+        end
+      end
+
       # On the backend, we proxy all class methods like we would
       # on the front-end.  This returns a promise, even if the
       # original code did not.
