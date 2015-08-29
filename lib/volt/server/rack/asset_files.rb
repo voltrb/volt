@@ -89,7 +89,7 @@ module Volt
     end
 
     def css_file(locator)
-      @assets << [:css_file, prepare_locator(locator, ['css','scss'])]
+      @assets << [:css_file, prepare_locator(locator, ['css','scss','sass'])]
     end
 
     def prepare_locator(locator, valid_extensions)
