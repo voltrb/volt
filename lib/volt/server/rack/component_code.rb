@@ -2,11 +2,12 @@ require 'volt/server/html_parser/view_parser'
 require 'volt/server/component_templates'
 require 'volt/server/rack/asset_files'
 
-# Takes in the name and all component paths and has a .code
-# method that returns all of the ruby setup code for the component.
+# Takes in the name and all component paths returns all of the ruby code for the
+# component and its dependencies.
 module Volt
   class ComponentCode
-    def initialize(component_name, component_paths, client = true)
+    def initialize(volt_app, component_name, component_paths, client = true)
+      @volt_app        = volt_app
       @component_name  = component_name
       @component_paths = component_paths
       @client          = client
@@ -15,15 +16,17 @@ module Volt
     # The client argument is for if this code is being generated for the client
     def code
       # Start with config code
-      code = @client ? generate_config_code : ''
+      initializer_code = @client ? generate_config_code : ''
+      component_code = ''
 
-      asset_files = AssetFiles.from_cache(@component_name, @component_paths)
+      asset_files = AssetFiles.from_cache(@volt_app.app_url, @component_name, @component_paths)
       asset_files.component_paths.each do |component_path, component_name|
-        code << ComponentTemplates.new(component_path, component_name, @client).code
-        code << "\n\n"
+        comp_template = ComponentTemplates.new(component_path, component_name, @client)
+        initializer_code << comp_template.initializer_code + "\n\n"
+        component_code << comp_template.component_code + "\n\n"
       end
 
-      code
+      initializer_code + component_code
     end
 
     def generate_config_code

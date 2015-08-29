@@ -11,7 +11,7 @@ if RUBY_PLATFORM != 'opal'
     end
 
     it 'should return the dependencies list' do
-      main = Volt::AssetFiles.new('main', @component_paths)
+      main = Volt::AssetFiles.new('/app', 'main', @component_paths)
 
       components = main.components
       expect(components).to eq(%w(volt mongo main shared bootstrap slideshow))
@@ -20,31 +20,31 @@ if RUBY_PLATFORM != 'opal'
     describe 'js files' do
       context "when the component's dependencies.rb does not contain .disable_auto_import" do
         it 'should list all JS files' do
-          main = Volt::AssetFiles.new('main', @component_paths)
-          expect(main.javascript(volt_app)).to eq([
-            [:src, '/assets/js/jquery-2.0.3.js'],
-            [:src, '/assets/js/volt_js_polyfills.js'],
-            [:src, '/assets/js/volt_watch.js'],
-            [:src, '/assets/js/bootstrap.js'],
-            [:src, '/assets/js/test2.js'],
-            [:src, '/assets/js/test3.js'],
-            [:src, '/assets/js/test1.js'],
-            [:src, '/assets/volt/volt/app.js'],
-            [:src, '/assets/components/main.js']
+          main = Volt::AssetFiles.new('/app', 'main', @component_paths)
+          expect(main.javascript(volt_app).reject{|v| v[0] != :src }).to eq([
+            [:src, "/app/volt/assets/js/jquery-2.0.3.js"],
+            [:src, "/app/volt/assets/js/volt_js_polyfills.js"],
+            [:src, "/app/volt/assets/js/volt_watch.js"],
+            [:src, "/app/bootstrap/assets/js/bootstrap.js"],
+            [:src, "/app/shared/assets/js/test2.js"],
+            [:src, "/app/slideshow/assets/js/test3.js"],
+            [:src, "/app/main/assets/js/test1.js"],
+            [:src, "/app/volt/volt/app.js"],
+            [:src, "/app/components/main.js"]
           ])
         end
       end
 
       context "when the component's dependencies.rb contains .disable_auto_import" do
         it 'should list only the files included via the css_file helpers' do
-          disabled_auto = Volt::AssetFiles.new('disable_auto', @component_paths)
-          expect(disabled_auto.javascript(volt_app)).to eq([
-            [:src, '/assets/js/jquery-2.0.3.js'],
-            [:src, '/assets/js/volt_js_polyfills.js'],
-            [:src, '/assets/js/volt_watch.js'],
-            [:src, '/assets/disable_auto/assets/js/test1.js'],
-            [:src, '/assets/volt/volt/app.js'],
-            [:src, '/assets/components/main.js']
+          disabled_auto = Volt::AssetFiles.new('/app', 'disable_auto', @component_paths)
+          expect(disabled_auto.javascript(volt_app).reject{|v| v[0] != :src }).to eq([
+            [:src, "/app/volt/assets/js/jquery-2.0.3.js"],
+            [:src, "/app/volt/assets/js/volt_js_polyfills.js"],
+            [:src, "/app/volt/assets/js/volt_watch.js"],
+            [:src, "/app/disable_auto/assets/js/test1.js"],
+            [:src, "/app/volt/volt/app.js"],
+            [:src, "/app/components/main.js"]
           ])
         end
       end
@@ -54,23 +54,23 @@ if RUBY_PLATFORM != 'opal'
 
       context "when the component's dependencies.rb does not contain .disable_auto_import" do
         it 'should list all the asset files in that component' do
-          main = Volt::AssetFiles.new('main', @component_paths)
+          main = Volt::AssetFiles.new('/app', 'main', @component_paths)
 
           expect(main.css).to eq([
-            '/assets/css/notices.css',
-            '/assets/css/01-bootstrap.css',
-            '/assets/css/test3.css'
+            "/app/volt/assets/css/notices.css",
+            "/app/bootstrap/assets/css/01-bootstrap.css",
+            "/app/main/assets/css/test3.css"
           ])
         end
       end
 
       context "when the component's dependencies.rb contains .disable_auto_import" do
         it 'should list only the files included via the css_file helpers' do
-          disabled_auto = Volt::AssetFiles.new('disable_auto', @component_paths)
+          disabled_auto = Volt::AssetFiles.new('/app', 'disable_auto', @component_paths)
 
           expect(disabled_auto.css).to eq([
-            '/assets/css/notices.css',
-            '/assets/disable_auto/assets/css/test1.css'
+            "/app/volt/assets/css/notices.css",
+            "/app/disable_auto/assets/css/test1.css"
           ])
         end
       end
@@ -78,33 +78,33 @@ if RUBY_PLATFORM != 'opal'
 
     describe '.is_url?' do
       it 'should return true for URIs like //something.com/something.js' do
-        main = Volt::AssetFiles.new('main', @component_paths)
+        main = Volt::AssetFiles.new('/app', 'main', @component_paths)
         expect(main.url_or_path? '//something.com/a-folder/something.js').to eq(true)
       end
 
       it 'should return true for HTTP and HTTPS urls' do
-        main = Volt::AssetFiles.new('main', @component_paths)
+        main = Volt::AssetFiles.new('/app', 'main', @component_paths)
         expect(main.url_or_path? 'http://something.com/a-folder/something.js').to eq(true)
         expect(main.url_or_path? 'https://something.com/a-folder/something.js').to eq(true)
       end
 
       it 'should return true for paths' do
-        main = Volt::AssetFiles.new('main', @component_paths)
+        main = Volt::AssetFiles.new('/app', 'main', @component_paths)
         expect(main.url_or_path? 'something.js').to eq(false)
-        expect(main.url_or_path? '/assets/something.js').to eq(true)
-        expect(main.url_or_path? '/assets/something/something.js').to eq(true)
+        expect(main.url_or_path? '/app/something.js').to eq(true)
+        expect(main.url_or_path? '/app/something/something.js').to eq(true)
       end
 
       it 'should return false for file names' do
-        main = Volt::AssetFiles.new('main', @component_paths)
+        main = Volt::AssetFiles.new('/app', 'main', @component_paths)
         expect(main.url_or_path? 'something.js').to eq(false)
-        expect(main.url_or_path? 'assets/something/something.js').to eq(false)
+        expect(main.url_or_path? 'app/something/something.js').to eq(false)
       end
 
     end
 
     it 'should raise an exception for a missing component gem' do
-      main = Volt::AssetFiles.new('main', @component_paths)
+      main = Volt::AssetFiles.new('/app', 'main', @component_paths)
 
       relative_dep_path = '../../apps/file_loading/app/missing_deps'
       path_to_missing_deps = File.join(File.dirname(__FILE__), relative_dep_path)
@@ -115,7 +115,7 @@ if RUBY_PLATFORM != 'opal'
     end
 
     it 'should not raise an exception for a dependency file with valid components' do
-      main = Volt::AssetFiles.new('main', @component_paths)
+      main = Volt::AssetFiles.new('/app', 'main', @component_paths)
 
       path_to_main = File.join(File.dirname(__FILE__), '../../apps/file_loading/app/main')
       path_to_missing_deps = File.join(File.dirname(__FILE__), path_to_main)
@@ -125,7 +125,7 @@ if RUBY_PLATFORM != 'opal'
     end
 
     it 'should parse javascript src/body from the javascript tags' do
-      main = Volt::AssetFiles.new('main', @component_paths)
+      main = Volt::AssetFiles.new('/app', 'main', @component_paths)
 
       expect(main).to receive(:javascript_tags).and_return("<script src='/someurl.js'></script><script>var inlinejs = true;</script>")
 

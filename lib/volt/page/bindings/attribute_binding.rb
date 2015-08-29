@@ -14,6 +14,39 @@ module Volt
     end
 
     def setup
+      if `#{element}.is('select')`
+        @is_select = true
+      elsif `#{element}.is('[type=hidden]')`
+        @is_hidden = true
+      elsif `#{element}.is('[type=radio]')`
+        @is_radio = true
+        @selected_value = `#{element}.attr('value') || ''`
+      elsif `#{element}.is('option')`
+        @is_option = true
+      end
+
+      if @is_option
+      else
+        # Bind so when this value updates, we update
+        case @attribute_name
+          when 'value'
+            changed_event = Proc.new { changed }
+            if @is_select
+              `#{element}.on('change.attrbind', #{changed_event})`
+
+              invalidate_proc = Proc.new { invalidate }
+              `#{element}.on('invalidate', #{invalidate_proc})`
+            elsif @is_hidden
+              `#{element}.watch('value', #{changed_event})`
+            else
+              `#{element}.on('input.attrbind', #{changed_event})`
+            end
+          when 'checked'
+            changed_event = proc { |event| changed(event) }
+            `#{element}.on('change.attrbind', #{changed_event})`
+        end
+      end
+
       # Listen for changes
       @computation = lambda do
         begin
@@ -27,26 +60,6 @@ module Volt
         method(:getter_fail)
       )
 
-      @is_select = `#{element}.is('select')`
-      @is_hidden = `#{element}.is('[type=hidden]')`
-      @is_radio = `#{element}.is('[type=radio]')`
-      @selected_value = `#{element}.attr('value') || ''` if @is_radio
-
-      # Bind so when this value updates, we update
-      case @attribute_name
-        when 'value'
-          changed_event = Proc.new { changed }
-          if @is_select
-            `#{element}.on('change.attrbind', #{changed_event})`
-          elsif @is_hidden
-            `#{element}.watch('value', #{changed_event})`
-          else
-            `#{element}.on('input.attrbind', #{changed_event})`
-          end
-        when 'checked'
-          changed_event = proc { |event| changed(event) }
-          `#{element}.on('change.attrbind', #{changed_event})`
-      end
     end
 
     def changed(event = nil)
@@ -99,6 +112,12 @@ module Volt
     def value=(val)
       case @attribute_name
         when 'value'
+          if @is_option
+            # When a new option is added, we trigger the invalidate event on the
+            # parent select so it will re-run update on the next tick and set
+            # the correct option.
+            `#{element}.parent('select').trigger('invalidate');`
+          end
           # TODO: only update if its not the same, this keeps it from moving the
           # cursor in text fields.
           `#{element}.val(#{val})` if val != `(#{element}.val() || '')`
@@ -116,6 +135,12 @@ module Volt
       end
     end
 
+    # On select boxes, when an option is added/changed, we want to run update
+    # again.  By calling invalidate, it will run at most once on the next tick.
+    def invalidate
+      @computation.invalidate!
+    end
+
     def update_checked(value)
       value = false if value.is_a?(NilMethodCall) || value.nil?
 
@@ -131,6 +156,7 @@ module Volt
         when 'value'
           if @is_select
             `#{element}.off('change.attrbind')`
+            `#{element}.off('invalidate')`
           elsif @is_hidden
             `#{element}.unwatch('value')`
           else

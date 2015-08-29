@@ -1,14 +1,33 @@
 # Change Log
 
 ## 0.9.5
+### Breaking Changes
+- previously, we mounted the asset folders in components at /assets, and we also mounted the /app folder (and any gem's app folders') at /assets.  This allowed you to usually access what you wanted at /assets, but resulted in conflicts.  To ensure better component isolation, we now only mount the ```app``` folders.  To make things clear, instead of sprockets being mounted at /assets, it is now mounted at /app.  So the url for something in /app/main/assets/css/something.css can be accessed at (you guessed it) /app/main/assets/css/something.css
+
 ### Added
 - You can now disable auto-import of JS/CSS with ```disable_auto_import``` in a dependencies.rb file
 - Opal was upgraded to 0.8, which brings sourcemaps back (yah!)
 - Page load performance was improved, and more of sprockets was used for component loading.
-- You can now return promises in permissions blocks.  Also, can_read?, can_create?, and .can_delete?
+- You can now return promises in permissions blocks.  Also, can_read?, can_create?, and .can_delete? now return promises.
 - Anything in /public is now served via Rack::Static in the default middleware stack.  (So you can put user uploaded images in there)
 - You can now use _ or - in volt tag names and attributes.  (We're moving to using dash ( - ) as the standard in html)
 - You can now trigger events on controllers rendered as tags.  The events will bubble up through the DOM and can be caught by any e- bindings.  See the docs for more information.
+- Rewrote the precompile pipeline.
+    - Added image compression by default. (using image_optim)
+- All volt CLI tasks now can run from inside of any directory in the volt app (or the root)
+- Asset precompilation has been reworked to use Sprockets::Manifest.  The results are written to /public, and an index.html file is created.  The entire app loading up until the websocket connect can be served statically (via nginx for example)  All js and css is written to a single file.
+- The ```generate gem``` generator has been improved to setup a dummy app and integration specs out of the box.
+- Tasks can now set (only set, not read) cookies on the client using the ```cookies``` collection.
+- Added ```login_as(user)``` method to Tasks and HttpController's.
+
+### Changed
+- fix issue with ```raw``` and promises (#275)
+- fix issue with .length on store (#269)
+- The {root}/config/initializers directory is now only for server side code.
+- Redid the initializer load order so all initializers run before any controllers/models/views are loaded.
+- Added error message for when an unserializable object is returned from a Task
+- Fixed issue with disable_encryption option
+- Fixed issue with select's not selecting options when options are dynamically loaded
 
 ## 0.9.4
 ### Lingo Change

@@ -24,9 +24,9 @@ module Volt
         @worker_pool = Concurrent::ImmediateExecutor.new
       else
         @worker_pool = Concurrent::ThreadPoolExecutor.new(
-        min_threads: Volt.config.min_worker_threads,
-        max_threads: Volt.config.max_worker_threads
-      )
+          min_threads: Volt.config.min_worker_threads,
+          max_threads: Volt.config.max_worker_threads
+        )
       end
 
       @worker_timeout = Volt.config.worker_timeout || 60
@@ -104,6 +104,7 @@ module Volt
       klass = Object.send(:const_get, class_name)
 
       promise = Promise.new
+      cookies = nil
 
       start_time = Time.now.to_f
 
@@ -118,7 +119,9 @@ module Volt
           Timeout.timeout(klass.__timeout || @worker_timeout) do
             Thread.current['meta'] = meta_data
             begin
-              result = klass.new(@volt_app, channel, self).send(method_name, *args)
+              klass_inst = klass.new(@volt_app, channel, self)
+              result = klass_inst.send(method_name, *args)
+              cookies = klass_inst.fetch_cookies
             ensure
               Thread.current['meta'] = nil
             end
@@ -145,12 +148,16 @@ module Volt
 
       # Run the promise and pass the return value/error back to the client
       promise.then do |result|
-        channel.send_message('response', callback_id, result, nil)
+        reply = EJSON.stringify(['response', callback_id, result, nil, cookies])
+        channel.send_string_message(reply)
 
         finish.call
       end.fail do |error|
         finish.call(error)
-        channel.send_message('response', callback_id, nil, error)
+        # Convert the error into a string so it can be serialized.
+        error_str = "#{error.class.to_s}: #{error.to_s}"
+
+        channel.send_message('response', callback_id, nil, error_str, cookies)
       end
 
     end

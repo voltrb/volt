@@ -62,6 +62,7 @@ else
 
           compress_javascript: Volt.env.production?,
           compress_css:        Volt.env.production?,
+          compress_images:     Volt.env.production?,
           abort_on_exception:  true,
 
           min_worker_threads: 1,

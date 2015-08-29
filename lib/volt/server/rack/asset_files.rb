@@ -4,17 +4,18 @@ require 'uri'
 # from the dependencies.rb files.
 module Volt
   class AssetFiles
-    def self.from_cache(component_name, component_paths)
+    def self.from_cache(app_url, component_name, component_paths)
       # @cache ||= {}
 
       # @cache[component_name] ||= begin
         # not cached, create
 
-        self.new(component_name, component_paths)
+        self.new(app_url, component_name, component_paths)
       # end
     end
 
-    def initialize(component_name, component_paths)
+    def initialize(app_url, component_name, component_paths)
+      @app_url = app_url
       @component_paths     = component_paths
       @assets              = []
       @included_components = {}
@@ -93,7 +94,7 @@ module Volt
 
     def prepare_locator(locator, valid_extensions)
       unless url_or_path?(locator)
-        locator = File.join('/assets', @current_component, '/assets', valid_extensions.first, "#{locator}")
+        locator = File.join(@app_url, @current_component, '/assets', valid_extensions.first, "#{locator}")
         locator += '.css' unless locator =~ /^.*\.(#{valid_extensions.join('|')})$/
       end
       locator
@@ -129,7 +130,12 @@ module Volt
         case type
           when :folder
             # for a folder, we search for all .js files and return a tag for them
-            javascript_files += Dir["#{path}/**/*.js"].sort.map { |folder| '/assets' + folder[path.size..-1] }
+            base_path = base(path)
+            javascript_files += Dir["#{path}/**/*.js"].sort.map do |folder|
+              # Grab the component folder/assets/js/file.js
+              local_path = folder[path.size..-1]
+              @app_url + '/' + base_path + local_path
+            end
           when :javascript_file
             # javascript_file is a cdn path to a JS file
             javascript_files << path
@@ -146,7 +152,7 @@ module Volt
       if ENV['MAPS'] == 'all'
         scripts << @opal_tag_generator.javascript_include_tag(volt_path)
       else
-        scripts << "<script src=\"/assets/#{volt_path}.js\"></script>"
+        scripts << "<script src=\"#{volt_app.app_url}/#{volt_path}.js\"></script>"
         scripts << "<script>#{Opal::Processor.load_asset_code(volt_app.sprockets, volt_path)}</script>"
       end
 
@@ -171,8 +177,10 @@ module Volt
             # Don't import any css/scss files that start with an underscore, so scss partials
             # aren't imported by default:
             #  http://sass-lang.com/guide
-            css_files += Dir["#{path}/**/[^_]*.{css,scss}"].sort.map do |folder|
-              css_path = '/assets' + folder[path.size..-1].gsub(/[.]scss$/, '')
+            base_path = base(path)
+            css_files += Dir["#{path}/**/[^_]*.{css,scss,sass}"].sort.map do |folder|
+              local_path = folder[path.size..-1].gsub(/[.](scss|sass)$/, '')
+              css_path = @app_url + '/' + base_path + local_path
               css_path += '.css' unless css_path =~ /[.]css$/
               css_path
             end
@@ -187,10 +195,10 @@ module Volt
     # #javascript is only used on the server
     unless RUBY_PLATFORM == 'opal'
       # Parses the javascript tags to reutrn the following:
-      # [[:url, '/somefile.js'], [:body, 'var inlinejs = true;']]
+      # [[:src, '/somefile.js'], [:body, 'var inlinejs = true;']]
       def javascript(volt_app)
         javascript_tags(volt_app)
-        .scan(/[<]script([^>]*)[>](.*?)[<]\/script[^>]*[>]/)
+        .scan(/[<]script([^>]*)[>](.*?)[<]\/script[^>]*[>]/m)
         .map do |attrs, body|
           src = attrs.match(/[\s|$]src\s*[=]\s*["']([^"']+?)["']/)
 
@@ -202,5 +210,12 @@ module Volt
         end
       end
     end
+
+    private
+    def base(path)
+      path.split('/')[-2..-1].join('/')
+    end
+
+
   end
 end

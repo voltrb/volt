@@ -2,6 +2,10 @@ require 'json'
 
 module Volt
   class EJSON
+    class NonEjsonType < Exception ; end
+
+    OTHER_VALID_CLASSES = [String, Symbol, TrueClass, FalseClass, Numeric, NilClass]
+
     def self.stringify(obj)
       encode(obj).to_json
     end
@@ -48,12 +52,13 @@ module Volt
 
           [key, value]
         end.to_h
+      elsif Time === obj
+        {'$date' => obj.to_i * 1_000}
+      elsif OTHER_VALID_CLASSES.any? {|klass| obj.is_a?(klass) }
+        obj
       else
-        if obj.is_a?(Time)
-          {'$date' => obj.to_i * 1_000}
-        else
-          obj
-        end
+        # Not a valid class for serializing, raise an exception
+        raise NonEjsonType, "Unable to serialize #{obj.inspect} to EJSON"
       end
     end
   end

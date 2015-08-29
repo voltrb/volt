@@ -92,6 +92,12 @@ describe Volt::EJSON, '.stringify' do
       )
     end
 
+    it 'should convert symbols to strings' do
+      stringified = subject.stringify({something: :awesome})
+
+      expect(stringified).to eq('{"something":"awesome"}')
+    end
+
     it 'escapes reserved key when type is incorrect' do
       stringified = subject.stringify '$date' => 'something'
 

@@ -27,16 +27,19 @@ module Volt
 
     # Container returns the node that is parent to all nodes in the section.
     def container
+      check_section!('container')
       section.container_node
     end
 
     def dom_nodes
+      check_section!('dom_nodes')
       section.range
     end
 
     # Walks the dom_nodes range until it finds an element.  Typically this will
     # be the container element without the whitespace text nodes.
     def first_element
+      check_section!('first_element')
       range = dom_nodes
       nodes = `range.startContainer.childNodes`
 
@@ -226,7 +229,14 @@ module Volt
     # Raw marks a string as html safe, so bindings can be rendered as html.
     # With great power comes great responsibility.
     def raw(str)
-      str = str.to_s unless str.is_a?(String)
+      # Promises need to have .to_s called using .then, since .to_s is a promise
+      # method, so it won't be passed down to the value.
+      if str.is_a?(Promise)
+        str = str.then(&:to_s)
+      else
+        str = str.to_s unless str.is_a?(String)
+      end
+
       str.html_safe
     end
 
@@ -248,5 +258,13 @@ module Volt
         super
       end
     end
+
+    private
+    def check_section!(method_name)
+      unless section
+        raise "##{method_name} can't be called before the {action}_ready method is called"
+      end
+    end
+
   end
 end

@@ -17,16 +17,7 @@ module Volt
     desc 'new PROJECT_NAME', 'generates a new project.'
 
     def new(name)
-      require 'securerandom'
-
-      # Grab the current volt version
-      directory('project', name, version: Volt::Version::STRING, name: name, domain: name.dasherize.downcase, app_name: name.capitalize)
-
-      # Move into the directory
-      Dir.chdir(name) do
-        # bundle
-        bundle_command('install')
-      end
+      new_project(name)
 
       say ""
       say "Your app is now ready in the #{name} directory.", :green
@@ -50,6 +41,7 @@ module Volt
     method_option :bind, type: :string, aliases: '-b', banner: 'the ip the server should bind to'
 
     def server
+      move_to_root
       if ENV['PROFILE_BOOT']
         begin
           require 'ruby-prof'
@@ -62,11 +54,12 @@ module Volt
 
       require 'fileutils'
       require 'volt/server'
+      require 'volt/utils/recursive_exists'
 
       # If we're in a Volt project, clear the temp directory
       # TODO: this is a work around for a bug when switching between
       # source maps and non-source maps.
-      if File.exist?('config.ru') && File.exist?('Gemfile')
+      if RecursiveExists.exists_here_or_up?('config.ru') && RecursiveExists.exists_here_or_up?('Gemfile')
         # FileUtils.rm_rf('tmp/sass')
         # FileUtils.rm_rf('tmp/sprockets')
       else
@@ -102,6 +95,7 @@ module Volt
     method_option :file_path, type: :string
     def runner(file_path)
       ENV['SERVER'] = 'true'
+      move_to_root
       require 'volt/cli/runner'
 
       Volt::CLI::Runner.run_file(file_path)
@@ -111,6 +105,7 @@ module Volt
 
     def drop_collection(collection)
       ENV['SERVER'] = 'true'
+      move_to_root
       require 'volt/boot'
 
       Volt.boot(Dir.pwd)
@@ -120,6 +115,55 @@ module Volt
 
       say("Collection #{collection} could not be dropped", :red) if drop == false
       say("Collection #{collection} dropped", :green) if drop == true
+    end
+
+    no_tasks do
+      # The logic for creating a new project.  We want to be able to invoke this
+      # inside of a method so we can run it with Dir.chdir
+      def new_project(name, skip_gemfile = false, disable_encryption = false)
+        require 'securerandom'
+
+        # Grab the current volt version
+        directory('project', name, {
+          version: Volt::Version::STRING,
+          name: name,
+          domain: name.dasherize.downcase,
+          app_name: name.capitalize,
+          disable_encryption: disable_encryption
+        })
+
+        unless skip_gemfile
+          # Move into the directory
+          Dir.chdir(name) do
+            # bundle
+            bundle_command('install')
+          end
+        end
+      end
+
+      def move_to_root
+        unless Gem.win_platform?
+          # Change CWD to the root of the volt project
+          pwd = Dir.pwd
+          changed = false
+          loop do
+            if File.exists?(pwd + '/config.ru') || File.exists?(pwd + '/Gemfile')
+              Dir.chdir(pwd) if changed
+              break
+            else
+              changed = true
+
+              # Move up a directory and try again
+              pwd = pwd.gsub(/\/[^\/]+$/, '')
+
+              if pwd == ''
+                puts "You are not currently in a volt project directory"
+                exit 1
+              end
+            end
+          end
+        end
+      end
     end
 
     def self.source_root

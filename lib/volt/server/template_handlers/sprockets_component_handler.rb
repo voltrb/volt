@@ -49,7 +49,7 @@ module Sprockets
 
         # Working with a component path
         volt_app = Thread.current['volt_app'] || $volt_app
-        data = Volt::ComponentCode.new(component_name, volt_app.component_paths, true).code
+        data = Volt::ComponentCode.new(volt_app, component_name, volt_app.component_paths, true).code
       else
         data = env.read_file(input[:filename], input[:content_type])
       end

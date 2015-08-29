@@ -72,6 +72,10 @@ module Volt
 
       path, params = @router.params_to_url(params)
 
+      if path == nil
+        raise "No route matched, make sure you have the base route defined last: `client '/', {}`"
+      end
+
       new_url    = "#{scheme}://#{host_with_port}#{path.chomp('/')}"
 
       # Add query params

@@ -407,7 +407,7 @@ module Volt
     end
 
     # We need to setup the proxy methods below where they are defined.
-    proxy_with_load :[], :size, :last, :reverse, :all, :to_a, :empty?, :present?, :blank?
+    proxy_with_load :[], :size, :length, :last, :reverse, :all, :to_a, :empty?, :present?, :blank?
 
   end
 end

@@ -33,19 +33,23 @@ module Volt
     # end
 
     def call(input)
+      context = input[:environment].context_class.new(input)
+      # context.link_asset('main/assets/images/lombard.jpg')
       # pp input
       data = input[:data]
 
       # input[:accept] = 'application/javascript'
       # input[:content_type] = 'application/javascript'
       # input[:environment].content_type = 'application/javascript'
-      input[:cache].fetch([self.cache_key, data]) do
+      data = input[:cache].fetch([self.cache_key, data]) do
         filename = input[:filename]
         # puts input[:data].inspect
         # Remove all semicolons from source
         # input[:content_type] = 'application/javascript'
         compile(filename, input[:data])
       end
+
+      context.metadata.merge(data: data.to_str)
     end
 
     def compile(view_path, html)
@@ -67,8 +71,7 @@ module Volt
       Opal.compile(code)
     end
 
-    def self.setup
-      sprockets = $volt_app.sprockets
+    def self.setup(sprockets=$volt_app.sprockets)
       sprockets.register_mime_type 'application/vtemplate', extensions: ['.html', '.email']
       sprockets.register_transformer 'application/vtemplate', 'application/javascript', Volt::ViewProcessor.new(true)
     end

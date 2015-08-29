@@ -5,7 +5,7 @@ module Main
   class MainController < Volt::ModelController
     model :page
 
-    reactive_accessor :blur_count, :focus_count
+    reactive_accessor :blur_count, :focus_count, :image_loaded
 
     def index
       a = {}
@@ -86,6 +86,10 @@ module Main
     def focus
       self.focus_count ||= 0
       self.focus_count += 1
+    end
+
+    def do_login_from_task
+      LoginTasks.login_first_user
     end
 
     private

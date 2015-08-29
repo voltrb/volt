@@ -41,14 +41,22 @@ module Volt
 
     # When a request is sent to the backend, it can attach a callback,
     # this is called from the backend to pass to the callback.
-    def response(promise_id, result, error)
+    def response(promise_id, result, error, cookies)
+      # Set the cookies
+      if cookies
+        cookies.each do |key, value|
+          @volt_app.cookies.set(key, value)
+        end
+      end
+
       promise = @promises.delete(promise_id)
 
       if promise
         if error
           # TODO: full error handling
           Volt.logger.error('Task Response:')
-          Volt.logger.error(error.inspect)
+          Volt.logger.error(error)
+
           promise.reject(error)
         else
           promise.resolve(result)

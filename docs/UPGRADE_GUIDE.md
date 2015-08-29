@@ -1,3 +1,11 @@
+# 0.9.4 to 0.9.5
+
+CSS url's now should be referenced either 1) as relative paths from the css file, or 2) using the full path from inside of app (eg: main/assets/images/background.jpg)
+
+On models, .can_delete?, .can_read?, and .can_create? now return promises.
+
+Check the CHANGELOG for more info.
+
 # 0.9.3 to 0.9.4
 
 We moved logic out of Volt::User and into the generated user file, so it is easier to customize.  Add the following to your app/main/models/user.rb:

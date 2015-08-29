@@ -5,6 +5,10 @@ if RUBY_PLATFORM != 'opal'
     def allowed_method(arg1, arg2)
       'yes' + arg1 + arg2
     end
+
+    def set_cookie
+      cookies._something = 'awesome'
+    end
   end
 
   class WorkerPoolStub
@@ -29,7 +33,9 @@ if RUBY_PLATFORM != 'opal'
     it 'should only allow method calls on Task or above in the inheritance chain' do
       channel = double('channel')
 
-      expect(channel).to receive(:send_message).with('response', 0, 'yes it works', nil)
+      # Tasks handle their own conversion to EJSON
+      msg = Volt::EJSON.stringify(['response', 0, 'yes it works', nil, nil])
+      expect(channel).to receive(:send_string_message).with(msg)
 
       dispatcher.dispatch(channel, [0, 'TestTask', :allowed_method, {}, ' it', ' works'])
     end
@@ -37,7 +43,7 @@ if RUBY_PLATFORM != 'opal'
     it 'should not allow eval' do
       channel = double('channel')
 
-      expect(channel).to receive(:send_message).with('response', 0, nil, RuntimeError.new('unsafe method: eval'))
+      expect(channel).to receive(:send_message).with('response', 0, nil, "RuntimeError: unsafe method: eval", nil)
 
       dispatcher.dispatch(channel, [0, 'TestTask', :eval, '5 + 10'])
     end
@@ -45,7 +51,7 @@ if RUBY_PLATFORM != 'opal'
     it 'should not allow instance_eval' do
       channel = double('channel')
 
-      expect(channel).to receive(:send_message).with('response', 0, nil, RuntimeError.new('unsafe method: instance_eval'))
+      expect(channel).to receive(:send_message).with('response', 0, nil, 'RuntimeError: unsafe method: instance_eval', nil)
 
       dispatcher.dispatch(channel, [0, 'TestTask', :instance_eval, '5 + 10'])
     end
@@ -53,7 +59,7 @@ if RUBY_PLATFORM != 'opal'
     it 'should not allow #methods' do
       channel = double('channel')
 
-      expect(channel).to receive(:send_message).with('response', 0, nil, RuntimeError.new('unsafe method: methods'))
+      expect(channel).to receive(:send_message).with('response', 0, nil, 'RuntimeError: unsafe method: methods', nil)
 
       dispatcher.dispatch(channel, [0, 'TestTask', :methods])
     end
@@ -65,6 +71,15 @@ if RUBY_PLATFORM != 'opal'
       expect(Volt.logger).to receive(:log_dispatch)
 
       dispatcher.dispatch(channel, [0, 'TestTask', :allowed_method, {}, ' it', ' works'])
+    end
+
+    it 'should let you set a cookie' do
+      channel = double('channel')
+
+      allow(channel).to receive(:send_message).with('response', 0, 'yes it works', {:something=>"awesome"})
+      expect(Volt.logger).to receive(:log_dispatch)
+
+      dispatcher.dispatch(channel, [0, 'TestTask', :set_cookie, {}])
     end
 
     it 'closes the channel' do

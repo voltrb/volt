@@ -12,15 +12,28 @@ module Volt
     module App
       attr_reader :live_query_pool, :query_subscription_pool,
                   :channel_query_subscriptions
+
+      # The root url is where the volt app is mounted
+      attr_reader :root_url
+      # The app url is where the app folder (and sprockets) is mounted
+      attr_reader :app_url
+
       def setup_paths
         # Load component paths
         @component_paths = ComponentPaths.new(@app_path)
+        @component_paths.setup_load_paths
+      end
+
+      def require_components
         @component_paths.require_in_components(self)
       end
 
       def load_app_code
         setup_router
         require_http_controllers
+
+        @root_url = '/'
+        @app_url = '/app'
       end
 
       def setup_router

@@ -54,13 +54,20 @@ module Volt
       @components
     end
 
+    # Setup load path for components
+    def setup_load_paths
+      unless RUBY_PLATFORM == 'opal'
+        app_folders do |app_folder|
+          $LOAD_PATH.unshift(app_folder)
+        end
+      end
+    end
+
     # Makes each components classes available on the load path, require classes.
     def require_in_components(volt_app)
       if RUBY_PLATFORM == 'opal'
       else
         app_folders do |app_folder|
-          $LOAD_PATH.unshift(app_folder)
-
           # Sort so we get consistent load order across platforms
           Dir["#{app_folder}/*/{controllers,models,tasks}/*.rb"].each do |ruby_file|
             path = ruby_file.gsub(/^#{app_folder}\//, '')[0..-4]
@@ -84,7 +91,7 @@ module Volt
       # Load in all views and routes
       # TODO: Nested components listed twice are are loaded multiple times
       component_names.uniq.each do |component_name|
-        code = Volt::ComponentCode.new(component_name, self, false).code
+        code = Volt::ComponentCode.new(volt_app, component_name, self, false).code
         # Evaluate returned code, the ```volt_app``` variable is set for access.
         eval(code)
       end

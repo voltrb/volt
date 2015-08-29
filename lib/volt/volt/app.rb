@@ -78,6 +78,8 @@ module Volt
         # Require in app and initializers
         run_app_and_initializers unless RUBY_PLATFORM == 'opal'
 
+        require_components
+
         # abort_on_exception is a useful debugging tool, and in my opinion something
         # you probbaly want on.  That said you can disable it if you need.
         unless RUBY_PLATFORM == 'opal'
@@ -89,7 +91,9 @@ module Volt
         # Load up the main component dependencies.  This is needed to load in
         # any opal_gem calls in dependencies.rb
         # TODO: Needs to support all components
-        AssetFiles.from_cache('main', component_paths)
+        if Dir.exists?(Volt.root + '/app/main')
+          AssetFiles.from_cache(app_url, 'main', component_paths)
+        end
 
         reset_query_pool!
 
@@ -97,8 +101,6 @@ module Volt
         setup_postboot_middleware
 
         start_message_bus
-
-        Volt::ViewProcessor.setup
       end
     end
 

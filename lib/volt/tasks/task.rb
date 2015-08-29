@@ -1,4 +1,5 @@
 require 'volt/controllers/collection_helpers'
+require 'volt/controllers/login_as_helper'
 
 module Volt
   class Task
@@ -17,6 +18,7 @@ module Volt
       end
     else
       include CollectionHelpers
+      include LoginAsHelper
 
       class_attribute :__timeout
 
@@ -39,6 +41,17 @@ module Volt
       # Volt.config.worker_timeout)
       def timeout(value)
         self.__timeout = value
+      end
+
+      def cookies
+        @cookies ||= Model.new
+      end
+
+      # Get the cookies that got set
+      def fetch_cookies
+        if @cookies
+          @cookies.to_h.reject {|k,v| k == :id }
+        end
       end
 
       # On the backend, we proxy all class methods like we would

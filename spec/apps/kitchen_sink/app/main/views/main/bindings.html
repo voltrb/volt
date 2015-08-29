@@ -154,4 +154,7 @@
   <div id="blurCount">{{ blur_count || 0 }}</div>
   <div id="focusCount">{{ focus_count || 0 }}</div>
 
+  <h2>Raw</h2>
 
+  <p>{{ raw 'some <br /> code' }}</p>
+  <p>{{ raw Promise.new.resolve('some <br /> other code') }}</p>

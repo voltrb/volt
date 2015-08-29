@@ -6,6 +6,7 @@ require 'volt/server/rack/quiet_common_logger'
 require 'volt/server/rack/opal_files'
 require 'volt/server/rack/index_files'
 require 'volt/server/rack/http_resource'
+require 'volt/server/rack/sprockets_helpers_setup'
 
 
 
@@ -42,9 +43,11 @@ module Volt
     # can set them up.
     def self.postboot_setup(volt_app, rack_app)
       # Serve the opal files
-      opal_files = OpalFiles.new(rack_app, volt_app.app_path, volt_app.component_paths)
+      opal_files = OpalFiles.new(rack_app, volt_app.app_url, volt_app.app_path, volt_app.component_paths)
       volt_app.opal_files = opal_files
       volt_app.sprockets = opal_files.environment
+
+      Volt::SprocketsHelpersSetup.new(volt_app)
 
       # Serve the main html files from public, also figure out
       # which JS/CSS files to serve.

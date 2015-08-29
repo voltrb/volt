@@ -12,7 +12,7 @@ module Volt
   class OpalFiles
     attr_reader :environment, :server
 
-    def initialize(builder, app_path, component_paths)
+    def initialize(builder, app_url, app_path, component_paths)
       Opal::Processor.source_map_enabled = Volt.source_maps?
       Opal::Processor.const_missing_enabled = true
 
@@ -34,16 +34,12 @@ module Volt
       # Opal::Processor.arity_check_enabled = !Volt.env.production?
       # Opal::Processor.dynamic_require_severity = :raise
 
-      @server = Opal::Server.new(prefix: '/assets', debug: Volt.source_maps?)
+      @server = Opal::Server.new(prefix: app_url, debug: Volt.source_maps?)
       @server.use_index = false
 
       @component_paths                   = component_paths
       # @environment                       = Opal::Environment.new
       @environment                       = @server.sprockets
-
-      # Since the scope changes in builder blocks, we need to capture
-      # environment in closure
-      environment                        = @environment
 
       environment.cache = Sprockets::Cache::FileStore.new('./tmp')
 
@@ -60,6 +56,10 @@ module Volt
         Csso.install(environment)
       end
 
+      if Volt.config.compress_images
+        add_image_compression
+      end
+
       @server.append_path(app_path)
 
       volt_gem_lib_path = File.expand_path(File.join(File.dirname(__FILE__), '../../..'))
@@ -67,8 +67,18 @@ module Volt
 
       add_asset_folders(@server)
 
-      env = @enviroment
-      builder.map '/assets' do
+
+      # Setup ViewProcessor to parse views
+      Volt::ViewProcessor.setup(@environment)
+
+      # Use the cached env in production so it doesn't have to stat the FS
+      @environment = @environment.cached if Volt.env.production?
+
+      # Since the scope changes in builder blocks, we need to capture
+      # environment in closure
+      environment                        = @environment
+
+      builder.map(app_url) do
         run environment
       end
 
@@ -84,34 +94,37 @@ module Volt
       end
 
       if source_map_enabled
-          builder.map(maps_prefix) do
-            require 'rack/conditionalget'
-            require 'rack/etag'
-            use Rack::ConditionalGet
-            use Rack::ETag
-            run maps_app
-          end
+        builder.map(maps_prefix) do
+          require 'rack/conditionalget'
+          require 'rack/etag'
+          use Rack::ConditionalGet
+          use Rack::ETag
+          run maps_app
+        end
+      end
+    end
+
+    def add_image_compression
+      if defined?(ImageOptim)
+        env = @environment
+        image_optim = ImageOptim.new({:pngout => false, :svgo => false})
+
+        processor = proc do |_context, data|
+          image_optim.optimize_image_data(data) || data
         end
 
-
-
-      # map server.source_maps.prefix do
-      #   run server.source_maps
-      # end
-
-      # if Volt.source_maps?
-      #   source_maps = SourceMapServer.new(environment)
-      #
-      #   builder.map(source_maps.prefix) do
-      #     run source_maps
-      #   end
-      # end
+        env.register_preprocessor 'image/gif', :image_optim, &processor
+        env.register_preprocessor 'image/jpeg', :image_optim, &processor
+        env.register_preprocessor 'image/png', :image_optim, &processor
+        env.register_preprocessor 'image/svg+xml', :image_optim, &processor
+      end
     end
 
     def add_asset_folders(environment)
-      @component_paths.asset_folders do |asset_folder|
-        environment.append_path(asset_folder)
-      end
+      # @component_paths.asset_folders do |asset_folder|
+      #   puts "ADD ASSET FOLDER: #{asset_folder.inspect}"
+      #   environment.append_path(asset_folder)
+      # end
     end
   end
 end

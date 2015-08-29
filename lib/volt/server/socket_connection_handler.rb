@@ -61,10 +61,19 @@ module Volt
       end
     end
 
+    # Used when the message is already encoded
+    def send_string_message(str)
+      send_raw_message(str)
+    end
 
     def send_message(*args)
+      # Encode as EJSON
       str = EJSON.stringify([*args])
 
+      send_raw_message(str)
+    end
+
+    def send_raw_message(str)
       @session.send(str)
 
       if RUNNING_SERVER == 'thin'
@@ -73,7 +82,6 @@ module Volt
         # TODO: Figure out the cause of the issue and submit a fix upstream.
         EM.next_tick {}
       end
-
     end
 
     def closed
