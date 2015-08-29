@@ -13,6 +13,7 @@ client '/html_safe', action: 'html_safe'
 client '/missing', action: 'missing'
 client '/require_test', action: 'require_test'
 client '/images', action: 'images'
+client '/login_from_task', action: 'login_from_task'
 
 # Events
 client '/events', component: 'main', controller: 'events', action: 'index'

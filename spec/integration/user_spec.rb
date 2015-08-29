@@ -88,6 +88,14 @@ describe 'user accounts', type: :feature, sauce: true do
 
       expect(page).to have_content('Password did not match')
     end
+
+    it 'should let you login from a task' do
+      visit '/login_from_task'
+
+      click_button 'Login First User'
+
+      expect(page).to have_content('Test Account 9550')
+    end
   end
 
 end

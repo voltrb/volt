@@ -1,12 +1,15 @@
 require 'volt/server/rack/http_response_header'
 require 'volt/server/rack/http_response_renderer'
 require 'volt/controllers/http_controller/http_cookie_persistor'
+require 'volt/controllers/login_as_helper'
 require 'volt/utils/lifecycle_callbacks'
 
 module Volt
   # Allow you to create controllers that act as http endpoints
   class HttpController
     include LifecycleCallbacks
+    include LoginAsHelper
+
     # Setup before_action and after_action
     setup_action_helpers_in_class(:before_action, :after_action)
 

@@ -88,6 +88,10 @@ module Main
       self.focus_count += 1
     end
 
+    def do_login_from_task
+      LoginTasks.login_first_user
+    end
+
     private
 
     # the main template contains a #template binding that shows another

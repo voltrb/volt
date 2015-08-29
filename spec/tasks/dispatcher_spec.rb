@@ -5,6 +5,10 @@ if RUBY_PLATFORM != 'opal'
     def allowed_method(arg1, arg2)
       'yes' + arg1 + arg2
     end
+
+    def set_cookie
+      cookies._something = 'awesome'
+    end
   end
 
   class WorkerPoolStub
@@ -67,6 +71,15 @@ if RUBY_PLATFORM != 'opal'
       expect(Volt.logger).to receive(:log_dispatch)
 
       dispatcher.dispatch(channel, [0, 'TestTask', :allowed_method, {}, ' it', ' works'])
+    end
+
+    it 'should let you set a cookie' do
+      channel = double('channel')
+
+      allow(channel).to receive(:send_message).with('response', 0, 'yes it works', {:something=>"awesome"})
+      expect(Volt.logger).to receive(:log_dispatch)
+
+      dispatcher.dispatch(channel, [0, 'TestTask', :set_cookie, {}])
     end
 
     it 'closes the channel' do

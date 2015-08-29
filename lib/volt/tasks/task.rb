@@ -1,4 +1,5 @@
 require 'volt/controllers/collection_helpers'
+require 'volt/controllers/login_as_helper'
 
 module Volt
   class Task
@@ -17,6 +18,7 @@ module Volt
       end
     else
       include CollectionHelpers
+      include LoginAsHelper
 
       class_attribute :__timeout
 
