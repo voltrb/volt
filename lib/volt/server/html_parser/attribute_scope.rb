@@ -83,8 +83,16 @@ module Volt
           # Multiple bindings
           add_multiple_attribute(tag_name, id, attribute_name, parts, value)
         elsif parts.size == 1 && binding_count == 1
-          # A single binding
-          add_single_attribute(id, attribute_name, parts)
+          getter = parts[0][2...-2].strip
+
+          if getter =~ /^asset_url[ \(]/
+            # asset url helper
+            add_asset_url_attribute(getter, attributes)
+            return # don't delete attr
+          else
+            # A single binding
+            add_single_attribute(id, attribute_name, getter)
+          end
         end
 
         # Remove the attribute
@@ -118,16 +126,24 @@ module Volt
     end
 
     # Add an attribute binding on the tag, bind directly to the getter in the binding
-    def add_single_attribute(id, attribute_name, parts)
-      getter = parts[0][2...-2].strip
-
-      # if getter.index('@')
-      #   raise "Bindings currently do not support instance variables"
-      # end
-
+    def add_single_attribute(id, attribute_name, getter)
       setter = getter_to_setter(getter)
 
       save_binding(id, "lambda { |__p, __t, __c, __id| Volt::AttributeBinding.new(__p, __t, __c, __id, #{attribute_name.inspect}, Proc.new { #{getter} }, Proc.new { |val| #{setter} }) }")
+    end
+
+    def add_asset_url_attribute(getter, attributes)
+      # Asset url helper binding
+      asset_url_parts = getter.split(/[\s\(\)\'\"]/).reject(&:blank?)
+      url = asset_url_parts[1]
+
+      unless url
+        raise "the `asset_url` helper requries a url argument ```{{ asset_url 'pic.png' }}```"
+      end
+
+      link_url = @handler.link_asset(url, false)
+
+      attributes['src'] = link_url
     end
 
     def add_multiple_attribute(tag_name, id, attribute_name, parts, content)
@@ -150,7 +166,7 @@ module Volt
 
     def add_string_template_renderer(content)
       path            = @path + "/_rv#{@binding_number}"
-      new_handler     = ViewHandler.new(path, false)
+      new_handler     = ViewHandler.new(path, nil, false)
       @binding_number += 1
 
       SandlebarsParser.new(content, new_handler)

@@ -72,7 +72,10 @@ module Volt
       Volt::ViewProcessor.setup(@environment)
 
       # Use the cached env in production so it doesn't have to stat the FS
-      @environment = @environment.cached if Volt.env.production?
+      if Volt.env.production?
+        @environment = @environment.cached
+        @server.sprockets = @environment
+      end
 
       # Since the scope changes in builder blocks, we need to capture
       # environment in closure
