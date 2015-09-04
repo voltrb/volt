@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.9.6
+## Added
+- @merongivian was kind enough to add Spanish traslations to the docs: (http://docs.voltframework.com/es/index.html)
+
 ## 0.9.5
 ### Breaking Changes
 - previously, we mounted the asset folders in components at /assets, and we also mounted the /app folder (and any gem's app folders') at /assets.  This allowed you to usually access what you wanted at /assets, but resulted in conflicts.  To ensure better component isolation, we now only mount the ```app``` folders.  To make things clear, instead of sprockets being mounted at /assets, it is now mounted at /app.  So the url for something in /app/main/assets/css/something.css can be accessed at (you guessed it) /app/main/assets/css/something.css

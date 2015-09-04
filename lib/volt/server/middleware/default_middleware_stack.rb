@@ -57,7 +57,7 @@ module Volt
 
       # serve assets from public
       rack_app.use Rack::Static,
-                    urls: ['/'],
+                    urls: [''],
                     root: 'public',
                     index: 'index.html',
                     header_rules: [

@@ -23,7 +23,7 @@ module Volt
     end
 
     def cache_key
-      @cache_key ||= "#{self.class.name}:0.1".freeze
+      @cache_key ||= "#{self.class.name}:0.2".freeze
     end
 
     # def evaluate(context, locals, &block)
