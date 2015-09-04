@@ -8,12 +8,12 @@ require 'volt/server/html_parser/textarea_scope'
 
 module Volt
   class ViewParser
-    attr_reader :templates
+    attr_reader :templates, :links
 
-    def initialize(html, template_path)
+    def initialize(html, template_path, sprockets_context=nil)
       @template_path = template_path
 
-      handler = ViewHandler.new(template_path)
+      handler = ViewHandler.new(template_path, sprockets_context)
 
       SandlebarsParser.new(html, handler)
 
@@ -25,6 +25,7 @@ module Volt
       last_scope.close_scope
 
       @templates = handler.templates
+      @links     = handler.links
     end
 
     # Returns a parsed version of the data (useful for backend rendering

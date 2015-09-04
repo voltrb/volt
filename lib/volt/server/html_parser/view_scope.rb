@@ -47,11 +47,15 @@ module Volt
             add_template(args)
           when 'yield'
             add_yield(args)
+          when 'asset_url'
+            add_asset_url(args)
           else
             if content =~ /.each\s+do\s+\|/
               add_each(content, false)
             elsif content =~ /.each_with_index\s+do\s+\|/
               add_each(content, true)
+            elsif content[0] == '#'
+              # A comment binding, just ignore it.
             else
               add_content_binding(content)
             end
@@ -69,6 +73,8 @@ module Volt
             add_content_binding(content)
         end
       end
+
+      nil
     end
 
     def add_content_binding(content)
@@ -138,6 +144,13 @@ module Volt
 
       # close right away if unary
       @handler.last.close_scope if unary
+    end
+
+    # The asset_url binding handles linking assets so they will be precompiled
+    # properly using the sprockets pipeline.
+    def add_asset_url(args)
+      # Add a link to the handler
+      @handler.link_asset(args.gsub(/["']/, '').strip)
     end
 
     # Called when this scope should be closed out

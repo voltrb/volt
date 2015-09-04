@@ -23,7 +23,7 @@ module Volt
     end
 
     def cache_key
-      @cache_key ||= "#{self.class.name}:0.1".freeze
+      @cache_key ||= "#{self.class.name}:0.2".freeze
     end
 
     # def evaluate(context, locals, &block)
@@ -35,24 +35,33 @@ module Volt
     def call(input)
       context = input[:environment].context_class.new(input)
       # context.link_asset('main/assets/images/lombard.jpg')
+      # puts context.asset_path('main/assets/images/lombard.jpg').inspect
       # pp input
       data = input[:data]
 
       # input[:accept] = 'application/javascript'
       # input[:content_type] = 'application/javascript'
       # input[:environment].content_type = 'application/javascript'
-      data = input[:cache].fetch([self.cache_key, data]) do
+      compiled = false
+      data, links = input[:cache].fetch([self.cache_key, data]) do
+        compiled = true
         filename = input[:filename]
         # puts input[:data].inspect
         # Remove all semicolons from source
         # input[:content_type] = 'application/javascript'
-        compile(filename, input[:data])
+        compile(filename, input[:data], context)
+      end
+
+      unless compiled
+        links.each do |link|
+          context.link_asset(link)
+        end
       end
 
       context.metadata.merge(data: data.to_str)
     end
 
-    def compile(view_path, html)
+    def compile(view_path, html, context)
       exts = ComponentTemplates::Preprocessors.extensions
       template_path = view_path.split('/')[-4..-1].join('/').gsub('/views/', '/').gsub(/[.](#{exts.join('|')})$/, '')
 
@@ -65,10 +74,11 @@ module Volt
       if handler = ComponentTemplates.handler_for_extension(format)
         html = handler.call(html)
 
-        code = ViewParser.new(html, template_path).code(app_reference)
+        parser = ViewParser.new(html, template_path, context)
+        code = parser.code(app_reference)
       end
 
-      Opal.compile(code)
+      return [Opal.compile(code), parser.links]
     end
 
     def self.setup(sprockets=$volt_app.sprockets)

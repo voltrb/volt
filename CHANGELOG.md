@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.9.6
+## Added
+- @merongivian was kind enough to add Spanish traslations to the docs: (http://docs.voltframework.com/es/index.html)
+
 ## 0.9.5
 ### Breaking Changes
 - previously, we mounted the asset folders in components at /assets, and we also mounted the /app folder (and any gem's app folders') at /assets.  This allowed you to usually access what you wanted at /assets, but resulted in conflicts.  To ensure better component isolation, we now only mount the ```app``` folders.  To make things clear, instead of sprockets being mounted at /assets, it is now mounted at /app.  So the url for something in /app/main/assets/css/something.css can be accessed at (you guessed it) /app/main/assets/css/something.css
@@ -19,6 +23,8 @@
 - The ```generate gem``` generator has been improved to setup a dummy app and integration specs out of the box.
 - Tasks can now set (only set, not read) cookies on the client using the ```cookies``` collection.
 - Added ```login_as(user)``` method to Tasks and HttpController's.
+- [asset_url helper](http://docs.voltframework.com/en/deployment/README.html) in css/sass and html files
+- Sourcemaps are enabled by default, you can disable them with ```MAPS=false``` env.  By default Volt and Opal code is not sourcemapped.  To enable sourcemaps for everything run with: ```MAPS=all``` (note this has a slight performance hit)  [Read the docs](http://docs.voltframework.com/en/docs/debugging.html) for more.
 
 ### Changed
 - fix issue with ```raw``` and promises (#275)

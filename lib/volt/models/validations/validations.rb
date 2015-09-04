@@ -1,6 +1,7 @@
 require 'volt/models/errors'
 require 'volt/models/validators/format_validator'
 require 'volt/models/validators/email_validator'
+require 'volt/models/validators/inclusion_validator'
 require 'volt/models/validators/length_validator'
 require 'volt/models/validators/numericality_validator'
 require 'volt/models/validators/phone_number_validator'
