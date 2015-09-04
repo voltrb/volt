@@ -66,15 +66,16 @@ module Volt
           # handle things.
           code << "\nrequire '#{require_path}'\n"
         else
+          valid_exts_re = exts.join('|')
           # On the sever side, we eval the compiled code
-          path_parts = view_path.scan(/([^\/]+)\/([^\/]+)\/[^\/]+\/([^\/]+)[.](html|email)$/)
+          path_parts = view_path.scan(/([^\/]+)\/([^\/]+)\/[^\/]+\/([^\/]+)[.](#{valid_exts_re})$/)
           component_name, controller_name, view, _ = path_parts[0]
 
           # file extension
           format = File.extname(view_path).downcase.delete('.').to_sym
 
           # Get the path for the template, supports templates in folders
-          template_path = view_path[views_path.size..-1].gsub(/[.](#{exts.join('|')})$/, '')
+          template_path = view_path[views_path.size..-1].gsub(/[.](#{valid_exts_re})$/, '')
           template_path = "#{@component_name}/#{template_path}"
 
           html = File.read(view_path)
