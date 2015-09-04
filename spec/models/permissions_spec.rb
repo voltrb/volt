@@ -61,8 +61,7 @@ describe 'model permissions' do
   let(:user_todo) { TestUserTodo.new }
 
   it 'auto-associates users via own_by_user' do
-    #TODO: better assertions
-    expect(user_todo.respond_to?(:user)).to be(true)
+    expect(user_todo).to respond_to(:user)
   end
 
   it 'should follow CRUD states when checking permissions' do
