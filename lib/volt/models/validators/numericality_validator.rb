@@ -41,9 +41,19 @@ module Volt
           @args.each do |arg, val|
             case arg
             when :min
+              Volt.logger.warn('numericality validator min: is deprecated in favor of gte:')
               add_error("number must be greater than #{val}") if @value < val
             when :max
+              Volt.logger.warn('numericality validator max: is deprecated in favor of lte:')
               add_error("number must be less than #{val}") if @value > val
+            when :gte
+              add_error("number must be greater than or equal to #{val}") unless @value >= val
+            when :lte
+              add_error("number must be less than or equal to #{val}") unless @value <= val
+            when :gt
+              add_error("number must be greater than #{val}") unless @value > val
+            when :lt
+              add_error("number must be less than #{val}") unless @value < val
             end
           end
 
