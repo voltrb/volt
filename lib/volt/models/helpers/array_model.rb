@@ -9,6 +9,10 @@ module Volt
         def loaded?
           loaded_state == :loaded
         end
+
+        def collection_name
+          path.last
+        end
       end
     end
   end

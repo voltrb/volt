@@ -318,7 +318,13 @@ module Volt
 
     alias_method :reactive_count, :count
     def count(&block)
-      all.reactive_count(&block)
+      puts "CALL MODEL COUNT"
+      if !block && persistor.is_a?(Persistors::ArrayStore)
+        puts "PER COUNT: #{@persistor.resolved_value.inspect}"
+        @persistor.resolved_value
+      else
+        all.reactive_count(&block)
+      end
     end
 
     private
@@ -327,7 +333,6 @@ module Volt
     # it to a model.  Then it takes the model and inserts it into the ArrayModel
     # then persists it.
     def create_new_model(model, from_method)
-      puts "A"
       if model.is_a?(Model)
         if model.buffer?
           fail "The #{from_method} does not take a buffer.  Call .save! on buffer's to persist them."
@@ -336,12 +341,10 @@ module Volt
         # Set the new path and the persistor.
         model.options = @options.merge(path: @options[:path] + [:[]])
       else
-        puts "WRAP VALUES: #{model.inspect}"
         model = wrap_values([model]).first
       end
 
       if model.is_a?(Model)
-        puts "B"
         promise = model.can_create?.then do |can_create|
           unless can_create
             fail "permissions did not allow create for #{model.inspect}"
@@ -356,14 +359,11 @@ module Volt
 
           @persistor.added(model, @array.size - 1)
         end.then do
-          puts "C"
           nil.then do
-            puts "D"
             # Validate and save
             model.run_changed
           end.then do
 
-            puts "E"
             # Mark the model as not new
             model.instance_variable_set('@new', false)
 

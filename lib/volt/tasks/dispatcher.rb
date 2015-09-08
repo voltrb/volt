@@ -53,7 +53,7 @@ module Volt
     # server, returning the result to the client.
     # Tasks returning a promise will wait to return.
     def dispatch(channel, message)
-      # Dispatch the task in the worker pool.  Pas in the meta data
+      # Dispatch the task in the worker pool.  Pass in the meta data
       @worker_pool.post do
         begin
           dispatch_in_thread(channel, message)

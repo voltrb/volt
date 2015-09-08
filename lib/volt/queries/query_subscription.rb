@@ -31,6 +31,7 @@ module Volt
     def initial_data
       # puts "INITIAL DATA: #{@live_query.last_data.inspect}"
       begin
+        # Filter the data first if we are working with models
         filter_data(@live_query.last_data)
       rescue => e
         puts e.inspect

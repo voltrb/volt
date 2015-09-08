@@ -34,11 +34,15 @@ module Volt
             store.model.clear if store.model.size > 0
           end
 
-          results.each_with_index do |data, index|
-            store.add(index, data)
-          end
+          if results.is_a?(Array)
+            results.each_with_index do |data, index|
+              store.add(index, data)
+            end
 
-          store.model.change_state_to(:loaded_state, :loaded)
+            store.model.change_state_to(:loaded_state, :loaded)
+          else
+            store.resolve_value(results)
+          end
 
           # if Volt.server?
           #   store.model.change_state_to(:loaded_state, :dirty)
@@ -68,13 +72,20 @@ module Volt
         # copy the data from the existing model.
         store.model.clear
 
-        # Get an existing store to copy data from
-        first_store_model = @stores.first.model
-        first_store_model.each_with_index do |item, index|
-          store.add(index, item.to_h)
+        first_store = @stores.first
+
+        if (resolved_value = first_store.resolved_value)
+          store.resolve_value(resolved_value)
+        else
+          # Get an existing store to copy data from
+          first_store_model = first_store.model
+          first_store_model.each_with_index do |item, index|
+            store.add(index, item.to_h)
+          end
+
+          store.model.change_state_to(:loaded_state, first_store_model.loaded_state)
         end
 
-        store.model.change_state_to(:loaded_state, first_store_model.loaded_state)
       else
         # First time we've added a store, setup the listener and get
         # the initial data.
@@ -99,20 +110,25 @@ module Volt
     end
 
     def updated(diff)
-      puts "UPDATED: #{diff.inspect}"
       diff.each do |op|
-        operation, id_or_index, data = op
+        puts "OP: #{op.inspect}"
+        operation, arg1, arg2 = op
 
-        case op
+        case operation
         when 'i'
           # insert
-          inserted(id_or_index, data)
+          inserted(arg1, arg2)
         when 'r'
           # remove
-          removed([id_or_index])
+          removed([arg1])
+        when 'c'
+          # changed
+          changed(arg1, arg2)
         when 'm'
           # move
-
+        when 'u'
+          # single value, update it
+          update(arg1)
         end
       end
     end
@@ -129,7 +145,14 @@ module Volt
       end
     end
 
+    def update(data)
+      @stores.each do |store|
+        store.resolve_value(data)
+      end
+    end
+
     def changed(model_id, data)
+      puts "CH: #{model_id.inspect} - #{data.inspect}"
       $loading_models = true
       Persistors::ModelStore.changed(model_id, data)
       $loading_models = false

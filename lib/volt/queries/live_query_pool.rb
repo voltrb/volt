@@ -18,10 +18,8 @@ module Volt
     end
 
     def updated_collection(collection, skip_channel, from_message_bus=false)
-      puts "UPDATED COLLECTION---: #{collection.inspect}"
       # collection = collection.to_sym
       lookup_all(collection).each do |live_query|
-        puts "UPDATE ON LQ: #{live_query.inspect}"
         live_query.update(skip_channel)
       end
 

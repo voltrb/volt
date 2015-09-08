@@ -7,7 +7,7 @@ module Volt
   module Persistors
     class ArrayStore < Store
       include StoreState
-
+      include ReactiveAccessors
 
       @@query_pool = QueryListenerPool.new
 
@@ -67,11 +67,13 @@ module Volt
 
       # Called by child models to track their listeners
       def listener_added
+        # puts "LIST ADD: #{inspect}"
         @listener_event_counter.add
       end
 
       # Called by child models to track their listeners
       def listener_removed
+        # puts "LIST REMOVE:  #{inspect}"
         @listener_event_counter.remove
       end
 
@@ -167,6 +169,69 @@ module Volt
         Cursor.new([], opts)
       end
 
+      # When doing things like .count, we get back a value, not an Array of
+      # Models.  To handle this, the updates from the server just resolve the
+      # value directly.
+      def resolve_value(val)
+        if @resolve_promises
+          # Resolve all waiting promises
+          resolve_promises.each do |promise|
+            promise.resolve(val)
+          end
+        else
+          # Only invalidate to generate a new promise if the previous one is
+          #  already realized.
+          resolve_dep.changed!
+          @resolve_dep = nil
+        end
+
+        # @root_dep.changed!
+
+        @model.value = val
+        @resolve_promises = nil
+      end
+
+      def value
+        # proc do |comp|
+          @root_dep.depend
+          resolve_dep.depend
+        #   comp.stop
+        # end.watch!
+        unless Computation.current
+          # Load the data now manually not running inside of a computation.
+          load_data
+        end
+
+        if @model.has_value? && (resval = self.resolved_value)
+          # Value is already there, return a resolved promise
+          return Promise.new.resolve(resval)
+        else
+          # Otherwise generate a new promise and queue it for resolving
+          promise = Promise.new
+          resolve_promises << promise
+
+          return promise
+        end
+      end
+
+      # Return a promise for resolving a value from something like .count
+      def resolve_promises
+        @resolve_promises ||= []
+      end
+
+
+      def resolve_dep
+        @resolve_dep ||= Dependency.new
+      end
+
+      def resolved_value
+        if @model.has_value?
+          @model.value
+        else
+          nil
+        end
+      end
+
       # Call a method on the model once the model is loaded.  Return a promise
       # that will resolve when the model is loaded
       def run_once_loaded
@@ -191,6 +256,12 @@ module Volt
       # passed block will be passed to the promises then.  Then will be passed the model.
       def fetch(&block)
         Volt.logger.warn('Deprication warning: in 0.9.3.pre4, all query methods on store now return Promises, so you can juse use .all or .first instead of .fetch')
+        begin
+          raise
+        rescue => e
+          puts e.inspect
+          puts e.backtrace.join("\n")
+        end
         promise = Promise.new
 
         # Run the block after resolve if a block is passed in
@@ -210,10 +281,6 @@ module Volt
 
         promise
       end
-
-      # Alias then for now
-      # TODO: Deprecate
-      alias_method :then, :fetch
 
       # Called from backend when an item is added
       def add(index, data)
@@ -293,6 +360,8 @@ module Volt
       def async?
         true
       end
+
+      private
     end
   end
 end

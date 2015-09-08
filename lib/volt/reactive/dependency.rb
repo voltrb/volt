@@ -54,7 +54,7 @@ module Volt
 
       deps.each(&:invalidate!)
 
-      @on_stop_dep.call if @on_stop_dep
+      # @on_stop_dep.call if @on_stop_dep
     end
 
     # Called when a dependency is no longer needed

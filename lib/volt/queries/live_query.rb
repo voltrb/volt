@@ -64,16 +64,25 @@ module Volt
     def update(skip_channel=nil)
       new_data = run
 
-      # Diff the new data
-      diff = QueryDiff.new(@last_data, @associations).run(new_data)
+      if new_data.is_a?(Array)
+        # Diff the new data
+        diff = QueryDiff.new(@last_data, @associations).run(new_data)
 
-      notify_updated(skip_channel, diff)
+        puts "DIFF: #{diff.inspect}"
+        notify_updated(skip_channel, diff)
+      else
+        # When working with queries that return a value, we don't diff, we just
+        # push an update operation
+        notify_updated(skip_channel, {'u' => new_data})
+      end
 
       @last_data = new_data
     end
 
     def notify_updated(skip_channel, diff)
-      notify!(skip_channel) do |query_subscription|
+      # TODO: We should be able to mostly skip our own channel
+      # notify!(skip_channel) do |query_subscription|
+      notify! do |query_subscription|
         query_subscription.notify_updated(diff)
       end
     end
