@@ -76,7 +76,7 @@ if RUBY_PLATFORM != 'opal'
     it 'should let you set a cookie' do
       channel = double('channel')
 
-      allow(channel).to receive(:send_message).with('response', 0, 'yes it works', {:something=>"awesome"})
+      allow(channel).to receive(:send_message).with('response', 0, 'yes it works', {something:"awesome"})
       expect(Volt.logger).to receive(:log_dispatch)
 
       dispatcher.dispatch(channel, [0, 'TestTask', :set_cookie, {}])

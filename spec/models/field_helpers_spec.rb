@@ -47,6 +47,6 @@ describe 'field helpers' do
   end
 
   it 'should track the fields on the model class' do
-    expect(ExampleModelWithField.fields_data).to eq({:name=>[nil, {}], :value=>[[Numeric, NilClass], {}]})
+    expect(ExampleModelWithField.fields_data).to eq({name:[nil, {}], value:[[Numeric, NilClass], {}]})
   end
 end

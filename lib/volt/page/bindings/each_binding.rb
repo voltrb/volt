@@ -104,7 +104,7 @@ module Volt
         dom_section.insert_anchor_before(binding_name, @templates[position].binding_name)
       end
 
-      # TODORW: :parent => @value may change
+      # TODORW: parent: @value may change
       item_context                           = SubContext.new({ _index_value: position, parent: @value }, @context)
       item_context.locals[@item_name.to_sym] = proc do
         # Fetch only whats there currently, no promises.
