@@ -65,8 +65,6 @@ module Volt
       exts = ComponentTemplates::Preprocessors.extensions
       template_path = view_path.split('/')[-4..-1].join('/').gsub('/views/', '/').gsub(/[.](#{exts.join('|')})$/, '')
 
-      exts = ComponentTemplates::Preprocessors.extensions
-
       format = File.extname(view_path).downcase.delete('.').to_sym
       code = ''
 
@@ -82,7 +80,9 @@ module Volt
     end
 
     def self.setup(sprockets=$volt_app.sprockets)
-      sprockets.register_mime_type 'application/vtemplate', extensions: ['.html', '.email']
+      exts = ComponentTemplates::Preprocessors.extensions.map{ |ext| ".#{ext}" }
+      
+      sprockets.register_mime_type 'application/vtemplate', extensions: exts
       sprockets.register_transformer 'application/vtemplate', 'application/javascript', Volt::ViewProcessor.new(true)
     end
   end
