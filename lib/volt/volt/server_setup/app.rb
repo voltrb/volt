@@ -10,6 +10,9 @@ end
 module Volt
   module ServerSetup
     module App
+      # Include Eventable to allow for lifecycle callbacks
+      include Eventable
+      
       # The root url is where the volt app is mounted
       attr_reader :root_url
       # The app url is where the app folder (and sprockets) is mounted

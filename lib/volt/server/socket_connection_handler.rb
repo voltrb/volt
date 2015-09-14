@@ -15,6 +15,26 @@ module Volt
 
       @@channels ||= []
       @@channels << self
+
+    end
+
+    def update_user_id(user_id)
+      if !@user_id && user_id
+        # If there is currently no user id associated with this channel
+        # and we get a new valid user_id, set it then trigger a
+        # user_connect event
+        @user_id = user_id
+        @@dispatcher.volt_app.trigger!("user_connect", @user_id)
+      elsif @user_id && !user_id
+        # If there is currently a user id associated with this channel
+        # and we get a nil user id, trigger a user_disconnect event then
+        # set the id to nil
+        @@dispatcher.volt_app.trigger!("user_disconnect", @user_id)
+        @user_id = user_id
+      else
+        # Otherwise, lets just set the id (should never really run)
+        @user_id = user_id
+      end
     end
 
     def self.dispatcher=(val)
@@ -82,6 +102,11 @@ module Volt
         @closed = true
         # Remove ourself from the available channels
         @@channels.delete(self)
+
+        # Trigger a user disconnect event even if the user hasn't logged out
+        if @user_id
+          @@dispatcher.volt_app.trigger!("user_disconnect", @user_id)
+        end
 
         begin
           @@dispatcher.close_channel(self)
