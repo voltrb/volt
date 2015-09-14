@@ -47,7 +47,7 @@ module Volt
         Volt.logger.error(msg)
 
         # If we get back that the user signature is wrong, log the user out.
-        if err.starts_with?('VoltUserError:')
+        if err.start_with?('VoltUserError:')
           # Delete the invalid cookie
           Volt.current_app.cookies.delete(:user_id)
         end
