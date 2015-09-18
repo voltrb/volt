@@ -10,11 +10,12 @@ module Volt
       def where(query)
         @model.select do |model|
           # Filter through each part of the query and make sure it matches.
+          has_values = []
           query.each_pair do |key, value|
-            next false unless model.get(key) == value
+            has_values << (model.get(key) == value)
           end
 
-          true
+          has_values.all?
         end
       end
     end
