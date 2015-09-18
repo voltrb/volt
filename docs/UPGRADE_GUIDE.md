@@ -4,6 +4,25 @@ CSS url's now should be referenced either 1) as relative paths from the css file
 
 On models, .can_delete?, .can_read?, and .can_create? now return promises.
 
+replace /config/base/index.html with:
+
+```ruby
+<!DOCTYPE html>
+<html>
+  <%# IMPORTANT: Please read before changing!                                   %>
+  <%# This file is rendered on the server using ERB, so it does NOT use Volt's  %>
+  <%# normal template system. You can add to it, but keep in mind the template  %>
+  <%# language difference. This file handles auto-loading all JS/Opal and CSS.  %>
+  <head>
+    <meta charset="UTF-8" />
+    <%= javascript_tags %>
+    <%= css_tags %>
+  </head>
+  <body>
+
+  </body>
+</html>
+```
 Check the CHANGELOG for more info.
 
 # 0.9.3 to 0.9.4
