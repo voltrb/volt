@@ -9,7 +9,7 @@ if RUBY_PLATFORM != 'opal'
       double('FakeUsersCollection', where: fake_response)
     end
 
-    let(:fake_store) { double('FakeStore', :_users => fake_users_collection) }
+    let(:fake_store) { double('FakeStore', _users: fake_users_collection) }
 
     let(:login_info) { { 'login' => 'Marty', 'password' => 'McFly' } }
 

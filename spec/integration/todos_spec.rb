@@ -5,7 +5,7 @@ describe 'todos app', type: :feature, sauce: true do
   it 'should add a todo and remove it' do
     visit '/todos'
 
-    fill_in 'newtodo', :with => 'Todo 1'
+    fill_in 'newtodo', with: 'Todo 1'
     find('#newtodo').native.send_keys(ENTER_KEY)
 
     expect(page).to have_content('Todo 1')
@@ -28,7 +28,7 @@ describe 'todos app', type: :feature, sauce: true do
   it 'should update a todo check state and persist' do
     visit '/todos'
 
-    fill_in 'newtodo', :with => 'Todo 1'
+    fill_in 'newtodo', with: 'Todo 1'
     find('#newtodo').native.send_keys(ENTER_KEY)
 
     expect(page).to have_content('Todo 1')

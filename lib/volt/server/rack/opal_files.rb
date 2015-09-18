@@ -110,7 +110,7 @@ module Volt
     def add_image_compression
       if defined?(ImageOptim)
         env = @environment
-        image_optim = ImageOptim.new({:pngout => false, :svgo => false})
+        image_optim = ImageOptim.new({pngout: false, svgo: false})
 
         processor = proc do |_context, data|
           image_optim.optimize_image_data(data) || data

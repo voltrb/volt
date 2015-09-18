@@ -16,7 +16,7 @@ if RUBY_PLATFORM != 'opal'
 
     it 'should create and run a new TaskArgumentFilterer when its filter method is called' do
       filtered_args = TaskArgumentFilterer.filter([{login: 'jam@jam.com', password: 'some password'}])
-      expect(filtered_args).to eq([{:login=>"jam@jam.com", :password=>"[FILTERED]"}])
+      expect(filtered_args).to eq([{login:"jam@jam.com", password:"[FILTERED]"}])
     end
 
   end
