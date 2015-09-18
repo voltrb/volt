@@ -103,13 +103,14 @@ module Volt
         # Remove ourself from the available channels
         @@channels.delete(self)
 
-        # Trigger a user disconnect event even if the user hasn't logged out
-        if @user_id
-          @@dispatcher.volt_app.trigger!("user_disconnect", @user_id)
-        end
-
         begin
           @@dispatcher.close_channel(self)
+
+          # Trigger a user disconnect event even if the user hasn't logged out
+          if @user_id
+            @@dispatcher.volt_app.trigger!("user_disconnect", @user_id)
+          end
+          
         rescue DRb::DRbConnError => e
         # ignore drb read of @@dispatcher error if child has closed
         end
