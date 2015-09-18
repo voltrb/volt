@@ -9,13 +9,12 @@ module Volt
 
       def where(query)
         @model.select do |model|
-          # Filter through each part of the query and make sure it matches.
-          has_values = []
-          query.each_pair do |key, value|
-            has_values << (model.get(key) == value)
+          # Run through each key in the query and make sure the value matches.
+          # We use .all? because once one fails to match, we can return false,
+          # because it wouldn't match as a whole.
+          query.all? do |key, value|
+            model.get(key) == value
           end
-
-          has_values.all?
         end
       end
     end
