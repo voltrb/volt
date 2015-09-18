@@ -9,6 +9,9 @@ end
 class Items < Volt::ArrayModel
 end
 
+class SubItem < Item
+end
+
 class TestAssignsMethod < Volt::Model
   def name=(val)
     self._name = val
@@ -620,5 +623,11 @@ describe Volt::Model do
     model = Volt::Model.new
     model._items << {}
     expect(model._items).to be_instance_of Items
+  end
+
+  it 'assigns the superclass\'s custom ArrayModel if it exists' do
+    model = Volt::Model.new
+    model._sub_items << {}
+    expect(model._sub_items).to be_instance_of Items
   end
 end
