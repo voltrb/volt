@@ -112,6 +112,39 @@ describe Volt::Computation do
     expect(values).to eq([nil, nil, 'inner', 'outer', 'inner'])
   end
 
+  it 'should raise an exception on a .watch! on the initial run' do
+    comp = nil
+    count = 1
+    expect do
+      comp = -> { count += 1 ; wrong_method }.watch!
+    end.to raise_error(/method `wrong_method'/)
+    # comp.stop
+  end
+
+  it 'should log an exception on the 2nd run, but not raise it' do
+    comp = nil
+    count = 0
+    dep = Volt::Dependency.new
+
+    expect(Volt.logger).to receive(:error) { nil }
+
+    expect do
+      comp = proc do
+        dep.depend
+        count += 1
+        if count > 1
+          raise "Count gt one"
+        end
+      end.watch!
+    end.not_to raise_error
+
+    dep.changed!
+
+    expect do
+      Volt::Computation.flush!
+    end.not_to raise_error
+  end
+
   describe 'watch_and_resolve!' do
     it 'should resolve any returnted promises' do
       promise = Promise.new

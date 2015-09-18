@@ -51,6 +51,16 @@ Volt.configure do |config|
   # have rack deflate all files.
   # config.deflate = true
 
+  #########################
+  # Websocket configuration
+  #########################
+  # If you need to use a different domain or path for the websocket connection,
+  # you can set it here.  Volt provides the socket connection url at /socket,
+  # but if for example you are using a proxy server that doesn't support
+  # websockets, you can point the websocket connection at the app server
+  # directly.
+  # config.public.websocket_url = '/socket'
+
   #######################
   # Public configurations
   #######################

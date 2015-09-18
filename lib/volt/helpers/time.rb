@@ -28,16 +28,16 @@ class Time
 
   def beginning_of_day
     #(self - seconds_since_midnight).change(usec: 0)
-    change(:hour => 0, :min => 0, :sec => 0)
+    change(hour: 0, min: 0, sec: 0)
   end
 
    # Returns a new Time representing the end of the day, 23:59:59.999999 (.999999999 in ruby1.9)
   def end_of_day
     change(
-      :hour => 23,
-      :min => 59,
-      :sec => 59,
-      # :usec => Rational(999999999, 1000)
+      hour: 23,
+      min: 59,
+      sec: 59,
+      # usec: Rational(999999999, 1000)
     )
   end
 end

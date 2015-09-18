@@ -74,27 +74,43 @@ module Volt
           # Gets the class for a model at the specified path.
           def class_at_path(path)
             if path
+              # remove the _ and then singularize/pluralize
+              if path.last == :[]
+                index = -2
+              else
+                index = -1
+              end
+
+              # process_class_name is defined by Model/ArrayModel as
+              # singularize/pluralize
+              klass_name = process_class_name(klass_name = path[index]).camelize
+
               begin
-                # remove the _ and then singularize/pluralize
-                if path.last == :[]
-                  index = -2
-                else
-                  index = -1
-                end
-
-                # process_class_name is defined by Model/ArrayModel as
-                # singularize/pluralize
-                klass_name = process_class_name(klass_name = path[index]).camelize
-
                 # Lookup the class
                 klass = Object.const_get(klass_name)
 
                 # Use it if it is a model
-                klass = self unless klass < self
+                return (klass < self ? klass : (klass = self))
               rescue NameError => e
                 # Ignore exception, just means the model isn't defined
-                klass = self
+                #
+                return klass = self if klass_name.singular?
               end
+
+              # Checl for special case where we are subclassing a Volt::Model that has a custom Volt::ArrayModel
+              begin
+                # Get the pluralised name of the superclass of the model
+                super_klass_name = Object.const_get(klass_name.singularize).superclass.to_s.pluralize
+
+                # Get the class, rescue if not found
+                klass = Object.const_get(super_klass_name)
+
+                klass = self unless klass < self
+              rescue NameError => e
+                # Ignore exception, array model isn't defined.
+                return klass = self
+              end
+
             else
               klass = self
             end

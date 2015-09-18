@@ -11,18 +11,6 @@ module Volt
       @opal_files      = opal_files
 
       @@router = volt_app.router
-
-      @@router.define do
-        # Load routes for each component
-        component_paths.components.values.flatten.uniq.each do |component_path|
-          routes_path = "#{component_path}/config/routes.rb"
-
-          if File.exist?(routes_path)
-            route_file = File.read(routes_path)
-            instance_eval(route_file, routes_path, 0)
-          end
-        end
-      end
     end
 
     def route_match?(path)

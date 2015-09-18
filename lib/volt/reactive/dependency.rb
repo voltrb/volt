@@ -34,7 +34,7 @@ module Volt
             # If @dependencies is nil, this Dependency has been removed
             if @dependencies
               # For set, .delete returns a boolean if it was deleted
-              deleted = @dependencies.delete(current)
+              deleted = @dependencies.delete?(current)
 
               # Call on stop dep if no more deps
               @on_stop_dep.call if @on_stop_dep && deleted && @dependencies.size == 0
@@ -54,7 +54,9 @@ module Volt
 
       deps.each(&:invalidate!)
 
-      # @on_stop_dep.call if @on_stop_dep
+      # Call on stop dep here because we are clearing out the @dependencies, so
+      # it won't trigger on the invalidates
+      @on_stop_dep.call if @on_stop_dep
     end
 
     # Called when a dependency is no longer needed

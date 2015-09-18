@@ -9,6 +9,9 @@ end
 class Items < Volt::ArrayModel
 end
 
+class SubItem < Item
+end
+
 class TestAssignsMethod < Volt::Model
   def name=(val)
     self._name = val
@@ -145,6 +148,15 @@ describe Volt::Model do
     Volt::Computation.flush!
 
     expect(values).to eq([nil, 'one'])
+  end
+
+  if RUBY_PLATFORM != 'opal'
+    it 'should allow a create/destroy from an existing model class' do
+      item = Item.new(name: 'The item')
+      store._items.create(item)
+
+      item.destroy
+    end
   end
 
   it 'should trigger changed for any indicies after a deleted index' do
@@ -634,4 +646,9 @@ describe Volt::Model do
     end
   end
 
+  it 'assigns the superclass\'s custom ArrayModel if it exists' do
+    model = Volt::Model.new
+    model._sub_items << {}
+    expect(model._sub_items).to be_instance_of Items
+  end
 end

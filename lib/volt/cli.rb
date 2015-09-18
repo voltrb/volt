@@ -3,7 +3,9 @@ require 'bundler/setup'
 
 require 'thor'
 require 'volt/extra_core/extra_core'
+require 'volt/cli/generators'
 require 'volt/cli/generate'
+require 'volt/cli/destroy'
 require 'volt/version'
 require 'volt/cli/bundle'
 
@@ -13,6 +15,7 @@ module Volt
     include Volt::Bundle
 
     register(Generate, 'generate', 'generate GENERATOR [args]', 'Run a generator.')
+    register(Destroy, 'destroy', 'destroy GENERATOR [args]', 'Delete files created by a generator.')
 
     desc 'new PROJECT_NAME', 'generates a new project.'
 

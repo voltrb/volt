@@ -26,11 +26,11 @@ module Volt
       rack_app.use Rack::ETag
 
       rack_app.use Rack::Session::Cookie, {
-        :key => 'rack.session',
-        # :domain => 'localhost.com',
-        :path => '/',
-        :expire_after => 2592000,
-        :secret => Volt.config.app_secret
+        key: 'rack.session',
+        # domain: 'localhost.com',
+        path: '/',
+        expire_after: 2592000,
+        secret: Volt.config.app_secret
       }
 
       rack_app.use QuietCommonLogger

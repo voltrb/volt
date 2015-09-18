@@ -86,7 +86,7 @@ describe Volt::Associations do
       bob = store.people.create.sync
 
       expect(bob.path).to eq([:people, :[]])
-      address = bob.addresses.create({:street => '1234 awesome street'})
+      address = bob.addresses.create({street: '1234 awesome street'})
 
       expect(bob.addresses[0].sync.person_id).to eq(bob.id)
       expect(bob.id).to_not eq(nil)

@@ -9,12 +9,12 @@ module Volt
 
       def where(query)
         result = @model.select do |model|
-          # Filter through each part of the query and make sure it matches.
-          query.each_pair do |key, value|
-            next false unless model.get(key) == value
+          # Run through each key in the query and make sure the value matches.
+          # We use .all? because once one fails to match, we can return false,
+          # because it wouldn't match as a whole.
+          query.all? do |key, value|
+            model.get(key) == value
           end
-
-          true
         end
 
         options = @model.options.merge(parent: @model, path: @model.path)

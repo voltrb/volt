@@ -131,7 +131,7 @@ describe 'bindings test', type: :feature, sauce: true do
     #   expect(find('#pageSelect3')).to have_content('two')
     #
     #   # Fill in one field and see if it updates the rest
-    #   fill_in('pageSelect2', :with => 'three')
+    #   fill_in('pageSelect2', with: 'three')
     #   expect(find('#pageSelect1').value).to eq('three')
     #   expect(find('#pageSelect2').value).to eq('three')
     #   expect(find('#pageSelect3')).to have_content('three')
