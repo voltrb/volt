@@ -54,8 +54,11 @@ module Sprockets
         data = env.read_file(input[:filename], input[:content_type])
       end
 
-      dependencies = Set.new(input[:metadata][:dependencies])
-      dependencies += [env.build_file_digest_uri(input[:filename])]
+      # dependencies = Set.new(input[:metadata][:dependencies])
+      # dependencies += [env.build_file_digest_uri(input[:filename])]
+
+      dependencies = input[:metadata][:dependencies]
+      # dependencies.merge(env.build_file_digest_uri(input[:filename]))
 
       { data: data, dependencies: dependencies }
     end

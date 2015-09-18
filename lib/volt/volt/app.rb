@@ -102,6 +102,8 @@ module Volt
         # Setup the middleware that we can only setup after all components boot.
         setup_postboot_middleware
 
+        setup_routes
+
         start_message_bus
       end
     end

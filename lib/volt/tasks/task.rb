@@ -39,7 +39,8 @@ module Volt
 
       # Set the timeout for method calls on this task.  (The default is
       # Volt.config.worker_timeout)
-      def timeout(value)
+      # Set 0 to disable timeout
+      def self.timeout(value)
         self.__timeout = value
       end
 
