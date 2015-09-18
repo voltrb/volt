@@ -27,14 +27,25 @@ module Volt
     end
 
     def connect!
-      `
-        if (document.location.protocol == 'https:') {
-          var wsProto = 'wss';
-        } else {
-          var wsProto = 'ws';
-        }
+      # The websocket url can be overridden by config.public.websocket_url
+      socket_url = Volt.config.try(:public).try(:websocket_url) || begin
+        "#{`document.location.host`}/socket"
+      end
 
-        this.socket = new WebSocket(wsProto + '://' + document.location.host + '/socket');
+      if socket_url !~ /^wss?[:]\/\//
+        if socket_url !~ /^[:]\/\//
+          # Add :// to the front
+          socket_url = "://#{socket_url}"
+        end
+
+        ws_proto = (`document.location.protocol` == 'https://') ? 'wss' : 'ws'
+
+        # Add wss? to the front
+        socket_url = "#{ws_proto}#{socket_url}"
+      end
+
+      `
+        this.socket = new WebSocket(socket_url);
 
         this.socket.onopen = function () {
           self.$opened();
