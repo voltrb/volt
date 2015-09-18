@@ -147,6 +147,15 @@ describe Volt::Model do
     expect(values).to eq([nil, 'one'])
   end
 
+  if RUBY_PLATFORM != 'opal'
+    it 'should allow a create/destroy from an existing model class' do
+      item = Item.new(name: 'The item')
+      store._items.create(item)
+
+      item.destroy
+    end
+  end
+
   it 'should trigger changed for any indicies after a deleted index' do
     model = Volt::Model.new
 

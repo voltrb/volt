@@ -21,21 +21,33 @@ module Volt
 
     # Runs the computation, called on initial run and
     # when changed!
-    def compute!
+    def compute!(initial_run=false)
       @invalidated = false
 
       unless @stopped
 
         @computing = true
-        run_in do
-          if @computation.arity > 0
-            # Pass in the Computation so it can be canceled from within
-            @computation.call(self)
-          else
-            @computation.call
+        begin
+          run_in do
+            if @computation.arity > 0
+              # Pass in the Computation so it can be canceled from within
+              @computation.call(self)
+            else
+              @computation.call
+            end
           end
+        rescue => e
+          if initial_run
+            # Re-raise if we are in the initial run
+            raise
+          else
+            msg = "Exception During Compute: " + e.inspect
+            msg += "\n" + e.backtrace.join("\n") if e.respond_to?(:backtrace)
+            Volt.logger.error(msg)
+          end
+        ensure
+          @computing = false
         end
-        @computing = false
       end
     end
 
@@ -140,7 +152,7 @@ class Proc
     computation = Volt::Computation.new(self)
 
     # Initial run
-    computation.compute!
+    computation.compute!(true)
 
     # return the computation
     computation

@@ -1,8 +1,12 @@
 # Change Log
 
 ## 0.9.6
-## Added
+### Added
 - @merongivian was kind enough to add Spanish traslations to the docs: (http://docs.voltframework.com/es/index.html)
+
+### Changed
+- Finally tracked down an illusive memory leak.
+- Computations now raise an error on their inital run, then log errors (via Volt.logger.error(..)) when running again (since they update on next tick)
 
 ## 0.9.5
 ### Breaking Changes
