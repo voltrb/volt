@@ -113,12 +113,15 @@ module Volt
         begin
           @@dispatcher.close_channel(self)
 
-          # Trigger a client disconnect event
-          @@dispatcher.volt_app.trigger!("client_disconnect")
+          # Check for volt_app (@@dispatcher could be an ErrorDispatcher)
+          if @@dispatcher.respond_to(:volt_app)
+            # Trigger a client disconnect event
+            @@dispatcher.volt_app.trigger!("client_disconnect")
 
-          # Trigger a user disconnect event even if the user hasn't logged out
-          if @user_id
-            @@dispatcher.volt_app.trigger!("user_disconnect", @user_id)
+            # Trigger a user disconnect event even if the user hasn't logged out
+            if @user_id
+              @@dispatcher.volt_app.trigger!("user_disconnect", @user_id)
+            end
           end
           
         rescue DRb::DRbConnError => e
