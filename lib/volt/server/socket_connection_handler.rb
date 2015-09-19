@@ -16,6 +16,9 @@ module Volt
       @@channels ||= []
       @@channels << self
 
+      # Trigger a client connect event
+      @@dispatcher.volt_app.trigger!("client_connect")
+
     end
 
     def update_user_id(user_id)
@@ -43,6 +46,10 @@ module Volt
 
     def self.dispatcher
       @@dispatcher
+    end
+
+    def self.channels
+      @@channels
     end
 
     # Sends a message to all, optionally skipping a users channel
@@ -105,6 +112,9 @@ module Volt
 
         begin
           @@dispatcher.close_channel(self)
+
+          # Trigger a client disconnect event
+          @@dispatcher.volt_app.trigger!("client_disconnect")
 
           # Trigger a user disconnect event even if the user hasn't logged out
           if @user_id
