@@ -115,7 +115,7 @@ module Volt
 
     def logout
       # Notify the backend so we can remove the user_id from the user's channel
-      UserTasks.logout(user_id: Volt.current_app.cookies._user_id)
+      UserTasks.logout
       
       # Remove the cookie so user is no longer logged in
       Volt.current_app.cookies.delete(:user_id)
