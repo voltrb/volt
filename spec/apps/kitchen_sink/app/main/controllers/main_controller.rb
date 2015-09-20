@@ -92,6 +92,9 @@ module Main
       LoginTasks.login_first_user
     end
 
+    def callbacks
+    end
+
     private
 
     # the main template contains a #template binding that shows another
