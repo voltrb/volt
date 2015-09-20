@@ -114,7 +114,7 @@ module Volt
           @@dispatcher.close_channel(self)
 
           # Check for volt_app (@@dispatcher could be an ErrorDispatcher)
-          if @@dispatcher.respond_to(:volt_app)
+          if @@dispatcher.respond_to?(:volt_app)
             # Trigger a client disconnect event
             @@dispatcher.volt_app.trigger!("client_disconnect")
 

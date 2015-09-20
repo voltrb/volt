@@ -65,7 +65,6 @@ if RUBY_PLATFORM != 'opal'
     describe '#close' do
       it 'should trigger a client_disconnect event' do
         allow(Volt::SocketConnectionHandler.dispatcher).to receive(:close_channel).and_return true
-        allow(Volt::SocketConnectionHandler.dispatcher).to receive(:respond_to).and_return true
 
         val = 0
 
@@ -78,7 +77,6 @@ if RUBY_PLATFORM != 'opal'
       context 'with valid user_id' do
         it 'should trigger a user_disconnect event' do
           allow(Volt::SocketConnectionHandler.dispatcher).to receive(:close_channel).and_return true
-          allow(Volt::SocketConnectionHandler.dispatcher).to receive(:respond_to).and_return true
 
           subject.user_id = 123
 
