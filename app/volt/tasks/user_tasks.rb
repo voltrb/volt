@@ -21,4 +21,10 @@ class UserTasks < Volt::Task
       end
     end
   end
+
+  def logout
+    # Remove user_id from user's channel
+    @channel.update_user_id(nil) if @channel
+  end
+
 end

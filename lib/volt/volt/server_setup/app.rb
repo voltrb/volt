@@ -13,6 +13,9 @@ module Volt
       attr_reader :live_query_pool, :query_subscription_pool,
                   :channel_query_subscriptions
 
+      # Include Eventable to allow for lifecycle callbacks
+      include Eventable
+
       # The root url is where the volt app is mounted
       attr_reader :root_url
       # The app url is where the app folder (and sprockets) is mounted
