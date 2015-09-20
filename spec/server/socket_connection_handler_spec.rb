@@ -8,7 +8,12 @@ if RUBY_PLATFORM != 'opal'
     let(:fake_session) {double("Faye::WebSocket")}
 
     before do
+      @old_dispatcher = Volt::SocketConnectionHandler.dispatcher
       Volt::SocketConnectionHandler.dispatcher = fake_dispatcher
+    end
+
+    after do
+      Volt::SocketConnectionHandler.dispatcher = @old_dispatcher
     end
 
     let(:connection_handler) { Volt::SocketConnectionHandler.new(fake_session) }
