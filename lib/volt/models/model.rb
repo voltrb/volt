@@ -288,7 +288,10 @@ module Volt
         opts = @options.merge(parent: self, path: path + [method_name])
 
         if method_name.plural?
-          opts[:associate] = self.class.collection_name
+          if self.class != Volt::Model
+            opts[:associate] = self.class.collection_name
+          end
+
           return new_array_model([], opts)
         else
           return new_model({}, opts)

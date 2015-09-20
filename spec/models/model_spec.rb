@@ -12,6 +12,10 @@ end
 class SubItem < Item
 end
 
+class Todo < Volt::Model
+#  field :label, String
+end
+
 class TestAssignsMethod < Volt::Model
   def name=(val)
     self._name = val
@@ -569,8 +573,8 @@ describe Volt::Model do
 
   if RUBY_PLATFORM != 'opal'
     it 'should update other queries on the server when a new model is created' do
-      query1 = store._todos!
-      query2 = store._todos.limit(1)
+      query1 = store.todos
+      query2 = store.todos.limit(1)
 
       count = 0
 
@@ -579,7 +583,7 @@ describe Volt::Model do
 
       expect(count).to eq(0)
 
-      query1 << { label: 'One' }
+      query1.create({ label: 'One' })
 
       count = 0
       query2.all.each { |v| count += 1 }

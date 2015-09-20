@@ -110,7 +110,7 @@ class Promise
     end
 
     if error
-      if error.is_a?(RSpec::Expectations::ExpectationNotMetError)
+      if defined?(Rspec) && error.is_a?(RSpec::Expectations::ExpectationNotMetError)
         # re-raise
         raise error
       end
