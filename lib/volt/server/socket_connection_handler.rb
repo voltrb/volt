@@ -45,7 +45,7 @@ module Volt
     end
 
     def self.dispatcher
-      @@dispatcher
+      defined?(@@dispatcher) ? @@dispatcher : nil
     end
 
     def self.channels
@@ -123,7 +123,7 @@ module Volt
               @@dispatcher.volt_app.trigger!("user_disconnect", @user_id)
             end
           end
-          
+
         rescue DRb::DRbConnError => e
         # ignore drb read of @@dispatcher error if child has closed
         end
