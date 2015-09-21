@@ -45,7 +45,6 @@ module Volt
         # Otherwise, lets just set the id (should never really run)
         @user_id = user_id
       end
->>>>>>> master
     end
 
     def self.dispatcher=(val)
