@@ -73,11 +73,15 @@ module Volt
 
     def reload
       # Stash the current page value
-      value = EJSON.stringify(Volt.current_app.page.to_h)
+      begin
+        value = EJSON.stringify(Volt.current_app.page.to_h)
 
-      # If this browser supports session storage, store the page, so it will
-      # be in the same state when we reload.
-      `sessionStorage.setItem('___page', value);` if `sessionStorage`
+        # If this browser supports session storage, store the page, so it will
+        # be in the same state when we reload.
+        `sessionStorage.setItem('___page', value);` if `sessionStorage`
+      rescue EJSON::NonEjsonType => e
+        # Unable to serailize the page, ignore stashing it
+      end
 
       Volt.current_app.page._reloading = true
       `window.location.reload(false);`
