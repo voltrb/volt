@@ -53,6 +53,7 @@ module Volt
     end
 
     # Sends a message to all, optionally skipping a users channel
+    # Expects promise_id after message name, can be nil
     def self.send_message_all(skip_channel = nil, *args)
       return unless defined?(@@channels)
       @@channels.each do |channel|

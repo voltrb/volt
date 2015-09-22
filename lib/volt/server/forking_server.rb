@@ -210,35 +210,52 @@ module Volt
 
 
     def reload(changed_files)
-      # only reload the server code if a non-view file was changed
-      server_code_changed = changed_files.any? { |path| File.extname(path) == '.rb' }
+      # if all changed files are just css files then we will just refresh the css links by invalidating the cache
+      if changed_files.all? { |path| File.extname(path).match(/css|scss|sass/) }
+        msg = 'CSS updated, refreshing client...'
 
-      msg = 'file changed, reloading'
-      msg << ' server and' if server_code_changed
-      msg << ' client...'
+        Volt.logger.log_with_color(msg, :light_blue)
 
-      Volt.logger.log_with_color(msg, :light_blue)
+        # sub out the Volt root and any preprocessor extensions from the file paths
+        css_file_paths = changed_files.map { |path| path.gsub(Volt.root, "").gsub(/.scss|.sass/,"") }
+
+        begin
+          SocketConnectionHandler.send_message_all(nil, 'refresh_css', nil, css_file_paths)
+        rescue => e
+          Volt.logger.error('CSS refresh dispatch error: ')
+          Volt.logger.error(e)
+        end
+      else
+        # only reload the server code if a non-view file was changed
+        server_code_changed = changed_files.any? { |path| File.extname(path) == '.rb' }
+
+        msg = 'file changed, reloading'
+        msg << ' server and' if server_code_changed
+        msg << ' client...'
+
+        Volt.logger.log_with_color(msg, :light_blue)
 
 
-      # Figure out if any views or routes were changed:
-      # TODO: Might want to only check for /config/ under the CWD
-      if changed_files.any? {|path| path =~ /\/config\// }
-        update_mod_time
-        sync_mod_time
-      end
-
-      begin
-        SocketConnectionHandler.send_message_all(nil, 'reload')
-      rescue => e
-        Volt.logger.error('Reload dispatch error: ')
-        Volt.logger.error(e)
-      end
-
-      if server_code_changed
-        @child_lock.with_write_lock do
-          stop_child
-          start_child
+        # Figure out if any views or routes were changed:
+        # TODO: Might want to only check for /config/ under the CWD
+        if changed_files.any? {|path| path =~ /\/config\// }
+          update_mod_time
           sync_mod_time
+        end
+
+        begin
+          SocketConnectionHandler.send_message_all(nil, 'reload')
+        rescue => e
+          Volt.logger.error('Reload dispatch error: ')
+          Volt.logger.error(e)
+        end
+
+        if server_code_changed
+          @child_lock.with_write_lock do
+            stop_child
+            start_child
+            sync_mod_time
+          end
         end
       end
     end
