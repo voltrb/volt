@@ -88,13 +88,35 @@ module Volt
 
     # refresh changed css
     def refresh_css(changed_files)
-      changed_files.each do |path|
-        
-        # We fetch the link (making sure to only match with 'begins with' incase the href has already been changed)
+      changed_files[:removed].each do |path|
+
+        # Remove link to css from head
+        `
+        var el = window.document.querySelector("link[href^='" + path + "']");
+        el.parentElement.removeChild(el);
+        `
+      end
+      changed_files[:modified].each do |path|
+
+        # We fetch the link
         # We then invalidate the cached css by appending a random query to the href which forces the CSS to be reloaded
         `
           var el = window.document.querySelector("link[href^='" + path + "']")
-          el.setAttribute("href", el.getAttribute("href") + "?v=" + #{SecureRandom.uuid[0..7]})
+          el.setAttribute('href', el.getAttribute('href') + '?v=' + #{SecureRandom.uuid[0..7]})
+        `
+      end
+
+      changed_files[:added].each do |path|
+
+        # Inject a new link to the css into the head
+        `
+          link=document.createElement('link');
+          link.href=path;
+          link.rel='stylesheet';
+          link.type='text/css';
+          link.meda='all';
+
+          document.getElementsByTagName('head')[0].appendChild(link);
         `
       end
     end

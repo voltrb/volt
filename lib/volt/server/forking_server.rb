@@ -208,8 +208,9 @@ module Volt
       end
     end
 
+    def reload(args)
+      changed_files = args[:modified] + args[:added] + args[:removed]
 
-    def reload(changed_files)
       # if all changed files are just css files then we will just refresh the css links by invalidating the cache
       if changed_files.all? { |path| File.extname(path).match(/css|scss|sass/) }
         msg = 'CSS updated, refreshing client...'
@@ -217,7 +218,9 @@ module Volt
         Volt.logger.log_with_color(msg, :light_blue)
 
         # sub out the Volt root and any preprocessor extensions from the file paths
-        css_file_paths = changed_files.map { |path| path.gsub(Volt.root, "").gsub(/.scss|.sass/,"") }
+        css_file_paths = args.update(args) do |key,value|
+          value.map { |path| path.gsub(Volt.root, '').gsub(/.scss|.sass/,'') }
+        end
 
         begin
           SocketConnectionHandler.send_message_all(nil, 'refresh_css', nil, css_file_paths)
@@ -284,7 +287,7 @@ module Volt
       @listener = Listen.to("#{@server.app_path}/", options) do |modified, added, removed|
         Thread.new do
           # Run the reload in a new thread
-          reload(modified + added + removed)
+          reload(modified: modified, added: added, removed: removed)
         end
       end
       @listener.start
