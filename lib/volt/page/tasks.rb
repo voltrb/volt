@@ -114,7 +114,7 @@ module Volt
           link.href=path;
           link.rel='stylesheet';
           link.type='text/css';
-          link.meda='all';
+          link.media='all';
 
           document.getElementsByTagName('head')[0].appendChild(link);
         `
