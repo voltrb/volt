@@ -38,7 +38,7 @@ group :test do
 end
 
 # Server for MRI
-platform :mri, :mingw do
+platform :mri, :mingw, :x64_mingw do
   # The implementation of ReadWriteLock in Volt uses concurrent ruby and ext helps performance.
   gem 'concurrent-ruby-ext', '~> 0.8.0'
 
