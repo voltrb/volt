@@ -81,7 +81,8 @@ module Volt
         `sessionStorage.setItem('___page', value);` if `sessionStorage`
       rescue EJSON::NonEjsonType => e
         # Unable to serailize the page, ignore stashing it
-        `sessionStorage.removeItem('__page');`
+        # clear the ___page stash
+        `sessionStorage.removeItem('___page');`
       end
 
       Volt.current_app.page._reloading = true
