@@ -6,6 +6,7 @@ unless RUBY_PLATFORM == 'opal'
 
     let(:test_model_class) do
       Class.new(Volt::Model) do
+        set_collection_name :test_model3_classes
         validations do
           if _is_ready == true
             validate :name, length: 5
@@ -16,6 +17,7 @@ unless RUBY_PLATFORM == 'opal'
 
     let(:test_model_action_pass_class) do
       Class.new(Volt::Model) do
+        set_collection_name :test_model_action_pass_classes
         validations do |action|
           # Only validation the name on update
           if action == :update

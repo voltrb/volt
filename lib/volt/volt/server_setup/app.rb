@@ -112,6 +112,8 @@ module Volt
           require 'volt/queries/live_query_pool'
           require 'volt/queries/query_subscription_pool'
 
+          # Try to reset the previous
+          @database.try(:reset!)
 
           # Setup LiveQueryPool for the app
           @query_subscription_pool.clear if @query_subscription_pool

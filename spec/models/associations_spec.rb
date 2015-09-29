@@ -3,11 +3,12 @@ require 'spec_helper'
 class ::Person < Volt::Model
   has_many :addresses
 end
-
+puts "Address----"
 class ::Address < Volt::Model
   belongs_to :person
   has_one :zip_info
 end
+puts "---------"
 
 class ::AddressBelongToOption < Volt::Model
   belongs_to :someone, collection: :person, foreign_key: :id, local_key: :some_weird_id
@@ -95,6 +96,7 @@ describe Volt::Associations do
     it 'should raise an exception when defining an association with an already used name' do
       expect do
         Class.new(Volt::Model) do
+          set_collection_name :temp1
           has_many :ones
           has_many :ones
         end

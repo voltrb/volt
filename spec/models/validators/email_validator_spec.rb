@@ -5,6 +5,7 @@ describe Volt::Model do
 
   let(:test_model_class) do
     Class.new(Volt::Model) do
+      set_collection_name :test_model4_classes
       validate :count, numericality: { min: 5, max: 10 }
       validate :description, length: { message: 'needs to be longer',
                                        length: 50 }
@@ -87,6 +88,7 @@ describe Volt::Model do
 
     let(:test_model_class) do
       Class.new(Volt::Model) do
+        set_collection_name :test_model5_classes
         validate :special_field, format: [
           { with: /regex/, message: 'regex failed' },
           { with: ->(x) { x == false }, message: 'proc failed' }

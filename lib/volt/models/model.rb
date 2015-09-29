@@ -360,7 +360,16 @@ module Volt
 
     # return the collection name for this model class
     def self.collection_name
-      name.underscore.pluralize.to_sym
+      name = @collection_name || self.name
+      if name
+        name.underscore.pluralize.to_sym
+      else
+        raise "Class does not have a name, assign one with collection_name or use a named class."
+      end
+    end
+
+    def self.set_collection_name(collection_name)
+      @collection_name = collection_name.to_s
     end
 
     # Update tries to update the model and returns
