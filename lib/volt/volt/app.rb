@@ -1,5 +1,10 @@
 require 'opal'
 
+# On the server, setup the server env by default
+unless RUBY_PLATFORM == 'opal'
+  ENV['SERVER'] ||= 'true'
+end
+
 # on the client, we want to include the main volt.rb file
 require 'volt'
 require 'volt/models'
@@ -48,6 +53,8 @@ module Volt
     attr_accessor :sprockets, :opal_files
 
     def initialize(app_path=nil)
+      app_path ||= Dir.pwd
+
       if Volt.server? && !app_path
         raise "Volt::App.new requires an app path to boot"
       end
