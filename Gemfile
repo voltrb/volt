@@ -46,8 +46,8 @@ group :development, :test do
 end
 
 platform :mri do
-  # The implementation of ReadWriteLock in Volt uses concurrent ruby and ext helps performance.
-  gem 'concurrent-ruby-ext'
+  # ReadWriteLock in Volt comes from concurrent ruby and ext helps performance.
+  gem 'concurrent-ruby-ext', '~> 1.0.0.pre3', '< 2.0.0'
 
   # For debugging
   gem 'pry-byebug', '~> 2.0.0', require: false

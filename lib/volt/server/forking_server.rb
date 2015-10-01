@@ -17,7 +17,7 @@ module Volt
   class ForkingServer
     def initialize(server)
       # A read write lock for accessing and creating the lock
-      @child_lock = ReadWriteLock.new
+      @child_lock = Concurrent::ReadWriteLock.new
 
       # Trap exit
       at_exit do
