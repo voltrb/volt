@@ -26,7 +26,10 @@ class Class
           else
             val = nil
           end
-          val = val.dup rescue val
+          # We need the numeric check because of: https://github.com/opal/opal/issues/1122
+          unless val.is_a?(Numeric)
+            val = val.dup rescue val
+          end
 
           instance_variable_set(ivar, val)
         end
