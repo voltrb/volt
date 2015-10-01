@@ -46,6 +46,25 @@ module Volt
         false
       end
 
+      # Stores can allow or not allow "on the fly collections", this means a
+      # collection will be created when saved to, even if the collection did
+      # not exist previously and was not created with a class.
+      #
+      # If we allow on the fly collections, we could do the following:
+      #    store._somethings
+      # ^ where no Something model class had been created
+      def on_the_fly_collections?
+        true
+      end
+
+      # Count gets passed down to the persistor, since different persistors
+      # may implement it different ways.  #reactive_count just aliases normal
+      # count for now.
+      def count(*args, &block)
+        @model.reactive_count(*args, &block)
+      end
+
+
       # Find the root for this model
       def root_model
         node = @model

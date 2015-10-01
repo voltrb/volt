@@ -60,7 +60,7 @@ describe Volt::User do
       end
 
       it 'should allow updates without validating the password' do
-        bob = store._users.buffer(name: 'Bob', email: 'bob@bob.com', password: '39sdjkdf932jklsd')
+        bob = store.users.buffer(name: 'Bob', email: 'bob@bob.com', password: '39sdjkdf932jklsd')
         bob.save!.sync
 
         Volt.as_user(bob) do
@@ -72,6 +72,7 @@ describe Volt::User do
           bob_buf.name = 'Jimmy'
 
           saved = false
+
           bob_buf.save! do
             saved = true
           end

@@ -1,6 +1,7 @@
 require 'spec_helper'
 require 'volt/models'
 
+
 describe Volt::Persistors::Store do
   it 'should tell the persistor when the model has changed' do
     persistor = double('volt/persistor')
@@ -38,21 +39,30 @@ describe Volt::Persistors::Store do
   end
 
   unless RUBY_PLATFORM == 'opal'
+    class ::Nester < Volt::Model
+    end
+
     before do
-      model = store._nesters.create(name: 'One').sync
+      model = store.nesters.create(name: 'One').sync
       model._subone = {name: 'Two'}
     end
 
     it 'should reload a model with nested hash models' do
-      model2 = store._nesters.first.sync
+      model2 = store.nesters.first.sync
 
       expect(model2.to_h.without(:id, :subone)).to eq(name: 'One')
       expect(model2._subone.to_h.without(:id)).to eq(name: 'Two')
     end
 
     it 'should reload nested hash models with the same parent persistor' do
-      model = store._nesters.first.sync
+      model = store.nesters.first.sync
       expect(model.persistor).to eq(model._subone.persistor)
+    end
+
+    it 'should raise an error when accessing an model class on store (using sql)' do
+      expect do
+        store.wrong_models
+      end.to raise_error
     end
   end
 

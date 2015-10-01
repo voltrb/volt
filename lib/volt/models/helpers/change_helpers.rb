@@ -18,35 +18,45 @@ module Volt
           # no_validate mode should only be used internally.  no_validate mode is a
           # performance optimization that prevents validation from running after each
           # change when assigning multile attributes.
-          unless Volt.in_mode?(:no_validate)
+          if Volt.in_mode?(:no_validate)
+            # Didn't run validations, return the model
+            self.then
+          else
             # Run the validations for all fields
             result = nil
             return validate!.then do
+              # Buffers only persist on .save!
+              if buffer?
+                nil
+              else
+                # valid model.  Save, then return the model
+                persist_changes(attribute_name)
+              end.then { self }
+              # ^ return the model
+            end.fail do |errors|
+              # invalid model
               # Buffers are allowed to be in an invalid state
               unless buffer?
                 # First check that all local validations pass
                 if error_in_changed_attributes?
-                  # Some errors are present, revert changes
+                  # Some errors are present in something that we changed.
                   revert_changes!
 
-                  # After we revert, we need to validate again to get the error messages back
+                  # After we revert, we need to validate again to get the error
+                  # messages back.
                   # TODO: Could probably cache the previous errors.
                   result = validate!.then do
                     # Reject the promise with the errors
                     Promise.new.reject(errs)
                   end
                 else
-                  result = persist_changes(attribute_name)
+                  result = persist_changes(attribute_name).then
                 end
               end
 
-              # Return result inside of the validate! promise
-              result.then { self }
+              result
             end
           end
-
-          # Didn't run validations
-          self.then
         end
 
 

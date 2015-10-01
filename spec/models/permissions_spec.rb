@@ -91,9 +91,21 @@ describe 'model permissions' do
   # end
 
   if RUBY_PLATFORM != 'opal'
+    class TestDenyReadName < Volt::Model
+    end
+
+    class TestDenyDelete < Volt::Model
+    end
+
+    class TestUpdateReadCheck < Volt::Model
+    end
+
+    class TestPromisePermission < Volt::Model
+    end
+
     describe 'read permissions' do
       it 'should deny read on a field' do
-        model = store._test_deny_read_names!.buffer
+        model = store.test_deny_read_names.buffer
         model._name = 'Jimmy'
         model._other = 'should be visible'
 
@@ -102,7 +114,7 @@ describe 'model permissions' do
         # Clear the identity map, so we can load up a fresh copy
         model.save_to.persistor.clear_identity_map
 
-        reloaded = store._test_deny_read_names.first.sync
+        reloaded = store.test_deny_read_names.first.sync
 
         expect(reloaded._name).to eq(nil)
         expect(reloaded._other).to eq('should be visible')
@@ -110,13 +122,13 @@ describe 'model permissions' do
     end
 
     it 'should prevent delete if denied' do
-      model = store._test_deny_deletes!.buffer
+      model = store.test_deny_deletes.buffer
 
       model.save!.then do
         # Saved
         count = 0
 
-        store._test_deny_deletes.delete(model).fail do |err|
+        store.test_deny_deletes.delete(model).fail do |err|
           # deleted
           count += 1
 
@@ -129,7 +141,7 @@ describe 'model permissions' do
     end
 
     it 'should not check the read permissions when updating (so that all fields are present for the permissions check)' do
-      model = store._test_update_read_checks!.append(name: 'Ryan').sync
+      model = store.test_update_read_checks.append(name: 'Ryan').sync
 
       expect(model.new?).to eq(false)
 
@@ -144,7 +156,7 @@ describe 'model permissions' do
     end
 
     it 'should not check read permissions on buffer save on server' do
-      model = store._test_update_read_checks!.buffer
+      model = store.test_update_read_checks.buffer
 
       model._name = 'Ryan'
 
@@ -164,7 +176,7 @@ describe 'model permissions' do
     end
 
     it 'should not check read on delete, so all fields are available to the permissions block' do
-      model = store._test_update_read_checks!.append(name: 'Ryan').sync
+      model = store.test_update_read_checks.append(name: 'Ryan').sync
 
       expect(model.read_check).to eq(nil)
 
@@ -174,7 +186,7 @@ describe 'model permissions' do
     end
 
     it 'should allow permission blocks to return a promise' do
-      promise = store._test_promise_permissions.create({})
+      promise = store.test_promise_permissions.create({})
 
       expect(promise.resolved?).to eq(false)
       expect(promise.rejected?).to eq(false)

@@ -31,6 +31,7 @@ task :test do
   Rake::Task['ruby:rspec'].invoke
 end
 
+desc "Run opal specs in the browser"
 task :opal_specs_in_browser do
   require 'volt/server/websocket/rack_server_adaptor'
   require 'rack/cascade'

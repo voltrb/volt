@@ -84,7 +84,6 @@ module Volt
               # process_class_name is defined by Model/ArrayModel as
               # singularize/pluralize
               klass_name = process_class_name(klass_name = path[index]).camelize
-
               begin
                 # Lookup the class
                 klass = Object.const_get(klass_name)

@@ -310,7 +310,19 @@ module Volt
       options         = options.dup
       options[:query] = []
 
+      check_require_model_class(options)
+
       Volt::ArrayModel.class_at_path(options[:path]).new(attributes, options)
+    end
+
+    # For collections that don't allow on the fly models, we check to see if
+    # a model class has been defined.
+    def check_require_model_class(options)
+      model_klass = Volt::Model.class_at_path(options[:path])
+
+      if model_klass == Volt::Model && @persistor && !@persistor.on_the_fly_collections?
+        raise "The `#{root.repo_name}` repo (at `#{options[:path].join('.')}`) does not allow on the fly collections, create a class for the model before using it."
+      end
     end
 
     def inspect

@@ -30,24 +30,26 @@ unless RUBY_PLATFORM == 'opal'
     it 'should run conditional validations in the validations block' do
       a = test_model_class.new(name: 'Jo')
 
-      a.validate!.sync
       expect(a.errors.size).to eq(0)
 
       a._is_ready = true
-      a.validate!.sync
 
       expect(a.errors.size).to eq(1)
+    end
+
+
+    class ::Person < Volt::Model
     end
 
     it 'should send the action name to the validations block' do
       jo = test_model_action_pass_class.new(name: 'Jo')
 
-      jo.validate!.sync
       expect(jo.errors.size).to eq(0)
 
-      store._people << jo
+      store.people << jo
 
-      jo.validate!.sync
+      jo._name = 'Joe'
+
       expect(jo.errors.size).to eq(1)
 
     end

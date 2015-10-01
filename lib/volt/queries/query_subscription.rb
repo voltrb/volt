@@ -46,13 +46,17 @@ module Volt
 
     # Filters data based on the user's permissions
     def filter_data(data)
-      data.map do |data|
-        model = model_for_filter(data)
+      if data.is_a?(Array)
+        data.map do |data|
+          model = model_for_filter(data)
 
-        # @channel might be nil
-        Volt.as_user(@channel.try(:user_id)) do
-          model.filtered_attributes.sync
+          # @channel might be nil
+          Volt.as_user(@channel.try(:user_id)) do
+            model.filtered_attributes.sync
+          end
         end
+      else
+        data
       end
     end
 

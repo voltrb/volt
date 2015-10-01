@@ -10,6 +10,10 @@ require 'volt/reactive/eventable'
 
 # Create a model that is above all of the root models.
 class BaseRootModel < Volt::Model
+  # return the name of the repo
+  def repo_name
+    self.class.name.gsub(/Root$/, '').underscore
+  end
 end
 
 

@@ -4,8 +4,11 @@ require 'spec_helper'
 # ArrayModel specs here.
 describe Volt::ArrayModel do
   unless RUBY_PLATFORM == 'opal'
+    class Post < Volt::Model
+    end
+
     it 'should return a Promise for empty? on store' do
-      expect(store._posts.empty?.class).to eq(Promise)
+      expect(store.posts.empty?.class).to eq(Promise)
     end
   end
 
@@ -48,11 +51,14 @@ describe Volt::ArrayModel do
   end
 
   unless RUBY_PLATFORM == 'opal'
+    class Item < Volt::Model
+    end
+
     it 'should return a promise for store on .length, .size, and .count' do
-      store._items << {name: 'One'}
+      store.items << {name: 'One'}
 
       [:size, :count, :length].each do |method_name|
-        val = store._items.send(method_name)
+        val = store.items.send(method_name)
         expect(val.class).to eq(Promise)
         expect(val.sync).to eq(1)
       end

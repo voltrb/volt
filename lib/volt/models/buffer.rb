@@ -10,60 +10,57 @@ module Volt
       # TODO: this shouldn't need to be run, but if no attributes are assigned, then
       # if needs to be run.  Maybe there's a better way to handle it.
       validate!.then do
-        # Get errors from validate
-        errors = self.errors.to_h
-
         result = nil
 
-        if errors.size == 0
-          # cache save_to in a local
-          save_to = self.save_to
-          if save_to
-            if save_to.is_a?(ArrayModel)
-              # Add to the collection
-              promise = save_to.create(attributes)
-            else
-              # We have a saved model
-              promise = save_to.assign_attributes(attributes, false, true)
-            end
-
-            result = promise.then do |new_model|
-              # The main model saved, so mark the buffer as not new
-              @new = false
-
-              if new_model
-                # Mark the model as loaded
-                new_model.change_state_to(:loaded_state, :loaded)
-
-                # Set the buffer's id to track the main model's id
-                self.save_to = new_model
-              end
-
-              # Copy attributes back from save_to model
-              @attributes = new_model.attributes
-
-              # Remove tracked changes
-              clear_tracked_changes!
-
-              new_model
-            end.fail do |errors|
-              if errors.is_a?(Hash)
-                server_errors.replace(errors)
-
-                # Merge the server errors into the main errors
-                self.errors.merge!(server_errors.to_h)
-              end
-
-              promise_for_errors(errors)
-            end
+        # cache save_to in a local
+        save_to = self.save_to
+        if save_to
+          if save_to.is_a?(ArrayModel)
+            # Add to the collection
+            promise = save_to.create(attributes)
           else
-            fail 'Model is not a buffer, can not be saved, modifications should be persisted as they are made.'
+            # We have a saved model
+            promise = save_to.assign_attributes(attributes, false, true)
           end
-        else
-          # Some errors, mark all fields
-          result = promise_for_errors(errors)
-        end
 
+          result = promise.then do |new_model|
+            # The main model saved, so mark the buffer as not new
+            @new = false
+
+            if new_model
+              # Mark the model as loaded
+              new_model.change_state_to(:loaded_state, :loaded)
+
+              # Set the buffer's id to track the main model's id
+              self.save_to = new_model
+            end
+
+            # Copy attributes back from save_to model
+            @attributes = new_model.attributes
+
+            # Remove tracked changes
+            clear_tracked_changes!
+
+            new_model
+          end.fail do |errors|
+            if errors.is_a?(Hash)
+              server_errors.replace(errors)
+
+              # Merge the server errors into the main errors
+              self.errors.merge!(server_errors.to_h)
+            end
+
+            promise_for_errors(errors)
+          end
+
+          result
+        else
+          fail 'Model is not a buffer, can not be saved, modifications should be persisted as they are made.'
+        end
+      end.fail do |errors|
+        # Some errors, mark all fields
+        promise_for_errors(errors)
+      end.then do |result|
         # If passed a block, call then on it with the block.
         result = result.then(&block) if block
 

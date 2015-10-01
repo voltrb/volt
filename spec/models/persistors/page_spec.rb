@@ -9,9 +9,9 @@ module Volt
           pedro = Volt::Model.new(name: 'Pedro', city: 'Quito', age: 15)
           jose  = Volt::Model.new(name: 'Jose', city: 'Quito', age: 13)
 
-          page = described_class.new [jose, juan, pedro]
+          the_page._items = [jose, juan, pedro]
 
-          expect(page.where age: 13, city: 'Quito').to match_array [juan, jose]
+          expect(the_page._items.where(age: 13, city: 'Quito')).to match_array [juan, jose]
         end
       end
     end

@@ -253,7 +253,9 @@ module Volt
     alias_method :new, :new_model
 
     def new_array_model(*args)
-      Volt::ArrayModel.class_at_path(options[:path]).new(*args)
+      klass = Volt::ArrayModel.class_at_path(options[:path])
+
+      klass.new(*args)
     end
 
     # Convert the model to an array all of the way down
