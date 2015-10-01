@@ -148,9 +148,23 @@ module Volt
       promise.then do |result|
         reply = EJSON.stringify(['response', callback_id, result, nil, cookies])
         channel.send_string_message(reply)
+        # NOTE: On success the method #send_string_message is called above.
+        #  In some specs the method #send_message is stubbed instead.
+        #  Because this is within a promise the RSpec error is trapped and the
+        #  fail block below is called. This results in green tests that should be red.
 
         finish.call
       end.fail do |error|
+        # NOTE: This next chunk of code should dump to the CI output when the above
+        #  situation triggers. It's what would normally cause the tests to fail.
+        if error.is_a? RSpec::Mocks::MockExpectationError
+          puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+          p error.class
+          p error
+          pp error.backtrace
+          puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        end
+
         finish.call(error)
         # Convert the error into a string so it can be serialized.
         error_str = "#{error.class.to_s}: #{error.to_s}"
