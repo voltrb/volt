@@ -1,6 +1,7 @@
 require 'volt/models/persistors/store'
 require 'volt/models/persistors/store_state'
 require 'volt/models/persistors/query/query_listener_pool'
+require 'volt/models/persistors/query/query_identifier'
 require 'volt/utils/timers'
 
 module Volt
@@ -159,10 +160,22 @@ module Volt
       # This will then be passed to the backend to run the query.
       #
       # @return [Cursor] a new cursor
-      def add_query_part(*args)
+      def add_query_part(*args, &block)
         opts = @model.options
         query = opts[:query] ? opts[:query].deep_clone : []
-        query << args
+
+        if false && args[0] == :where
+          if block
+            # Block was passed to where query, pass in the QueryIdentifier
+            result = block.call(QueryIdentifier.new)
+
+            query << result.to_query
+          else
+            raise "Use block for now"
+          end
+        else
+          query << args
+        end
 
         # Make a new opts hash with changed query
         opts = opts.merge(query: query)
@@ -193,8 +206,8 @@ module Volt
 
       def value
         # proc do |comp|
-          @root_dep.depend
-          resolve_dep.depend
+        @root_dep.depend
+        resolve_dep.depend
         #   comp.stop
         # end.watch!
         unless Computation.current

@@ -24,8 +24,8 @@ module Volt
         Volt::ArrayModel.proxy_to_persistor(*method_names)
 
         method_names.each do |method_name|
-          Volt::Persistors::ArrayStore.send(:define_method, method_name) do |*args|
-            add_query_part(method_name, *args)
+          Volt::Persistors::ArrayStore.send(:define_method, method_name) do |*args, &block|
+            add_query_part(method_name, *args, &block)
           end
         end
       end

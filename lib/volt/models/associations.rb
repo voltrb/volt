@@ -16,7 +16,6 @@ module Volt
             lookup_key = get(local_key)
 
             # Return a promise for the belongs_to
-            puts "#{root.inspect}.get(#{collection.inspect}).where(#{foreign_key.inspect} => #{lookup_key.inspect})"
             root.get(collection).where(foreign_key => lookup_key).first
           end
         end
@@ -142,7 +141,7 @@ module Volt
         check_name_in_use(method_name)
 
         collection, foreign_key, local_key = assoc_parts(method_name, options,
-          type)
+                                                         type)
 
         # Track the association
         self.associations[method_name] = {
@@ -175,7 +174,7 @@ module Volt
         collection, foreign_key, local_key, type =
           assoc_data.mfetch(:collection, :foreign_key, :local_key, :type)
       else
-      # Association is implicit, generate instead
+        # Association is implicit, generate instead
         type = :has_many
         collection, foreign_key, local_key =
           self.class.assoc_parts(method_name, {}, type)
@@ -199,7 +198,7 @@ module Volt
 
       # Check if we are on the store collection
       if persistor.is_a?(Volt::Persistors::ModelStore) ||
-         persistor.is_a?(Volt::Persistors::Page)
+          persistor.is_a?(Volt::Persistors::Page)
         # Get the root node
         root = persistor.try(:root_model)
 

@@ -3,12 +3,10 @@ require 'spec_helper'
 class ::Person < Volt::Model
   has_many :addresses
 end
-puts "Address----"
 class ::Address < Volt::Model
   belongs_to :person
   has_one :zip_info
 end
-puts "---------"
 
 class ::AddressBelongToOption < Volt::Model
   belongs_to :someone, collection: :person, foreign_key: :id, local_key: :some_weird_id
@@ -121,14 +119,14 @@ describe Volt::Associations do
           :collection=>:addresses,
           :foreign_key=>:person_id,
           :local_key=>:id
-        })
+      })
 
       expect(Address.associations[:zip_info]).to eq({
-        :type=>:has_one,
-        :to_many=>false,
-        :collection=>:zip_infos,
-        :foreign_key=>:address_id,
-        :local_key=>:id
+                                                      :type=>:has_one,
+                                                      :to_many=>false,
+                                                      :collection=>:zip_infos,
+                                                      :foreign_key=>:address_id,
+                                                      :local_key=>:id
       })
     end
 

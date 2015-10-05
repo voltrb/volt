@@ -47,9 +47,19 @@ module Volt
       previous_id = Thread.current['with_user_id']
       Thread.current['with_user_id'] = user_id
 
-      result = yield
-
-      Thread.current['with_user_id'] = previous_id
+      # In the console, you can use without a block
+      if block_given?
+        begin
+          result = yield
+        ensure
+          Thread.current['with_user_id'] = previous_id
+        end
+      else
+        # No block given, only allowed in the console
+        unless Volt.try(:console?)
+          raise "as_user requires a block, except in the console."
+        end
+      end
 
       result
     end
@@ -118,7 +128,7 @@ module Volt
     def logout
       # Notify the backend so we can remove the user_id from the user's channel
       UserTasks.logout
-      
+
       # Remove the cookie so user is no longer logged in
       Volt.current_app.cookies.delete(:user_id)
     end

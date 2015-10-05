@@ -13,12 +13,12 @@ require 'volt/volt/users'
 
 module Volt
   @in_browser = if RUBY_PLATFORM == 'opal'
-                  # When testing with opal-rspec, it technically is in a browser
-                  # but its not setup with our own app code.
-                  `!!document && !window.OPAL_SPEC_PHANTOM && window.$`
-                else
-                  false
-                end
+    # When testing with opal-rspec, it technically is in a browser
+    # but its not setup with our own app code.
+    `!!document && !window.OPAL_SPEC_PHANTOM && window.$`
+  else
+    false
+  end
 
   include Modes
 
@@ -38,12 +38,18 @@ module Volt
       !ENV['SERVER']
     end
 
-    def source_maps?
-      if !ENV['MAPS']
-        # If no MAPS is specified, enable it in dev
-        Volt.env.development?
-      else
-        ENV['MAPS'] != 'false'
+    if RUBY_PLATFORM != 'opal'
+      def console?
+        !!ENV['CONSOLE']
+      end
+
+      def source_maps?
+        if !ENV['MAPS']
+          # If no MAPS is specified, enable it in dev
+          Volt.env.development?
+        else
+          ENV['MAPS'] != 'false'
+        end
       end
     end
 

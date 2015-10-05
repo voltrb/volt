@@ -35,6 +35,7 @@ module Volt
     desc 'console', 'run the console on the project in the current directory'
 
     def console
+      ENV['CONSOLE'] = 'true'
       require 'volt/cli/console'
       Console.start
     end
@@ -128,11 +129,11 @@ module Volt
 
         # Grab the current volt version
         directory('project', name, {
-          version: Volt::Version::STRING,
-          name: name,
-          domain: name.dasherize.downcase,
-          app_name: name.capitalize,
-          disable_encryption: disable_encryption
+                    version: Volt::Version::STRING,
+                    name: name,
+                    domain: name.dasherize.downcase,
+                    app_name: name.capitalize,
+                    disable_encryption: disable_encryption
         })
 
         unless skip_gemfile
