@@ -3,13 +3,13 @@ require 'opal/sprockets/processor'
 require 'sprockets'
 require 'tilt'
 require 'opal/sprockets/processor'
+require 'sprockets/uri_utils'
 
 module Volt
 
 
 
   class ViewProcessor < ::Opal::TiltTemplate
-
     def initialize(client)
       @client = client
     end
@@ -49,6 +49,10 @@ module Volt
         # puts input[:data].inspect
         # Remove all semicolons from source
         # input[:content_type] = 'application/javascript'
+
+        # Track the dependency
+        context.metadata[:dependencies] << Sprockets::URIUtils.build_file_digest_uri(input[:filename])
+
         compile(filename, input[:data], context)
       end
 
@@ -81,10 +85,9 @@ module Volt
 
     def self.setup(sprockets=$volt_app.sprockets)
       exts = ComponentTemplates::Preprocessors.extensions.map{ |ext| ".#{ext}" }
-      
+
       sprockets.register_mime_type 'application/vtemplate', extensions: exts
       sprockets.register_transformer 'application/vtemplate', 'application/javascript', Volt::ViewProcessor.new(true)
     end
   end
 end
-
