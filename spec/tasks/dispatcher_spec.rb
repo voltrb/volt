@@ -67,7 +67,12 @@ if RUBY_PLATFORM != 'opal'
     it 'should log an info message before and after the dispatch' do
       channel = double('channel')
 
+      # NOTE: This method stub is incorrect. We should be stubbing #send_string_message
+      #  See line 150 in lib/volt/tasks/dispatcher.rb
       allow(channel).to receive(:send_message).with('response', 0, 'yes it works', nil)
+
+      # NOTE: This is what I think the stub needs to be.
+      #allow(channel).to receive(:send_string_message).with(any_args)
       expect(Volt.logger).to receive(:log_dispatch)
 
       dispatcher.dispatch(channel, [0, 'TestTask', :allowed_method, {}, ' it', ' works'])
@@ -76,7 +81,12 @@ if RUBY_PLATFORM != 'opal'
     it 'should let you set a cookie' do
       channel = double('channel')
 
+      # NOTE: This method stub is incorrect. We should be stubbing #send_string_message
+      #  See line 150 in lib/volt/tasks/dispatcher.rb
       allow(channel).to receive(:send_message).with('response', 0, 'yes it works', {something:"awesome"})
+
+      # NOTE: This is what I think the stub needs to be.
+      #allow(channel).to receive(:send_string_message).with(any_args)
       expect(Volt.logger).to receive(:log_dispatch)
 
       dispatcher.dispatch(channel, [0, 'TestTask', :set_cookie, {}])
