@@ -43,7 +43,7 @@ if RUBY_PLATFORM != 'opal'
     it 'should not allow eval' do
       channel = double('channel')
 
-      expect(channel).to receive(:send_message).with('response', 0, nil, "RuntimeError: unsafe method: eval", nil)
+      expect(channel).to receive(:send_message).with('response', 0, nil, RuntimeError.new('unsafe method: eval'), nil)
 
       dispatcher.dispatch(channel, [0, 'TestTask', :eval, '5 + 10'])
     end
@@ -51,7 +51,12 @@ if RUBY_PLATFORM != 'opal'
     it 'should not allow instance_eval' do
       channel = double('channel')
 
-      expect(channel).to receive(:send_message).with('response', 0, nil, 'RuntimeError: unsafe method: instance_eval', nil)
+
+      first = true
+      expect(channel).to receive(:send_message).with("response", 0, nil, RuntimeError.new('unsafe method: instance_eval'), nil)
+
+
+      # .with('response', 0, nil, /RuntimeError: unsafe method: instance_eval/, nil)
 
       dispatcher.dispatch(channel, [0, 'TestTask', :instance_eval, '5 + 10'])
     end
@@ -59,7 +64,7 @@ if RUBY_PLATFORM != 'opal'
     it 'should not allow #methods' do
       channel = double('channel')
 
-      expect(channel).to receive(:send_message).with('response', 0, nil, 'RuntimeError: unsafe method: methods', nil)
+      expect(channel).to receive(:send_message).with('response', 0, nil, RuntimeError.new('unsafe method: methods'), nil)
 
       dispatcher.dispatch(channel, [0, 'TestTask', :methods])
     end
