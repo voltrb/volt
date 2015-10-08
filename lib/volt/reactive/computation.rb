@@ -41,9 +41,17 @@ module Volt
             # Re-raise if we are in the initial run
             raise
           else
-            msg = "Exception During Compute: " + e.inspect
-            msg += "\n" + e.backtrace.join("\n") if e.respond_to?(:backtrace)
-            Volt.logger.error(msg)
+            # Sometimes we get nil as the exception, not sure if thats an opal
+            # issue or what.
+            if e
+              msg = "Exception During Compute: " + e.inspect
+              msg += "\n" + e.backtrace.join("\n") if e.respond_to?(:backtrace)
+              Volt.logger.error(msg)
+
+              if RUBY_PLATFORM == 'opal'
+                `console.log(e);`
+              end
+            end
           end
         ensure
           @computing = false

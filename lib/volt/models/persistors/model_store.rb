@@ -114,7 +114,10 @@ module Volt
         end.fail do |errors|
           save_promises = @save_promises
           @save_promises = nil
-          save_promises.each { |promise|  promise.reject(errors) }
+
+          # Rewrap in Volt::Errors
+          errors = Volt::Errors.new(errors)
+          save_promises.each { |promise| promise.reject(errors) }
 
           # Mark that we failed to save
           @model.change_state_to(:saved_state, :save_failed)
