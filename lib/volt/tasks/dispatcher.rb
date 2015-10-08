@@ -151,11 +151,24 @@ module Volt
 
         finish.call
       end.fail do |error|
-        finish.call(error)
-        # Convert the error into a string so it can be serialized.
-        error_str = "#{error.class.to_s}: #{error.to_s}"
+        begin
+          finish.call(error)
 
-        channel.send_message('response', callback_id, nil, error_str, cookies)
+          begin
+            # Try to send, handle error if we can't convert the result to EJSON
+            channel.send_message('response', callback_id, nil, error, cookies)
+          rescue EJSON::NonEjsonType => e
+            # Convert the error into a string so it can be serialized to
+            # something.
+            error = "#{error.class.to_s}: #{error.to_s}"
+            channel.send_message('response', callback_id, nil, error, cookies)
+          end
+
+        rescue => e
+          Volt.logger.error "Error in fail dispatch: #{e.inspect}"
+          Volt.logger.error(e.backtrace.join("\n")) if e.respond_to?(:backtrace)
+          raise
+        end
       end
 
     end

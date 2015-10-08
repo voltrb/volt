@@ -105,7 +105,9 @@ module Volt
 
         @model.change_state_to(:saved_state, :saving)
 
+        puts "RUN SAVE"
         StoreTasks.save(collection, @model.path, self_attributes).then do
+          puts "THEN"
           save_promises = @save_promises
           @save_promises = nil
           save_promises.each { |promise|  promise.resolve(nil) }
@@ -116,6 +118,7 @@ module Volt
           @save_promises = nil
 
           # Rewrap in Volt::Errors
+          puts "REWRAP: #{errors.inspect}"
           errors = Volt::Errors.new(errors)
           save_promises.each { |promise| promise.reject(errors) }
 

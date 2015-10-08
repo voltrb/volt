@@ -8,6 +8,6 @@ describe 'saving', type: :feature, sauce: true do
 
     click_button 'Save'
 
-    expect(page).to have_content('Error as class: Errors')
+    expect(page).to have_content('#<Volt::Errors {"title"=>["must be at least 5 characters"]}>')
   end
 end
