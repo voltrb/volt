@@ -24,7 +24,10 @@ module Volt
             return validate!.then do
               # Buffers are allowed to be in an invalid state
               unless buffer?
-                # First check that all local validations pass
+                # First check that all local validations pass.  Any time any
+                # validations fail, the model is in an invalid state and won't
+                # persist.  However, we want to be able to move the model
+                # towards a valid state one change at a time.
                 if error_in_changed_attributes?
                   # Some errors are present, revert changes
                   revert_changes!

@@ -19,6 +19,8 @@ client '/callbacks', action: 'callbacks'
 # Events
 client '/events', component: 'main', controller: 'events', action: 'index'
 
+client '/save', component: 'main', controller: 'save', action: 'index'
+
 # Signup/login routes
 client '/signup', component: 'user_templates', controller: 'signup'
 client '/login', component: 'user_templates', controller: 'login'
