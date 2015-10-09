@@ -158,7 +158,11 @@ module Volt
 
           begin
             # Try to send, handle error if we can't convert the result to EJSON
-            channel.send_message('response', callback_id, nil, error, cookies)
+            reply = EJSON.stringify(['response', callback_id, nil, error, cookies])
+
+            # use send_string_message, since we stringify here, not on the other
+            # side of Drb.
+            channel.send_string_message(reply)
           rescue EJSON::NonEjsonType => e
             # Convert the error into a string so it can be serialized to
             # something.
