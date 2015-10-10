@@ -37,7 +37,8 @@ module Volt
 
     # Special methods in ruby don't respond to method_missing, so setup methods
     # for them.
-    ['=~', '!~', '&', '|'].each do |op|
+    # We need < and > until https://github.com/opal/opal/issues/1137 is fixed.
+    ['=~', '!~', '&', '|', '<', '>', '<=', '>='].each do |op|
       define_method(op) do |val|
         __op(op, val)
       end
@@ -73,12 +74,16 @@ module Volt
     end
 
     def to_query
-      @from.map do |val|
-        if val.is_a?(QueryIdentifier)
-          val.to_query
-        else
-          val
+      if @from.is_a?(Array)
+        @from.map do |val|
+          if val.is_a?(QueryIdentifier)
+            val.to_query
+          else
+            val
+          end
         end
+      else
+        @from
       end
     end
   end

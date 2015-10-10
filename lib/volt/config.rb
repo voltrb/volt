@@ -48,14 +48,25 @@ else
     class << self
       def defaults
         app_name = File.basename(Dir.pwd)
+
+        db_opts = {
+        }
+
+        # The user can use any DB_KEY to assign a value into the database
+        # config.
+        ENV.keys.grep(/^DB_/).each do |db_key|
+          db_opts[db_key.gsub(/^DB_/, '').downcase] = ENV[db_key]
+        end
+
         opts = {
           app_name:  app_name,
-          db_name:   (ENV['DB_NAME'] || (app_name + '_' + Volt.env.to_s)).gsub('.', '_'),
-          db_host:   ENV['DB_HOST'] || 'localhost',
-          db_port:   (ENV['DB_PORT'] || 27_017).to_i,
-          db_driver: ENV['DB_DRIVER'] || 'postgres',
-          ## TEMP
-          db_uri: "postgres://ryanstout:@localhost:5432/#{(ENV['DB_NAME'] || (app_name + '_' + Volt.env.to_s)).gsub('.', '_')}",
+          db: db_opts,
+          # db_name:   (ENV['DB_NAME'] || (app_name + '_' + Volt.env.to_s)).gsub('.', '_'),
+          # db_host:   ENV['DB_HOST'] || 'localhost',
+          # db_port:   (ENV['DB_PORT'] || 27_017).to_i,
+          # db_driver: ENV['DB_DRIVER'] || 'postgres',
+          # ## TEMP
+          # db_uri: "postgres://ryanstout:@localhost:5432/#{(ENV['DB_NAME'] || (app_name + '_' + Volt.env.to_s)).gsub('.', '_')}",
 
           # a list of components which should be included in all components
           default_components: ['volt'],

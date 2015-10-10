@@ -40,6 +40,7 @@ require 'volt/server/message_bus/peer_to_peer/server_tracker'
 require 'volt/server/message_bus/peer_to_peer/peer_server'
 require 'volt/server/message_bus/peer_to_peer/peer_connection'
 require 'volt/server/message_bus/base_message_bus'
+require_relative '../../../../app/volt/models/active_volt_instance'
 
 # TODO: Right now the message bus uses threads, we should switch it to use a
 # single thread and some form of select:
@@ -112,14 +113,9 @@ module Volt
 
       # Return an array of peer records.
       def peers
-        instances = @volt_app.store._active_volt_instances
+        instances = @volt_app.store.active_volt_instances
 
-        if Volt.config.db_driver == 'postgres'
-          query = Sequel.~(server_id: @server_id)
-        else
-          query = {server_id: {'$ne' => @server_id}}
-        end
-        instances.where(query).all.sync
+        instances.where {|svr| svr.server_id !~ @server_id }.all.sync
       end
 
       def connect_to_peers

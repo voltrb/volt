@@ -41,9 +41,13 @@ describe 'field helpers' do
     buf.value = 'cats'
     expect(buf.value).to eq('cats')
 
+    fail_called = false
     buf.validate!.fail do |error|
-      expect(error).to eq({})
+      fail_called = true
+      expect(error).to eq({'value' => ['must be a number']})
     end
+
+    expect(fail_called).to eq(true)
   end
 
   it 'should track the fields on the model class' do

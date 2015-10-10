@@ -156,7 +156,7 @@ module Volt
           if can_delete
             super(val)
           else
-           Promise.new.reject("permissions did not allow delete for #{val.inspect}.")
+            Promise.new.reject("permissions did not allow delete for #{val.inspect}.")
           end
         end
       end
@@ -373,7 +373,6 @@ module Volt
             model.change_state_to(:loaded_state, :loaded)
 
           end.fail do |err|
-            puts "ERR: #{err.inspect}"
             # remove from the collection because it failed to save on the server
             # we don't need to call delete on the server.
             index = @array.index(model)

@@ -164,15 +164,13 @@ module Volt
         opts = @model.options
         query = opts[:query] ? opts[:query].deep_clone : []
 
-        if false && args[0] == :where
-          if block
-            # Block was passed to where query, pass in the QueryIdentifier
-            result = block.call(QueryIdentifier.new)
+        if args[0] == :where && block
+          # Change the query name to show that we were passed a block
+          args[0] = :where_with_block
+          # Block was passed to where query, pass in the QueryIdentifier
+          result = block.call(QueryIdentifier.new)
 
-            query << result.to_query
-          else
-            raise "Use block for now"
-          end
+          query << [*args, result.to_query]
         else
           query << args
         end

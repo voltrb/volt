@@ -43,7 +43,7 @@ describe Volt::User do
       describe 'when it is a Volt server' do
         before do
           allow(BCrypt::Password).to receive(:create).with('test')
-            .and_return 'hashed-password'
+          .and_return 'hashed-password'
         end
 
         it 'encrypts password' do
@@ -73,8 +73,10 @@ describe Volt::User do
 
           saved = false
 
-          bob_buf.save! do
+          bob_buf.save!.then do
             saved = true
+          end.fail do |err|
+            puts "User save error: #{err.inspect}"
           end
 
           expect(saved).to eq(true)

@@ -3,7 +3,7 @@ module Main
     model :store
 
     def add_todo
-      _todos << { name: page._new_todo }
+      todos << { name: page._new_todo }
       page._new_todo = ''
     end
 

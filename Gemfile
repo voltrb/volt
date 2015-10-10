@@ -4,7 +4,7 @@ gemspec
 
 # volt-mongo gem for testing
 # gem 'volt-mongo'
-gem 'volt-postgres', path: '/Users/ryanstout/Sites/volt/apps/volt-postgres'
+gem 'volt-sql', path: '/Users/ryanstout/Sites/volt/apps/volt-sql'
 
 # Use rbnacl for message bus encrpytion
 # (optional, if you don't need encryption, disable in app.rb and remove)
@@ -13,6 +13,7 @@ gem 'rbnacl-libsodium', require: false
 
 # temp until 0.8.0 of opal
 # gem 'opal-rspec', github: 'opal/opal-rspec'
+gem 'sqlite3'
 
 group :development, :test do
   # For testing the kitchen sink app

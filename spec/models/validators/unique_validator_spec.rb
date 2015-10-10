@@ -2,6 +2,7 @@ require 'spec_helper'
 
 unless RUBY_PLATFORM == 'opal'
   class Fridge < Volt::Model
+    field :name, String
     validate :name, unique: true
   end
 

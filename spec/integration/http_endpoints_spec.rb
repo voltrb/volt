@@ -1,5 +1,9 @@
 require 'spec_helper'
 
+class ::SimpleHttpTest < Volt::Model
+  field :name
+end
+
 describe 'http endpoints', type: :feature, sauce: true do
   it 'should show the page' do
     visit '/simple_http'

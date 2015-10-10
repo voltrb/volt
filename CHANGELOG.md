@@ -8,6 +8,7 @@
 - Finally tracked down an illusive memory leak.
 - Computations now raise an error on their inital run, then log errors (via Volt.logger.error(..)) when running again (since they update on next tick)
 - fixed template caching issue
+- .validate! return a promise that now rejects when the model is invalid
 
 ## 0.9.5
 ### Breaking Changes

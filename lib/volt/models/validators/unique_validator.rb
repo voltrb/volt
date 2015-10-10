@@ -8,15 +8,11 @@ module Volt
           query = {}
           # Check to see if any other documents have this value.
           query[field_name.to_s] = value
-          if Volt.config.public.db_driver == 'postgres'
-            query = Sequel.&(query, Sequel.~(id: model.id))
-          else
-            query['id'] = { '$ne' => model.id }
-          end
+          model_id = model.id
 
           # Check if the value is taken
           # TODO: need a way to handle scope for unique
-          return Volt.current_app.store.get(model.path[-2]).where(query).first.then do |item|
+          return Volt.current_app.store.get(model.path[-2]).where(query) {|m| m.id !~ model_id }.first.then do |item|
             if item
               message = (args.is_a?(Hash) && args[:message]) || 'is already taken'
 
