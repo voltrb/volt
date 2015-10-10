@@ -22,3 +22,4 @@ tmp
 sauce_connect.log
 .ruby-gemset
 tags
+config/db/
