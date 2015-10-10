@@ -28,9 +28,9 @@ module Generators
       method_option :bin, type: :boolean, default: false, aliases: '-b', banner: 'Generate a binary for your library.'
       method_option :test, type: :string, lazy_default: 'rspec', aliases: '-t', banner: "Generate a test directory for your library: 'rspec' is the default, but 'minitest' is also supported."
       method_option :edit, type: :string, aliases: '-e',
-                           lazy_default: [ENV['BUNDLER_EDITOR'], ENV['VISUAL'], ENV['EDITOR']].find { |e| !e.nil? && !e.empty? },
-                           required: false, banner: '/path/to/your/editor',
-                           desc: 'Open generated gemspec in the specified editor (defaults to $EDITOR or $BUNDLER_EDITOR)'
+        lazy_default: [ENV['BUNDLER_EDITOR'], ENV['VISUAL'], ENV['EDITOR']].find { |e| !e.nil? && !e.empty? },
+        required: false, banner: '/path/to/your/editor',
+        desc: 'Open generated gemspec in the specified editor (defaults to $EDITOR or $BUNDLER_EDITOR)'
       method_option :coc, type: :boolean, desc: "Generate a code of conduct file. Set a default with `bundle config gem.coc true`."
       method_option :mit, type: :boolean, desc: "Generate an MIT license file"
 
@@ -98,6 +98,17 @@ module Generators
         view_folder = Dir.pwd + "/app/#{component}/views/#{name}/"
         directory('view', view_folder, view_name: name, component: component)
         controller(name, component) unless controller_exists?(name, component)
+      end
+
+      desc 'migration NAME', 'creates a migration with the name specified'
+      method_option :name, type: :string, banner: 'The name of the migration file'
+      def migration(name)
+        timestamp = Time.now.to_i
+        file_name = "#{timestamp}_#{name.underscore}"
+        class_name = name.camelize
+        output_file = "#{Dir.pwd}/config/db/migrations/#{file_name}"
+
+        template('migration/migration.rb.tt', output_file, class_name: class_name)
       end
 
       private

@@ -1,0 +1,9 @@
+class <%= config[:class_name] %> < Volt::Migration
+  def up
+
+  end
+
+  def down
+
+  end
+end
