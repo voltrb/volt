@@ -26,7 +26,11 @@ module Volt
           end.to_h
         elsif obj.size == 1 && (time = obj['$date'])
           if time.is_a?(Fixnum)
-            return Time.at(time / 1000.0)
+            if defined?(Volt::VoltTime)
+              return Volt::VoltTime.at(time / 1000.0)
+            else
+              return Time.at(time / 1000.0)
+            end
           end
         end
 
@@ -52,7 +56,7 @@ module Volt
 
           [key, value]
         end.to_h
-      elsif Time === obj
+      elsif Time === obj || (defined?(Volt::VoltTime) && Volt::VoltTime === obj)
         {'$date' => obj.to_i * 1_000}
       elsif OTHER_VALID_CLASSES.any? {|klass| obj.is_a?(klass) }
         obj
