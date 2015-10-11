@@ -56,7 +56,7 @@ describe Volt::VoltTime do
   
   describe "#local_strftime" do
     it "returns formatted local time" do
-      expect(Volt::VoltTime.at(0).local_strftime("%d %m %Y")).to eq("31 12 1969")
+      expect(Volt::VoltTime.at(0).local_strftime("%d %m %Y")).to eq(Time.at(0).strftime("%d %m %Y"))
     end
   end
   
