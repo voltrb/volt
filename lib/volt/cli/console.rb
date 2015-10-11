@@ -67,7 +67,6 @@ module Volt
       ENV['SERVER'] = 'true'
 
       require 'volt'
-      require 'volt/boot'
       require 'volt/volt/core'
       require 'volt/server/socket_connection_handler_stub'
 

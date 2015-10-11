@@ -8,6 +8,7 @@ require 'volt/cli/generate'
 require 'volt/cli/destroy'
 require 'volt/version'
 require 'volt/cli/bundle'
+require 'volt/boot'
 
 module Volt
   class CLI < Thor
@@ -110,7 +111,6 @@ module Volt
     def drop_collection(collection)
       ENV['SERVER'] = 'true'
       move_to_root
-      require 'volt/boot'
 
       Volt.boot(Dir.pwd)
 

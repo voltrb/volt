@@ -54,6 +54,7 @@ module FieldHelpers
 
         # Add NilClass as an allowed type unless allow_nil: false was passed.
         unless options[:allow_nil] == false
+          options.delete(:allow_nil)
           klasses << NilClass
         end
       end
@@ -68,10 +69,12 @@ module FieldHelpers
         end
       end
 
+      # define the fields getter
       define_method(name) do
         get(name)
       end
 
+      # define the fields setter
       define_method(:"#{name}=") do |val|
         # Check if the value assigned matches the class restriction
         if klasses

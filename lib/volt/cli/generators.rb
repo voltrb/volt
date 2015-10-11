@@ -100,17 +100,6 @@ module Generators
         controller(name, component) unless controller_exists?(name, component)
       end
 
-      desc 'migration NAME', 'creates a migration with the name specified'
-      method_option :name, type: :string, banner: 'The name of the migration file'
-      def migration(name)
-        timestamp = Time.now.to_i
-        file_name = "#{timestamp}_#{name.underscore}"
-        class_name = name.camelize
-        output_file = "#{Dir.pwd}/config/db/migrations/#{file_name}"
-
-        template('migration/migration.rb.tt', output_file, class_name: class_name)
-      end
-
       private
 
       def controller_exists?(name, component = 'main')
