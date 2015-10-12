@@ -3,34 +3,35 @@
 # there are only two possible timezones, the local zone and UTC, while
 # in Ruby any timezone can be set. 
 # VoltTime is always stored in UTC but can be converted to the local timezone.
-# It has most of the instance methods of ::Time apart from those that are
-# ambiguous from a timezone point of view (e.g. #to_time))
+# Because of Opal issue , Volt::VoltTime could not be name Volt::Time.
+# Because of Opal issue , Volt::VoltTime could not be a subclass of Volt::Time
 
 module Volt
   class VoltTime
 
    # A VoltTime can be initialized from either local or UTC timezone. 
-   # It can also be initialise to any timezone on Ruby, but on Opal only
-   # to UTC or local.
-   # If hour, minute or second is specified then the timezone must be specified
-   # If only year, month, or day is specified then UTC is assumed
-   def initialize(year = nil, month = nil, day = nil, hour = nil, min = nil, sec = nil, zone = nil)
-    raise ArgumentError, "if you want to set the time components of Volt::VoltTime, specify :local or :utc" if year && (hour || min || sec) && !zone
-    if !year
+   # If no parameters are provided then the current time is initialized.
+   # Zone must be specified (as :local or :utc) if any parts of the date are given
+   # to be clear whether VoltTime should assume that the parameters
+   # are for a local or utc time. 
+   def initialize(zone = nil, year = nil, month = nil, day = nil, hour = nil, min = nil, sec = nil)
+
+    # Case when all params are nil - create time now
+    if !zone || !year
       @time = ::Time.new.getutc
-    elsif !zone || zone == :utc
-      t = ::Time.new(year, month, day, hour, min, sec)
+    elsif zone == :utc
+      t = ::Time.new(year, month, day, hour, min, sec) 
       @time = (t + t.utc_offset).getutc
     elsif zone == :local
-      @time = ::Time.new(year, month, day, hour, min, sec)
+      @time = ::Time.new(year, month, day, hour, min, sec).getutc
     else
-      @time = ::Time.new(year, month, day, hour, min, sec, zone)
+      raise ArgumentError, "Specify zone as :utc or :local"
     end
    end
     
     class << self
       
-      # Returns a VoltTime from by a ::Time
+      # Returns a VoltTime from a ::Time
       def from_time(time)
         VoltTime.new.set_time(time)
       end
@@ -55,6 +56,7 @@ module Volt
       def current_offset
         ::Time.new.utc_offset
       end
+
     end
 
     # Sets Volt::Time from a ::Time object, converting to UTC if necessary
@@ -79,7 +81,7 @@ module Volt
       end
     end
 
-    def to_s
+    def to_skkkj
       @time.to_s
     end
     
@@ -137,17 +139,9 @@ module Volt
     end
    
     private
-    
-      # The method blacklist excludes methods that 
-      # are ambiguous from a timezone point of view
-      METHOD_BLACKLIST = ["to_time", "to_date", "to_datetime"]
-  
+      
       def method_missing(method, *args, &block)
-        if METHOD_BLACKLIST.include?(method.to_s)
-          raise NoMethodError, "undefined method `#{method}' for #{self.inspect}:#{self.class}"
-        else
-          @time.send(method, *args, &block)
-        end
+        @time.send(method, *args, &block)
       end
       
       def respond_to_missing?(method_name, include_private = false)

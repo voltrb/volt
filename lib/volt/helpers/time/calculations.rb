@@ -44,7 +44,7 @@ module Volt
       new_hour  = options.fetch(:hour, hour)
       new_min   = options.fetch(:min, options[:hour] ? 0 : min)
       new_sec   = options.fetch(:sec, (options[:hour] || options[:min]) ? 0 : sec)
-      Volt::VoltTime.new(new_year, new_month, new_day, new_hour, new_min, new_sec, :utc)
+      Volt::VoltTime.new(:utc, new_year, new_month, new_day, new_hour, new_min, new_sec)
     end
     
     # Returns a new time that has been advanced according to the +options+
@@ -117,7 +117,7 @@ module Volt
     
     # Advances the time to the given date
     def advance_to_date(date)
-      Volt::VoltTime.new(date.year, date.month, date.day, hour, min, sec + (usec/1.0e6), :utc)
+      Volt::VoltTime.new(:utc, date.year, date.month, date.day, hour, min, sec + (usec/1.0e6))
     end
     
     # Adds a duration to the time
@@ -134,7 +134,7 @@ module Volt
     # Returns a new Time representing the end of the day, 23:59:59.999
     # Only milliseconds are supported in Opal
     def end_of_day
-      Volt::VoltTime.new(year, month, day, 23, 59, 59.999, :utc)
+      Volt::VoltTime.new(:utc, year, month, day, 23, 59, 59.999)
 =begin      
       change(
         :hour => 23,
