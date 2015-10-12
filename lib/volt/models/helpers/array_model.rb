@@ -11,7 +11,7 @@ module Volt
         end
 
         def collection_name
-          path.last
+          path.last.gsub('/', '_')
         end
       end
     end
