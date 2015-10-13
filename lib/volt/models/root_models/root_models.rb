@@ -42,5 +42,14 @@ module Volt
 
       trigger!('model_created', klass)
     end
+
+    # Used mostly for testing, deletes a model
+    def self.remove_model_class(klass)
+      self.model_classes.reject! {|v| v == klass }
+    end
+
+    def self.clear_temporary
+      self.model_classes.reject! {|klass| klass.is_temporary }
+    end
   end
 end

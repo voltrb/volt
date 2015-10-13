@@ -120,6 +120,14 @@ module Volt
 
         def self.included(base)
           base.send :extend, ClassMethods
+          # Used for testing
+          def base.temporary
+            @temporary = true
+          end
+
+          def base.is_temporary
+            @temporary
+          end
         end
 
       end

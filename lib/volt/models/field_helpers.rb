@@ -52,9 +52,9 @@ module FieldHelpers
         # defined in associations.rb
         check_name_in_use(name)
 
-        # Add NilClass as an allowed type unless allow_nil: false was passed.
-        unless options[:allow_nil] == false
-          options.delete(:allow_nil)
+        # Add NilClass as an allowed type unless nil: false was passed.
+        unless options[:nil] == false
+          options.delete(:nil)
           klasses << NilClass
         end
       end

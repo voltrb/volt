@@ -13,7 +13,7 @@ class SubItem < Item
 end
 
 class Todo < Volt::Model
-#  field :label, String
+  #  field :label, String
 end
 
 class TestAssignsMethod < Volt::Model
@@ -609,7 +609,7 @@ describe Volt::Model do
     it 'fails if attempting to destroy while parentless' do
       model = Volt::Model.new(test: "yeah")
       expect { model.destroy }.to raise_error(RuntimeError,
-        'Model does not have a parent and cannot be deleted.')
+                                              'Model does not have a parent and cannot be deleted.')
     end
   end
 
@@ -654,5 +654,13 @@ describe Volt::Model do
     model = Volt::Model.new
     model._sub_items << {}
     expect(model._sub_items).to be_instance_of Items
+  end
+
+  it 'should allow a temporary flag to be set' do
+    class TempModel < Volt::Model
+      temporary
+    end
+
+    expect(TempModel.is_temporary).to eq(true)
   end
 end

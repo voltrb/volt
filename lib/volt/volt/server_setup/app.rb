@@ -11,7 +11,7 @@ module Volt
   module ServerSetup
     module App
       attr_reader :live_query_pool, :query_subscription_pool,
-                  :channel_query_subscriptions
+        :channel_query_subscriptions
 
       # Include Eventable to allow for lifecycle callbacks
       include Eventable
@@ -143,7 +143,7 @@ module Volt
               message_bus_class = MessageBus.const_get(bus_name.camelize)
             rescue NameError => e
               raise "message bus name #{bus_name} was not found, be sure its "
-                    + "gem is included in the gemfile."
+              + "gem is included in the gemfile."
             end
 
             @message_bus = message_bus_class.new(self)

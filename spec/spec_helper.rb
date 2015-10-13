@@ -1,3 +1,10 @@
+# require 'volt'
+# if ENV['DB'] = 'pg'
+#   Volt.configure do |config|
+#     config.db.uri = 'postgres://ryanstout:@localhost:5432/volt_sql_test'
+#   end
+# end
+
 
 require 'volt/spec/setup'
 
