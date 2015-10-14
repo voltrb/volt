@@ -14,8 +14,8 @@ gem 'rbnacl-libsodium', require: false
 # temp until 0.8.0 of opal
 # gem 'opal-rspec', github: 'opal/opal-rspec'
 gem 'sqlite3'
-# gem 'pg', '~> 0.18.2'
-# gem 'pg_json', '~> 0.1.29'
+gem 'pg', '~> 0.18.2'
+gem 'pg_json', '~> 0.1.29'
 
 
 group :development, :test do
