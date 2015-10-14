@@ -1,5 +1,6 @@
 
 require 'volt/spec/setup'
+require 'rack/test'
 
 unless RUBY_PLATFORM == 'opal'
   begin
