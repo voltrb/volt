@@ -91,11 +91,26 @@ module FieldHelpers
         set(name, val)
       end
     end
+
+    def index(columns, options={})
+      # Columns is stored in an array
+      columns = [columns].flatten.map {|c| c.to_sym }
+
+      options[:columns] = columns
+
+      # Add in default name
+      name = (options.delete(:name) || "#{collection_name}_#{columns.join('_')}_index").to_sym
+      self.indexes[name] = options
+    end
   end
 
   def self.included(base)
     base.class_attribute :fields
     base.fields = {}
+
+    base.class_attribute :indexes
+    base.indexes = {}
+
     base.send :extend, ClassMethods
   end
 end
