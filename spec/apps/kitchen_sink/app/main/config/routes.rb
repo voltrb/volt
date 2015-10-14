@@ -29,6 +29,7 @@ client '/login', component: 'user_templates', controller: 'login'
 get '/simple_http', controller: 'simple_http', action: 'index'
 get '/simple_http/store', controller: 'simple_http', action: 'show'
 post '/simple_http/upload', controller: 'simple_http', action: 'upload'
+post '/simple_http', controller: 'simple_http', action: 'create'
 
 # Route for file uploads
 client '/upload', controller: 'upload', action: 'index'
