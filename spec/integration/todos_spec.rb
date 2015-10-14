@@ -5,8 +5,6 @@ describe 'todos app', type: :feature, sauce: true do
   it 'should add a todo and remove it' do
     visit '/todos'
 
-    sleep 2
-
     fill_in 'newtodo', with: 'Todo 1'
     find('#newtodo').native.send_keys(ENTER_KEY)
 

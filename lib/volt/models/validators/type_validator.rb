@@ -16,6 +16,17 @@ module Volt
 
       valid_type = false
       type_restrictions.each do |type_rest|
+        if type_rest == Volt::Boolean
+          if RUBY_PLATFORM == 'opal'
+            type_rest = ::Boolean
+          else
+            if value == true || value == false
+              valid_type = true
+              break
+            end
+          end
+        end
+
         if value.is_a?(type_rest)
           valid_type = true
           break

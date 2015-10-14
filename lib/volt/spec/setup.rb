@@ -65,6 +65,10 @@ module Volt
           if url.instance_variable_get('@params')
             url.instance_variable_set('@params', nil)
           end
+
+          # Reset volt_app
+          $volt_app = volt_app
+          Thread.current['volt_app'] = volt_app
         end
 
         if RUBY_PLATFORM != 'opal'

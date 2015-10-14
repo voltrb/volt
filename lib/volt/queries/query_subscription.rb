@@ -40,7 +40,7 @@ module Volt
     end
 
     def notify_updated(diff)
-      puts "UPD: #{@live_query.collection.inspect}, #{@live_query.query.inspect}, #{diff.inspect}"
+      # puts "UPD: #{@live_query.collection.inspect}, #{@live_query.query.inspect}, #{diff.inspect}"
       @channel.send_message('updated', nil, @live_query.collection, @live_query.query, diff)
     end
 

@@ -23,3 +23,4 @@ sauce_connect.log
 .ruby-gemset
 tags
 config/db/
+spec/apps/kitchen_sink/config/db

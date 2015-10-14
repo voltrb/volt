@@ -68,7 +68,6 @@ module Volt
         # Diff the new data
         diff = QueryDiff.new(@last_data, @associations).run(new_data)
 
-        puts "DIFF: #{diff.inspect}"
         notify_updated(skip_channel, diff)
       else
         # When working with queries that return a value, we don't diff, we just

@@ -12,7 +12,7 @@ module Main
     end
 
     def completed
-      _todos.count(&:_completed)
+      todos.count(&:completed)
     end
   end
 end

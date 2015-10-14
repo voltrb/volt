@@ -111,7 +111,6 @@ module Volt
 
     def updated(diff)
       diff.each do |op|
-        puts "OP: #{op.inspect}"
         operation, arg1, arg2 = op
 
         case operation

@@ -147,6 +147,10 @@ module Volt
     def setup_browser
       @browser = Browser.new(self)
     end
+
+    def inspect
+      "#<Volt::App #{object_id}>"
+    end
   end
 end
 
