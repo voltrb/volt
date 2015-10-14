@@ -3,7 +3,7 @@
 #
 # Much thanks to @achiu (https://github.com/achiu) for original version of this middleware
 #
-# New Parsers can be added in your apps config:
+# New Parsers can be added in your app's config:
 #      Volt.setup do |config|
 #        config.http_content_types = {
 #          parsers: {
