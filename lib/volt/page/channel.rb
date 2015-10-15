@@ -38,7 +38,7 @@ module Volt
           socket_url = "://#{socket_url}"
         end
 
-        ws_proto = (`document.location.protocol` == 'https://') ? 'wss' : 'ws'
+        ws_proto = (`document.location.protocol` == 'https:') ? 'wss' : 'ws'
 
         # Add wss? to the front
         socket_url = "#{ws_proto}#{socket_url}"
