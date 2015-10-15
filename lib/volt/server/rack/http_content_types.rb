@@ -26,7 +26,7 @@ module Rack
 
     def initialize(app, options = {})
       @app = app
-      @options = Volt.config.http_content_types.dup || {}
+      @options = Volt.config.http_content_types ? Volt.config.http_content_types.dup : {}
       @options.merge!(options)
       @parsers = @options[:parsers] || {}
       @handlers = @options[:handlers] || {}
