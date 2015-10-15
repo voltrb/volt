@@ -242,14 +242,6 @@ module Volt
       Volt::Model.class_at_path(options[:path]).new(*args)
     end
 
-    # Create a new instance of a model, or raise an error if
-    def new(attrs)
-      model = new_model(attrs)
-
-      # Return/resolve the model, or raise a validation error.
-      model.validate!
-    end
-
     alias_method :new, :new_model
 
     def new_array_model(*args)
@@ -320,9 +312,7 @@ module Volt
 
     alias_method :reactive_count, :count
     def count(&block)
-      puts "CALL MODEL COUNT"
       if !block && persistor.is_a?(Persistors::ArrayStore)
-        puts "PER COUNT: #{@persistor.resolved_value.inspect}"
         @persistor.resolved_value
       else
         all.reactive_count(&block)

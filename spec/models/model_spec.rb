@@ -22,6 +22,11 @@ class TestAssignsMethod < Volt::Model
   end
 end
 
+class TempModel < Volt::Model
+  temporary
+end
+
+
 describe Volt::Model do
   it 'delegates unary operator to its attributes' do
     model = Volt::Model.new
@@ -657,10 +662,6 @@ describe Volt::Model do
   end
 
   it 'should allow a temporary flag to be set' do
-    class TempModel < Volt::Model
-      temporary
-    end
-
     expect(TempModel.is_temporary).to eq(true)
   end
 end

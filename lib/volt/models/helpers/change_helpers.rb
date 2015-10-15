@@ -5,7 +5,9 @@ module Volt
     module Helpers
       module ChangeHelpers
         def self.included(base)
-          base.setup_action_helpers_in_class(:before_save, :before_validate)
+          base.setup_action_helpers_in_class(
+            :before_create, :before_update, :before_save, :before_validate
+          )
         end
 
         # Called when something in the model changes.  Saves
@@ -77,6 +79,11 @@ module Volt
             # the before_save to put the model into an invalid state, which you want
             # sometimes.
             Volt::Model.no_validate do
+              if new?
+                run_callbacks(:before_create)
+              else
+                run_callbacks(:before_update)
+              end
               run_callbacks(:before_save)
             end
 
