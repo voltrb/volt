@@ -1,9 +1,9 @@
 
 require 'volt/spec/setup'
-require 'rack/test'
 
 unless RUBY_PLATFORM == 'opal'
   begin
+    require 'rack/test'
     require 'pry-byebug'
   rescue LoadError => e
     # Ignore if not installed
