@@ -78,13 +78,15 @@ module Volt
             # skip validations when running before_save, this prevents n+1, and allows
             # the before_save to put the model into an invalid state, which you want
             # sometimes.
-            Volt::Model.no_validate do
-              if new?
-                run_callbacks(:before_create)
-              else
-                run_callbacks(:before_update)
+            unless buffer?
+              Volt::Model.no_validate do
+                if new?
+                  run_callbacks(:before_create)
+                else
+                  run_callbacks(:before_update)
+                end
+                run_callbacks(:before_save)
               end
-              run_callbacks(:before_save)
             end
 
             # the changed method on a persistor should return a promise that will

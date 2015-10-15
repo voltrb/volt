@@ -36,41 +36,41 @@ end
 
 
 describe Volt::Models::Helpers::ChangeHelpers do
-  # it 'should call before save before each save' do
-  #   model = the_page._before_callbacks_tests.create({name: 'One'})
+  it 'should call before save before each save' do
+    model = the_page._before_callbacks_tests.create({name: 'One'})
 
-  #   expect(model.save_count).to eq(1)
-  # end
+    expect(model.save_count).to eq(1)
+  end
 
-  # it 'should call before_create before create' do
-  #   model = the_page._before_callbacks_tests.create({name: 'One'})
+  it 'should call before_create before create' do
+    model = the_page._before_callbacks_tests.create({name: 'One'})
 
-  #   expect(model.create_count).to eq(1)
-  # end
+    expect(model.create_count).to eq(1)
+  end
 
-  # it 'should call before_update before update' do
-  #   model = the_page._before_callbacks_tests.create({name: 'One'})
-  #   expect(model.create_count).to eq(1)
-  #   expect(model.update_count).to eq(0)
+  it 'should call before_update before update' do
+    model = the_page._before_callbacks_tests.create({name: 'One'})
+    expect(model.create_count).to eq(1)
+    expect(model.update_count).to eq(0)
 
-  #   model.name = 'New Name'
-  #   expect(model.create_count).to eq(1)
-  #   expect(model.update_count).to eq(1)
+    model.name = 'New Name'
+    expect(model.create_count).to eq(1)
+    expect(model.update_count).to eq(1)
 
-  #   model.name = 'Another name'
-  #   expect(model.create_count).to eq(1)
-  #   expect(model.update_count).to eq(2)
-  #   expect(model.save_count).to eq(3)
-  # end
+    model.name = 'Another name'
+    expect(model.create_count).to eq(1)
+    expect(model.update_count).to eq(2)
+    expect(model.save_count).to eq(3)
+  end
 
-  # # validation happens one extra time for the initial create
-  # it 'should call before_validate before validate' do
-  #   model = the_page._before_callbacks_tests.create({name: 'One'})
-  #   expect(model.validate_count).to eq(2)
+  # validation happens one extra time for the initial create
+  it 'should call before_validate before validate' do
+    model = the_page._before_callbacks_tests.create({name: 'One'})
+    expect(model.validate_count).to eq(2)
 
-  #   model.name = 'New Name'
-  #   expect(model.validate_count).to eq(3)
-  # end
+    model.name = 'New Name'
+    expect(model.validate_count).to eq(3)
+  end
 
   # it 'should not call anything on a buffer' do
   #   model = the_page._before_callbacks_tests.buffer({name: 'One'})
