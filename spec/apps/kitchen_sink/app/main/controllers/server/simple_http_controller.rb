@@ -8,6 +8,10 @@ module Main
       render text: "You had me at #{store._simple_http_tests.first._name.sync}"
     end
 
+    def create
+      render text: params.inspect
+    end
+
     def upload
       uploaded = params._file._tempfile
       File.open('tmp/uploaded_file', 'wb') { |f| f.write(uploaded.read) }

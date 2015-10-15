@@ -7,6 +7,7 @@ require 'volt/server/rack/opal_files'
 require 'volt/server/rack/index_files'
 require 'volt/server/rack/http_resource'
 require 'volt/server/rack/sprockets_helpers_setup'
+require 'volt/server/rack/http_content_types'
 
 
 
@@ -24,6 +25,7 @@ module Volt
       rack_app.use Rack::KeepAlive
       rack_app.use Rack::ConditionalGet
       rack_app.use Rack::ETag
+      rack_app.use Rack::HttpContentTypes
 
       rack_app.use Rack::Session::Cookie, {
         key: 'rack.session',
