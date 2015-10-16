@@ -213,7 +213,7 @@ module Volt
           load_data
         end
 
-        if @model.has_value? && (resval = self.resolved_value)
+        if @value.respond_to?(:has_value?) && @model.has_value? && (resval = self.resolved_value)
           # Value is already there, return a resolved promise
           return Promise.new.resolve(resval)
         else
@@ -236,7 +236,7 @@ module Volt
       end
 
       def resolved_value
-        if @model.has_value?
+        if @value.respond_to?(:has_value?) && @model.has_value?
           @model.value
         else
           nil
