@@ -57,8 +57,11 @@ module Volt
           array_model.path = self.path + new_path
           array_model.parent = self
 
-          # Store the associated query
-          set(method_name, array_model)
+          # Store the associated query, don't track changes, since the
+          # association is persisted via _id fields.
+          Volt.run_in_mode(:no_change_tracking) do
+            set(method_name, array_model)
+          end
           array_model
         end
 
