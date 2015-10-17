@@ -55,5 +55,4 @@ platform :mri do
   # Thin is the default volt server, you Puma is also supported
   gem 'thin', '~> 1.6.0'
   # gem 'puma'
-  gem 'bson_ext', '~> 1.9.0'
 end

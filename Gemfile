@@ -38,7 +38,6 @@ end
 
 group :development, :test do
   platform :mri do
-    gem 'bson_ext'
 
     # For running tests
     gem 'thin'
