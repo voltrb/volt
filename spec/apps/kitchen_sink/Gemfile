@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 gem 'volt', path: '../../../'
 
 # volt uses mongo as the default data store.
-gem 'volt-mongo', path: '/Users/ryanstout/Sites/volt/apps/volt-mongo'
+gem 'volt-mongo'
 
 # The following gem's are optional for themeing
 # Twitter bootstrap
