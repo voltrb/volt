@@ -17,14 +17,9 @@ class User < Volt::User
     end
 
     Volt.current_app.on("user_disconnect") do |user_id|
-      puts "DISCONNECT1: #{user_id.inspect}"
       begin
-        user = Volt.current_app.store.users.where(id: user_id).first.sync
-
-        puts "GOT USER: #{user.inspect}"
-        user._event_triggered = "user_disconnect"
+        user = Volt.current_app.store.users.where(id: user_id).first.sync._event_triggered = "user_disconnect"
       rescue => e
-        puts "ERROR: #{e.inspect}"
         #we rescue as this callback will also get called from the SocketConnectionHandler specs (and will fail)
       end
     end
