@@ -55,7 +55,7 @@ class LiveQuery
   end
 
   def notify_changed(id, data, skip_channel)
-    # puts "NOTIFY CHANGED"
+    puts "NOTIFY CHANGED: #{data.inspect}"
     model = nil
 
     notify!(skip_channel) do |channel|
