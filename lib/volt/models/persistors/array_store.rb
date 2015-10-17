@@ -68,7 +68,6 @@ module Volt
 
       # Called by child models to track their listeners
       def listener_added
-        # puts "LIST ADD: #{inspect}"
         @listener_event_counter.add
       end
 

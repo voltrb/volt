@@ -41,28 +41,30 @@ module Volt
         )
 
         define_method(method_name) do
+          puts "CHECK ATTRS: #{attributes.inspect}"
           # If the association is already in attributes, return
           if attributes[method_name]
-            return get(method_name)
+            get(method_name)
+          else
+
+            # Get the
+            lookup_key = get(local_key)
+            array_model = root.get(collection).where(foreign_key => lookup_key)
+
+            # Since we are coming off of the root collection, we need to setup
+            # the right parent and path.
+            new_path = array_model.options[:path]
+            # Assign path and parent
+            array_model.path = self.path + new_path
+            array_model.parent = self
+
+            # Store the associated query, don't track changes, since the
+            # association is persisted via _id fields.
+            Volt.run_in_mode(:no_change_tracking) do
+              set(method_name, array_model)
+            end
+            array_model
           end
-
-          # Get the
-          lookup_key = get(local_key)
-          array_model = root.get(collection).where(foreign_key => lookup_key)
-
-          # Since we are coming off of the root collection, we need to setup
-          # the right parent and path.
-          new_path = array_model.options[:path]
-          # Assign path and parent
-          array_model.path = self.path + new_path
-          array_model.parent = self
-
-          # Store the associated query, don't track changes, since the
-          # association is persisted via _id fields.
-          Volt.run_in_mode(:no_change_tracking) do
-            set(method_name, array_model)
-          end
-          array_model
         end
 
         # setter

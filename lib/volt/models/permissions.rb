@@ -173,6 +173,13 @@ module Volt
             res.each do |key, value|
               if value.is_a?(Model)
                 value = value.filtered_attributes
+              elsif value.is_a?(ArrayModel)
+                new_val = []
+                value.all.each do |sub_model|
+                  new_val << sub_model.filtered_attributes.sync
+                end
+
+                value = new_val
               end
               keys << key
               values << value
