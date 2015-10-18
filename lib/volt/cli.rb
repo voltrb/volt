@@ -6,6 +6,7 @@ require 'volt/extra_core/extra_core'
 require 'volt/cli/generators'
 require 'volt/cli/generate'
 require 'volt/cli/destroy'
+require 'volt/cli/migrate'
 require 'volt/version'
 require 'volt/cli/bundle'
 require 'volt/boot'
@@ -17,6 +18,7 @@ module Volt
 
     register(Generate, 'generate', 'generate GENERATOR [args]', 'Run a generator.')
     register(Destroy, 'destroy', 'destroy GENERATOR [args]', 'Delete files created by a generator.')
+    register(CliSubclasses::Migrate, 'migrate', 'migrate up/down', 'Migrate your app data')
 
     desc 'new PROJECT_NAME', 'generates a new project.'
 

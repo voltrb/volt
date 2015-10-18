@@ -59,6 +59,9 @@ module FieldHelpers
         end
       end
 
+      # Normalize default
+      options.delete(:default) if options[:default] == nil
+
       self.fields[name] = [klasses, options]
 
       if klasses

@@ -41,7 +41,6 @@ module Volt
         )
 
         define_method(method_name) do
-          puts "CHECK ATTRS: #{attributes.inspect}"
           # If the association is already in attributes, return
           if attributes[method_name]
             get(method_name)
