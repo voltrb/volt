@@ -125,6 +125,10 @@ module Volt
           # for each channel.  We store this here instead of on the channel
           # because in ForkingServer, channel is a DrbObject instance.
           @channel_query_subscriptions = {}
+
+          # Try to load the db to make sure its connected.  Also will run
+          # migrations on volt-sql in dev
+          @database.db
         end
       end
 
