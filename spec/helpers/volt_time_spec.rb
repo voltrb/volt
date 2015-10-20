@@ -13,9 +13,6 @@ describe VoltTime do
       expect(VoltTime.new(:local, 1970, 1, 1, 0, 0, 0)).to eq(::Time.at(0) - ::Time.at(0).utc_offset)
     end
     
-    it "raises an ArgumentError is a time is specified with a specific time zone" do
-      expect { VoltTime.new(+0100, 1970,1,1,0,0,0) }.to raise_error(ArgumentError)
-    end
   end
   
   describe "#+" do
