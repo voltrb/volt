@@ -33,12 +33,14 @@ module Volt
     def since(time = Volt::VoltTime.now)
       sum(1, time)
     end
+    alias :from_now :since
     
     # Calculates a new Time which is the Duration in the past
     # The default is since the current time
     def ago(time = Volt::VoltTime.now)
       sum(-1, time)
     end
+    alias :until :ago
     
     # Ensure that the Duration responds like the value to other methods
     def respond_to_missing?(method, include_private=false)
