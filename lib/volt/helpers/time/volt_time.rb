@@ -12,8 +12,7 @@ class VoltTime
  # If no parameters are provided then the current time is initialized.
  # Zone must be specified (as :local or :utc) if any parts of the date are given
  # to be clear whether VoltTime should assume that the parameters
- # are for a local or utc time. In Ruby you can also pass in an offset
- # which will cause an exception in Opal
+ # are for a local or utc time. 
  def initialize(zone = nil, year = nil, month = nil, day = nil, hour = nil, min = nil, sec = nil)
 
   # Case when all params are nil - create time now
@@ -25,8 +24,7 @@ class VoltTime
   elsif zone == :local
     @time = ::Time.new(year, month, day, hour, min, sec).getutc
   else
-    # If you try this in Opal it will throw an exception
-    @time = ::Time.new(year, month, day, hour, min, sec, zone).getutc
+    raise ArgumentError, "Specify zone as :utc or :local"
   end
  end
   
