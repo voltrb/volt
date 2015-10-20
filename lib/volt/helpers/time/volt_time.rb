@@ -82,7 +82,7 @@ class VoltTime
     end
   end
 
-  def to_skkkj
+  def to_s
     @time.to_s
   end
   
