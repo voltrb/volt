@@ -27,6 +27,8 @@ Check out demo apps:
  - https://github.com/voltrb/todomvc
  - https://github.com/voltrb/blog5
 
+For a full list of all things volt, check out [awesome-volt](https://github.com/heri/awesome-volt)
+
 # Docs
 
 Read the [full docs on Volt here](http://voltframework.com/docs)
