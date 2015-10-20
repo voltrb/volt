@@ -30,14 +30,14 @@ module Volt
     
     # Calculates a new Time which is the Duration in the future.
     # The default is since the current time
-    def since(time = Volt::VoltTime.now)
+    def since(time = VoltTime.now)
       sum(1, time)
     end
     alias :from_now :since
     
     # Calculates a new Time which is the Duration in the past
     # The default is since the current time
-    def ago(time = Volt::VoltTime.now)
+    def ago(time = VoltTime.now)
       sum(-1, time)
     end
     alias :until :ago
@@ -49,7 +49,7 @@ module Volt
     
     private
     
-      def sum(sign, time = Volt::VoltTime.now)
+      def sum(sign, time = VoltTime.now)
         parts.inject(time) do |t, (type, number)|
           t.advance({type => number*sign})
         end

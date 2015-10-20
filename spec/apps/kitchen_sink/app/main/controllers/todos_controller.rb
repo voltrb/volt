@@ -5,8 +5,7 @@ module Main
     model :store
 
     def add_todo
-      created_at = Volt::VoltTime.new
-      _todos << { name: page._new_todo, created_at: Volt::VoltTime.new }
+      _todos << { name: page._new_todo, created_at: VoltTime.new }
       page._new_todo = ''
     end
 

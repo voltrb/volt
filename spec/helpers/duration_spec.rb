@@ -103,57 +103,57 @@ describe Volt::Duration do
   
   describe "#since" do
     it "returns 1 day since the provided time" do
-      expect(1.day.since(Volt::VoltTime.at(0))).to eq(Volt::VoltTime.new(:utc, 1970, 1, 2, 0, 0, 0))
+      expect(1.day.since(VoltTime.at(0))).to eq(VoltTime.new(:utc, 1970, 1, 2, 0, 0, 0))
     end
    
     it "returns 2 days (1 day + 24 hours) since the provided time" do
-      expect((1.day + 24.hours).since(Volt::VoltTime.at(0))).to eq(Volt::VoltTime.new(:utc, 1970, 1, 3, 0, 0, 0))
+      expect((1.day + 24.hours).since(VoltTime.at(0))).to eq(VoltTime.new(:utc, 1970, 1, 3, 0, 0, 0))
     end
     
     it "returns 2 months since the provided time" do
-      expect(2.months.since(Volt::VoltTime.at(0))).to eq(Volt::VoltTime.new(:utc, 1970, 3, 1, 0, 0, 0))
+      expect(2.months.since(VoltTime.at(0))).to eq(VoltTime.new(:utc, 1970, 3, 1, 0, 0, 0))
     end
     
     it "returns 3 years since the provided time" do
-      expect(3.years.since(Volt::VoltTime.at(0))).to eq(Volt::VoltTime.new(:utc, 1973, 1, 1, 0, 0, 0))
+      expect(3.years.since(VoltTime.at(0))).to eq(VoltTime.new(:utc, 1973, 1, 1, 0, 0, 0))
     end
     
     it "returns 4 seconds since the provided time" do
-      expect(4.seconds.since(Volt::VoltTime.at(0))).to eq(Volt::VoltTime.new(:utc, 1970, 1, 1, 0, 0, 4))
+      expect(4.seconds.since(VoltTime.at(0))).to eq(VoltTime.new(:utc, 1970, 1, 1, 0, 0, 4))
     end
     
     it "returns 1 week since the provided time" do
-      expect(1.week.since(Volt::VoltTime.at(0))).to eq(Volt::VoltTime.new(:utc, 1970, 1, 8, 0, 0, 0))
+      expect(1.week.since(VoltTime.at(0))).to eq(VoltTime.new(:utc, 1970, 1, 8, 0, 0, 0))
     end
     
     it "returns 1 fortnight since the provided time" do
-      expect(1.fortnight.since(Volt::VoltTime.at(0))).to eq(Volt::VoltTime.new(:utc, 1970, 1, 15, 0, 0, 0))
+      expect(1.fortnight.since(VoltTime.at(0))).to eq(VoltTime.new(:utc, 1970, 1, 15, 0, 0, 0))
     end
     
     it "returns 24 hourse since the provided time" do
-      expect(24.hours.since(Volt::VoltTime.at(0))).to eq(Volt::VoltTime.new(:utc, 1970, 1, 2, 0, 0, 0))
+      expect(24.hours.since(VoltTime.at(0))).to eq(VoltTime.new(:utc, 1970, 1, 2, 0, 0, 0))
     end
   end
   
   describe "#ago" do
     it "returns 1 day before the provided time" do
-      expect(1.day.ago(Volt::VoltTime.at(0))).to eq(Volt::VoltTime.new(:utc, 1969, 12, 31, 0, 0, 0))
+      expect(1.day.ago(VoltTime.at(0))).to eq(VoltTime.new(:utc, 1969, 12, 31, 0, 0, 0))
     end
     
     it "returns 2 months before the provided time" do
-      expect(2.months.ago(Volt::VoltTime.at(0))).to eq(Volt::VoltTime.new(:utc, 1969, 11, 1, 0, 0, 0))
+      expect(2.months.ago(VoltTime.at(0))).to eq(VoltTime.new(:utc, 1969, 11, 1, 0, 0, 0))
     end
     
     it "returns 3 years before the provided time" do
-      expect(3.years.ago(Volt::VoltTime.at(0))).to eq(Volt::VoltTime.new(:utc, 1967, 1, 1, 0, 0, 0))
+      expect(3.years.ago(VoltTime.at(0))).to eq(VoltTime.new(:utc, 1967, 1, 1, 0, 0, 0))
     end
     
     it "returns 4 seconds before the provided time" do
-      expect(4.seconds.ago(Volt::VoltTime.at(0))).to eq(Volt::VoltTime.new(:utc, 1969, 12, 31, 23, 59, 56))
+      expect(4.seconds.ago(VoltTime.at(0))).to eq(VoltTime.new(:utc, 1969, 12, 31, 23, 59, 56))
     end
     
     it "returns 1 week before the provided time" do
-      expect(1.week.ago(Volt::VoltTime.at(0))).to eq(Volt::VoltTime.new(:utc, 1969, 12, 25, 0, 0, 0))
+      expect(1.week.ago(VoltTime.at(0))).to eq(VoltTime.new(:utc, 1969, 12, 25, 0, 0, 0))
     end
   end
 end
