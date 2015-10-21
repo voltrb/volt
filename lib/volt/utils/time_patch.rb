@@ -11,8 +11,9 @@ if RUBY_PLATFORM == 'opal'
    
     # Patches backported Opal Time because it's missing
     # this method 
-    def getlocal
-      ::Time.at(self.to_f - self.utc_offset)
+    def getlocal  
+      s = self.to_f - self.utc_offset
+      ::Time.at(self.to_f)
     end
   end
 end

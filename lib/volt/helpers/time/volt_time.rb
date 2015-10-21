@@ -134,7 +134,7 @@ class VoltTime
   end
   
   def respond_to?(method_name, include_private = false)
-    !METHOD_BLACKLIST.include?(method_name.to_s) && @time.respond_to?(method_name, include_private)
+    @time.respond_to?(method_name, include_private)
   end
  
   private
@@ -144,9 +144,7 @@ class VoltTime
     end
     
     def respond_to_missing?(method_name, include_private = false)
-      if !METHOD_BLACKLIST.include?(method_name.to_s)
-        @time.respond_to?(method_name, include_private)
-      end
+      @time.respond_to?(method_name, include_private)
     end
     
 end
