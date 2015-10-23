@@ -92,6 +92,9 @@ describe Volt::Routes do
       put '/people', controller: 'people', action: 'update'
       patch '/people/1', controller: 'people', action: 'update'
       delete '/people/2', controller: 'people', action: 'destroy'
+      client '/pics/new/{{ new_id }}/two', controller: 'pics', action: 'new'
+      client '/pics/{{ pic_id }}/view/one', controller: 'pics', action: 'view'
+      client '/pics/{{ *pic_id }}', controller: 'pics', action: 'show'
     end
 
     params = @routes.url_to_params('/blog')
@@ -122,7 +125,7 @@ describe Volt::Routes do
     expect(params).to eq(controller: 'articles', action: 'index')
 
     params = @routes.url_to_params(:post, '/articles')
-    expect(params).to be_nil
+    expect(params).to eq(false)
 
     params = @routes.url_to_params(:post, '/comments')
     expect(params).to eq(controller: 'comments', action: 'create')
@@ -141,6 +144,15 @@ describe Volt::Routes do
 
     params = @routes.url_to_params(:put, '/articles/2/comments/9')
     expect(params).to eq(controller: 'comments', action: 'update', articles_id: '2', id: '9')
+
+    params = @routes.url_to_params('/pics/new/view/one')
+    expect(params).to eq({controller: "pics", action: "view", pic_id: "new"})
+
+    params = @routes.url_to_params('/pics/new/view/two')
+    expect(params).to eq({controller: "pics", action: "new", new_id: "view"})
+
+    params = @routes.url_to_params('/pics/new/view/three')
+    expect(params).to eq({controller: "pics", action: "show", pic_id: "new/view/three"})
   end
 
   it 'should go from params to url' do
@@ -279,16 +291,16 @@ describe Volt::Routes do
     params = @routes.url_to_params(:get, '/api/v1/articles/1')
     expect(params).to eq(controller: 'articles', action: 'show', id: '1')
 
-    expect(@routes.url_to_params(:post, '/api/v1/articles')).to be_nil
-    expect(@routes.url_to_params(:put, '/api/v1/articles/1')).to be_nil
-    expect(@routes.url_to_params(:delete, '/api/v1/articles/1')).to be_nil
+    expect(@routes.url_to_params(:post, '/api/v1/articles')).to eq(false)
+    expect(@routes.url_to_params(:put, '/api/v1/articles/1')).to eq(false)
+    expect(@routes.url_to_params(:delete, '/api/v1/articles/1')).to eq(false)
 
     routes do
       rest '/api/v1/articles', controller: 'articles', only: [:update, :destroy, :create]
     end
 
-    expect(@routes.url_to_params(:get, '/api/v1/articles')).to be_nil
-    expect(@routes.url_to_params(:get, '/api/v1/articles/1')).to be_nil
+    expect(@routes.url_to_params(:get, '/api/v1/articles')).to eq(false)
+    expect(@routes.url_to_params(:get, '/api/v1/articles/1')).to eq(false)
 
     params = @routes.url_to_params(:post, '/api/v1/articles')
     expect(params).to eq(controller: 'articles', action: 'create')
@@ -311,8 +323,8 @@ describe Volt::Routes do
     params = @routes.url_to_params(:get, '/api/v1/articles/1')
     expect(params).to eq(controller: 'articles', action: 'show', id: '1')
 
-    expect(@routes.url_to_params(:post, '/api/v1/articles')).to be_nil
-    expect(@routes.url_to_params(:put, '/api/v1/articles/1')).to be_nil
-    expect(@routes.url_to_params(:delete, '/api/v1/articles/1')).to be_nil
+    expect(@routes.url_to_params(:post, '/api/v1/articles')).to eq(false)
+    expect(@routes.url_to_params(:put, '/api/v1/articles/1')).to eq(false)
+    expect(@routes.url_to_params(:delete, '/api/v1/articles/1')).to eq(false)
   end
 end

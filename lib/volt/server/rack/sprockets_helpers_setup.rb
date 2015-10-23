@@ -107,30 +107,30 @@ module Volt
 end
 
 
-module Sprockets
-  class Context
-    # We have to reinclude this because of some ```require``` thread saftey issues.
-    def find_asset_path(uri, source, options = {})
-      if Helpers.manifest && options[:manifest] != false
-        manifest_path = Helpers.manifest.assets[uri.path]
-        return Helpers::ManifestPath.new(uri, manifest_path, options) if manifest_path
-      end
+# module Sprockets
+#   class Context
+#     # We have to reinclude this because of some ```require``` thread saftey issues.
+#     def find_asset_path(uri, source, options = {})
+#       if Helpers.manifest && options[:manifest] != false
+#         manifest_path = Helpers.manifest.assets[uri.path]
+#         return Helpers::ManifestPath.new(uri, manifest_path, options) if manifest_path
+#       end
 
-      if Sprockets::Helpers.are_using_sprockets_3
-        resolved = assets_environment.resolve(uri.path)
+#       if Sprockets::Helpers.are_using_sprockets_3
+#         resolved = assets_environment.resolve(uri.path)
 
-        if resolved
-          return Helpers::AssetPath.new(uri, assets_environment[uri.path], options)
-        else
-          return Helpers::FilePath.new(uri, options)
-        end
-      else
-        assets_environment.resolve(uri.path) do |path|
-          return Helpers::AssetPath.new(uri, assets_environment[path], options)
-        end
+#         if resolved
+#           return Helpers::AssetPath.new(uri, assets_environment[uri.path], options)
+#         else
+#           return Helpers::FilePath.new(uri, options)
+#         end
+#       else
+#         assets_environment.resolve(uri.path) do |path|
+#           return Helpers::AssetPath.new(uri, assets_environment[path], options)
+#         end
 
-        return Helpers::FilePath.new(uri, options)
-      end
-    end
-  end
-end
+#         return Helpers::FilePath.new(uri, options)
+#       end
+#     end
+#   end
+# end

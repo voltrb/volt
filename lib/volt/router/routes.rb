@@ -133,7 +133,6 @@ module Volt
         obj[k.to_sym] = v
       end
 
-      puts "PTURL: #{@param_matches[method].inspect}"
       @param_matches[method].each do |param_matcher|
         # TODO: Maybe a deep dup?
         result, new_params = check_params_match(test_params.dup, param_matcher[0])
@@ -162,10 +161,7 @@ module Volt
       # Next, split the url and walk the sections
       parts = url_parts(path)
 
-      res = match_path(parts, parts, @indirect_routes[method])
-
-      puts "MATCHED2: #{res.inspect}"
-      res
+      match_path(parts, parts, @indirect_routes[method])
     end
 
     private
@@ -199,15 +195,24 @@ module Volt
         else
           false
         end
-      elsif (new_node = node[part])
-        # Direct match for section, continue
-        match_path(original_parts, parts, new_node)
-      elsif (new_node = node['*'])
-        # Match on binding single section
-        match_path(original_parts, parts, new_node)
-      # elsif (params = node['**'][nil])
-      #   # Match on binding multiple sections
-      #   setup_bindings_in_params(original_parts, params)
+      else
+        if (new_node = node[part])
+          # Direct match for section, continue
+          result = match_path(original_parts, parts, new_node)
+          return result if result
+        end
+        if (new_node = node['*'])
+          # Match on binding single section
+          result = match_path(original_parts, parts, new_node)
+          return result if result
+        end
+        if ((params = node['**']) && params && (params = params[nil]))
+          # Match on binding multiple sections
+          result = setup_bindings_in_params(original_parts, params)
+          return result if result
+        end
+
+        return false
       end
     end
 
@@ -242,19 +247,18 @@ module Volt
       parts.each_with_index do |part, index|
         if has_binding?(part)
           # Strip off {{ and }}
-          section_matcher = part[2...-2].strip
+          section_matcher, multipart = binding_extract(part)
 
-          if section_matcher[0] == '*'
+          if multipart
             # Match anything for the rest of the url (multiple sections)
             part = '**'
-            section_matcher = section_matcher[1..-1]
             index = (index..-1)
           else
             # Match anything in a single section, set the part to be '*'
             part = '*'
           end
 
-          params[section_matcher.to_sym] = index
+          params[section_matcher] = index
         end
 
         node = (node[part] ||= {})
@@ -271,7 +275,8 @@ module Volt
         if has_binding?(part)
           # Setup a nil param that can match anything, but gets
           # assigned into the url
-          params[part[2...-2].strip.to_sym] = nil
+          section_matcher, _ = binding_extract(part)
+          params[section_matcher] = nil
         end
       end
 
@@ -290,7 +295,7 @@ module Volt
         url = parts.map do |part|
           val = if has_binding?(part)
                   # Get the
-                  binding = part[2...-2].strip.to_sym
+                  binding, _ = binding_extract(part)
                   input_params.delete(binding)
                 else
                   part
@@ -350,6 +355,23 @@ module Volt
     #Append an id to a given path
     def path_with_id(base_path)
       base_path + '/{{ id  }}'
+    end
+
+    # @param: The binding part of the url eg: "{{ binding }} or {{ *binding }}"
+    # @return: a symbol for the binding variable eg: :binding, and a boolean for
+    #          if the binding matches multiple sections.
+    def binding_extract(part)
+      section_matcher = part[2...-2].strip
+
+      multipart_matcher = false
+
+      if section_matcher[0] == '*'
+        # Match anything for the rest of the url (multiple sections)
+        section_matcher = section_matcher[1..-1]
+        multipart_matcher = true
+      end
+
+      return section_matcher.to_sym, multipart_matcher
     end
   end
 end
