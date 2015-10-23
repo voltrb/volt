@@ -251,6 +251,12 @@ module Volt
 
           if multipart
             # Match anything for the rest of the url (multiple sections)
+
+            # check that the splat is at the end of the url
+            if index != (parts.size-1)
+              raise "The splat (*) operator can only be used at the end of a url"
+            end
+
             part = '**'
             index = (index..-1)
           else
