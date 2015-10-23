@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.9.7
+
+### Changed
+- fixed the issue with serving precompiled assets in production. It also fixes the issue where sometimes non-root urls wouldn't load correctly.
+
+
 ## 0.9.6
 0.9.6 is mostly a bug fix release with a few minor features.
 

@@ -5,38 +5,38 @@ module Volt
   # a url to params, and params to url.
   # routes do
   #   client "/about", _view: 'about'
-  #   client "/blog/{id}/edit", _view: 'blog/edit', _action: 'edit'
-  #   client "/blog/{id}", _view: 'blog/show', _action: 'show'
-  #   client "/blog", _view: 'blog'
-  #   client "/blog/new", _view: 'blog/new', _action: 'new'
-  #   client "/cool/{_name}", _view: 'cool'
+  #   client "/blog/{{ id }}/edit", view: 'blog/edit', action: 'edit'
+  #   client "/blog/{{ id }}", view: 'blog/show', action: 'show'
+  #   client "/blog", view: 'blog'
+  #   client "/blog/new", view: 'blog/new', action: 'new'
+  #   client "/cool/{{ name }}", view: 'cool'
   # end
   #
   # Using the routes above, we would generate the following:
   #
   # @direct_routes = {
-  #   '/about' => {_view: 'about'},
-  #   '/blog' => {_view: 'blog'}
-  #   '/blog/new' => {_view: 'blog/new', _action: 'new'}
+  #   '/about' => {view: 'about'},
+  #   '/blog' => {view: 'blog'}
+  #   '/blog/new' => {view: 'blog/new', action: 'new'}
   # }
   #
   # -- nil represents a terminal
-  # -- * represents any match
+  # -- * represents any match (in that section (between / and /))
   # -- a number for a parameter means use the value in that number section
   #
   # @indirect_routes = {
   #     '*' => {
   #       'edit' => {
-  #         nil => {id: 1, _view: 'blog/edit', _action: 'edit'}
+  #         nil => {id: 1, view: 'blog/edit', action: 'edit'}
   #       }
-  #       nil => {id: 1, _view: 'blog/show', _action: 'show'}
+  #       nil => {id: 1, view: 'blog/show', action: 'show'}
   #     }
   #   }
   # }
   #
   # Match for params
   # @param_matches = [
-  #   {id: nil, _view: 'blog/edit', _action: 'edit'} => Proc.new {|params| "/blog/#{params.id}/edit", params.reject {|k,v| k == :id }}
+  #   {id: nil, view: 'blog/edit', action: 'edit'} => Proc.new {|params| "/blog/#{params.id}/edit", params.reject {|k,v| k == :id }}
   # ]
   class Routes
     def initialize
@@ -68,7 +68,7 @@ module Volt
     end
 
     # Add server side routes
-    
+
     def get(path, params)
       create_route(:get, path, params)
     end
@@ -133,6 +133,7 @@ module Volt
         obj[k.to_sym] = v
       end
 
+      puts "PTURL: #{@param_matches[method].inspect}"
       @param_matches[method].each do |param_matcher|
         # TODO: Maybe a deep dup?
         result, new_params = check_params_match(test_params.dup, param_matcher[0])
@@ -161,7 +162,10 @@ module Volt
       # Next, split the url and walk the sections
       parts = url_parts(path)
 
-      match_path(parts, parts, @indirect_routes[method])
+      res = match_path(parts, parts, @indirect_routes[method])
+
+      puts "MATCHED2: #{res.inspect}"
+      res
     end
 
     private
@@ -190,7 +194,7 @@ module Volt
       if part.nil?
         if node[part]
           # We found a match, replace the bindings and return
-          # TODO: Handvle nested
+          # TODO: Handle nested
           setup_bindings_in_params(original_parts, node[part])
         else
           false
@@ -199,8 +203,11 @@ module Volt
         # Direct match for section, continue
         match_path(original_parts, parts, new_node)
       elsif (new_node = node['*'])
-        # Match on binding section
+        # Match on binding single section
         match_path(original_parts, parts, new_node)
+      # elsif (params = node['**'][nil])
+      #   # Match on binding multiple sections
+      #   setup_bindings_in_params(original_parts, params)
       end
     end
 
@@ -214,6 +221,10 @@ module Volt
         if value.is_a?(Fixnum)
           # Lookup the param's value in the original url parts
           params[key] = original_parts[value]
+        elsif value.is_a?(Range)
+          # When doing multiple section bindings, we lookup the parts as a range
+          # then join them with /
+          params[key] = original_parts[value].join('/')
         end
       end
 
@@ -231,10 +242,19 @@ module Volt
       parts.each_with_index do |part, index|
         if has_binding?(part)
           # Strip off {{ and }}
-          params[part[2...-2].strip.to_sym] = index
+          section_matcher = part[2...-2].strip
 
-          # Set the part to be '*' (anything matcher)
-          part = '*'
+          if section_matcher[0] == '*'
+            # Match anything for the rest of the url (multiple sections)
+            part = '**'
+            section_matcher = section_matcher[1..-1]
+            index = (index..-1)
+          else
+            # Match anything in a single section, set the part to be '*'
+            part = '*'
+          end
+
+          params[section_matcher.to_sym] = index
         end
 
         node = (node[part] ||= {})
