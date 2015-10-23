@@ -172,6 +172,9 @@ module Volt
     def self.source_root
       File.expand_path(File.join(File.dirname(__FILE__), '../../templates'))
     end
+
+    map "d" => "destroy"
+    map "dc" => "drop_collection"
   end
 end
 
