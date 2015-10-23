@@ -25,7 +25,7 @@ module Volt
     private
 
     def routes_match?(request)
-      @router.url_to_params(request.method, request.path)
+      @router.url_to_params(request.method, request.path_info)
     end
 
     # Find the correct controller and call the correct action on it.

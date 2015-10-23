@@ -95,7 +95,7 @@ describe Volt::Routes do
       client '/pics/new/{{ new_id }}/two', controller: 'pics', action: 'new'
       client '/pics/{{ pic_id }}/view/one', controller: 'pics', action: 'view'
       client '/pics/{{ *pic_id }}', controller: 'pics', action: 'show'
-      client '/wide_match/{{ *path_parts }}', controller: 'wide_match', action: 'show'
+      get '/wide_match/{{ *path_parts }}', controller: 'wide_match', action: 'show'
     end
 
     params = @routes.url_to_params('/blog')
@@ -154,6 +154,9 @@ describe Volt::Routes do
 
     params = @routes.url_to_params('/pics/new/view/three')
     expect(params).to eq({controller: "pics", action: "show", pic_id: "new/view/three"})
+
+    params = @routes.url_to_params(:get, '/wide_match/some/image/path/file.png')
+    expect(params).to eq({controller: "wide_match", action: "show", path_parts: "some/image/path/file.png"})
   end
 
   it 'should raise an error if the splat match isn\'t at the end of the url' do
