@@ -82,7 +82,22 @@ module Volt
       environment                        = @environment
 
       builder.map(app_url) do
-        run environment
+        # This map block takes over all serving for /app, so here we serve out
+        # of public/app if the file isn't found in sprockets.
+        # TODO: We should really let Rack::Cascade run from the default
+        # middleware stack.
+        not_found = lambda { |env| [404, {}, []] }
+        opts = {
+          urls: [''],
+          root: ['public/app'],
+          header_rules: [
+            [:all, { 'Cache-Control' => 'public, max-age=86400' }]
+          ]
+        }
+        static = Rack::Static.new(not_found, opts)
+
+        run Rack::Cascade.new([environment, static])
+        # run environment
       end
 
       # Remove dup paths

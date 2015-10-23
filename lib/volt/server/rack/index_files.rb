@@ -30,7 +30,14 @@ module Volt
     end
 
     def html
-      index_path = File.expand_path(File.join(Volt.root, 'config/base/index.html'))
+      # Check for a precompiled
+      index_path = File.expand_path(File.join(Volt.root, 'public/index.html'))
+
+      # Next check for one in config/base
+      unless File.exists?(index_path)
+        index_path = File.expand_path(File.join(Volt.root, 'config/base/index.html'))
+      end
+
       html       = File.read(index_path)
 
       ERB.new(html, nil, '-').result(binding)

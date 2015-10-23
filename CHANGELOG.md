@@ -1,5 +1,21 @@
 # Change Log
 
+## 0.9.7
+
+### Added
+You can now do "splat" matches in routes.  Splat matches let you match multiple sections at the end of a url.
+```ruby
+client '/info/{{ *rest_of_path }}', component: 'main', controller: 'main', action: 'info'
+```
+
+By doing the above, anything after /info/ will be matched and placed into the rest_of_path param.
+
+### Changed
+- fixed the issue with serving precompiled assets in production. It also fixes the issue where sometimes non-root urls wouldn't load correctly.
+- fixed issue with some routes not matching
+
+
+
 ## 0.9.6
 0.9.6 is mostly a bug fix release with a few minor features.
 

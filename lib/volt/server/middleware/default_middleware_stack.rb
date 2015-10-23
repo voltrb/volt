@@ -44,6 +44,7 @@ module Volt
     # Setup the middleware that we need to wait for components to boot before we
     # can set them up.
     def self.postboot_setup(volt_app, rack_app)
+
       # Serve the opal files
       opal_files = OpalFiles.new(rack_app, volt_app.app_url, volt_app.app_path, volt_app.component_paths)
       volt_app.opal_files = opal_files
@@ -57,14 +58,15 @@ module Volt
 
       rack_app.use HttpResource, volt_app, volt_app.router
 
+
       # serve assets from public
       rack_app.use Rack::Static,
-                    urls: [''],
-                    root: 'public',
-                    index: 'index.html',
-                    header_rules: [
-                      [:all, { 'Cache-Control' => 'public, max-age=86400' }]
-                    ]
+        urls: [''],
+        root: ['public'],
+        index: 'index.html',
+      header_rules: [
+        [:all, { 'Cache-Control' => 'public, max-age=86400' }]
+      ]
 
       rack_app.run lambda { |env| [404, { 'Content-Type' => 'text/html; charset=utf-8' }, ['404 - page not found']] }
     end

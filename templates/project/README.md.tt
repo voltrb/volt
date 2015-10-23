@@ -1,4 +1,9 @@
-# Place your app's docs here.
+# Welcome to Volt
+
+You can start your volt app by running:
+
+```bundle exec volt server```
 
 ## New to Volt?
+
 Be sure to read the volt docs at http://voltframework.com/docs
