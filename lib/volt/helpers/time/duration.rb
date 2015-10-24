@@ -46,12 +46,33 @@ module Volt
     def respond_to_missing?(method, include_private=false)
       @value.respond_to?(method, include_private)
     end
+
+    def inspect #:nodoc:
+      to_sentance parts.
+        reduce(::Hash.new(0)) { |h,(l,r)| h[l] += r; h }.
+        sort_by {|unit,  _ | [:years, :months, :days, :minutes, :seconds].index(unit)}.
+        map     {|unit, val| "#{val} #{val == 1 ? unit.to_s.chop : unit.to_s}"}
+    end
     
     private
     
       def sum(sign, time = VoltTime.now)
         parts.inject(time) do |t, (type, number)|
           t.advance({type => number*sign})
+        end
+      end
+
+      def to_sentance(array) 
+        puts array
+        case array.length
+          when 0
+            ""
+          when 1
+            array[0]
+          when 2
+            "#{array[0]} and #{array[1]}"
+          else
+            "#{array[0...-1].join(',')} and #{array[-1]}"
         end
       end
 
