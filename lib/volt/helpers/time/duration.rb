@@ -63,7 +63,6 @@ module Volt
       end
 
       def to_sentance(array) 
-        puts array
         case array.length
           when 0
             ""
