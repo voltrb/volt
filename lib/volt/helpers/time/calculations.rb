@@ -46,7 +46,7 @@ class VoltTime
     new_sec   = options.fetch(:sec, (options[:hour] || options[:min]) ? 0 : sec)
     VoltTime.new(:utc, new_year, new_month, new_day, new_hour, new_min, new_sec)
   end
-  
+
   # Returns a new time that has been advanced according to the +options+
   # parameter. The +options+ parameter is a hash with any of these keys:
   # <tt>:years</tt>, <tt>:months</tt>, <tt>:days</tt>, <tt>:hours</tt>, <tt>:mins</tt>,
@@ -125,21 +125,26 @@ class VoltTime
     if other.is_a?(Volt::Duration)
     end
   end
-
-  # Returns a new Time representing the beginning of the day, 00:00:00
+  
+  # Returns a new VoltTime representing the beginning of the day, 00:00:00
   def beginning_of_day
-    change(:hour => 0, :min => 0, :sec => 0)
+    change(hour: 0, min: 0, sec: 0)
   end
 
-  # Returns a new Time representing the end of the day, 23:59:59.999
+  # Returns a new VoltTime representing the end of the day, 23:59:59.999
   # Only milliseconds are supported in Opal
   def end_of_day
     VoltTime.new(:utc, year, month, day, 23, 59, 59.999)
   end
   
+  # Returns a new Time for the middle of the day i.e. 12:00:00
+  def middle_of_day
+    change(hour: 12)
+  end
+
   # Returns the number of seconds since 00:00:00 of the current day
   def seconds_since_midnight
-    to_f - change(:hour => 0).to_f
+    to_f - change(hour: 0).to_f
   end
   
   # Returns the number of seconds to the 23:59:59 of the current day
@@ -147,19 +152,14 @@ class VoltTime
     end_of_day.to_f - to_f
   end
   
-  # Returns a new Time for the number of seconds ago
+  # Returns a new VoltTime for the number of seconds ago
   def ago(seconds)
     since(-seconds)
   end
   
-  # Returns a new Time for the number of seconds since the current time
+  # Returns a new VoltTime for the number of seconds since the current time
   def since(seconds)
     VoltTime.new.set_time(@time + seconds)
-  end
-  
-  # Returns a new Time for the middle of the day i.e. 12:00:00
-  def middle_of_day
-    change(hour: 12)
   end
   
   # Returns a new Time for the beginning of the current hour

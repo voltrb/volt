@@ -88,26 +88,6 @@ class VoltTime
     @time.inspect
   end
   
-  # Returns a string representation of the local time
-  def local_to_s
-    @time.getlocal.to_s
-  end
-  
-  # Returns a canonical representation of the local time
-  def local_asctime
-    @time.getlocal.asctime
-  end
-  
-  # Returns a canonical representation of the local time
-  def local_ctime
-    @time.getlocal.ctime
-  end
-  
-  # Formats the local time according to the provided string
-  def local_strftime(string)
-    @time.getlocal.strftime(string)
-  end
-  
   def + (other)
     VoltTime.from_time(@time + other)
   end
@@ -131,6 +111,11 @@ class VoltTime
   def localtime
     # Opal 0.9.0 has no localtime method so use getlocal instead
     @time.getlocal
+  end
+
+  # Get the local offset from UTC
+  def local_offset
+    @time.getlocal.utc_offset
   end
   
   def respond_to?(method_name, include_private = false)
