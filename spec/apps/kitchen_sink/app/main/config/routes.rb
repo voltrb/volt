@@ -34,5 +34,8 @@ post '/simple_http', controller: 'simple_http', action: 'create'
 # Route for file uploads
 client '/upload', controller: 'upload', action: 'index'
 
+# Simple JSON API specs
+rest '/api/issues', component: 'api', controller: 'api', model: 'issue'
+
 # The main route, this should be last.  It will match any params not previously matched.
 client '/', {}

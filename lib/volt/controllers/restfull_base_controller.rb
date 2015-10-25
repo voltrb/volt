@@ -2,7 +2,7 @@ require 'volt/controllers/http_controller'
 
 module Volt
   # Allow you to create controllers that act as http endpoints
-  class RestfulBaseController < HttpController
+  class RestfullBaseController < HttpController
 
     before_action :setup_model
     before_action :setup_new_resource, only: [:create]

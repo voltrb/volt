@@ -1,12 +1,12 @@
 require 'spec_helper'
 
 if RUBY_PLATFORM != 'opal'
-  require 'volt/controllers/restful_base_controller'
+  require 'volt/controllers/restfull_base_controller'
   require 'volt/server/rack/http_request'
   require 'volt/server/rack/http_resource'
 
-  describe Volt::RestfulBaseController do
-    class TestRestfulController < Volt::RestfulBaseController
+  describe Volt::RestfullBaseController do
+    class TestRestfulController < Volt::RestfullBaseController
 
       attr_accessor :the_model, :the_collection, :the_collection_name, :the_resource_params
 
@@ -25,7 +25,7 @@ if RUBY_PLATFORM != 'opal'
 
     end
 
-    class StaticRestfulController < Volt::RestfulBaseController
+    class StaticRestfulController < Volt::RestfullBaseController
       attr_accessor :the_model
 
       model :issue
@@ -35,7 +35,7 @@ if RUBY_PLATFORM != 'opal'
       end
     end
 
-    class ImplementedRestfulController < Volt::RestfulBaseController
+    class ImplementedRestfulController < Volt::RestfullBaseController
       attr_accessor :the_resource
 
       def create
