@@ -19,7 +19,7 @@ module Volt
       end
     end
     
-    # Adds durations or seconds to the duration
+    # Adds durations or duration to a VoltTime or seconds to the duration
     def +(other)
       if other.is_a?(Volt::Duration)
         Volt::Duration.new(value + other.value, parts + other.parts)
@@ -47,22 +47,23 @@ module Volt
       @value.respond_to?(method, include_private)
     end
 
-    def inspect #:nodoc:
-      to_sentance parts.
+    def inspect
+      to_sentence parts.
         reduce(::Hash.new(0)) { |h,(l,r)| h[l] += r; h }.
         sort_by {|unit,  _ | [:years, :months, :days, :minutes, :seconds].index(unit)}.
         map     {|unit, val| "#{val} #{val == 1 ? unit.to_s.chop : unit.to_s}"}
     end
     
+    def sum(sign, time = VoltTime.now)
+      parts.inject(time) do |t, (type, number)|
+        t.advance({type => number*sign})
+      end
+    end
+
     private
     
-      def sum(sign, time = VoltTime.now)
-        parts.inject(time) do |t, (type, number)|
-          t.advance({type => number*sign})
-        end
-      end
 
-      def to_sentance(array) 
+      def to_sentence(array) 
         case array.length
           when 0
             ""

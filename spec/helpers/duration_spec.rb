@@ -99,6 +99,7 @@ describe Volt::Duration do
     it "returns 3 years for 1 year + 2 years" do
       expect(1.year + 2.years).to eq(3.years)
     end
+
   end
   
   describe "#since" do
