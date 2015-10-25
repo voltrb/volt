@@ -79,6 +79,10 @@ class VoltTime
       change(accuracy => send(accuracy)) <=> other.change(accuracy => other.send(accuracy))  
     end
   end
+
+  def compare?(other, accuracy)
+    compare(other, accuracy) == 0 ? true : false
+  end 
   
   # Advances time by a number of years
   def advance_years(years)

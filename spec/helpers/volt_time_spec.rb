@@ -239,23 +239,29 @@ describe VoltTime do
     end
   end
   
-  describe "#compare" do
+  describe "#compare and #compare?" do
     it "checks if the years are the same" do
       expect(vt0.compare(VoltTime.at(10000), :year)).to eq(0)
+      expect(vt0.compare?(VoltTime.at(10000), :year)).to be true
     end
     
     it "checks if the months are the same" do
-      expect(VoltTime.new(:utc, 1970,1,1).compare(VoltTime.new(:utc, 1970, 1, 30), :month)).to eq(0)
+      expect(vt0.compare(VoltTime.new(:utc, 1970, 1, 30), :month)).to eq(0)
+      expect(vt0.compare?(VoltTime.new(:utc, 1970, 1, 30), :month)).to be true
     end
     
     it "checks if the day is the same" do
-      expect(VoltTime.new(:utc, 1970,1,1).compare(VoltTime.new(:utc, 1971, 1,1), :day)).to eq(-1)
+      expect(vt0.compare(VoltTime.new(:utc, 1971, 1,1), :day)).to eq(-1)
+      expect(vt0.compare?(VoltTime.new(:utc, 1971, 1,1), :day)).to be false
     end
     
     it "checks if the minute is the same" do
       expect(VoltTime.at(61).compare(VoltTime.at(0), :min)).to eq(1)
+      expect(VoltTime.at(61).compare?(VoltTime.at(0), :min)).to be false
     end
     
   end
+  
+
 
 end
