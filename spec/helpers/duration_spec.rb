@@ -100,9 +100,6 @@ describe Volt::Duration do
       expect(1.year + 2.years).to eq(3.years)
     end
 
-    it "returns next month" do
-      expect(1.month + VoltTime.at(0)).to eq(VoltTime.new(:utc, 1970, 2, 1))
-    end
   end
   
   describe "#since" do

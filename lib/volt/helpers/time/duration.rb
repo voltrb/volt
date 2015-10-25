@@ -23,8 +23,6 @@ module Volt
     def +(other)
       if other.is_a?(Volt::Duration)
         Volt::Duration.new(value + other.value, parts + other.parts)
-      elsif other.is_a?(VoltTime)
-        sum(1, other)
       else
         Volt::Duration.new(value + other, parts + [[:seconds, other]])
       end
