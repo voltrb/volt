@@ -300,12 +300,12 @@ module Volt
 
         url = parts.map do |part|
           val = if has_binding?(part)
-                  # Get the
-                  binding, _ = binding_extract(part)
-                  input_params.delete(binding)
-                else
-                  part
-                end
+            # Get the
+            binding, _ = binding_extract(part)
+            input_params.delete(binding)
+          else
+            part
+          end
 
           val
         end.join('/')
@@ -350,7 +350,9 @@ module Volt
     end
 
     def url_parts(path)
-      path.split('/').reject(&:blank?)
+      # Remove start and end / and then split, keeping any blanks between
+      # sections (so // would get rejoined with the double)
+      path.gsub(/^\//, '').chomp('/').split('/', -1)
     end
 
     # Check if a string has a binding in it

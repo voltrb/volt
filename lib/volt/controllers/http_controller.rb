@@ -65,6 +65,18 @@ module Volt
       response_body << body
     end
 
+    def send_file(path)
+      if File.exists?(path)
+        head(200, {})
+      else
+        raise "Invalid SendFile: #{path}"
+      end
+
+      # You can pass back a File to rack and it will stream from it and close it
+      # when its done.
+      @response_body = File.open(path, 'rb')
+    end
+
     def respond
       unless @response_status
         # render was not called, show an error
