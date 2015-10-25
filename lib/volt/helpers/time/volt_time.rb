@@ -89,7 +89,11 @@ class VoltTime
   end
   
   def + (other)
-    VoltTime.from_time(@time + other)
+    if other.is_a?(Volt::Duration)
+      other.sum(1, self)
+    else
+      VoltTime.from_time(@time + other)
+    end
   end
   
   def - (other)
@@ -97,6 +101,8 @@ class VoltTime
       @time - other.getutc
     elsif other.is_a?(::Time)
       @time - other
+    elsif other.is_a?(Volt::Duration)
+      other.sum(-1, self)
     else 
       VoltTime.from_time(@time - other)
     end

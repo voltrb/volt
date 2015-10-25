@@ -48,6 +48,10 @@ describe VoltTime do
     it "returns the time plus a second" do
       expect(vt0 + 1).to eq(VoltTime.at(1))
     end
+
+    it "returns the time plus a duration" do
+      expect(vt0 + 1.month).to eq(VoltTime.new(:utc, 1970, 2, 1))
+    end
   end
   
   describe "#-" do
@@ -61,6 +65,10 @@ describe VoltTime do
     
     it "returns the seconds between a VoltTime and a Time object" do
       expect(VoltTime.at(100) - vt0).to eq(100)
+    end
+
+    it "returns the time minus the duration" do
+      expect(vt0 - 1.month).to eq(VoltTime.new(:utc, 1969, 12, 1))
     end
   end
   
