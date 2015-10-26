@@ -62,21 +62,6 @@ module Volt
     end
 
     private
-
-
-      def to_sentence(array)
-        case array.length
-          when 0
-            ""
-          when 1
-            array[0]
-          when 2
-            "#{array[0]} and #{array[1]}"
-          else
-            "#{array[0...-1].join(', ')} and #{array[-1]}"
-        end
-      end
-
       # Ensures that the Duration responds like the value to other methods
       def method_missing(method, *args, &block)
         value.send(method, *args, &block)
