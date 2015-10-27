@@ -12,7 +12,7 @@
         <td>{{ idx+1 }}.</td>
         <td><input type="checkbox" checked="{{ todo._completed }}"></td>
         <td class="name {{ if todo._completed }}complete{{ end }}">{{todo._name}}</td>
-        <td>{{ todo._created_at.local_asctime }}</td>
+        <td>{{ todo._created_at.time_distance_in_words }}</td>
         <td><button e-click="remove_todo(todo)">X</button></td>
       </tr>
     {{ end }}

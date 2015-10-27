@@ -48,8 +48,8 @@ module Volt
     end
 
     attr_reader :component_paths, :router, :live_query_pool,
-                :channel_live_queries, :app_path, :database, :message_bus,
-                :middleware, :browser
+      :channel_live_queries, :app_path, :database, :message_bus,
+      :middleware, :browser
     attr_accessor :sprockets, :opal_files
 
     def initialize(app_path=nil)
@@ -148,6 +148,10 @@ module Volt
     # Setup a Page instance.
     def setup_browser
       @browser = Browser.new(self)
+    end
+
+    def inspect
+      "#<#{self.class.to_s}:#{object_id}>"
     end
   end
 end

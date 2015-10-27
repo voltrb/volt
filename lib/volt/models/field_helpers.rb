@@ -27,7 +27,6 @@ module Volt
       Fixnum        => lambda {|val| NUMERIC_CAST[:Integer, val] },
       Numeric       => lambda {|val| NUMERIC_CAST[:Float, val] },
       Float         => lambda {|val| NUMERIC_CAST[:Float, val] },
-      Time          => nil,
       TrueClass     => nil,
       FalseClass    => nil,
       NilClass      => nil,
