@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'volt/helpers/time'
 
 describe Volt::EJSON, '.parse' do
   subject { Volt::EJSON }
@@ -15,7 +16,7 @@ describe Volt::EJSON, '.parse' do
     it 'only escapes one level down' do
       parsed = subject.parse %({"$escape": {"$date": {"$date": #{epoch}}}})
 
-      expect(parsed).to eq('$date' => Time.at(ruby_epoch))
+      expect(parsed).to eq('$date' => VoltTime.at(ruby_epoch))
     end
   end
 
@@ -29,13 +30,13 @@ describe Volt::EJSON, '.parse' do
       it 'parses proper $date EJSON fields' do
         parsed = subject.parse '{"a" : {"$date": 135820576553}}'
 
-        expect(parsed['a']).to eq Time.at(ruby_epoch)
+        expect(parsed['a']).to eq VoltTime.at(ruby_epoch)
       end
 
       it 'parses nested EJSON date fields' do
         parsed = subject.parse '{"a" : {"b" : {"$date": 135820576553}}}'
 
-        expect(parsed['a']['b']).to eq Time.at(ruby_epoch)
+        expect(parsed['a']['b']).to eq VoltTime.at(ruby_epoch)
       end
 
       it 'parses nested $dates within $escapes' do
@@ -43,7 +44,7 @@ describe Volt::EJSON, '.parse' do
           '{"a" : {"$escape": {"$date" : {"date" : {"$date": 135820576553}}}}}'
         )
 
-        expect(parsed['a']['$date']['date']).to eq Time.at(ruby_epoch)
+        expect(parsed['a']['$date']['date']).to eq VoltTime.at(ruby_epoch)
       end
 
       it 'parses multiple EJSON date fields' do
@@ -52,8 +53,8 @@ describe Volt::EJSON, '.parse' do
         end
 
         expect(subject.parse ejson).to eq(
-          "when" => Time.at(ruby_epoch),
-          "then" => Time.at(ruby_epoch)
+          "when" => VoltTime.at(ruby_epoch),
+          "then" => VoltTime.at(ruby_epoch)
         )
       end
     end
@@ -63,7 +64,7 @@ end
 describe Volt::EJSON, '.stringify' do
   subject { Volt::EJSON }
   context 'marshaling dates' do
-    let(:now) { Time.now }
+    let(:now) { VoltTime.now }
     let(:now_js_epoch) { now.to_i * 1_000 }
 
     it 'does nothing with regular hashes' do

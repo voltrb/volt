@@ -35,6 +35,10 @@ module Volt
       require 'selenium-webdriver'
       require 'volt/server'
 
+
+      # Setup server, use existing booted app
+      Capybara.app = Server.new(app_path, volt_app).app
+
       case RUNNING_SERVER
       when 'thin'
         Capybara.server do |app, port|
@@ -48,9 +52,6 @@ module Volt
           end.run.join
         end
       end
-
-      # Setup server, use existing booted app
-      Capybara.app = Server.new(app_path, volt_app).app
     end
   end
 end

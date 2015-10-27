@@ -6,6 +6,7 @@ require 'volt/utils/modes'
 require 'volt/utils/volt_user_error'
 require 'volt/utils/boolean_patch'
 require 'volt/utils/time_patch'
+require 'volt/utils/time_opal_patch' if RUBY_PLATFORM == 'opal'
 
 require 'volt/config'
 require 'volt/data_stores/data_store' unless RUBY_PLATFORM == 'opal'

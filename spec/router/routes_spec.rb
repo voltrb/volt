@@ -63,18 +63,22 @@ describe Volt::Routes do
     end
 
     param_matches = @routes.instance_variable_get(:@param_matches)
-    expect(param_matches[:client].map { |v| v[0] }).to eq([
-      { view: 'blog' },
-      { view: 'blog/show', id: nil },
-      { view: 'blog/edit', id: nil },
-      { view: 'blog/tag', tag: nil },
-      { view: 'login', action: 'user', name: nil, id: nil }
-    ])
+    expect(param_matches[:client].map { |v| v[0] }).to eq(
+      [
+        { view: 'blog' },
+        { view: 'blog/show', id: nil },
+        { view: 'blog/edit', id: nil },
+        { view: 'blog/tag', tag: nil },
+        { view: 'login', action: 'user', name: nil, id: nil }
+      ]
+    )
 
-    expect(param_matches[:get].map { |v| v[0] }).to eq([
-      { controller: 'articles', action: 'index' },
-      { controller: 'articles', action: 'show', id: nil }
-    ])
+    expect(param_matches[:get].map { |v| v[0] }).to eq(
+      [
+        { controller: 'articles', action: 'index' },
+        { controller: 'articles', action: 'show', id: nil }
+      ]
+    )
   end
 
   it 'should match routes' do
@@ -157,12 +161,15 @@ describe Volt::Routes do
 
     params = @routes.url_to_params(:get, '/wide_match/some/image/path/file.png')
     expect(params).to eq({controller: "wide_match", action: "show", path_parts: "some/image/path/file.png"})
+
+    params = @routes.url_to_params(:get, '/wide_match/http://something/cool.jpg')
+    expect(params).to eq({controller: "wide_match", action: "show", path_parts: "http://something/cool.jpg"})
   end
 
   it 'should raise an error if the splat match isn\'t at the end of the url' do
     expect do
       routes do
-      client '/blog/{{ *slug }}/after', view: 'blog'
+        client '/blog/{{ *slug }}/after', view: 'blog'
       end
     end.to raise_error('The splat (*) operator can only be used at the end of a url')
   end

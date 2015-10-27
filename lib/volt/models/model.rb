@@ -328,6 +328,9 @@ module Volt
     def inspect
       Computation.run_without_tracking do
         str = "#<#{self.class}"
+
+
+        str += ":(buffer)" if buffer?
         # str += ":#{object_id}"
 
         # First, select all of the non-ArrayModel values

@@ -1,5 +1,12 @@
 require 'json'
 
+# We auto require time on the server, so we can decode VoltTime's in the parent
+# process on the ForkingServer.  (Since no user code is booted in the forking
+# server).  On the client the user has to require it if they want to use it.
+unless RUBY_PLATFORM == 'opal'
+  require 'volt/helpers/time'
+end
+
 module Volt
   class EJSON
     class NonEjsonType < Exception ; end
@@ -24,9 +31,15 @@ module Volt
           return escape.map do |key, value|
             [key, decode(value)]
           end.to_h
-        elsif obj.size == 1 && (time = obj['$date'])
-          if time.is_a?(Fixnum)
-            return Time.at(time / 1000.0)
+        elsif obj.size == 1
+          if (time = obj['$date'])
+            if defined?(VoltTime)
+            	if time.is_a?(Numeric)
+	              return VoltTime.at(time / 1000.0)
+            	end
+            else
+              raise "VoltTime is not defined, be sure to require 'volt/helpers/time'."
+            end
           end
         end
 
@@ -44,15 +57,15 @@ module Volt
       elsif Hash === obj
         obj.map do |key, value|
           if key == '$date'
+            value = {key => encode(value)}
             key = '$escape'
-            value = {'$date' => encode(value)}
           else
             value = encode(value)
           end
 
           [key, value]
         end.to_h
-      elsif Time === obj
+      elsif (defined?(VoltTime) && VoltTime === obj)
         {'$date' => obj.to_i * 1_000}
       elsif OTHER_VALID_CLASSES.any? {|klass| obj.is_a?(klass) }
         obj

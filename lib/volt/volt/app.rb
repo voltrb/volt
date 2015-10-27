@@ -149,7 +149,7 @@ module Volt
     end
 
     def inspect
-      "#<Volt::App #{object_id}>"
+      "#<#{self.class.to_s}:#{object_id}>"
     end
   end
 end

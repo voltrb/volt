@@ -1,9 +1,11 @@
+require 'volt/helpers/time'
+
 module Main
   class TodosController < Volt::ModelController
     model :store
 
     def add_todo
-      todos << { name: page._new_todo }
+      _todos.create({ name: page._new_todo, created_at: VoltTime.new })
       page._new_todo = ''
     end
 

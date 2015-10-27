@@ -27,7 +27,7 @@ describe 'field helpers' do
   it 'should raise an error when an invalid cast type is provided' do
     expect do
       ExampleModelWithField2.field :awesome, Range
-    end.to raise_error(FieldHelpers::InvalidFieldClass)
+    end.to raise_error(Volt::FieldHelpers::InvalidFieldClass)
   end
 
   it 'should convert numeric strings to Fixnum when Fixnum is specified as a type restriction' do

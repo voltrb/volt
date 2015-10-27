@@ -4,6 +4,7 @@ describe 'todos app', type: :feature, sauce: true do
   ENTER_KEY = ENV["BROWSER"] == 'phantom' ? :Enter : :return
   it 'should add a todo and remove it' do
     visit '/todos'
+    store._todos
 
     fill_in 'newtodo', with: 'Todo 1'
     find('#newtodo').native.send_keys(ENTER_KEY)
@@ -27,6 +28,7 @@ describe 'todos app', type: :feature, sauce: true do
 
   it 'should update a todo check state and persist' do
     visit '/todos'
+    store._todos
 
     fill_in 'newtodo', with: 'Todo 1'
     find('#newtodo').native.send_keys(ENTER_KEY)
