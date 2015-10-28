@@ -50,7 +50,7 @@ module Volt
         end
       end.fail do |err|
         # TODO: need to make it so we can re-raise out of this promise
-        msg = "Error adding listener: #{err.inspect}"
+        msg = "Database Query Error: #{err.inspect}"
         msg += "\n#{err.backtrace.join("\n")}" if err.respond_to?(:backtrace)
         Volt.logger.error(msg)
 
