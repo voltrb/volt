@@ -22,3 +22,8 @@ else
   require(gem_dir + '/stdlib/promise')
 end
 require 'volt/utils/promise_extensions'
+
+
+unless RUBY_PLATFORM == 'opal'
+  require 'volt/models/migrations/migration_runner'
+end
