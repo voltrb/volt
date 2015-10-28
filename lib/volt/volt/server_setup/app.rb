@@ -142,7 +142,12 @@ module Volt
           # updating each other.
           unless Volt.env.test?
             # Start the message bus
-            bus_name = Volt.config.message_bus.try(:bus_name) || 'peer_to_peer'
+            bus_name = if ((bus = Volt.config.message_bus) && name = bus.bus_name)
+              name
+            else
+              'peer_to_peer'
+            end
+
             begin
               message_bus_class = MessageBus.const_get(bus_name.camelize)
             rescue NameError => e

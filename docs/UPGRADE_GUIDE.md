@@ -1,3 +1,9 @@
+# 0.9.5 to 0.9.7
+
+- 0.9.7 adds the awesome VoltTime class.
+    To make this work, some stuff had to change in volt-mongo, upgrade volt-mongo to at least 0.2.0.  Also, switch any instances of Time to VoltTime.
+-
+
 # 0.9.4 to 0.9.5
 
 CSS url's now should be referenced either 1) as relative paths from the css file, or 2) using the full path from inside of app (eg: main/assets/images/background.jpg)

@@ -178,12 +178,12 @@ module Volt
 
     # Return the first item in the collection, or create one if one does not
     # exist yet.
-    def first_or_create
+    def first_or_create(attrs={})
       first.then do |item|
         if item
           item
         else
-          create
+          create(attrs)
         end
       end
     end
