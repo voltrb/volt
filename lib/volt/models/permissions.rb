@@ -65,34 +65,26 @@ module Volt
       end
 
       def allow(*fields)
-        if @__allow_fields
-          if @__allow_fields != true
-            if fields.size == 0
-              # No field's were passed, this means we deny all
-              @__allow_fields = true
-            else
-              # Fields were specified, add them to the list
-              @__allow_fields += fields.map(&:to_sym)
-            end
-          end
-        else
-          fail 'allow should be called inside of a permissions block'
-        end
+        rule :allow, *fields
       end
 
       def deny(*fields)
-        if @__deny_fields
-          if @__deny_fields != true
+        rule :deny, *fields
+      end
+
+      def rule(type, *fields)
+        if @__permission_fields[type]
+          if @__permission_fields[type] != true
             if fields.size == 0
-              # No field's were passed, this means we deny all
-              @__deny_fields = true
+              # No fields were passed, this means we [allow|deny] all
+              @__permission_fields[type] = true
             else
               # Fields were specified, add them to the list
-              @__deny_fields += fields.map(&:to_sym)
+              @__permission_fields[type] += fields.map(&:to_sym)
             end
           end
         else
-          fail 'deny should be called inside of a permissions block'
+          fail "#{type.to_s} should be called inside of a permissions block"
         end
       end
 
@@ -119,7 +111,7 @@ module Volt
         # TODO: this does some unnecessary work
         compute_allow_and_deny(action_name).then do
 
-          deny = @__deny_fields == true || (@__deny_fields && @__deny_fields.size > 0)
+          deny = @__permission_fields[:deny] == true || (@__permission_fields[:deny] && @__permission_fields[:deny].size > 0)
 
           clear_allow_and_deny
 
@@ -131,7 +123,7 @@ module Volt
       def allow_and_deny_fields(action_name)
         compute_allow_and_deny(action_name).then do
 
-          result = [@__allow_fields, @__deny_fields]
+          result = [@__permission_fields[:allow], @__permission_fields[:deny]]
 
           clear_allow_and_deny
 
@@ -192,25 +184,25 @@ module Volt
 
           errors = {}
 
-          if @__allow_fields == true
+          if @__permission_fields[:allow] == true
             # Allow all fields
-          elsif @__allow_fields && @__allow_fields.size > 0
+          elsif @__permission_fields[:allow] && @__permission_fields[:allow].size > 0
             # Deny all not specified in the allow list
             changed_attributes.keys.each do |field_name|
-              unless @__allow_fields.include?(field_name)
+              unless @__permission_fields[:allow].include?(field_name)
                 add_error_if_changed(errors, field_name)
               end
             end
           end
 
-          if @__deny_fields == true
+          if @__permission_fields[:deny] == true
             # Don't allow any field changes
             changed_attributes.keys.each do |field_name|
               add_error_if_changed(errors, field_name)
             end
-          elsif @__deny_fields
+          elsif @__permission_fields[:deny]
             # Allow all except the denied
-            @__deny_fields.each do |field_name|
+            @__permission_fields[:deny].each do |field_name|
               add_error_if_changed(errors, field_name) if changed?(field_name)
             end
           end
@@ -222,15 +214,16 @@ module Volt
       end
 
       def clear_allow_and_deny
-        @__deny_fields = nil
-        @__allow_fields = nil
+        @__permission_fields[:deny] = nil
+        @__permission_fields[:allow] = nil
       end
 
       # Run through the permission blocks for the action name, acumulate
       # all allow/deny fields.
       def compute_allow_and_deny(action_name)
-        @__deny_fields = []
-        @__allow_fields = []
+        @__permission_fields ||= {}
+        @__permission_fields[:deny] = []
+        @__permission_fields[:allow] = []
 
         # Skip permissions can be run on the server to ignore the permissions
         return if Volt.in_mode?(:skip_permissions)
