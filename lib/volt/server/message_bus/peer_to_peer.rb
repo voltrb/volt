@@ -50,7 +50,6 @@ module Volt
     class PeerToPeer < BaseMessageBus
       # How long without an update before we mark an instance as dead (in seconds)
       DEAD_TIME = 20
-      include Eventable
 
       # Use subscribe instead of on provided in Eventable
       alias_method :subscribe, :on

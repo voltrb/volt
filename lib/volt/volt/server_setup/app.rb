@@ -12,7 +12,7 @@ module Volt
     module App
       # Include Eventable to allow for lifecycle callbacks
       include Eventable
-      
+
       # The root url is where the volt app is mounted
       attr_reader :root_url
       # The app url is where the app folder (and sprockets) is mounted
@@ -125,12 +125,17 @@ module Volt
           # updating each other.
           unless Volt.env.test?
             # Start the message bus
-            bus_name = Volt.config.message_bus.try(:bus_name) || 'peer_to_peer'
+            bus_name = if ((bus = Volt.config.message_bus) && name = bus.bus_name)
+              name
+            else
+              'peer_to_peer'
+            end
+
             begin
               message_bus_class = MessageBus.const_get(bus_name.camelize)
             rescue NameError => e
               raise "message bus name #{bus_name} was not found, be sure its "
-                    + "gem is included in the gemfile."
+              + "gem is included in the gemfile."
             end
 
             @message_bus = message_bus_class.new(self)

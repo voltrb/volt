@@ -5,13 +5,15 @@
 #
 # MessageBus instances inherit from MessageBus::BaseMessageBus and provide
 # two methods 'publish' and 'subscribe'.  They should be inside of
-# Volt::MessageBus.
+# Volt::MessageBus.  Be sure to
+# ```require 'volt/server/message_bus/base_message_bus'```
 #
 # publish should take a channel name and a message and deliver the message to
 # any subscried listeners.
 #
 # subscribe should take a channel name and a block.  It should yield a message
-# to the block if a message is published to the channel.
+# to the block if a message is published to the channel.  It should return an
+# object with a ```remove``` method that will remove the subscription.
 #
 # The implementation details of the pub/sub connection are left to the
 # implemntation.  If the user needs to configure server addresses, Volt.config
@@ -29,9 +31,13 @@
 # NOTE: in the future, we plan to add support for round robbin message receiving
 # and other patterns.
 
+require 'volt/reactive/eventable'
+
 module Volt
   module MessageBus
     class BaseMessageBus
+      include Eventable
+
       # MessagesBus's should take an instance of a Volt::App
       def initialize(volt_app)
         raise "Not implemented"
