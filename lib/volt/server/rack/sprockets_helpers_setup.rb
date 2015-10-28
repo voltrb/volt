@@ -1,3 +1,4 @@
+require 'sprockets'
 require 'sprockets-helpers'
 
 module Volt

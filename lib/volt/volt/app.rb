@@ -75,6 +75,12 @@ module Volt
         # middleware.
         run_config
 
+        # abort_on_exception is a useful debugging tool, and in my opinion something
+        # you probbaly want on.  That said you can disable it if you need.
+        unless RUBY_PLATFORM == 'opal'
+          Thread.abort_on_exception = Volt.config.abort_on_exception
+        end
+
         # Setup all of the middleware we can before we load the users components
         # since the users components might want to add middleware during boot.
         setup_preboot_middleware
@@ -85,13 +91,9 @@ module Volt
         # Require in app and initializers
         run_app_and_initializers unless RUBY_PLATFORM == 'opal'
 
-        require_components
+        reset_query_pool!
 
-        # abort_on_exception is a useful debugging tool, and in my opinion something
-        # you probbaly want on.  That said you can disable it if you need.
-        unless RUBY_PLATFORM == 'opal'
-          Thread.abort_on_exception = Volt.config.abort_on_exception
-        end
+        require_components
 
         load_app_code
 
@@ -101,8 +103,6 @@ module Volt
         if Dir.exists?(Volt.root + '/app/main')
           AssetFiles.from_cache(app_url, 'main', component_paths)
         end
-
-        reset_query_pool!
 
         # Setup the middleware that we can only setup after all components boot.
         setup_postboot_middleware

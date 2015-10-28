@@ -4,6 +4,7 @@ unless RUBY_PLATFORM == 'opal'
   require 'volt/server/middleware/middleware_stack'
   require 'volt/server/middleware/default_middleware_stack'
   require 'volt/volt/core'
+  require 'volt/volt/properties'
 
 end
 
@@ -57,6 +58,10 @@ module Volt
           end
         end
 
+      end
+
+      def properties
+        @properties ||= Properties.new
       end
 
       def setup_preboot_middleware

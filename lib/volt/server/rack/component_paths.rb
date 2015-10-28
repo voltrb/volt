@@ -12,13 +12,16 @@ module Volt
       # Find all app folders
       @app_folders ||= begin
         volt_app    = File.expand_path(File.join(File.dirname(__FILE__), '../../../../app'))
-        app_folders = [volt_app, "#{@root}/app", "#{@root}/vendor/app"].map { |f| File.expand_path(f) }
 
         # Gem folders with volt in them
         # TODO: we should probably qualify this a bit more
-        app_folders += Gem.loaded_specs.values
-                       .select {|gem| gem.name =~ /^volt/ }
-                       .map {|gem| "#{gem.full_gem_path}/app" }
+        app_folders = [volt_app]
+        app_folders += Gem.loaded_specs.values.
+          select {|gem| gem.name =~ /^volt/ }.
+          sort { |a, b| dependent_sort(a, b) }.
+          map {|gem| "#{gem.full_gem_path}/app" }
+
+        app_folders += ["#{@root}/app", "#{@root}/vendor/app"].map { |f| File.expand_path(f) }
 
         app_folders.uniq
       end
@@ -119,5 +122,24 @@ module Volt
 
       folders.flatten
     end
+
+    private
+
+    # Determine if Gem::Specification b dependes on a
+    def dependent?(a, b)
+      name = a.name
+      b.dependencies.any? {|dep| dep.type == :runtime && dep.name == a.name }
+    end
+
+    def dependent_sort(a, b)
+      if dependent?(a, b)
+        -1
+      elsif dependent?(b, a)
+        1
+      else
+        0
+      end
+    end
+
   end
 end

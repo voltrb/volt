@@ -34,9 +34,9 @@ module Volt
         elsif obj.size == 1
           if (time = obj['$date'])
             if defined?(VoltTime)
-            	if time.is_a?(Numeric)
-	              return VoltTime.at(time / 1000.0)
-            	end
+              if time.is_a?(Numeric)
+                return VoltTime.at(time / 1000.0)
+              end
             else
               raise "VoltTime is not defined, be sure to require 'volt/helpers/time'."
             end

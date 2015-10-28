@@ -9,16 +9,16 @@ module Volt
     # the block the value.  The return value from the block replaces the
     # previous value.
     # NOTE: This does not yield hashes or arrays.
-    def self.transform(data, &block)
+    def self.transform(data, transform_keys=true, &block)
       if data.is_a?(Hash)
         data.map do |key, value|
-          key = transform(key, &block)
-          value = transform(value, &block)
+          key = transform(key, transform_keys, &block) if transform_keys
+          value = transform(value, transform_keys, &block)
           [key, value]
         end.to_h
       elsif data.is_a?(Array)
         data.map do |value|
-          transform(value, &block)
+          transform(value, transform_keys, &block)
         end
       else
         # yield to the trasnformer
