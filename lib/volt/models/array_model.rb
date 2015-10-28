@@ -188,6 +188,22 @@ module Volt
       end
     end
 
+    # Finds a model maching query and calls .update passing in attrs.  If the
+    # model is not found, it creates the model with attrs merged into query.
+    def update_or_create(query, attrs={})
+      where(query).first.then do |item|
+        if item
+          if attrs.size > 0
+            item.update(attrs)
+          else
+            item
+          end
+        else
+          create(query.merge(attrs))
+        end
+      end
+    end
+
     def last
       self[-1]
     end
