@@ -122,7 +122,7 @@ module Volt
 
           # Setup LiveQueryPool for the app
           @query_subscription_pool.clear if @query_subscription_pool
-          @database = Volt::DataStore.fetch
+          @database = Volt::DataStore.fetch(self)
           @live_query_pool = LiveQueryPool.new(@database, self)
           @query_subscription_pool = QuerySubscriptionPool.new(self)
 
@@ -130,10 +130,6 @@ module Volt
           # for each channel.  We store this here instead of on the channel
           # because in ForkingServer, channel is a DrbObject instance.
           @channel_query_subscriptions = {}
-
-          # Try to load the db to make sure its connected.  Also will run
-          # migrations on volt-sql in dev
-          @database.db
         end
       end
 

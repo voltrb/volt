@@ -110,6 +110,10 @@ module Volt
         setup_routes
 
         start_message_bus
+
+        # Try to load the db to make sure its connected.  Also will run
+        # migrations on volt-sql in dev
+        trigger!('boot')
       end
     end
 

@@ -114,9 +114,9 @@ module Volt
       ENV['SERVER'] = 'true'
       move_to_root
 
-      Volt.boot(Dir.pwd)
+      volt_app = Volt.boot(Dir.pwd)
 
-      db = Volt::DataStore.fetch
+      db = Volt::DataStore.fetch(volt_app)
       drop = db.drop_collection(collection)
 
       say("Collection #{collection} could not be dropped", :red) if drop == false

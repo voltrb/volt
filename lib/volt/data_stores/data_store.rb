@@ -5,7 +5,8 @@ module Volt
   class DataStore
     @@data_store_mutex = Mutex.new
 
-    def self.fetch
+    # TODO: cache based on volt_app
+    def self.fetch(volt_app)
       @@data_store_mutex.synchronize do
         # Cache the driver
         return @adaptor if @adaptor
@@ -16,7 +17,7 @@ module Volt
         root = Volt::DataStore
         if root.const_defined?(adaptor_name)
           adaptor_name = root.const_get(adaptor_name)
-          @adaptor = adaptor_name.new
+          @adaptor = adaptor_name.new(volt_app)
         else
           raise "#{database_name} is not a supported database (as configured by Volt.config.db_driver), you might be missing a volt-#{database_name} gem"
         end

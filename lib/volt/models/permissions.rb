@@ -14,7 +14,7 @@ module Volt
             belongs_to key.to_s.gsub(pattern, '')
           else
             raise "You tried to auto associate a model using #{key}, but #{key} "\
-                  "does not end in `_id`"
+              "does not end in `_id`"
           end          # When the model is created, assign it the user_id (if the user is logged in)
           on(:new) do
             # Only assign the user_id if there isn't already one and the user is logged in.

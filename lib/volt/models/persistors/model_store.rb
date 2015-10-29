@@ -159,7 +159,7 @@ module Volt
 
       if RUBY_PLATFORM != 'opal'
         def db
-          @@db ||= Volt::DataStore.fetch
+          @@db ||= Volt::DataStore.fetch(Volt.current_app)
         end
 
         # Do the actual writing of data to the database, only runs on the backend.

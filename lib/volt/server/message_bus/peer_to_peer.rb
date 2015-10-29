@@ -60,7 +60,7 @@ module Volt
       def initialize(volt_app)
         @volt_app = volt_app
 
-        if Volt::DataStore.fetch.connected?
+        if Volt::DataStore.fetch(volt_app).connected?
           # Generate a guid
           @server_id = SecureRandom.uuid
           # The PeerConnection's to peers

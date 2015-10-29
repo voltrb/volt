@@ -2,7 +2,7 @@ require 'volt/models'
 
 class StoreTasks < Volt::Task
   def db
-    @@db ||= Volt::DataStore.fetch
+    @@db ||= Volt::DataStore.fetch(Volt.current_app)
   end
 
   def load_model(collection, path, data)
@@ -66,7 +66,7 @@ class StoreTasks < Volt::Task
 
     query.first.then do |model|
       if model
-        if model.can_delete?
+        if model.can_delete?.sync
           db.delete(collection, 'id' => id)
         else
           fail "Permissions did not allow #{collection} #{id} to be deleted."
