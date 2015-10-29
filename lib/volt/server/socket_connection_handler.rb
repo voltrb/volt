@@ -24,7 +24,9 @@ module Volt
       @@all_channels << self
 
       # Trigger a client connect event
-      @@dispatcher.volt_app.trigger!("client_connect")
+      if @@dispatcher.respond_to?(:volt_app)
+        @@dispatcher.volt_app.trigger!("client_connect")
+      end
 
     end
 
