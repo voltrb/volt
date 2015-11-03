@@ -30,12 +30,12 @@ module Volt
 
     def received_message(name, promise_id, *args)
       case name
-        when 'updated'
-          notify_updated(*args)
-        when 'response'
-          response(promise_id, *args)
-        when 'reload'
-          reload
+      when 'updated'
+        notify_updated(*args)
+      when 'response'
+        response(promise_id, *args)
+      when 'reload'
+        reload
       end
     end
 
@@ -56,6 +56,14 @@ module Volt
           # TODO: full error handling
           Volt.logger.error('Task Response:')
           Volt.logger.error(error)
+
+          if error.is_a?(String)
+            klass, error = error.split(':', 2)
+
+            if (klass = Object.const_get(klass))
+              error = klass.new(error)
+            end
+          end
 
           promise.reject(error)
         else
