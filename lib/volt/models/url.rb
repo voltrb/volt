@@ -9,7 +9,7 @@ module Volt
 
     # TODO: we need to make it so change events only trigger on changes
     reactive_accessor :scheme, :host, :port, :path, :query, :fragment
-    attr_accessor :router
+    attr_accessor :router, :routes_loader
 
     def initialize(router = nil)
       @router = router
@@ -67,8 +67,17 @@ module Volt
     # Full url rebuilds the url from it's constituent parts.
     # The params passed in are used to generate the urls.
     def url_for(params)
-      host_with_port = host
+      host_with_port = host || location.host
       host_with_port += ":#{port}" if port && port != 80
+      scheme = scheme || location.scheme
+
+      unless RUBY_PLATFORM == 'opal'
+        # lazy load routes and views on the server
+        if !@router && @routes_loader
+          # Load the templates
+          @routes_loader.call
+        end
+      end
 
       path, params = @router.params_to_url(params)
 

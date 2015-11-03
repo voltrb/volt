@@ -6,14 +6,15 @@ describe Volt::URL do
 
   let(:fake_location) do
     double(
-      'Location',
+      'Volt::Location',
       host: 'voltframework.com',
-      protocol: 'http:'
+      protocol: 'http:',
+      scheme: 'http'
     )
   end
 
   before do
-    allow(Location).to receive(:new).and_return fake_location
+    allow(Volt::Location).to receive(:new).and_return fake_location
     subject.parse uri
   end
 

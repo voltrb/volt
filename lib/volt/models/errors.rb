@@ -28,5 +28,16 @@ module Volt
 
       str.join(', ')
     end
+
+    # message returns a human readable string for the errors
+    def message
+      str = []
+
+      each_pair do |field, error|
+        str << "#{field} #{error}"
+      end
+
+      str.to_sentence
+    end
   end
 end

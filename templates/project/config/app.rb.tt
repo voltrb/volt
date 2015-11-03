@@ -8,6 +8,7 @@ Volt.configure do |config|
   # Basic App Info (stuff you should set)
   #######################################
   config.domain = '<%= config[:domain] %>.com'
+  config.scheme = Volt.env.production? ? 'https' : 'http' # http or https
   config.app_name = '<%= config[:app_name] %>'
   config.mailer.from = '<%= config[:app_name] %> <no-reply@<%= config[:domain] %>.com>'
 
