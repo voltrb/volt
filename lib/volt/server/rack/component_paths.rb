@@ -80,6 +80,7 @@ module Volt
 
         # Delay the loading of views
         volt_app.templates.template_loader = -> { load_views_and_routes(volt_app) }
+        volt_app.url.routes_loader = -> { load_views_and_routes(volt_app) }
       end
     end
 
@@ -98,6 +99,10 @@ module Volt
         # Evaluate returned code, the ```volt_app``` variable is set for access.
         eval(code)
       end
+
+      # Clear template loader
+      volt_app.templates.template_loader = nil
+      volt_app.url.routes_loader = nil
     end
 
     # Returns all paths for a specific component

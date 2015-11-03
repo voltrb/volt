@@ -15,10 +15,10 @@ module Volt
   class DefaultMiddlewareStack
     # Setup on the middleware we can setup before booting components
     def self.preboot_setup(volt_app, rack_app)
+      rack_app.use Rack::Chunked
       # Should only be used in production
       if Volt.config.deflate
         rack_app.use Rack::Deflater
-        rack_app.use Rack::Chunked
       end
 
       rack_app.use Rack::ContentLength
