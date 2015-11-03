@@ -60,6 +60,13 @@ module Volt
         end
       end
 
+      # Also copy the attribute bindings
+      bindings.each_pair do |name, binding|
+        if name.is_a?(String) && name[0..1] == 'id'
+          new_bindings[name] = binding
+        end
+      end
+
       return new_html.join(''), new_bindings
     end
 

@@ -18,6 +18,11 @@ unless RUBY_PLATFORM == 'opal'
       expect(html).to eq("\n  <h1>Welcome Jimmy</h1>\n\n  <p>Glad you signed up!</p>\n\n")
     end
 
+    it 'should render with an attribute binding' do
+      html = Volt::PathStringRenderer.new(@volt_app, 'main/mailers/reset_password/html', { reset_url: 'http://resetthepassword.com/' }).html
+      expect(html).to eq("\n  Reset your password <a target=\"_new\" id=\"id0\" href=\"http://resetthepassword.com/\">here</a>.\n\n  <a id=\"id1\" href=\"http://resetthepassword.com/\">Reset Password</a>\n\n")
+    end
+
     it 'Raises raises ViewLookupException if full_path is nil' do
       expect do
         Volt::PathStringRenderer.new(@volt_app, '', { name: 'Jimmy' }).html

@@ -10,7 +10,11 @@ module Volt
       @getter         = getter
       @setter         = setter
 
-      setup
+      if RUBY_PLATFORM == 'opal'
+        setup
+      else
+        setup_server
+      end
     end
 
     def setup
@@ -60,6 +64,24 @@ module Volt
         method(:getter_fail)
       )
 
+    end
+
+    unless RUBY_PLATFORM == 'opal'
+      # Does the setup during server side rendering
+      def setup_server
+        val = begin
+          @context.instance_eval(&@getter)
+        rescue => e
+          getter_fail(e)
+          ''
+        end
+
+        node = target.find_by_tag_id(binding_name)
+
+        if node
+          node.attributes[@attribute_name] = val
+        end
+      end
     end
 
     def changed(event = nil)
