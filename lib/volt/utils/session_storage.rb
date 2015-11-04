@@ -1,3 +1,5 @@
+require 'volt/utils/html_storage'
+
 module Volt
   module SessionStorage
     extend HtmlStorage
