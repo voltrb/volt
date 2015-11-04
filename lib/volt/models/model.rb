@@ -13,6 +13,7 @@ require 'volt/models/validators/user_validation'
 require 'volt/models/helpers/dirty'
 require 'volt/models/helpers/listener_tracker'
 require 'volt/models/helpers/change_helpers'
+require 'volt/models/helpers/defaults'
 require 'volt/models/permissions'
 require 'volt/models/associations'
 require 'volt/reactive/class_eventable'
@@ -43,6 +44,7 @@ module Volt
     include FieldHelpers
     include UserValidatorHelpers
     include Models::Helpers::Dirty
+    include Models::Helpers::Defaults
     include ClassEventable
     include Modes
     include Models::Helpers::ListenerTracker
@@ -92,6 +94,8 @@ module Volt
       else
         change_state_to(:loaded_state, initial_state || :loaded, false)
       end
+
+      setup_defaults
 
       # Trigger the new event, pass in :new
       trigger!(:new, :new)

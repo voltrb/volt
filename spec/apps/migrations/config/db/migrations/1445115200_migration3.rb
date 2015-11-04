@@ -1,4 +1,4 @@
-class Migration2 < Volt::Migration
+class Migration3 < Volt::Migration
   def up
   end
 

@@ -56,6 +56,7 @@ module Volt
           @__store_accessed = true
           volt_app.store
         end
+        let(:cleanup_db) { @__store_accessed = true }
         let(:volt_app) { volt_app }
         let(:params) { volt_app.params }
 

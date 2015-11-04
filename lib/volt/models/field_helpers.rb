@@ -67,6 +67,11 @@ module Volt
         # Normalize default
         options.delete(:default) if options[:default] == nil
 
+        # Store the field defaults
+        if (default_val = options[:default])
+          self.defaults[name] = default_val
+        end
+
         self.fields[name] = [klasses, options]
 
         if klasses
@@ -118,6 +123,9 @@ module Volt
 
       base.class_attribute :indexes
       base.indexes = {}
+
+      base.class_attribute :defaults
+      base.defaults = {}
 
       base.send :extend, ClassMethods
     end
