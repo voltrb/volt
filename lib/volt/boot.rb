@@ -2,6 +2,7 @@ unless RUBY_PLATFORM == 'opal'
   # An option to skip requiring.
   unless ENV['SKIP_BUNDLER_REQUIRE']
     # Require in gems
+    require 'bundler'
     Bundler.require(:default, (ENV['VOLT_ENV'] || ENV['RACK_ENV'] || :development).to_sym)
   end
 end

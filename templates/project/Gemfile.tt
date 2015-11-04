@@ -3,7 +3,18 @@ source 'https://rubygems.org'
 gem 'volt', '<%= config[:version] %>'
 
 # volt uses mongo as the default data store.
-gem 'volt-mongo', '~> 0.2.0'
+gem 'volt-sql', '~> 0.0.1'
+
+# Choose the database drivers
+# sqlite (default, mostly for dev)
+gem 'sqlite3'
+
+# Postgres
+# gem 'pg', '~> 0.18.2'
+# gem 'pg_json', '~> 0.1.29'
+
+# Mysql
+# gem 'mysql2'
 
 # The following gem's are optional for themeing
 # Twitter bootstrap
@@ -13,7 +24,7 @@ gem 'volt-bootstrap', '~> 0.1.0'
 gem 'volt-bootstrap_jumbotron_theme', '~> 0.1.0'
 
 # User templates for login, signup, and logout menu.
-gem 'volt-user_templates', '~> 0.4.0'
+gem 'volt-user_templates', '~> 0.5.1'
 
 # Add ability to send e-mail from apps.
 gem 'volt-mailer', '~> 0.1.1'

@@ -9,7 +9,11 @@ require 'volt/cli/destroy'
 require 'volt/cli/migrate'
 require 'volt/version'
 require 'volt/cli/bundle'
-require 'volt/boot'
+
+# new doesn't run inside of a Gemfile, so don't boot the volt app
+unless ARGV[0] == 'new'
+  require 'volt/boot'
+end
 
 module Volt
   class CLI < Thor
@@ -23,6 +27,7 @@ module Volt
     desc 'new PROJECT_NAME', 'generates a new project.'
 
     def new(name)
+      ENV['SKIP_BUNDLER_REQUIRE'] = 'true'
       new_project(name)
 
       say ""

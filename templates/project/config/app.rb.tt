@@ -40,10 +40,20 @@ Volt.configure do |config|
   # Database config all start with db_ and can be set either in the config
   # file or with an environment variable (DB_NAME for example).
 
-  # config.db_driver = 'mongo'
-  # config.db_name = (config.app_name + '_' + Volt.env.to_s)
-  # config.db_host = 'localhost'
-  # config.db_port = 27017
+  config.db_driver = 'sqlite' # or 'postgres' or 'mysql'
+  config.db.database = (config.app_name + '_' + Volt.env.to_s)
+
+  # for postgres or mysql configuration, see the sequel options here:
+  # http://sequel.jeremyevans.net/rdoc/files/doc/opening_databases_rdoc.html#label-General+connection+options
+  # Any options set on config.db will be passed to Sequel on connect.
+  # Example (with uri):
+  #
+  # config.db.uri = 'postgres://ryanstout:@localhost:5432/blog_demo10'
+  #
+  # Example (with options)
+  # config.db.host = 'mydatabase.com/'
+  # config.db.user = 'my user'
+  # config.db.password = 'some password'
 
   #####################
   # Compression options
