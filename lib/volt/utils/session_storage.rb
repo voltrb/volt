@@ -1,6 +1,6 @@
 module Volt
   module SessionStorage
-    include HtmlStorage
+    extend HtmlStorage
 
     if RUBY_PLATFORM == 'opal'
       def self.area
