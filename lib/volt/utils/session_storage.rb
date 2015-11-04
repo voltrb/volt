@@ -3,7 +3,7 @@ module Volt
     include HtmlStorage
 
     def self.area
-      `localStorage`
+      `sessionStorage`
     end
   end
 end
