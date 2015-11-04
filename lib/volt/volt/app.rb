@@ -114,6 +114,8 @@ module Volt
         trigger!('boot')
 
         start_message_bus
+
+        trigger!('post_boot')
       end
     end
 

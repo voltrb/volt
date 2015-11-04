@@ -1,15 +1,15 @@
 # The migration runner runs the migrations and tracks the versions that have
 # been run.
-require 'volt/models/migrations/migration_version'
 require 'volt/models/migrations/migration'
 
 module Volt
   class DuplicateMigrationTimestamp < RuntimeError ; end
 
   class MigrationRunner
-    # The args are passed to the Volt::Migration
+    # The args are passed to each Volt::Migration, (typically just the @db)
     def initialize(*args)
       @args = args
+      ensure_migration_versions_table
     end
 
     # Runs all migrations up
@@ -19,7 +19,7 @@ module Volt
       disk_versions = disk_version_paths.map {|v| v[0] }
 
       # Get the db versions
-      ran_versions = self.ran_versions
+      ran_versions = self.all_versions
 
       if direction == :up
         # Run all that are on disk, but haven't been run (from the db)
@@ -78,10 +78,6 @@ module Volt
       migration_versions.all.sync.map {|v| v.version }
     end
 
-    def migration_versions
-      Volt.current_app.store.migration_versions
-    end
-
     def run_migration(path, direction=:up)
       Volt.logger.info("Run #{direction} migration #{File.basename(path)}")
       version = version_for_path(path)
@@ -117,11 +113,34 @@ module Volt
 
       if direction == :up
         # Track that it ran
-        migration_versions.create(version: version)
+        add_version(version)
       else
         # Remove that it ran
-        migration_versions.where(version: version).first.sync.destroy
+        remove_version(version)
       end
+    end
+
+    # Implement the following in your data provider to allow migrations.  We
+    # can't use Volt::Model until after the reconcile step has happened, so
+    # these methods need to work directly with the database.
+    def ensure_migration_versions_table
+      raise "not implemented"
+    end
+
+    def add_version(version)
+      raise "not implemented"
+    end
+
+    def has_version?(version)
+      raise "not implemented"
+    end
+
+    def remove_version(version)
+      raise "not implemented"
+    end
+
+    def all_versions
+      raise "not implemented"
     end
   end
 end

@@ -70,6 +70,14 @@ module Volt
       listener
     end
 
+    # Same as on, but automatically removes itself after the call
+    def once(*events, &callback)
+      list = on(*events) do |*args, &block|
+        callback.call(*args, &block)
+        list.remove
+      end
+    end
+
     # Triggers event on the class the module was includeded.  Any .on listeners
     # will have their block called passing in *args.
     def trigger!(event, *args)
