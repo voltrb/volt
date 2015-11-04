@@ -9,24 +9,24 @@ if RUBY_PLATFORM == 'opal'
 
       def self.[](key)
         `
-          var val = {{store}}.getItem(key);
+          var val = #{area}.getItem(key);
           return val === null ? nil : val;
         `
       end
 
       def self.[]=(key, value)
-        `{{store}}.setItem(key, value)`
+        `#{area}.setItem(key, value)`
       end
 
       def self.clear
-        `{{store}}.clear()`
+        `#{area}.clear()`
         self
       end
 
       def self.delete(key)
         `
-          var val = {{store}}.getItem(key);
-          {{store}}.removeItem(key);
+          var val = #{area}.getItem(key);
+          #{area}.removeItem(key);
           return val === null ? nil : val;
         `
       end
