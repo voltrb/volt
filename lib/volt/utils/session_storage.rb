@@ -1,7 +1,7 @@
 require 'volt/utils/html_storage'
 
 module Volt
-  module SessionStorage
+  class SessionStorage
     extend HtmlStorage
 
     if RUBY_PLATFORM == 'opal'

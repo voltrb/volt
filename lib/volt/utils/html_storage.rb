@@ -1,6 +1,6 @@
 if RUBY_PLATFORM == 'opal'
   module Volt
-    module HtmlStorage
+    class HtmlStorage
 
       # Implement in SessionStorage and LocalStorage
       def self.area
@@ -34,7 +34,7 @@ if RUBY_PLATFORM == 'opal'
   end
 else
   module Volt
-    module HtmlStorage
+    class HtmlStorage
       @@store = {}
 
       def self.[](key)

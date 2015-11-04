@@ -1,7 +1,7 @@
 require 'volt/utils/html_storage'
 
 module Volt
-  module LocalStorage
+  class LocalStorage
     extend HtmlStorage
 
     if RUBY_PLATFORM == 'opal'
