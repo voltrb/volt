@@ -32,6 +32,13 @@ module Volt
       end
     end
 
+    def session_store
+      @session_store ||= begin
+        check_for_client?('session_store')
+        SessionStoreRoot.new({}, persistor: Persistors::SessionStore)
+      end
+    end
+
     def cookies
       @cookies ||= begin
         check_for_client?('cookies')

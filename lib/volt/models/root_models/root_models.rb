@@ -11,7 +11,7 @@ class BaseRootModel < Volt::Model
 end
 
 
-ROOT_MODEL_NAMES = [:Store, :Page, :Params, :Cookies, :LocalStore, :Flash]
+ROOT_MODEL_NAMES = [:Store, :Page, :Params, :Cookies, :LocalStore, :SessionStore, :Flash]
 
 ROOT_MODEL_NAMES.each do |base_name|
   Object.const_set("#{base_name}Root", Class.new(BaseRootModel))

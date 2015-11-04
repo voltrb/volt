@@ -2,8 +2,9 @@ if RUBY_PLATFORM == 'opal'
   module Volt
     module HtmlStorage
 
+      # Implement in SessionStorage and LocalStorage
       def self.area
-        nil # implement in SessionStorage and LocalStorage
+        raise 'should be implemented in SessionStorage or LocalStorage'
       end
 
       def self.[](key)

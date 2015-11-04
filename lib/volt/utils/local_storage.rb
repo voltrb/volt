@@ -1,5 +1,5 @@
 module Volt
-  module SessionStorage
+  module LocalStorage
     include HtmlStorage
 
     if RUBY_PLATFORM == 'opal'

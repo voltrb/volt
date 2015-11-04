@@ -1,13 +1,13 @@
 require 'volt/models/persistors/html_store'
-require 'volt/utils/local_storage'
+require 'volt/utils/session_storage'
 
 module Volt
   module Persistors
     # Backs a collection in the local store
-    class LocalStore < HtmlStore
+    class SessionStore < HtmlStore
 
       def self.storage
-        LocalStorage
+        SessionStorage
       end
 
     end
