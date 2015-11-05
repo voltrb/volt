@@ -21,6 +21,7 @@ By doing the above, anything after /info/ will be matched and placed into the re
 ### Changed
 - fixed the issue with serving precompiled assets in production. It also fixes the issue where sometimes non-root urls wouldn't load correctly.
 - fixed issue with some routes not matching
+- fixed issue with attribute bindings in mailer templates
 
 
 
