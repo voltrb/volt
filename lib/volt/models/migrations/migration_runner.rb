@@ -13,7 +13,7 @@ module Volt
     end
 
     # Runs all migrations up
-    def run(direction=:up, util_version=nil)
+    def run(direction=:up, until_version=nil)
       # Get the disk versions
       disk_version_paths = self.disk_versions
       disk_versions = disk_version_paths.map {|v| v[0] }
@@ -25,19 +25,19 @@ module Volt
         # Run all that are on disk, but haven't been run (from the db)
         need_to_run_versions = disk_versions - ran_versions
 
-        if util_version
-          # remove any versions > the util_version, since the user is saying run
+        if until_version
+          # remove any versions > the until_version, since the user is saying run
           # "up" migrations until we hit version X
-          need_to_run_versions.reject! {|version| version > util_version }
+          need_to_run_versions.reject! {|version| version > until_version }
         end
       else
         # Run down on all versions that are in the db.  If the file doesn't exist
         need_to_run_versions = ran_versions
 
-        if util_version
-          # remove any versions < the util_version, since the user is saying run
+        if until_version
+          # remove any versions < the until_version, since the user is saying run
           # "up" migrations until we hit version X
-          need_to_run_versions.reject! {|version| version < util_version }
+          need_to_run_versions.reject! {|version| version < until_version }
         end
       end
 
