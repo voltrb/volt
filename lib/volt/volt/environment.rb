@@ -1,5 +1,6 @@
 module Volt
   class Environment
+    attr_writer :env
     def initialize
       # Use VOLT_ENV or RACK_ENV to set the environment
       @env = ENV['VOLT_ENV'] || ENV['RACK_ENV']

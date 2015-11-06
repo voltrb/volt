@@ -18,7 +18,8 @@ if RUBY_PLATFORM == 'opal'
       attr_reader :config
 
       # Called on page load to pass the backend config to the client
-      def setup_client_config(config_hash)
+      def setup_client_config(env, config_hash)
+        self.env.env = env
         # Only Volt.config.public is passed from the server (for security reasons)
         @config = wrap_config(public: config_hash)
       end

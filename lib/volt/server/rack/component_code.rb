@@ -31,7 +31,7 @@ module Volt
 
     def generate_config_code
       # Setup Volt.config on the client
-      "\nVolt.setup_client_config(#{Volt.config.public.to_h.inspect})\n"
+      "\nVolt.setup_client_config(#{Volt.env.to_s.inspect}, #{Volt.config.public.to_h.inspect})\n"
     end
   end
 end
