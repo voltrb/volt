@@ -29,6 +29,12 @@ gem 'volt-user_templates', '~> 0.5.1'
 # Add ability to send e-mail from apps.
 gem 'volt-mailer', '~> 0.1.1'
 
+group :development do
+  # browser_irb is optional, gives you an irb like terminal on the client
+  # (hit ESC) to activate.
+  gem 'volt-browser_irb'
+end
+
 # Use rbnacl for message bus encrpytion
 # (optional, if you don't need encryption, disable in app.rb and remove)
 #
