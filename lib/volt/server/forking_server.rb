@@ -258,7 +258,7 @@ module Volt
     def start_change_listener
       sync_mod_time
 
-      options = {ignore: /\/tmp/}
+      options = {}
       if ENV['POLL_FS']
         options[:force_polling] = true
       end
