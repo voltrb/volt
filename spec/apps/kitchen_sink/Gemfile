@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 gem 'volt', path: '../../../'
 
 # volt uses mongo as the default data store.
-gem 'volt-sql', path: '/Users/ryanstout/Sites/volt/apps/volt-sql'
+gem 'volt-sql'
 gem 'sqlite3'
 gem 'pg', '~> 0.18.2'
 gem 'pg_json', '~> 0.1.29'
