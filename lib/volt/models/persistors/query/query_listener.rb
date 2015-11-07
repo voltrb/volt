@@ -151,7 +151,6 @@ module Volt
     end
 
     def changed(model_id, data)
-      puts "CH: #{model_id.inspect} - #{data.inspect}"
       $loading_models = true
       Persistors::ModelStore.changed(model_id, data)
       $loading_models = false
