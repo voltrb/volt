@@ -32,6 +32,10 @@ module Volt
       element = `$(event.target || event.originalEvent.target)`
 
       loop do
+        if `event.isPropagationStopped()`
+          break
+        end
+
         # Lookup the handler, make sure to not assume the group
         # exists.
         # TODO: Sometimes the event doesn't exist, but we still get
