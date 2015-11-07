@@ -49,10 +49,10 @@ class VoltTime
     # Live now acts just like now, except it invalidates any computations the
     # VoltTime object is used in at every interval.  This makes it easy to
     # display live timer's.
-    def live_now(interval=1000)
+    def live_now(seconds=1)
       dep = Volt::Dependency.new
       dep.depend
-      Volt::Timers.client_set_timeout(interval) do
+      Volt::Timers.client_set_timeout(seconds * 1000) do
         dep.changed!
       end
       VoltTime.new

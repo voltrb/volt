@@ -103,8 +103,6 @@ module Volt
 
     # Sets the current model on this controller
     def model=(val)
-      val = val.call if val.is_a?(Proc)
-
       if val.is_a?(Promise)
         # Resolve the promise before setting
         self.last_promise = val
