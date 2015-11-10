@@ -5,4 +5,6 @@
 class VoltAppProperty < Volt::Model
   field :name, String
   field :value, String
+
+  index :name, unique: true
 end
