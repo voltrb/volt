@@ -142,6 +142,7 @@ module Volt
       # Remove existing controller and template and call _removed
       if @current_controller_handler
         @current_controller_handler.call_action('before', 'remove')
+        @current_controller_handler.send_controller_removed!
       end
 
       if @current_template

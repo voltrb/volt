@@ -103,43 +103,76 @@ module Volt
 
     # Sets the current model on this controller
     def model=(val)
-      if val.is_a?(Promise)
-        # Resolve the promise before setting
-        self.last_promise = val
+      puts "ASSIGN: #{val.inspect}"
+      # Clear the proc watcher
+      stop_proc_watcher
 
-        val.then do |result|
-          # Only assign if nothing else has been assigned since we started the resolve
-          self.model = result if last_promise == val
-        end.fail do |err|
-          Volt.logger.error("Unable to resolve promise assigned to model on #{inspect}")
-        end
-
-        return
-      end
-
-      # Clear
+      # Clear last promise
       self.last_promise = nil
 
-      # Start with a nil reactive value.
-      self.current_model ||= Model.new
-
       if Symbol === val || String === val
+        puts "S::"
         collections = [:page, :store, :params, :controller]
         if collections.include?(val.to_sym)
           self.current_model = send(val)
         else
           fail "#{val} is not the name of a valid model, choose from: #{collections.join(', ')}"
         end
-      else
-        self.current_model = val
+
+        return
       end
+      # If the val is a proc, then we need to call the proc in a watch, and
+      # run the rest of the assign after
+
+      puts "VAL: #{val.inspect}"
+      if val.is_a?(Proc)
+        puts "ASSIGN PROC"
+        @model_proc_watcher = proc do
+          # unwrap in a proc
+          val = val.call
+          puts "GOT: #{val.inspect}"
+          assign_current_model(val)
+        end.watch!
+      else
+        assign_current_model(val)
+      end
+    end
+
+    def stop_proc_watcher
+      @model_proc_watcher.stop if @model_proc_watcher
+      @model_proc_watcher = nil
+    end
+
+    def send_controller_removed
+      puts "CONT REMOVED"
+      stop_proc_watcher
+    end
+
+    def assign_current_model(val)
+      if val.is_a?(Promise)
+        # Resolve the promise before setting
+        self.last_promise = val
+
+        val.then do |result|
+          puts "RESOLVED: #{result.inspect}"
+          # Only assign if nothing else has been assigned since we started the resolve
+          self.current_model = result if last_promise == val
+          self.last_promise = nil
+        end.fail do |err|
+          Volt.logger.error("Unable to resolve promise assigned to ModelController: #{inspect}")
+        end
+
+        return
+      end
+
+      self.current_model = val
     end
 
     def model
       model = self.current_model
 
-      # If the model is a proc, call it now
-      model = model.call if model && model.is_a?(Proc)
+      # # If the model is a proc, call it now
+      # model = model.call if model && model.is_a?(Proc)
 
       model
     end

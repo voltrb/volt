@@ -59,6 +59,12 @@ module Volt
       false
     end
 
+    def send_controller_removed!
+      if @controller.respond_to?(:controller_removed!)
+        @controller.controller_removed!
+      end
+    end
+
     # Fetch the controller class
     def self.get_controller_and_action(controller_path)
       fail "Invalid controller path: #{controller_path.inspect}" unless controller_path && controller_path.size > 0
