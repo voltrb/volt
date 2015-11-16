@@ -47,7 +47,7 @@ class StoreTasks < Volt::Task
         next nil
       end.fail do |err|
         # An error object, convert to hash
-        Promise.new.reject(err.to_h)
+        Promise.new.reject(err.try(:to_h) || err.to_s)
       end
 
       Thread.current['in_channel'] = nil

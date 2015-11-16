@@ -17,14 +17,23 @@ module Volt
       method_name = method_name.to_s
       # c for call
 
+      args = escape(args)
+
+      QueryIdentifier.new(['c', @from, method_name, *args])
+    end
+
+    def escape(args)
       args.map do |arg|
         if arg.is_a?(Array)
           # Escape the array
           arg.unshift('a')
+        elsif arg.is_a?(Regexp)
+          # Track regexp
+          ['r', arg.to_s]
+        else
+          arg
         end
       end
-
-      QueryIdentifier.new(['c', @from, method_name, *args])
     end
 
     def ==(val)
@@ -54,7 +63,7 @@ module Volt
     end
 
     def __op(*args)
-      QueryOp.new(['c', self, *args])
+      QueryOp.new(['c', self, *escape(args)])
     end
 
     def coerce(other)
