@@ -152,7 +152,9 @@ module Volt
 
     def changed(model_id, data)
       $loading_models = true
-      Persistors::ModelStore.changed(model_id, data)
+      Volt.skip_permissions do
+        Persistors::ModelStore.changed(model_id, data)
+      end
       $loading_models = false
     end
   end
