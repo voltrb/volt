@@ -59,6 +59,8 @@ module Volt
       false
     end
 
+    # If the controller wants to know, provide a general way the controller can
+    # know if its being removed.  This lets us cleanup any watches.
     def send_controller_removed!
       if @controller.respond_to?(:controller_removed!)
         @controller.controller_removed!

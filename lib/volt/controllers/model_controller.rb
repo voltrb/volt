@@ -103,7 +103,6 @@ module Volt
 
     # Sets the current model on this controller
     def model=(val)
-      puts "ASSIGN: #{val.inspect}"
       # Clear the proc watcher
       stop_proc_watcher
 
@@ -111,7 +110,6 @@ module Volt
       self.last_promise = nil
 
       if Symbol === val || String === val
-        puts "S::"
         collections = [:page, :store, :params, :controller]
         if collections.include?(val.to_sym)
           self.current_model = send(val)
@@ -124,14 +122,16 @@ module Volt
       # If the val is a proc, then we need to call the proc in a watch, and
       # run the rest of the assign after
 
-      puts "VAL: #{val.inspect}"
       if val.is_a?(Proc)
-        puts "ASSIGN PROC"
         @model_proc_watcher = proc do
           # unwrap in a proc
-          val = val.call
-          puts "GOT: #{val.inspect}"
-          assign_current_model(val)
+          new_val = val.call
+
+          # The assignment part we don't want to watch on because it will be
+          # changing the current_model reactive_accessor.
+          u do
+            assign_current_model(new_val)
+          end
         end.watch!
       else
         assign_current_model(val)
@@ -143,8 +143,7 @@ module Volt
       @model_proc_watcher = nil
     end
 
-    def send_controller_removed
-      puts "CONT REMOVED"
+    def controller_removed!
       stop_proc_watcher
     end
 
@@ -154,7 +153,6 @@ module Volt
         self.last_promise = val
 
         val.then do |result|
-          puts "RESOLVED: #{result.inspect}"
           # Only assign if nothing else has been assigned since we started the resolve
           self.current_model = result if last_promise == val
           self.last_promise = nil

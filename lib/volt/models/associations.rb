@@ -22,11 +22,9 @@ module Volt
 
         # setter
         define_method(:"#{method_name}=") do |obj|
-          # Associatie the obj's foreign key
-          obj.set(foreign_key, id)
-
-          # Associate on the method name
-          set(method_name, obj)
+          # Associate the local key
+          foreign_key_value = obj.get(foreign_key)
+          set(local_key, foreign_key_value)
         end
       end
 
