@@ -59,7 +59,10 @@ module Volt
         result = assign_query_hash_to_params
       end
 
-      scroll
+      # Wait until things are rendered before we scroll
+      Volt::Timers.next_tick do
+        scroll
+      end
 
       result
     end
@@ -141,11 +144,11 @@ module Volt
           `
           try {
             var anchor = $('#' + frag);
+            console.log('frag', anchor);
             if (anchor.length == 0) {
               anchor = $('*[name="' + frag + '"]:first');
             }
             if (anchor && anchor.length > 0) {
-              console.log('scroll to: ', anchor.offset().top);
               $(document.body).scrollTop(anchor.offset().top);
             }
           }
