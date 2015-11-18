@@ -94,5 +94,17 @@ describe Volt::QueryIdentifier do
     )
   end
 
+  it 'should handle regex comparisons' do
+    query = (ident.message =~ /something/)
+    expect(query.to_query).to eq(
+      [
+        "c",
+        ["c", "ident", "message"],
+        "=~",
+        ["r", /something/.to_s]
+      ]
+    )
+  end
+
   it 'should handle method calls like max'
 end
