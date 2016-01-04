@@ -33,6 +33,7 @@ require 'volt/volt/templates'
 
 if RUBY_PLATFORM == 'opal'
   require 'volt/volt/client_setup/browser'
+  require 'volt/volt/client_setup/app'
 else
   require 'volt/volt/server_setup/app'
   require 'volt/server/template_handlers/view_processor'
@@ -45,6 +46,8 @@ module Volt
     if RUBY_PLATFORM != 'opal'
       # Include server app setup
       include Volt::ServerSetup::App
+    else
+      include Volt::ClientSetup::App
     end
 
     attr_reader :component_paths, :router, :live_query_pool,
@@ -110,9 +113,10 @@ module Volt
         setup_postboot_middleware
 
         setup_routes
-
-        start_message_bus
       end
+
+      # Starts message bus on server or proxy on client
+      start_message_bus
     end
 
     def templates
