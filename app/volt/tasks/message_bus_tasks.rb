@@ -1,9 +1,14 @@
+require 'securerandom'
+
 class MessageBusTasks < Volt::Task
-  require 'securerandom'
 
   # Publishes a message in the message bus
   def publish(channel, message)
+    # Trigger subscriptions in remote volt app (via the message bus)
     Volt.current_app.message_bus.publish(channel, message)
+
+    # Trigger local subscriptions, of local volt app
+    Volt.current_app.message_bus.trigger!(channel, message)
     return true
   end
 
@@ -13,11 +18,20 @@ class MessageBusTasks < Volt::Task
     @@subscriptions ||= {}
     @@subscriptions[listener_id] = []
 
+    # Todo: Maybe do this in a custom thread?
     events.each do |event|
       @@subscriptions[listener_id] << Volt.current_app.message_bus.on(event) do |msg|
         inform_subscriber(event, msg)
       end
     end
+
+    # Remove all registered listeners on client disconnect
+    connection_listener = Volt.current_app.on('client_disconnect') do
+      remove(listener_id)
+      connection_listener.remove # to avoid endless listeners
+    end
+
+    # Todo: If a client reconnects, automatically reattach all subscriptions?!
 
     return listener_id
   end
@@ -26,6 +40,7 @@ class MessageBusTasks < Volt::Task
   def remove(listener_id)
     if @@subscriptions && @@subscriptions[listener_id]
       @@subscriptions[listener_id].each &:remove
+      @@subscriptions[listener_id] = nil
     end
 
     return listener_id
@@ -33,11 +48,9 @@ class MessageBusTasks < Volt::Task
 
 
 
-  # todo: react on disconnect / connect
   # todo: authentication / authorization layer
   # todo: authenticate publishing and subscribing
   # todo: reauthenticate publish/subscribe on each message
-  # todo: does publishing also fire the event locally?
 
   private
 
