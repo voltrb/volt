@@ -142,7 +142,7 @@ module Volt
 
             Thread.new do
               # Handle incoming messages in a new thread
-              @message_bus.subscribe('volt_collection_update') do |collection_name|
+              @message_bus.subscribe('volt:collection_update') do |collection_name|
                 # update a collection, don't resend since we're coming from
                 # the message bus.
                 live_query_pool.updated_collection(collection_name, nil, true)

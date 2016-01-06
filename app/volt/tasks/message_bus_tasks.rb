@@ -75,7 +75,6 @@ class MessageBusTasks < Volt::Task
   end
 
   # todo: enable usage in views
-  # todo: use 'volt:' as a channel prefix for all volt internals?
 
   private
 
