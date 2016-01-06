@@ -74,8 +74,6 @@ class MessageBusTasks < Volt::Task
     is_allowed? :subscribe, *channels
   end
 
-  # todo: enable usage in views
-
   private
 
   # informs subscriber about new message in channel
