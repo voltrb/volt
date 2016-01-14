@@ -101,20 +101,16 @@ module Volt
       # either be a string or a regular expression. The replacement should
       # always be a string that may include references to the matched data from
       # the rule.
-      def plural(rule, replacement)
-        @uncountables.delete(rule) if rule.is_a?(String)
-        @uncountables.delete(replacement)
-        @plurals.insert(0, [rule, replacement])
+      def plural(*args)
+        register_pluralization_rule('plurals', *args)
       end
 
       # Specifies a new singularization rule and its replacement. The rule can
       # either be a string or a regular expression. The replacement should
       # always be a string that may include references to the matched data from
       # the rule.
-      def singular(rule, replacement)
-        @uncountables.delete(rule) if rule.is_a?(String)
-        @uncountables.delete(replacement)
-        @singulars.insert(0, [rule, replacement])
+      def singular(*args)
+        register_pluralization_rule('singulars', *args)
       end
 
       # Specifies a new irregular that applies to both pluralization and
@@ -191,6 +187,14 @@ module Volt
           else
             instance_variable_set "@#{scope}", []
         end
+      end
+
+      private
+
+      def register_pluralization_rule(type, rule, replacement)
+        @uncountables.delete(rule) if rule.is_a?(String)
+        @uncountables.delete(replacement)
+        instance_variable_get("@#{type}").insert(0, [rule, replacement])
       end
     end
 
