@@ -34,6 +34,10 @@ module Volt
       Volt.current_app.local_store
     end
 
+    def session_store
+      Volt.current_app.session_store
+    end
+
     def cookies
       Volt.current_app.cookies
     end
