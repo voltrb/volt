@@ -15,7 +15,7 @@ env:
   - secure: W03bt+hqLkAenymipqADIuRGZMiqu/sKx+9PXJJzCy0qAgmKs/PhPpHRpGpSmaYvVQQuiWX/rsw7xWXc2CHDJSp5aInd693xhJuSKXmnUp00r14/io+VWI9LE0lWjx4qdb6YQhdBTaxJB0+1sHDwU088yWBNnri/KwU4UlUgO5M=
   - secure: X95q9DUVJRLIoxd116xEbi/3xL85XiGbWdz0p5z/UawShQalMHxLfPNdU9u5gyw99LrgxTdPsJOTps8hB3vhzp8qIegrM8i2AICcicXC1QDOWi7McXSH9SBmE1AjhlyE/PLLHwLDeqfvwNMPAOrDH1GOisQp505D7SSXUZ9m0GI=
   matrix:
-  - NO_BROWSER=true
+  - BROWSER=phantom
   # - BROWSER=sauce OS="Windows 8" USE_BROWSER="Firefox" VERSION="33"
 script: bundle exec rake
 notifications:
