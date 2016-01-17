@@ -94,7 +94,7 @@ class VoltTime
     if other.is_a?(::Time)
       @time == other
     else
-      @time == other.getutc
+      @time == other.try(:getutc)
     end
   end
 
