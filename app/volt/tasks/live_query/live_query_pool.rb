@@ -26,7 +26,7 @@ class LiveQueryPool < Volt::GenericPool
 
     msg_bus = @volt_app.message_bus
     if !from_message_bus && collection != 'active_volt_instances' && msg_bus
-      msg_bus.publish('volt_collection_update', collection)
+      msg_bus.publish('volt:collection_update', collection)
     end
   end
 
