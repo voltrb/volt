@@ -4,6 +4,7 @@ require 'opal'
 
 require 'rack'
 require 'sass'
+require 'concurrent'
 require 'volt/utils/tilt_patch'
 
 require 'volt'
@@ -13,7 +14,6 @@ require 'volt/server/rack/component_code'
 require 'volt/server/template_handlers/sprockets_component_handler'
 
 require 'volt/server/websocket/websocket_handler'
-require 'volt/utils/read_write_lock'
 require 'volt/server/forking_server'
 require 'volt/server/websocket/rack_server_adaptor'
 
