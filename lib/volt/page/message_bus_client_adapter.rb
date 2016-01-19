@@ -2,7 +2,7 @@ require 'volt/reactive/eventable'
 require 'volt/server/message_bus/base_message_bus'
 
 module Volt
-  class MessageBusClientProxy < MessageBus::BaseMessageBus
+  class MessageBusClientAdapter < MessageBus::BaseMessageBus
     include Eventable
 
     # Custom listener class, proxying Eventable#Listener since
