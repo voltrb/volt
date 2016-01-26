@@ -1,4 +1,5 @@
 require 'volt/utils/ejson'
+require 'securerandom'
 
 module Volt
   # The tasks class provides an interface to call tasks on
@@ -36,6 +37,8 @@ module Volt
           response(promise_id, *args)
         when 'reload'
           reload
+        when 'refresh_css'
+          refresh_css(*args)
       end
     end
 
@@ -87,6 +90,41 @@ module Volt
 
       Volt.current_app.page._reloading = true
       `window.location.reload(false);`
+    end
+
+    # refresh changed css
+    def refresh_css(changed_files)
+      changed_files[:removed].each do |path|
+
+        # Remove link to css from head
+        `
+        var el = window.document.querySelector("link[href^='" + path + "']");
+        el.parentElement.removeChild(el);
+        `
+      end
+      changed_files[:modified].each do |path|
+
+        # We fetch the link
+        # We then invalidate the cached css by appending a random query to the href which forces the CSS to be reloaded
+        `
+          var el = window.document.querySelector("link[href^='" + path + "']")
+          el.setAttribute('href', el.getAttribute('href') + '?v=' + #{SecureRandom.uuid[0..7]})
+        `
+      end
+
+      changed_files[:added].each do |path|
+
+        # Inject a new link to the css into the head
+        `
+          link=document.createElement('link');
+          link.href=path;
+          link.rel='stylesheet';
+          link.type='text/css';
+          link.media='all';
+
+          document.getElementsByTagName('head')[0].appendChild(link);
+        `
+      end
     end
   end
 end
