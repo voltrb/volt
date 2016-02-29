@@ -45,6 +45,10 @@ class QueryTasks < Volt::Task
   def remove_listener(collection, query)
     live_query = @volt_app.live_query_pool.lookup(collection, query)
     live_query.remove_channel(@channel)
+
+    # If query has no more channels remove it from channel_live_queries
+    @volt_app.channel_live_queries[@channel].delete(live_query) if live_query.channels.blank?
+    return true
   end
 
   # Removes a channel from all associated live queries
