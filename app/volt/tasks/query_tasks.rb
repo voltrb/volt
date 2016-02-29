@@ -47,7 +47,7 @@ class QueryTasks < Volt::Task
     live_query.remove_channel(@channel)
 
     # If query has no more channels remove it from channel_live_queries
-    # @volt_app.channel_live_queries[@channel].delete(live_query) if live_query.channels.blank?
+    @volt_app.channel_live_queries[@channel].delete_if{|channel_live_query| channel_live_query.channels.blank? }
   end
 
   # Removes a channel from all associated live queries
