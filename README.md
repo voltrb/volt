@@ -59,7 +59,7 @@ Have a question and need help?  The volt team watches [stackoverflow](http://sta
 
 # Contributing
 
-You want to contribute? Great! Thanks for being awesome! At the moment, we have a big internal todo list.  Please hop on https://gitter.im/voltrb/volt so that we don't duplicate work. Pull requests are always welcome, but asking about helping on Gitter should save some duplication.
+Do you want to contribute? Great! Thanks for being awesome! At the moment, we have a big internal todo list.  Please hop on https://gitter.im/voltrb/volt so that we don't duplicate work. Pull requests are always welcome, but asking about helping on Gitter should save some duplication.
 
 # Support
 
