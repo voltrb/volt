@@ -106,7 +106,6 @@ the base collections will now be called "Repositories" or "Repo's" for short.  T
 ## 0.9.3
 [0.9.3 Update Blog Post](http://blog.voltframework.com/post/121128931859/0-9-3-stuff-you-asked-for)
 [Upgrade Guide](https://github.com/voltrb/volt/blob/master/docs/UPGRADE_GUIDE.md)
-
 ### Added
 - Added validations block for conditional validation runs
 - you can now set the NO_FORKING=true ENV to prevent using the forking server in development.
