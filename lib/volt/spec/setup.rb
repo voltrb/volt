@@ -24,7 +24,7 @@ module Volt
         end
       end
 
-      unless ENV['BROWSER']
+      if ! ENV['BROWSER'] || ENV['NO_BROWSER']
         # Not running integration tests with ENV['BROWSER']
         RSpec.configuration.filter_run_excluding type: :feature
       end
