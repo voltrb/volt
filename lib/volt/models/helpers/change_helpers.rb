@@ -5,7 +5,7 @@ module Volt
     module Helpers
       module ChangeHelpers
         def self.included(base)
-          base.setup_action_helpers_in_class(:before_save, :before_validate)
+          base.setup_action_helpers_in_class(:before_save, :after_save, :before_validate)
         end
 
         # Called when something in the model changes.  Saves
@@ -83,6 +83,14 @@ module Volt
 
             # Clear the change tracking
             clear_tracked_changes!
+
+            #Call the after_save callback
+            # skip validations when running after_save, this prevents n+1, and allows
+            # the after_save to put the model into an invalid state, which you want
+            # sometimes.
+            Volt::Model.no_validate do
+              run_callbacks(:after_save)
+            end
           end
 
           result
