@@ -7,7 +7,10 @@ module Volt
         local_key   ||= options.fetch(:local_key, "#{method_name}_id")
 
         # Add a field for the association_id
-        field(local_key)
+        field local_key, String
+
+        # initialize has_many association in foreign model
+        root.get(collection).class.has_many(self.class.name)
 
         # getter
         define_method(method_name) do
@@ -21,7 +24,7 @@ module Volt
         end
 
         define_method(:"#{method_name}=") do |obj|
-          id = obj.is_a?(Fixnum) ? obj : obj.id
+          id = obj.is_a?(String) ? obj : obj.id
 
           # Assign the current model's something_id to the object's id
           set(local_key, id)
@@ -52,16 +55,38 @@ module Volt
 
       # has_one creates a method on the Volt::Model that returns a promise
       # to get the associated model.
-      def has_one(method_name)
+      def has_one(method_name, options = {})
         if method_name.plural?
           raise NameError, "has_one takes a singluar association name"
         end
 
+        collection  ||= options.fetch(:collection, method_name).pluralize
+        foreign_key ||= options.fetch(:foreign_key, :id)
+        local_key   ||= options.fetch(:local_key, "#{method_name}_id")
+
+        # Add a field for the association_id
+        field local_key, String
+
         define_method(method_name) do
           association_with_root_model('has_one') do |root|
-            key = self.class.to_s.underscore + '_id'
-            root.send(method_name.pluralize).where(key => id).first
+            lookup_key = get(local_key)
+
+            root.get(collection).where(foreign_key => lookup_key).first
           end
+        end
+
+        define_method(:"#{method_name}=") do |obj|
+          id = obj.is_a?(String) ? obj : obj.id
+
+          # Delete old record
+          old_id = get(local_key)
+          if old_id and old_id != id
+            root.get(collection).where(foreign_key => old_id).first.then do |old_obj|
+              old_obj.parent.delete(old_obj)
+            end
+          end
+          
+          set(local_key, id)
         end
       end
     end
